@@ -72,7 +72,7 @@ CREATE TABLE sys_oper_log (
 
 -- 插入默认超级管理员账号
 INSERT INTO sys_user (username, password, real_name, user_type, status) 
-VALUES ('root', '$2a$10$VQECw7SiNIH8Mn0CFqC3IOwBjKJYVqDQxQZQZQZQZQZQZQZQZQZQ', '超级管理员', 1, 1);
+VALUES ('root', '$2b$10$6kyfYFRRM1W2cadzuB9OlOGL0f4nyKeLyEd1oyg2cq94lGQuFZRWC', '超级管理员', 1, 1);
 
 -- 插入默认角色
 INSERT INTO sys_role (role_name, role_key, remark) VALUES 
