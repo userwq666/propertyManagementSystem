@@ -71,6 +71,20 @@ const routes = [
         meta: { title: '车位管理', parent: '小区管理' }
       },
       {
+        path: 'repair',
+        name: 'Repair',
+        redirect: '/repair/record',
+        meta: { title: '报修管理', icon: 'Tools' },
+        children: [
+          {
+            path: 'record',
+            name: 'RepairRecord',
+            component: () => import('@/views/repair/record/index.vue'),
+            meta: { title: '报修记录' }
+          }
+        ]
+      },
+      {
         path: 'fee',
         name: 'Fee',
         redirect: '/fee/item',
