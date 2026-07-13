@@ -115,6 +115,31 @@ const routes = [
             meta: { title: '欠费统计', parent: '收费管理' }
           }
         ]
+      },
+      {
+        path: 'complaint',
+        name: 'Complaint',
+        meta: { title: '投诉建议', icon: 'ChatDotRound' },
+        children: [
+          {
+            path: 'suggest',
+            name: 'ComplaintSuggest',
+            component: () => import('@/views/complaint/suggest/index.vue'),
+            meta: { title: '投诉建议列表' }
+          },
+          {
+            path: 'suggest/add',
+            name: 'ComplaintSuggestAdd',
+            component: () => import('@/views/complaint/suggest/add.vue'),
+            meta: { title: '新增投诉建议' }
+          },
+          {
+            path: 'suggest/:id',
+            name: 'ComplaintSuggestDetail',
+            component: () => import('@/views/complaint/suggest/detail.vue'),
+            meta: { title: '投诉建议详情' }
+          }
+        ]
       }
     ]
   }
