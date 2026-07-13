@@ -869,30 +869,173 @@ GET /api/fee/record/statistics
 
 ---
 
-## 五、待开发模块
+## 五、报修维修模块
 
-### 5.1 报修维修模块（待开发）
+### 5.1 报修记录管理
 
-- 报修记录管理
-- 报修处理流程
-- 完成评价
+#### 5.1.1 新增报修记录
 
-### 5.2 投诉建议模块（待开发）
+```
+POST /api/repair/record
+```
+
+**请求参数：**
+
+```json
+{
+  "ownerId": 1,
+  "houseId": 1,
+  "repairType": "水电",
+  "content": "水管漏水",
+  "imgUrl": ""
+}
+```
+
+#### 5.1.2 更新报修记录
+
+```
+PUT /api/repair/record
+```
+
+**请求参数：**
+
+```json
+{
+  "id": 1,
+  "ownerId": 1,
+  "houseId": 1,
+  "repairType": "水电",
+  "content": "水管漏水",
+  "imgUrl": ""
+}
+```
+
+#### 5.1.3 删除报修记录
+
+```
+DELETE /api/repair/record/{id}
+```
+
+#### 5.1.4 获取报修记录详情
+
+```
+GET /api/repair/record/{id}
+```
+
+**响应参数：**
+
+```json
+{
+  "code": 200,
+  "message": "操作成功",
+  "data": {
+    "id": 1,
+    "ownerId": 1,
+    "houseId": 1,
+    "repairType": "水电",
+    "content": "水管漏水",
+    "imgUrl": "",
+    "status": 0,
+    "handleUser": null,
+    "handleResult": null,
+    "finishTime": null,
+    "rating": null,
+    "createTime": "2026-07-13T10:00:00"
+  }
+}
+```
+
+#### 5.1.5 获取报修记录分页列表
+
+```
+GET /api/repair/record/page
+```
+
+**请求参数：**
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| pageNum | Integer | 否 | 页码，默认1 |
+| pageSize | Integer | 否 | 每页数量，默认10 |
+| ownerId | Long | 否 | 业主ID |
+| houseId | Long | 否 | 房屋ID |
+| status | Integer | 否 | 状态：0待处理 1处理中 2已完成 3驳回 |
+
+**响应参数：**
+
+```json
+{
+  "code": 200,
+  "message": "操作成功",
+  "data": {
+    "records": [
+      {
+        "id": 1,
+        "ownerId": 1,
+        "houseId": 1,
+        "repairType": "水电",
+        "content": "水管漏水",
+        "status": 0,
+        "handleUser": null,
+        "rating": null,
+        "createTime": "2026-07-13T10:00:00"
+      }
+    ],
+    "total": 10,
+    "size": 10,
+    "current": 1
+  }
+}
+```
+
+#### 5.1.6 更新报修状态
+
+```
+PUT /api/repair/record/status
+```
+
+**请求参数：**
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 是 | 报修记录ID |
+| status | Integer | 是 | 状态：0待处理 1处理中 2已完成 3驳回 |
+| handleUser | String | 否 | 处理人 |
+| handleResult | String | 否 | 处理结果 |
+
+#### 5.1.7 更新报修评分
+
+```
+PUT /api/repair/record/rating
+```
+
+**请求参数：**
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 是 | 报修记录ID |
+| rating | Integer | 是 | 评分：1-5 |
+
+---
+
+## 六、待开发模块
+
+### 6.1 投诉建议模块（待开发）
 
 - 投诉建议提交
 - 处理回复
 
-### 5.3 公告管理模块（待开发）
+### 6.2 公告管理模块（待开发）
 
 - 公告发布
 - 公告查看
 
-### 5.4 设备巡检模块（待开发）
+### 6.3 设备巡检模块（待开发）
 
 - 巡检计划
 - 巡检记录
 
-### 5.5 数据统计模块（待开发）
+### 6.4 数据统计模块（待开发）
 
 - 收费统计
 - 报修统计
