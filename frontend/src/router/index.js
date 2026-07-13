@@ -140,6 +140,24 @@ const routes = [
             meta: { title: '投诉建议详情' }
           }
         ]
+      },
+      {
+        path: 'announcement',
+        name: 'Announcement',
+        component: () => import('../views/announcement/index.vue'),
+        meta: { title: '公告管理' }
+      },
+      {
+        path: 'announcement/add',
+        name: 'AnnouncementAdd',
+        component: () => import('../views/announcement/add.vue'),
+        meta: { title: '新增公告' }
+      },
+      {
+        path: 'announcement/:id',
+        name: 'AnnouncementDetail',
+        component: () => import('../views/announcement/detail.vue'),
+        meta: { title: '公告详情' }
       }
     ]
   }
