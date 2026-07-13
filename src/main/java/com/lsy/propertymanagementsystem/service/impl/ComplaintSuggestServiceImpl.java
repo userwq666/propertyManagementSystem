@@ -2,7 +2,7 @@ package com.lsy.propertymanagementsystem.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.lsy.propertymanagementsystem.common.BusinessException;
+import com.lsy.propertymanagementsystem.common.exception.BusinessException;
 import com.lsy.propertymanagementsystem.dto.request.ComplaintSuggestRequest;
 import com.lsy.propertymanagementsystem.entity.ComplaintSuggest;
 import com.lsy.propertymanagementsystem.mapper.ComplaintSuggestMapper;
