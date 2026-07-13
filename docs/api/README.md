@@ -1018,24 +1018,169 @@ PUT /api/repair/record/rating
 
 ---
 
-## 六、待开发模块
+## 六、投诉建议模块
 
-### 6.1 投诉建议模块（待开发）
+### 6.1 投诉建议管理
 
-- 投诉建议提交
-- 处理回复
+#### 6.1.1 新增投诉建议
 
-### 6.2 公告管理模块（待开发）
+```
+POST /api/complaint/suggest
+```
+
+**请求参数：**
+
+```json
+{
+  "ownerId": 1,
+  "houseId": 1,
+  "type": "投诉",
+  "title": "噪音扰民",
+  "content": "楼上住户深夜制造噪音"
+}
+```
+
+#### 6.1.2 更新投诉建议
+
+```
+PUT /api/complaint/suggest
+```
+
+**请求参数：**
+
+```json
+{
+  "id": 1,
+  "ownerId": 1,
+  "houseId": 1,
+  "type": "投诉",
+  "title": "噪音扰民",
+  "content": "楼上住户深夜制造噪音"
+}
+```
+
+#### 6.1.3 删除投诉建议
+
+```
+DELETE /api/complaint/suggest/{id}
+```
+
+#### 6.1.4 获取投诉建议详情
+
+```
+GET /api/complaint/suggest/{id}
+```
+
+**响应参数：**
+
+```json
+{
+  "code": 200,
+  "message": "操作成功",
+  "data": {
+    "id": 1,
+    "ownerId": 1,
+    "houseId": 1,
+    "type": "投诉",
+    "title": "噪音扰民",
+    "content": "楼上住户深夜制造噪音",
+    "status": 0,
+    "handleUser": null,
+    "handleResult": null,
+    "finishTime": null,
+    "rating": null,
+    "createTime": "2026-07-13T10:00:00"
+  }
+}
+```
+
+#### 6.1.5 获取投诉建议分页列表
+
+```
+GET /api/complaint/suggest/page
+```
+
+**请求参数：**
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| pageNum | Integer | 否 | 页码，默认1 |
+| pageSize | Integer | 否 | 每页数量，默认10 |
+| ownerId | Long | 否 | 业主ID |
+| houseId | Long | 否 | 房屋ID |
+| status | Integer | 否 | 状态：0待受理 1已受理 2处理中 3已完成 4已评价 5已驳回 |
+| type | String | 否 | 类型：投诉/建议/其他 |
+
+**响应参数：**
+
+```json
+{
+  "code": 200,
+  "message": "操作成功",
+  "data": {
+    "records": [
+      {
+        "id": 1,
+        "ownerId": 1,
+        "houseId": 1,
+        "type": "投诉",
+        "title": "噪音扰民",
+        "status": 0,
+        "handleUser": null,
+        "rating": null,
+        "createTime": "2026-07-13T10:00:00"
+      }
+    ],
+    "total": 10,
+    "size": 10,
+    "current": 1
+  }
+}
+```
+
+#### 6.1.6 更新投诉建议状态
+
+```
+PUT /api/complaint/suggest/status
+```
+
+**请求参数：**
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 是 | 投诉建议ID |
+| status | Integer | 是 | 状态：0待受理 1已受理 2处理中 3已完成 4已评价 5已驳回 |
+| handleUser | String | 否 | 处理人 |
+| handleResult | String | 否 | 处理结果 |
+
+#### 6.1.7 更新投诉建议评分
+
+```
+PUT /api/complaint/suggest/rating
+```
+
+**请求参数：**
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 是 | 投诉建议ID |
+| rating | Integer | 是 | 评分：1-5 |
+
+---
+
+## 七、待开发模块
+
+### 7.1 公告管理模块（待开发）
 
 - 公告发布
 - 公告查看
 
-### 6.3 设备巡检模块（待开发）
+### 7.2 设备巡检模块（待开发）
 
 - 巡检计划
 - 巡检记录
 
-### 6.4 数据统计模块（待开发）
+### 7.3 数据统计模块（待开发）
 
 - 收费统计
 - 报修统计
