@@ -22,7 +22,10 @@ public class StatisticsController {
     }
 
     @GetMapping("/fee/monthly")
-    public Result getMonthlyFeeStatistics(@RequestParam Integer year) {
+    public Result getMonthlyFeeStatistics(@RequestParam(defaultValue = "2026") Integer year) {
+        if (year < 1900 || year > 2100) {
+            return Result.error("年份范围无效，应在1900-2100之间");
+        }
         List<Map<String, Object>> statistics = statisticsService.getMonthlyFeeStatistics(year);
         return Result.success(statistics);
     }

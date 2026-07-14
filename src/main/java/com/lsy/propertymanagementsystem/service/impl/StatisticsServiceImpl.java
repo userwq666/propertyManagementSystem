@@ -68,6 +68,13 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Override
     public List<Map<String, Object>> getMonthlyFeeStatistics(Integer year) {
+        if (year == null) {
+            year = 2026;
+        }
+        if (year < 1900 || year > 2100) {
+            year = 2026;
+        }
+
         LambdaQueryWrapper<FeeRecord> wrapper = new LambdaQueryWrapper<>();
         wrapper.likeRight(FeeRecord::getBillCycle, String.valueOf(year));
         List<FeeRecord> records = feeRecordMapper.selectList(wrapper);
