@@ -142,6 +142,42 @@ const routes = [
         ]
       },
       {
+        path: 'equipment/category',
+        name: 'EquipmentCategory',
+        component: () => import('../views/equipment/category/index.vue'),
+        meta: { title: '设备分类', parent: '设备巡检' }
+      },
+      {
+        path: 'equipment/device',
+        name: 'Equipment',
+        component: () => import('../views/equipment/device/index.vue'),
+        meta: { title: '设备管理', parent: '设备巡检' }
+      },
+      {
+        path: 'inspection/plan',
+        name: 'InspectionPlan',
+        component: () => import('../views/equipment/inspection/plan/index.vue'),
+        meta: { title: '巡检计划', parent: '设备巡检' }
+      },
+      {
+        path: 'inspection/plan/add',
+        name: 'InspectionPlanAdd',
+        component: () => import('../views/equipment/inspection/plan/add.vue'),
+        meta: { title: '新增计划', parent: '巡检计划' }
+      },
+      {
+        path: 'inspection/record',
+        name: 'InspectionRecord',
+        component: () => import('../views/equipment/inspection/record/index.vue'),
+        meta: { title: '巡检记录', parent: '设备巡检' }
+      },
+      {
+        path: 'inspection/record/add',
+        name: 'InspectionRecordAdd',
+        component: () => import('../views/equipment/inspection/record/add.vue'),
+        meta: { title: '新增记录', parent: '巡检记录' }
+      },
+      {
         path: 'announcement',
         name: 'Announcement',
         component: () => import('../views/announcement/index.vue'),
