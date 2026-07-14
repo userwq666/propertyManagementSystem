@@ -1570,10 +1570,160 @@ GET /api/inspection/record/equipment/{id}
 
 ---
 
-## 九、待开发模块
+## 九、数据统计模块
 
-### 9.1 数据统计模块（待开发）
+### 9.1 收费统计
 
-- 收费统计
-- 报修统计
-- 图表展示
+#### 9.1.1 按月统计收费情况
+
+```
+GET /api/statistics/fee/monthly
+```
+
+**请求参数：**
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| year | Integer | 否 | 年份，默认当前年份 |
+| month | Integer | 否 | 月份，默认当前月份 |
+
+**响应参数：**
+
+```json
+{
+  "code": 200,
+  "message": "操作成功",
+  "data": {
+    "totalAmount": 125000.00,
+    "paidAmount": 98000.00,
+    "unpaidAmount": 27000.00,
+    "paidRate": 78.4,
+    "details": [
+      {
+        "itemName": "物业费",
+        "amount": 85000.00,
+        "paidAmount": 68000.00,
+        "unpaidAmount": 17000.00
+      }
+    ]
+  }
+}
+```
+
+#### 9.1.2 按年统计收费情况
+
+```
+GET /api/statistics/fee/yearly
+```
+
+**请求参数：**
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| year | Integer | 否 | 年份，默认当前年份 |
+
+**响应参数：**
+
+```json
+{
+  "code": 200,
+  "message": "操作成功",
+  "data": {
+    "totalAmount": 1500000.00,
+    "paidAmount": 1200000.00,
+    "unpaidAmount": 300000.00,
+    "paidRate": 80.0,
+    "monthlyData": [
+      {
+        "month": 1,
+        "amount": 125000.00,
+        "paidAmount": 100000.00
+      }
+    ]
+  }
+}
+```
+
+### 9.2 报修统计
+
+#### 9.2.1 按月统计报修情况
+
+```
+GET /api/statistics/repair/monthly
+```
+
+**请求参数：**
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| year | Integer | 否 | 年份，默认当前年份 |
+| month | Integer | 否 | 月份，默认当前月份 |
+
+**响应参数：**
+
+```json
+{
+  "code": 200,
+  "message": "操作成功",
+  "data": {
+    "totalCount": 45,
+    "completedCount": 40,
+    "pendingCount": 5,
+    "completionRate": 88.9,
+    "averageHandleTime": "2.5天"
+  }
+}
+```
+
+#### 9.2.2 按类型统计报修情况
+
+```
+GET /api/statistics/repair/type
+```
+
+**响应参数：**
+
+```json
+{
+  "code": 200,
+  "message": "操作成功",
+  "data": [
+    {
+      "type": "水电",
+      "count": 20,
+      "percentage": 44.4
+    },
+    {
+      "type": "电梯",
+      "count": 15,
+      "percentage": 33.3
+    }
+  ]
+}
+```
+
+### 9.3 系统概览
+
+#### 9.3.1 获取系统概览数据
+
+```
+GET /api/statistics/overview
+```
+
+**响应参数：**
+
+```json
+{
+  "code": 200,
+  "message": "操作成功",
+  "data": {
+    "totalBuildings": 10,
+    "totalHouses": 500,
+    "totalOwners": 450,
+    "totalParking": 200,
+    "monthlyFeeCollection": 125000.00,
+    "pendingRepairs": 5,
+    "pendingComplaints": 3
+  }
+}
+```
