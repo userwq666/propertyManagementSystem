@@ -199,7 +199,7 @@ const routes = [
         path: 'statistics',
         name: 'Statistics',
         component: () => import('../views/statistics/index.vue'),
-        meta: { title: '数据统计' }
+        meta: { title: '数据统计', parent: '数据统计' }
       }
     ]
   }

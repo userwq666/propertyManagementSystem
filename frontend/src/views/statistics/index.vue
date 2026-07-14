@@ -141,6 +141,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { Money, Warning, Tools, Clock } from '@element-plus/icons-vue'
 import {
   getStatisticsOverview,
   getFeeMonthlyStatistics,
