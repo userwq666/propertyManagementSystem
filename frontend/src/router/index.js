@@ -194,6 +194,12 @@ const routes = [
         name: 'AnnouncementDetail',
         component: () => import('../views/announcement/detail.vue'),
         meta: { title: '公告详情' }
+      },
+      {
+        path: 'statistics',
+        name: 'Statistics',
+        component: () => import('../views/statistics/index.vue'),
+        meta: { title: '数据统计' }
       }
     ]
   }
