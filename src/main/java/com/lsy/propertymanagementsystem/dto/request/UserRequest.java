@@ -3,6 +3,7 @@ package com.lsy.propertymanagementsystem.dto.request;
 import lombok.Data;
 
 import jakarta.validation.constraints.NotBlank;
+import java.util.List;
 
 @Data
 public class UserRequest {
@@ -21,4 +22,6 @@ public class UserRequest {
     private Integer userType;
     
     private Integer status;
+    
+    private List<Long> roleIds;
 }

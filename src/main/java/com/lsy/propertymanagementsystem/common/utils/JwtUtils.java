@@ -9,13 +9,24 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class JwtUtils {
-    private static final String SECRET = "propertyManagementSystemSecretKeyForJwtTokenGeneration";
-    private static final long EXPIRATION = 24 * 60 * 60 * 1000; // 24小时
+    private static String secret = "propertyManagementSystemSecretKeyForJwtTokenGeneration";
+    private static long expiration = 24 * 60 * 60 * 1000;
+
+    private static final ConcurrentHashMap<String, Long> tokenBlacklist = new ConcurrentHashMap<>();
+
+    public static void setSecret(String secret) {
+        JwtUtils.secret = secret;
+    }
+
+    public static void setExpiration(long expiration) {
+        JwtUtils.expiration = expiration;
+    }
 
     private static SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET.getBytes());
+        return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
     public static String generateToken(Long userId, String username) {
@@ -25,7 +36,7 @@ public class JwtUtils {
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -50,10 +61,24 @@ public class JwtUtils {
 
     public static boolean isTokenValid(String token) {
         try {
+            if (tokenBlacklist.containsKey(token)) {
+                return false;
+            }
             Claims claims = parseToken(token);
             return !claims.getExpiration().before(new Date());
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static void invalidateToken(String token) {
+        if (token != null) {
+            tokenBlacklist.put(token, System.currentTimeMillis());
+        }
+    }
+
+    public static void cleanExpiredBlacklist() {
+        long now = System.currentTimeMillis();
+        tokenBlacklist.entrySet().removeIf(entry -> (now - entry.getValue()) > expiration);
     }
 }
