@@ -45,7 +45,7 @@
         </el-menu>
       </el-aside>
       
-      <el-container>
+      <el-container class="right-container">
         <el-header class="header">
           <div class="header-left">
             <el-icon class="collapse-btn" @click="toggleCollapse">
@@ -126,6 +126,18 @@ onMounted(async () => {
   height: 100vh;
 }
 
+.layout-container > .el-container {
+  flex: 1;
+  overflow: hidden;
+}
+
+.right-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .aside {
   background-color: #304156;
   transition: width 0.3s;
@@ -180,5 +192,7 @@ onMounted(async () => {
 .main {
   background: #f5f7fa;
   padding: 20px;
+  flex: 1;
+  overflow: auto;
 }
 </style>
