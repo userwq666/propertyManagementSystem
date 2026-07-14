@@ -1312,14 +1312,267 @@ PUT /api/announcement/top
 
 ---
 
-## 八、待开发模块
+## 八、设备巡检模块
 
-### 8.1 设备巡检模块（待开发）
+### 8.1 设备分类管理
 
-- 巡检计划
-- 巡检记录
+#### 8.1.1 新增设备分类
 
-### 8.2 数据统计模块（待开发）
+```
+POST /api/equipment/category
+```
+
+**请求参数：**
+
+```json
+{
+  "categoryName": "电梯",
+  "description": "电梯设备",
+  "sortOrder": 1
+}
+```
+
+#### 8.1.2 更新设备分类
+
+```
+PUT /api/equipment/category
+```
+
+**请求参数：**
+
+```json
+{
+  "id": 1,
+  "categoryName": "电梯",
+  "description": "电梯设备",
+  "sortOrder": 1
+}
+```
+
+#### 8.1.3 删除设备分类
+
+```
+DELETE /api/equipment/category/{id}
+```
+
+#### 8.1.4 获取设备分类详情
+
+```
+GET /api/equipment/category/{id}
+```
+
+#### 8.1.5 获取设备分类列表
+
+```
+GET /api/equipment/category/list
+```
+
+### 8.2 设备管理
+
+#### 8.2.1 新增设备
+
+```
+POST /api/equipment
+```
+
+**请求参数：**
+
+```json
+{
+  "equipmentName": "1号电梯",
+  "equipmentCode": "EL-001",
+  "categoryId": 1,
+  "location": "A栋1单元",
+  "maintenanceUser": "张三",
+  "installDate": "2024-01-01",
+  "warrantyDate": "2026-01-01"
+}
+```
+
+#### 8.2.2 更新设备
+
+```
+PUT /api/equipment
+```
+
+#### 8.2.3 删除设备
+
+```
+DELETE /api/equipment/{id}
+```
+
+#### 8.2.4 获取设备详情
+
+```
+GET /api/equipment/{id}
+```
+
+#### 8.2.5 分页查询设备
+
+```
+GET /api/equipment/page
+```
+
+**请求参数：**
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| pageNum | Integer | 否 | 页码，默认1 |
+| pageSize | Integer | 否 | 每页数量，默认10 |
+| categoryId | Long | 否 | 设备分类ID |
+| status | Integer | 否 | 状态：0正常 1维修中 2停用 |
+
+#### 8.2.6 更新设备状态
+
+```
+PUT /api/equipment/status
+```
+
+**请求参数：**
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 是 | 设备ID |
+| status | Integer | 是 | 状态：0正常 1维修中 2停用 |
+
+### 8.3 巡检计划管理
+
+#### 8.3.1 新增巡检计划
+
+```
+POST /api/inspection/plan
+```
+
+**请求参数：**
+
+```json
+{
+  "planName": "每日电梯巡检",
+  "planType": 0,
+  "planDate": "2026-07-14",
+  "equipmentIds": "1,2,3",
+  "inspectorIds": "1,2"
+}
+```
+
+#### 8.3.2 更新巡检计划
+
+```
+PUT /api/inspection/plan
+```
+
+#### 8.3.3 删除巡检计划
+
+```
+DELETE /api/inspection/plan/{id}
+```
+
+#### 8.3.4 获取巡检计划详情
+
+```
+GET /api/inspection/plan/{id}
+```
+
+#### 8.3.5 分页查询巡检计划
+
+```
+GET /api/inspection/plan/page
+```
+
+**请求参数：**
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| pageNum | Integer | 否 | 页码，默认1 |
+| pageSize | Integer | 否 | 每页数量，默认10 |
+| status | Integer | 否 | 状态：0待执行 1执行中 2已完成 3已取消 |
+
+#### 8.3.6 更新巡检计划状态
+
+```
+PUT /api/inspection/plan/status
+```
+
+**请求参数：**
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | Long | 是 | 计划ID |
+| status | Integer | 是 | 状态：0待执行 1执行中 2已完成 3已取消 |
+
+#### 8.3.7 手动生成周期计划
+
+```
+POST /api/inspection/plan/generate
+```
+
+### 8.4 巡检记录管理
+
+#### 8.4.1 新增巡检记录
+
+```
+POST /api/inspection/record
+```
+
+**请求参数：**
+
+```json
+{
+  "planId": 1,
+  "equipmentId": 1,
+  "inspectorId": 1,
+  "result": 0,
+  "faultDesc": "",
+  "repairSuggestion": "",
+  "budget": 0,
+  "duration": ""
+}
+```
+
+#### 8.4.2 更新巡检记录
+
+```
+PUT /api/inspection/record
+```
+
+#### 8.4.3 删除巡检记录
+
+```
+DELETE /api/inspection/record/{id}
+```
+
+#### 8.4.4 获取巡检记录详情
+
+```
+GET /api/inspection/record/{id}
+```
+
+#### 8.4.5 分页查询巡检记录
+
+```
+GET /api/inspection/record/page
+```
+
+**请求参数：**
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| pageNum | Integer | 否 | 页码，默认1 |
+| pageSize | Integer | 否 | 每页数量，默认10 |
+| equipmentId | Long | 否 | 设备ID |
+| result | Integer | 否 | 巡检结果：0正常 1一般异常 2严重异常 |
+
+#### 8.4.6 按设备查询历史巡检记录
+
+```
+GET /api/inspection/record/equipment/{id}
+```
+
+---
+
+## 九、待开发模块
+
+### 9.1 数据统计模块（待开发）
 
 - 收费统计
 - 报修统计
