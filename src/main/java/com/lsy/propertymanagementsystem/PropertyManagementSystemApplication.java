@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-@MapperScan("com.lsy.propertymanagementsystem.mapper")
+@MapperScan("com.lsy.propertymanagementsystem.module.**.mapper")
 @EnableScheduling
 public class PropertyManagementSystemApplication {
 

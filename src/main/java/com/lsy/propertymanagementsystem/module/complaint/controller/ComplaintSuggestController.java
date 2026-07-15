@@ -2,8 +2,10 @@ package com.lsy.propertymanagementsystem.module.complaint.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.common.result.Result;
-import com.lsy.propertymanagementsystem.module.complaint.entity.ComplaintSuggest;
+import com.lsy.propertymanagementsystem.module.complaint.domain.ComplaintSuggestDomain;
+import com.lsy.propertymanagementsystem.module.complaint.dto.ComplaintSuggestDTO;
 import com.lsy.propertymanagementsystem.module.complaint.service.ComplaintSuggestService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,27 +17,21 @@ public class ComplaintSuggestController {
     private ComplaintSuggestService complaintSuggestService;
 
     @PostMapping
-    public Result add(@RequestBody ComplaintSuggest record) {
-        complaintSuggestService.addComplaintSuggest(record);
+    public Result add(@Valid @RequestBody ComplaintSuggestDTO domain) {
+        complaintSuggestService.add(domain);
         return Result.success();
     }
 
     @PutMapping
-    public Result update(@RequestBody ComplaintSuggest record) {
-        complaintSuggestService.updateComplaintSuggest(record);
+    public Result update(@Valid @RequestBody ComplaintSuggestDTO domain) {
+        complaintSuggestService.update(domain);
         return Result.success();
     }
 
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Long id) {
-        complaintSuggestService.deleteComplaintSuggest(id);
+        complaintSuggestService.delete(id);
         return Result.success();
-    }
-
-    @GetMapping("/{id}")
-    public Result getById(@PathVariable Long id) {
-        ComplaintSuggest complaintSuggest = complaintSuggestService.getById(id);
-        return Result.success(complaintSuggest);
     }
 
     @GetMapping("/page")
@@ -44,22 +40,16 @@ public class ComplaintSuggestController {
                        @RequestParam(required = false) Long ownerId,
                        @RequestParam(required = false) String type,
                        @RequestParam(required = false) Integer status) {
-        Page<ComplaintSuggest> page = complaintSuggestService.page(pageNum, pageSize, ownerId, type, status);
+        Page<ComplaintSuggestDomain> page = complaintSuggestService.page(pageNum, pageSize, ownerId, type, status);
         return Result.success(page);
     }
 
     @PutMapping("/status")
     public Result updateStatus(@RequestParam Long id,
                                @RequestParam Integer status,
-                               @RequestParam(required = false) String handleUser,
-                               @RequestParam(required = false) String handleResult) {
-        complaintSuggestService.updateStatus(id, status, handleUser, handleResult);
-        return Result.success();
-    }
-
-    @PutMapping("/rating")
-    public Result updateRating(@RequestParam Long id, @RequestParam Integer rating) {
-        complaintSuggestService.updateRating(id, rating);
+                               @RequestParam(required = false) Long handlerId,
+                               @RequestParam(required = false) String handleContent) {
+        complaintSuggestService.updateStatus(id, status, handlerId, handleContent);
         return Result.success();
     }
 }

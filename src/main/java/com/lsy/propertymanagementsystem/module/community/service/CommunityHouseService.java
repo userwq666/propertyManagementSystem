@@ -1,25 +1,14 @@
 package com.lsy.propertymanagementsystem.module.community.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.lsy.propertymanagementsystem.dto.request.HouseRequest;
-import com.lsy.propertymanagementsystem.module.community.entity.CommunityHouse;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.lsy.propertymanagementsystem.module.community.domain.CommunityHouseDomain;
+import com.lsy.propertymanagementsystem.module.community.dto.CommunityHouseDTO;
 
-import java.util.List;
-
-public interface CommunityHouseService extends IService<CommunityHouse> {
-    IPage<CommunityHouse> getHousePage(Integer pageNum, Integer pageSize, Long buildingId, String roomNo, Integer houseStatus);
-    
-    List<CommunityHouse> getHouseList();
-    
-    void addHouse(HouseRequest request);
-    
-    void updateHouse(HouseRequest request);
-    
+public interface CommunityHouseService {
+    void addHouse(CommunityHouseDTO house);
+    void updateHouse(CommunityHouseDTO house);
     void deleteHouse(Long id);
-    
-    CommunityHouse getHouseById(Long id);
-    
-    void updateHouseStatus(Long id, Integer houseStatus);
+    CommunityHouseDomain getHouseById(Long id);
+    Page<CommunityHouseDomain> page(int pageNum, int pageSize, Long buildingId, Integer houseStatus);
     long countByBuildingId(Long buildingId);
 }

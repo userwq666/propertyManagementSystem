@@ -4,49 +4,59 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lsy.propertymanagementsystem.common.exception.BusinessException;
-import com.lsy.propertymanagementsystem.module.announcement.entity.Announcement;
+import com.lsy.propertymanagementsystem.module.announcement.domain.AnnouncementDomain;
+import com.lsy.propertymanagementsystem.module.announcement.dto.AnnouncementDTO;
+import com.lsy.propertymanagementsystem.module.announcement.enums.PublishStatus;
 import com.lsy.propertymanagementsystem.module.announcement.mapper.AnnouncementMapper;
 import com.lsy.propertymanagementsystem.module.announcement.service.AnnouncementService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
 @Service
-public class AnnouncementServiceImpl extends ServiceImpl<AnnouncementMapper, Announcement> implements AnnouncementService {
+public class AnnouncementServiceImpl extends ServiceImpl<AnnouncementMapper, AnnouncementDomain> implements AnnouncementService {
 
     @Override
-    public Page<Announcement> page(int pageNum, int pageSize, String title, Integer status) {
-        LambdaQueryWrapper<Announcement> wrapper = new LambdaQueryWrapper<>();
+    public AnnouncementDomain getById(Long id) {
+        return super.getById(id);
+    }
+
+    @Override
+    public Page<AnnouncementDomain> page(int pageNum, int pageSize, String title, Integer status) {
+        LambdaQueryWrapper<AnnouncementDomain> wrapper = new LambdaQueryWrapper<>();
         if (title != null && !title.isEmpty()) {
-            wrapper.like(Announcement::getTitle, title);
+            wrapper.like(AnnouncementDomain::getTitle, title);
         }
         if (status != null) {
-            wrapper.eq(Announcement::getStatus, status);
+            wrapper.eq(AnnouncementDomain::getPublishStatus, PublishStatus.of(status));
         }
-        wrapper.orderByDesc(Announcement::getCreateTime);
+        wrapper.orderByDesc(AnnouncementDomain::getCreateTime);
         return this.page(new Page<>(pageNum, pageSize), wrapper);
     }
 
     @Override
     @Transactional
-    public void addAnnouncement(Announcement announcement) {
-        announcement.setStatus(0);
-        this.save(announcement);
+    public void addAnnouncement(AnnouncementDTO dto) {
+        AnnouncementDomain domain = new AnnouncementDomain();
+        BeanUtils.copyProperties(dto, domain);
+        domain.prepareAdd();
+        this.save(domain);
     }
 
     @Override
     @Transactional
-    public void updateAnnouncement(Announcement announcement) {
-        Announcement existing = this.getById(announcement.getId());
+    public void updateAnnouncement(AnnouncementDTO dto) {
+        AnnouncementDomain domain = new AnnouncementDomain();
+        BeanUtils.copyProperties(dto, domain);
+        AnnouncementDomain existing = this.getById(domain.getId());
         if (existing == null) {
             throw new BusinessException("公告不存在");
         }
-        existing.setTitle(announcement.getTitle());
-        existing.setContent(announcement.getContent());
-        existing.setType(announcement.getType());
-        existing.setPublishTime(announcement.getPublishTime());
-        existing.setExpireTime(announcement.getExpireTime());
+        existing.setTitle(domain.getTitle());
+        existing.setContent(domain.getContent());
+        existing.setType(domain.getType());
+        existing.setPublishTime(domain.getPublishTime());
+        existing.setTopExpireTime(domain.getTopExpireTime());
         this.updateById(existing);
     }
 
@@ -59,13 +69,17 @@ public class AnnouncementServiceImpl extends ServiceImpl<AnnouncementMapper, Ann
     @Override
     @Transactional
     public void updateStatus(Long id, Integer status) {
-        Announcement announcement = this.getById(id);
+        AnnouncementDomain announcement = this.getById(id);
         if (announcement == null) {
             throw new BusinessException("公告不存在");
         }
-        announcement.setStatus(status);
-        if (status == 2) {
-            announcement.setPublishTime(LocalDateTime.now());
+        PublishStatus newStatus = PublishStatus.of(status);
+        if (newStatus == PublishStatus.PUBLISHED) {
+            announcement.publish();
+        } else if (newStatus == PublishStatus.OFFLINE) {
+            announcement.offline();
+        } else {
+            announcement.setPublishStatus(newStatus);
         }
         this.updateById(announcement);
     }
@@ -73,11 +87,15 @@ public class AnnouncementServiceImpl extends ServiceImpl<AnnouncementMapper, Ann
     @Override
     @Transactional
     public void updateIsTop(Long id, Integer isTop) {
-        Announcement announcement = this.getById(id);
+        AnnouncementDomain announcement = this.getById(id);
         if (announcement == null) {
             throw new BusinessException("公告不存在");
         }
-        announcement.setIsTop(isTop);
+        if (isTop == 1) {
+            announcement.topUntil(announcement.getTopExpireTime());
+        } else {
+            announcement.cancelTop();
+        }
         this.updateById(announcement);
     }
 }

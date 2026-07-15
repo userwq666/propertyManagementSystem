@@ -2,12 +2,13 @@ package com.lsy.propertymanagementsystem.module.fee.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.common.result.Result;
-import com.lsy.propertymanagementsystem.dto.request.FeeRecordRequest;
-import com.lsy.propertymanagementsystem.module.fee.entity.FeeRecord;
+import com.lsy.propertymanagementsystem.module.fee.domain.FeeRecordDomain;
+import com.lsy.propertymanagementsystem.module.fee.dto.FeeRecordDTO;
 import com.lsy.propertymanagementsystem.module.fee.service.FeeRecordService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Map;
 
@@ -19,15 +20,15 @@ public class FeeRecordController {
     private FeeRecordService feeRecordService;
 
     @PostMapping("/generate")
-    public Result generateBills(@Valid @RequestBody List<FeeRecordRequest> requests) {
-        feeRecordService.generateBills(requests);
+    public Result generateBills(@Valid @RequestBody List<FeeRecordDTO> domains) {
+        feeRecordService.generateBills(domains);
         return Result.success();
     }
 
     @GetMapping("/{id}")
     public Result getById(@PathVariable Long id) {
-        FeeRecord feeRecord = feeRecordService.getById(id);
-        return Result.success(feeRecord);
+        FeeRecordDomain domain = feeRecordService.getById(id);
+        return Result.success(domain);
     }
 
     @GetMapping("/page")
@@ -36,7 +37,7 @@ public class FeeRecordController {
                        @RequestParam(required = false) Long ownerId,
                        @RequestParam(required = false) Long houseId,
                        @RequestParam(required = false) Integer payStatus) {
-        Page<FeeRecord> page = feeRecordService.page(pageNum, pageSize, ownerId, houseId, payStatus);
+        Page<FeeRecordDomain> page = feeRecordService.page(pageNum, pageSize, ownerId, houseId, payStatus);
         return Result.success(page);
     }
 

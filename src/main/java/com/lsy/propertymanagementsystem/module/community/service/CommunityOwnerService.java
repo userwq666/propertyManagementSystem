@@ -1,24 +1,14 @@
 package com.lsy.propertymanagementsystem.module.community.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.lsy.propertymanagementsystem.dto.request.OwnerRequest;
-import com.lsy.propertymanagementsystem.module.community.entity.CommunityOwner;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.lsy.propertymanagementsystem.module.community.domain.CommunityOwnerDomain;
+import com.lsy.propertymanagementsystem.module.community.dto.CommunityOwnerDTO;
 
-import java.util.List;
-
-public interface CommunityOwnerService extends IService<CommunityOwner> {
-    IPage<CommunityOwner> getOwnerPage(Integer pageNum, Integer pageSize, String name, String phone);
-    
-    List<CommunityOwner> getOwnerList();
-    
-    void addOwner(OwnerRequest request);
-    
-    void updateOwner(OwnerRequest request);
-    
+public interface CommunityOwnerService {
+    void addOwner(CommunityOwnerDTO owner);
+    void updateOwner(CommunityOwnerDTO owner);
     void deleteOwner(Long id);
-    
-    CommunityOwner getOwnerById(Long id);
-    
-    void bindUser(Long ownerId, Long userId);
+    CommunityOwnerDomain getOwnerById(Long id);
+    CommunityOwnerDomain getByUserId(Long userId);
+    Page<CommunityOwnerDomain> page(int pageNum, int pageSize, String name, String phone);
 }

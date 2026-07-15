@@ -2,8 +2,10 @@ package com.lsy.propertymanagementsystem.module.inspection.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.common.result.Result;
-import com.lsy.propertymanagementsystem.module.inspection.entity.InspectionPlan;
+import com.lsy.propertymanagementsystem.module.inspection.domain.InspectionPlanDomain;
+import com.lsy.propertymanagementsystem.module.inspection.dto.InspectionPlanDTO;
 import com.lsy.propertymanagementsystem.module.inspection.service.InspectionPlanService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,13 +17,13 @@ public class InspectionPlanController {
     private InspectionPlanService inspectionPlanService;
 
     @PostMapping
-    public Result add(@RequestBody InspectionPlan plan) {
+    public Result add(@Valid @RequestBody InspectionPlanDTO plan) {
         inspectionPlanService.addPlan(plan);
         return Result.success();
     }
 
     @PutMapping
-    public Result update(@RequestBody InspectionPlan plan) {
+    public Result update(@Valid @RequestBody InspectionPlanDTO plan) {
         inspectionPlanService.updatePlan(plan);
         return Result.success();
     }
@@ -33,8 +35,8 @@ public class InspectionPlanController {
     }
 
     @GetMapping("/{id}")
-    public Result getById(@PathVariable Long id) {
-        InspectionPlan plan = inspectionPlanService.getById(id);
+    public Result getPlanById(@PathVariable Long id) {
+        InspectionPlanDomain plan = inspectionPlanService.getPlanById(id);
         return Result.success(plan);
     }
 
@@ -43,7 +45,7 @@ public class InspectionPlanController {
                        @RequestParam(defaultValue = "10") int pageSize,
                        @RequestParam(required = false) String planName,
                        @RequestParam(required = false) Integer status) {
-        Page<InspectionPlan> page = inspectionPlanService.page(pageNum, pageSize, planName, status);
+        Page<InspectionPlanDomain> page = inspectionPlanService.page(pageNum, pageSize, planName, status);
         return Result.success(page);
     }
 

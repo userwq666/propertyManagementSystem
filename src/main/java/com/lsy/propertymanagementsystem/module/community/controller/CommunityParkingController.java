@@ -1,63 +1,50 @@
 package com.lsy.propertymanagementsystem.module.community.controller;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.common.result.Result;
-import com.lsy.propertymanagementsystem.dto.request.ParkingRequest;
-import com.lsy.propertymanagementsystem.module.community.entity.CommunityParking;
+import com.lsy.propertymanagementsystem.module.community.domain.CommunityParkingDomain;
+import com.lsy.propertymanagementsystem.module.community.dto.CommunityParkingDTO;
 import com.lsy.propertymanagementsystem.module.community.service.CommunityParkingService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/parking")
+@RequestMapping("/api/community/parking")
 public class CommunityParkingController {
-    
+
     @Autowired
     private CommunityParkingService parkingService;
-    
+
     @PostMapping
-    public Result<Void> addParking(@RequestBody @Valid ParkingRequest request) {
-        parkingService.addParking(request);
+    public Result add(@Valid @RequestBody CommunityParkingDTO parking) {
+        parkingService.addParking(parking);
         return Result.success();
     }
-    
+
     @PutMapping
-    public Result<Void> updateParking(@RequestBody @Valid ParkingRequest request) {
-        parkingService.updateParking(request);
+    public Result update(@Valid @RequestBody CommunityParkingDTO parking) {
+        parkingService.updateParking(parking);
         return Result.success();
     }
-    
+
     @DeleteMapping("/{id}")
-    public Result<Void> deleteParking(@PathVariable Long id) {
+    public Result delete(@PathVariable Long id) {
         parkingService.deleteParking(id);
         return Result.success();
     }
-    
-    @GetMapping("/list")
-    public Result<List<CommunityParking>> getParkingList() {
-        return Result.success(parkingService.getParkingList());
-    }
-    
+
     @GetMapping("/{id}")
-    public Result<CommunityParking> getParkingById(@PathVariable Long id) {
+    public Result getById(@PathVariable Long id) {
         return Result.success(parkingService.getParkingById(id));
     }
-    
+
     @GetMapping("/page")
-    public Result<IPage<CommunityParking>> getParkingPage(
-            @RequestParam(defaultValue = "1") Integer pageNum,
-            @RequestParam(defaultValue = "10") Integer pageSize,
-            @RequestParam(required = false) String parkingNo,
-            @RequestParam(required = false) Integer status) {
-        return Result.success(parkingService.getParkingPage(pageNum, pageSize, parkingNo, status));
-    }
-    
-    @PutMapping("/status")
-    public Result<Void> updateParkingStatus(@RequestParam Long id, @RequestParam Integer status, @RequestParam(required = false) Long ownerId) {
-        parkingService.updateParkingStatus(id, status, ownerId);
-        return Result.success();
+    public Result page(@RequestParam(defaultValue = "1") int pageNum,
+                       @RequestParam(defaultValue = "10") int pageSize,
+                       @RequestParam(required = false) String parkingNo,
+                       @RequestParam(required = false) Integer status) {
+        Page<CommunityParkingDomain> page = parkingService.page(pageNum, pageSize, parkingNo, status);
+        return Result.success(page);
     }
 }

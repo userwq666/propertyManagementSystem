@@ -1,24 +1,14 @@
 package com.lsy.propertymanagementsystem.module.community.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.lsy.propertymanagementsystem.dto.request.ParkingRequest;
-import com.lsy.propertymanagementsystem.module.community.entity.CommunityParking;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.lsy.propertymanagementsystem.module.community.domain.CommunityParkingDomain;
+import com.lsy.propertymanagementsystem.module.community.dto.CommunityParkingDTO;
 
-import java.util.List;
-
-public interface CommunityParkingService extends IService<CommunityParking> {
-    IPage<CommunityParking> getParkingPage(Integer pageNum, Integer pageSize, String parkingNo, Integer status);
-    
-    List<CommunityParking> getParkingList();
-    
-    void addParking(ParkingRequest request);
-    
-    void updateParking(ParkingRequest request);
-    
+public interface CommunityParkingService {
+    void addParking(CommunityParkingDTO parking);
+    void updateParking(CommunityParkingDTO parking);
     void deleteParking(Long id);
-    
-    CommunityParking getParkingById(Long id);
-    
-    void updateParkingStatus(Long id, Integer status, Long ownerId);
+    CommunityParkingDomain getParkingById(Long id);
+    Page<CommunityParkingDomain> page(int pageNum, int pageSize, String parkingNo, Integer status);
+    long countByOwnerId(Long ownerId);
 }

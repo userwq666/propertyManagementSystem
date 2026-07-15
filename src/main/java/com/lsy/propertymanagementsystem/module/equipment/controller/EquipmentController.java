@@ -2,8 +2,10 @@ package com.lsy.propertymanagementsystem.module.equipment.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.common.result.Result;
-import com.lsy.propertymanagementsystem.module.equipment.entity.Equipment;
+import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentDomain;
+import com.lsy.propertymanagementsystem.module.equipment.dto.EquipmentDTO;
 import com.lsy.propertymanagementsystem.module.equipment.service.EquipmentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,14 +17,14 @@ public class EquipmentController {
     private EquipmentService equipmentService;
 
     @PostMapping
-    public Result add(@RequestBody Equipment equipment) {
-        equipmentService.addEquipment(equipment);
+    public Result add(@Valid @RequestBody EquipmentDTO domain) {
+        equipmentService.addEquipment(domain);
         return Result.success();
     }
 
     @PutMapping
-    public Result update(@RequestBody Equipment equipment) {
-        equipmentService.updateEquipment(equipment);
+    public Result update(@Valid @RequestBody EquipmentDTO domain) {
+        equipmentService.updateEquipment(domain);
         return Result.success();
     }
 
@@ -34,8 +36,8 @@ public class EquipmentController {
 
     @GetMapping("/{id}")
     public Result getById(@PathVariable Long id) {
-        Equipment equipment = equipmentService.getById(id);
-        return Result.success(equipment);
+        EquipmentDomain domain = equipmentService.getById(id);
+        return Result.success(domain);
     }
 
     @GetMapping("/page")
@@ -43,7 +45,7 @@ public class EquipmentController {
                        @RequestParam(defaultValue = "10") int pageSize,
                        @RequestParam(required = false) Long categoryId,
                        @RequestParam(required = false) Integer status) {
-        Page<Equipment> page = equipmentService.page(pageNum, pageSize, categoryId, status);
+        Page<EquipmentDomain> page = equipmentService.page(pageNum, pageSize, categoryId, status);
         return Result.success(page);
     }
 

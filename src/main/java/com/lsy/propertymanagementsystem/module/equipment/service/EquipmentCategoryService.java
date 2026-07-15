@@ -1,12 +1,13 @@
 package com.lsy.propertymanagementsystem.module.equipment.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.lsy.propertymanagementsystem.module.equipment.entity.EquipmentCategory;
+import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentCategoryDomain;
+import com.lsy.propertymanagementsystem.module.equipment.dto.EquipmentCategoryDTO;
+
+import java.util.List;
 
 public interface EquipmentCategoryService {
-    void addCategory(EquipmentCategory category);
-    void updateCategory(EquipmentCategory category);
-    void deleteCategory(Long id);
-    EquipmentCategory getById(Long id);
-    Page<EquipmentCategory> page(int pageNum, int pageSize, String categoryName);
+    List<EquipmentCategoryDomain> getList();
+    void add(EquipmentCategoryDTO category);
+    void update(EquipmentCategoryDTO category);
+    void delete(Long id);
 }

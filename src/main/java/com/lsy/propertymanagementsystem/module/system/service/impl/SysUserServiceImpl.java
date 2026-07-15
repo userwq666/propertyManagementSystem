@@ -6,10 +6,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lsy.propertymanagementsystem.common.exception.BusinessException;
 import com.lsy.propertymanagementsystem.common.utils.PasswordUtils;
-import com.lsy.propertymanagementsystem.dto.request.UserRequest;
-import com.lsy.propertymanagementsystem.dto.response.UserResponse;
-import com.lsy.propertymanagementsystem.module.system.entity.SysUser;
-import com.lsy.propertymanagementsystem.module.system.entity.SysUserRole;
+import com.lsy.propertymanagementsystem.module.system.dto.UserRequest;
+import com.lsy.propertymanagementsystem.module.system.dto.UserResponse;
+import com.lsy.propertymanagementsystem.module.system.domain.SysUserDomain;
+import com.lsy.propertymanagementsystem.module.system.domain.SysUserRoleDomain;
+import com.lsy.propertymanagementsystem.module.system.enums.UserStatus;
+import com.lsy.propertymanagementsystem.module.system.enums.UserType;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserMapper;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserRoleMapper;
 import com.lsy.propertymanagementsystem.module.system.service.SysUserService;
@@ -21,136 +23,145 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
-    
+public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDomain> implements SysUserService {
+
     @Autowired
     private SysUserRoleMapper userRoleMapper;
-    
+
     @Override
-    public IPage<UserResponse> getUserPage(Integer pageNum, Integer pageSize, String username, Integer status) {
-        LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
+    public IPage<UserResponse> getUserPage(Integer pageNum, Integer pageSize, String username, UserStatus status) {
+        LambdaQueryWrapper<SysUserDomain> wrapper = new LambdaQueryWrapper<>();
         if (username != null && !username.isEmpty()) {
-            wrapper.like(SysUser::getUsername, username);
+            wrapper.like(SysUserDomain::getUsername, username);
         }
         if (status != null) {
-            wrapper.eq(SysUser::getStatus, status);
+            wrapper.eq(SysUserDomain::getStatus, status);
         }
-        wrapper.orderByDesc(SysUser::getCreateTime);
-        
-        IPage<SysUser> page = this.page(new Page<>(pageNum, pageSize), wrapper);
-        
+        wrapper.orderByDesc(SysUserDomain::getCreateTime);
+
+        IPage<SysUserDomain> page = this.page(new Page<>(pageNum, pageSize), wrapper);
         return page.convert(this::convertToResponse);
     }
-    
+
     @Override
     @Transactional
     public void addUser(UserRequest request) {
-        LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SysUser::getUsername, request.getUsername());
+        LambdaQueryWrapper<SysUserDomain> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SysUserDomain::getUsername, request.getUsername());
         if (this.count(wrapper) > 0) {
             throw new BusinessException("用户名已存在");
         }
-        
-        SysUser user = new SysUser();
+
+        SysUserDomain user = new SysUserDomain();
         user.setUsername(request.getUsername());
         user.setPassword(PasswordUtils.encode(request.getPassword()));
         user.setRealName(request.getRealName());
         user.setPhone(request.getPhone());
-        user.setUserType(request.getUserType());
-        user.setStatus(request.getStatus() != null ? request.getStatus() : 1);
+        user.setUserType(UserType.of(request.getUserType()));
+        user.setStatus(request.getStatus() != null ? UserStatus.of(request.getStatus()) : UserStatus.ENABLED);
         this.save(user);
-        
+
         saveUserRoles(user.getId(), request.getRoleIds());
     }
-    
+
     @Override
     @Transactional
     public void updateUser(UserRequest request) {
-        SysUser user = this.getById(request.getId());
+        SysUserDomain user = this.getById(request.getId());
         if (user == null) {
             throw new BusinessException("用户不存在");
         }
-        
-        LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SysUser::getUsername, request.getUsername());
-        wrapper.ne(SysUser::getId, request.getId());
+
+        LambdaQueryWrapper<SysUserDomain> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SysUserDomain::getUsername, request.getUsername());
+        wrapper.ne(SysUserDomain::getId, request.getId());
         if (this.count(wrapper) > 0) {
             throw new BusinessException("用户名已存在");
         }
-        
+
         user.setRealName(request.getRealName());
         user.setPhone(request.getPhone());
-        user.setUserType(request.getUserType());
-        user.setStatus(request.getStatus());
+        user.setUserType(UserType.of(request.getUserType()));
+        user.setStatus(UserStatus.of(request.getStatus()));
         if (request.getPassword() != null && !request.getPassword().isEmpty()) {
             user.setPassword(PasswordUtils.encode(request.getPassword()));
         }
         this.updateById(user);
-        
+
         if (request.getRoleIds() != null) {
             saveUserRoles(user.getId(), request.getRoleIds());
         }
     }
-    
+
     @Override
     @Transactional
     public void deleteUser(Long id) {
-        LambdaQueryWrapper<SysUserRole> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SysUserRole::getUserId, id);
+        LambdaQueryWrapper<SysUserRoleDomain> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SysUserRoleDomain::getUserId, id);
         userRoleMapper.delete(wrapper);
         this.removeById(id);
     }
-    
+
     @Override
     @Transactional
-    public void updateUserStatus(Long id, Integer status) {
-        SysUser user = this.getById(id);
+    public void updateUserStatus(Long id, UserStatus status) {
+        SysUserDomain user = this.getById(id);
         if (user == null) {
             throw new BusinessException("用户不存在");
         }
-        
-        user.setStatus(status);
+        user.changeStatus(status);
         this.updateById(user);
     }
-    
+
     @Override
     @Transactional
     public void resetPassword(Long id, String newPassword) {
-        SysUser user = this.getById(id);
+        SysUserDomain user = this.getById(id);
         if (user == null) {
             throw new BusinessException("用户不存在");
         }
-        
-        user.setPassword(PasswordUtils.encode(newPassword));
+        user.resetPassword(PasswordUtils.encode(newPassword));
         this.updateById(user);
     }
-    
+
     @Override
     public UserResponse getUserById(Long id) {
-        SysUser user = this.getById(id);
+        SysUserDomain user = this.getById(id);
         if (user == null) {
             throw new BusinessException("用户不存在");
         }
         return convertToResponse(user);
     }
-    
+
+    @Override
+    public SysUserDomain getByUsername(String username) {
+        LambdaQueryWrapper<SysUserDomain> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SysUserDomain::getUsername, username);
+        return this.getOne(wrapper);
+    }
+
+    @Override
+    public SysUserDomain getById(Long id) {
+        return super.getById(id);
+    }
+
     private void saveUserRoles(Long userId, List<Long> roleIds) {
         if (roleIds == null || roleIds.isEmpty()) {
             return;
         }
-        LambdaQueryWrapper<SysUserRole> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SysUserRole::getUserId, userId);
+        LambdaQueryWrapper<SysUserRoleDomain> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SysUserRoleDomain::getUserId, userId);
         userRoleMapper.delete(wrapper);
-        
+
         for (Long roleId : roleIds) {
-            SysUserRole userRole = new SysUserRole();
+            SysUserRoleDomain userRole = new SysUserRoleDomain();
             userRole.setUserId(userId);
             userRole.setRoleId(roleId);
             userRoleMapper.insert(userRole);
         }
     }
-    
-    private UserResponse convertToResponse(SysUser user) {
+
+    private UserResponse convertToResponse(SysUserDomain user) {
         UserResponse response = new UserResponse();
         response.setId(user.getId());
         response.setUsername(user.getUsername());
@@ -160,12 +171,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         response.setUserType(user.getUserType());
         response.setStatus(user.getStatus());
         response.setCreateTime(user.getCreateTime());
-        
-        LambdaQueryWrapper<SysUserRole> roleWrapper = new LambdaQueryWrapper<>();
-        roleWrapper.eq(SysUserRole::getUserId, user.getId());
-        List<SysUserRole> userRoles = userRoleMapper.selectList(roleWrapper);
-        response.setRoleIds(userRoles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList()));
-        
+
+        LambdaQueryWrapper<SysUserRoleDomain> roleWrapper = new LambdaQueryWrapper<>();
+        roleWrapper.eq(SysUserRoleDomain::getUserId, user.getId());
+        List<SysUserRoleDomain> userRoles = userRoleMapper.selectList(roleWrapper);
+        response.setRoleIds(userRoles.stream().map(SysUserRoleDomain::getRoleId).collect(Collectors.toList()));
+
         return response;
     }
 }

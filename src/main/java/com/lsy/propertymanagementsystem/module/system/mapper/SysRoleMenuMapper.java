@@ -1,9 +1,9 @@
 package com.lsy.propertymanagementsystem.module.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.lsy.propertymanagementsystem.module.system.entity.SysRoleMenu;
+import com.lsy.propertymanagementsystem.module.system.domain.SysRoleMenuDomain;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public interface SysRoleMenuMapper extends BaseMapper<SysRoleMenu> {
+public interface SysRoleMenuMapper extends BaseMapper<SysRoleMenuDomain> {
 }
