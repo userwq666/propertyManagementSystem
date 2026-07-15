@@ -71,6 +71,13 @@ export const asyncRoutes = [
         meta: { title: '字典管理', icon: 'Document', roles: ['admin'] }
       },
       {
+        path: 'dict/data/:dictType',
+        component: () => import('@/views/system/dict/data.vue'),
+        name: 'SystemDictData',
+        hidden: true,
+        meta: { title: '字典数据', icon: 'Document', roles: ['admin'], activeMenu: '/system/dict' }
+      },
+      {
         path: 'config',
         component: () => import('@/views/system/config/index.vue'),
         name: 'SystemConfig',
@@ -177,6 +184,18 @@ export const asyncRoutes = [
         component: () => import('@/views/fee/arrears/index.vue'),
         name: 'FeeArrears',
         meta: { title: '欠费管理', icon: 'WarningFilled', roles: ['admin', 'property', 'finance'] }
+      },
+      {
+        path: 'notice',
+        component: () => import('@/views/fee/notice/index.vue'),
+        name: 'FeeNotice',
+        meta: { title: '缴费通知', icon: 'BellFilled', roles: ['admin', 'property', 'finance'] }
+      },
+      {
+        path: 'record',
+        component: () => import('@/views/fee/record/index.vue'),
+        name: 'FeeRecord',
+        meta: { title: '缴费记录管理', icon: 'Coin', roles: ['admin', 'property', 'finance'] }
       }
     ]
   },
