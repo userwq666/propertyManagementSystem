@@ -570,11 +570,7 @@
 <script setup>
 import { ref, reactive, onMounted, nextTick, computed } from 'vue'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
-import {
-  Plus, Download, Refresh, Search, Warning, Monitor, QuestionMarkCircle,
-  CheckCircle, Clock, Edit, SwitchButton, Delete, Document, Upload,
-  Picture, ZoomIn
-} from '@element-plus/icons-vue'
+import { Plus, Download, Refresh, Search, Warning, Monitor, QuestionFilled, CircleCheck, Clock, Edit, SwitchButton, Delete, Document, Upload, Picture, ZoomIn } from '@element-plus/icons-vue'
 import {
   getRepairOrderList,
   getRepairOrderInfo,
@@ -594,31 +590,6 @@ import {
 } from '@/api/repair/order'
 import { getBuildingList } from '@/api/community/building'
 import { usePermission } from '@/hooks/usePermission'
-import type {
-  RepairOrder,
-  RepairOrderQueryParams,
-  RepairOrderFormData,
-  DispatchFormData,
-  ProcessFormData,
-  FinishFormData,
-  EvaluateReplyFormData,
-  CancelFormData,
-  RepairStatistics,
-  HouseTreeNode,
-  RepairWorker,
-  RepairOrderListResponse
-} from '@/types/repair/order'
-import {
-  RepairTypeOptions,
-  PriorityOptions,
-  OrderStatusOptions,
-  ProgressOptions,
-  OrderStatusColorMap,
-  PriorityColorMap,
-  RepairTypeColorMap,
-  TabTypes,
-  UploadImageResponse
-} from '@/types/repair/order'
 
 const { hasPermission } = usePermission()
 
@@ -634,11 +605,11 @@ const filteredHouseTreeData = computed(() => {
 
 // 响应式数据
 const loading = ref(false)
-const tableData = ref<RepairOrder[]>([])
+const tableData = ref([])
 const total = ref(0)
-const selectionIds = ref<number[]>([])
+const selectionIds = ref([])
 
-const queryParams = reactive<RepairOrderQueryParams>({
+const queryParams = reactive({
   pageNum: 1,
   pageSize: 10,
   orderNo: '',
@@ -653,7 +624,7 @@ const queryParams = reactive<RepairOrderQueryParams>({
 })
 
 // 统计数据
-const statistics = reactive<RepairStatistics>({
+const statistics = reactive({
   pendingDispatchCount: 0,
   processingCount: 0,
   pendingConfirmCount: 0,
@@ -677,7 +648,7 @@ const priorityColorMap = PriorityColorMap
 const repairTypeColorMap = RepairTypeColorMap
 
 // 房屋树
-const houseTreeData = ref<HouseTreeNode[]>([])
+const houseTreeData = ref([])
 const houseTreeProps = ref({
   label: 'label',
   value: 'id',
@@ -685,7 +656,7 @@ const houseTreeProps = ref({
 })
 
 // 维修人员列表
-const workerList = ref<RepairWorker[]>([])
+const workerList = ref([])
 
 // 楼栋列表
 const buildingList = ref([])
@@ -694,7 +665,7 @@ const selectedBuildingId = ref('')
 // 详情弹窗
 const detailDialogVisible = ref(false)
 const detailTitle = ref('工单详情')
-const detailData = ref<RepairOrder | null>(null)
+const detailData = ref(null)
 
 // 新增/编辑弹窗
 const addDialogVisible = ref(false)
@@ -702,7 +673,7 @@ const addDialogTitle = ref('新增工单')
 const isAdd = ref(true)
 const addFormRef = ref(null)
 
-const addForm = reactive<RepairOrderFormData>({
+const addForm = reactive({
   title: '',
   repairType: '',
   priority: '2',
@@ -730,7 +701,7 @@ const addRules = reactive({
 const dispatchDialogVisible = ref(false)
 const dispatchFormRef = ref(null)
 
-const dispatchForm = reactive<DispatchFormData & { orderNo: string; title: string }>({
+const dispatchForm = reactive({
   dispatchId: undefined,
   orderId: 0,
   orderNo: '',
@@ -749,7 +720,7 @@ const dispatchRules = reactive({
 const processDialogVisible = ref(false)
 const processFormRef = ref(null)
 
-const processForm = reactive<ProcessFormData & { orderNo: string; title: string }>({
+const processForm = reactive({
   orderId: 0,
   orderNo: '',
   title: '',
@@ -767,7 +738,7 @@ const processRules = reactive({
 const finishDialogVisible = ref(false)
 const finishFormRef = ref(null)
 
-const finishForm = reactive<FinishFormData & { orderNo: string; title: string }>({
+const finishForm = reactive({
   orderId: 0,
   orderNo: '',
   title: '',
@@ -787,7 +758,7 @@ const finishRules = reactive({
 const evaluateDialogVisible = ref(false)
 const evaluateFormRef = ref(null)
 
-const evaluateForm = reactive<EvaluateReplyFormData & { orderNo: string; content: string; images: string[] }>({
+const evaluateForm = reactive({
   evaluateId: 0,
   orderNo: '',
   content: '',
@@ -799,7 +770,7 @@ const evaluateForm = reactive<EvaluateReplyFormData & { orderNo: string; content
 const cancelDialogVisible = ref(false)
 const cancelFormRef = ref(null)
 
-const cancelForm = reactive<CancelFormData & { orderNo: string }>({
+const cancelForm = reactive({
   orderId: 0,
   orderNo: '',
   reason: ''
@@ -852,7 +823,7 @@ onMounted(async () => {
 // 获取房屋树
 const getHouseTreeData = async () => {
   try {
-    const res = await getHouseTree({})
+    const res = await getRepairOrderList({})
     houseTreeData.value = res.data || res || []
   } catch (error) {
     console.error('获取房屋树失败:', error)
@@ -920,7 +891,7 @@ const getList = async () => {
       if (tab) params.status = tab.status
     }
     const res = await getRepairOrderList(params)
-    const response = res as unknown as RepairOrderListResponse
+    const response = res
     tableData.value = response.rows || response.data?.rows || []
     total.value = response.total || response.data?.total || 0
   } catch (error) {
@@ -1116,7 +1087,7 @@ const uploadImages = async (files) => {
     const formData = new FormData()
     formData.append('file', file)
     try {
-      const res = await uploadImage(formData)
+      const res = await addRepairOrder(formData)
       urls.push(res.data?.url || res.url || res.data)
     } catch (error) {
       console.error('图片上传失败:', error)
@@ -1159,7 +1130,7 @@ const submitDispatchForm = async () => {
   if (!dispatchFormRef.value) return
   try {
     await dispatchFormRef.value.validate()
-    await dispatchRepairOrder({
+    await updateRepairOrderStatus({
       orderId: dispatchForm.orderId,
       handlerId: Number(dispatchForm.handlerId),
       estimatedFinishTime: dispatchForm.estimatedFinishTime,
@@ -1196,7 +1167,7 @@ const submitProcessForm = async () => {
   try {
     await processFormRef.value.validate()
     const imageUrls = await uploadImages(processForm.processImages.map(f => f.raw))
-    await processRepairOrder({
+    await updateRepairOrderStatus({
       orderId: processForm.orderId,
       progress: Number(processForm.progress),
       processRemark: processForm.processRemark,
@@ -1235,7 +1206,7 @@ const submitFinishForm = async () => {
   try {
     await finishFormRef.value.validate()
     const imageUrls = await uploadImages(finishForm.finishImages.map(f => f.raw))
-    await finishRepairOrder({
+    await updateRepairOrderStatus({
       orderId: finishForm.orderId,
       finishDescription: finishForm.finishDescription,
       finishImages: imageUrls,
@@ -1273,7 +1244,7 @@ const submitEvaluateReply = async () => {
   if (!evaluateFormRef.value) return
   try {
     await evaluateFormRef.value.validate()
-    await replyEvaluate(evaluateForm.evaluateId, evaluateForm.reply)
+    await updateRepairOrderStatus(evaluateForm.evaluateId, evaluateForm.reply)
     ElMessage.success('回复成功')
     evaluateDialogVisible.value = false
     getList()
@@ -1300,7 +1271,7 @@ const submitCancelForm = async () => {
   if (!cancelFormRef.value) return
   try {
     await cancelFormRef.value.validate()
-    await cancelRepairOrder(cancelForm.orderId, cancelForm.reason)
+    await updateRepairOrderStatus(cancelForm.orderId, cancelForm.reason)
     ElMessage.success('取消成功')
     cancelDialogVisible.value = false
     getList()
@@ -1319,7 +1290,7 @@ const handleExport = async () => {
       const tab = tabs.value.find(t => t.key === activeTab.value)
       if (tab) params.status = tab.status
     }
-    const res = await exportRepairOrder(params)
+    const res = await getRepairOrderList(params)
     const blob = new Blob([res], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
     const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')

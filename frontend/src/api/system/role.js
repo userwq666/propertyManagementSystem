@@ -31,25 +31,9 @@ export function updateRole(data) {
   })
 }
 
-export function deleteRole(roleIds) {
+export function deleteRole(id) {
   return request({
-    url: `/system/role/${roleIds}`,
+    url: `/system/role/${id}`,
     method: 'delete'
-  })
-}
-
-export function getRoleMenuTreeselect(roleId) {
-  return request({
-    url: `/system/menu/roleMenuTreeselect/${roleId}`,
-    method: 'get'
-  })
-}
-
-export function exportRole(params) {
-  return request({
-    url: '/system/role/export',
-    method: 'get',
-    params,
-    responseType: 'blob'
   })
 }

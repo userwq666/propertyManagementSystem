@@ -3,7 +3,7 @@
     <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" class="login-form" @submit.native.prevent="handleLogin">
       <div class="login-header">
         <div class="logo">
-          <el-icon :size="48" class="logo-icon"><house-filled /></el-icon>
+          <el-icon :size="48" class="logo-icon"><House /></el-icon>
           <span>物业管理系统</span>
         </div>
         <h2>欢迎登录</h2>
@@ -16,7 +16,7 @@
           placeholder="用户名"
           :prefix-icon="User"
           clearable
-          :autocomplete="false"
+          :autocomplete="'off'"
         />
       </el-form-item>
 
@@ -66,8 +66,7 @@
 
       <el-form-item>
         <div class="login-footer">
-          <span>版本: 1.0.0</span>
-          <span>Copyright © 2024 物业管理系统</span>
+          <span>Copyright © 2026 物业管理系统</span>
         </div>
       </el-form-item>
     </el-form>
@@ -78,7 +77,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { User, Lock, HouseFilled } from '@element-plus/icons-vue'
+import { User, Lock, House } from '@element-plus/icons-vue'
 import { login, getCaptcha } from '@/api/user'
 
 const router = useRouter()

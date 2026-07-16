@@ -1,4 +1,4 @@
-package com.lsy.propertymanagementsystem.module.fee.domain;
+﻿package com.lsy.propertymanagementsystem.module.fee.domain;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -23,6 +23,8 @@ public class FeeNoticeDomain {
     private LocalDateTime createTime;
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
+    @TableLogic
+    private Integer deleted;
 
     public void publish() {
         this.sendStatus = 1;

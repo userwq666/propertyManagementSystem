@@ -39,33 +39,9 @@ export function updateMenu(data) {
   })
 }
 
-export function deleteMenu(menuIds) {
+export function deleteMenu(id) {
   return request({
-    url: `/system/menu/${menuIds}`,
+    url: `/system/menu/${id}`,
     method: 'delete'
-  })
-}
-
-export function getMenuTreeselect(params) {
-  return request({
-    url: '/system/menu/treeselect',
-    method: 'get',
-    params
-  })
-}
-
-export function getRoleMenuTreeselect(roleId) {
-  return request({
-    url: `/system/menu/roleMenuTreeselect/${roleId}`,
-    method: 'get'
-  })
-}
-
-export function exportMenu(params) {
-  return request({
-    url: '/system/menu/export',
-    method: 'get',
-    params,
-    responseType: 'blob'
   })
 }

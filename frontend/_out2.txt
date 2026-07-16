@@ -1,0 +1,575 @@
+NODE_ENV=production is not supported in the .env file. Only NODE_ENV=development is supported to create a development build of your project. If you need to set process.env.NODE_ENV, you can set it in the Vite config instead.
+vite v5.4.21 building for production...
+transforming...
+node_modules/element-plus/node_modules/@vueuse/core/dist/index.js (3362:0): A comment
+
+"/* #__PURE__ */"
+
+in "node_modules/element-plus/node_modules/@vueuse/core/dist/index.js" contains an annotation that Rollup cannot interpret due to the position of the comment. The comment will be removed to avoid issues.
+node_modules/element-plus/node_modules/@vueuse/core/dist/index.js (5780:22): A comment
+
+"/* #__PURE__ */"
+
+in "node_modules/element-plus/node_modules/@vueuse/core/dist/index.js" contains an annotation that Rollup cannot interpret due to the position of the comment. The comment will be removed to avoid issues.
+✓ 805 modules transformed.
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+2 │ @import "variables";
+  │         ^^^^^^^^^^^
+  ╵
+    src\assets\styles\index.scss 2:9  root stylesheet
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+
+✨ [vite-plugin-compression]:algorithm=gzip - compressed file successfully: 
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/css/button-Clr9-o6A.css.gz         19.78kb / gzip: 2.14kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/css/index-C5nmziIP.css.gz          16.61kb / gzip: 3.24kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/css/col-yED17g82.css.gz            38.41kb / gzip: 3.46kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/css/index-BbGGt9ic.css.gz          20.14kb / gzip: 3.69kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/css/date-picker-CfSxQEpe.css.gz    28.41kb / gzip: 4.14kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/css/pagination-B2R69-Q4.css.gz     10.50kb / gzip: 2.00kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/css/index-D7lGy9bY.css.gz          22.22kb / gzip: 4.02kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/css/index-C9OU8wou.css.gz          20.14kb / gzip: 3.69kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/css/index-CiavwJZd.css.gz          20.14kb / gzip: 3.69kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/css/upload-CmBF2Pjn.css.gz         11.77kb / gzip: 2.07kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/css/table-column-F6HSxNZ8.css.gz   25.18kb / gzip: 3.55kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/css/index-Dtn7NQ1F.css.gz          24.55kb / gzip: 3.82kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/data--f3AmDcw.js.gz             11.96kb / gzip: 3.85kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/data-CGNuz2u3.js.gz             11.96kb / gzip: 3.84kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/data-BYlbKhmj.js.gz             11.96kb / gzip: 3.84kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/css/input-CWEgL4KT.css.gz          16.61kb / gzip: 2.50kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/data-Dk1VlCID.js.gz             11.96kb / gzip: 3.85kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/data-CwKYWqjn.js.gz             11.96kb / gzip: 3.85kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-B-TjqlEJ.js.gz            11.88kb / gzip: 3.90kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-B3lHg2NB.js.gz            12.46kb / gzip: 3.97kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-1Fqs__kH.js.gz            10.89kb / gzip: 4.66kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-B1V0_7K1.js.gz            23.03kb / gzip: 5.52kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-B6iP7ldc.js.gz            29.41kb / gzip: 9.82kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-BfAvhsPs.js.gz            12.79kb / gzip: 3.31kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-B9n9zDHn.js.gz            21.71kb / gzip: 5.53kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-B43w7p9b.js.gz            19.36kb / gzip: 5.45kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-BTPutM95.js.gz            11.88kb / gzip: 3.91kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-BsFwRlyK.js.gz            21.87kb / gzip: 5.52kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-BNqrwyb6.js.gz            23.83kb / gzip: 6.48kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-BbGwdpXO.js.gz            19.36kb / gzip: 5.45kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-BUSCEFh_.js.gz            10.54kb / gzip: 3.94kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-Bxsz84aa.js.gz            12.79kb / gzip: 3.30kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-BGuSlPiv.js.gz            19.73kb / gzip: 5.25kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-ByaUd-_9.js.gz            19.74kb / gzip: 5.25kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-BuRGr0b_.js.gz            19.36kb / gzip: 5.45kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-BWcR87xE.js.gz            15.28kb / gzip: 4.66kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-C1gNtZ4q.js.gz            11.88kb / gzip: 3.91kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-BZhJZdbP.js.gz            23.83kb / gzip: 6.48kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-BzR9T0oM.js.gz            21.73kb / gzip: 5.53kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-C3FtXajE.js.gz            24.06kb / gzip: 6.31kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-C5VKoLz6.js.gz            11.47kb / gzip: 3.64kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-C6iDc5cg.js.gz            15.28kb / gzip: 4.66kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-ChFa9lDH.js.gz            12.76kb / gzip: 3.32kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-CdVZ_2Kn.js.gz            21.88kb / gzip: 5.52kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-CK14jNhy.js.gz            11.47kb / gzip: 3.64kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-Chv_lEvh.js.gz            29.21kb / gzip: 9.75kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-CE6cgeei.js.gz            10.54kb / gzip: 3.94kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-CoXEiU4X.js.gz            19.36kb / gzip: 5.45kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-CUTiknWU.js.gz            12.79kb / gzip: 3.30kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-CmnUg4ns.js.gz            24.06kb / gzip: 6.31kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-D-EHqzoS.js.gz            24.07kb / gzip: 6.31kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-C_Swd5ed.js.gz            23.82kb / gzip: 6.48kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-D2W5bitq.js.gz            11.88kb / gzip: 3.90kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-D1F3Hnsv.js.gz            12.79kb / gzip: 3.30kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-D3-LdRt1.js.gz            10.54kb / gzip: 3.94kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-D0Sya-ca.js.gz            36.73kb / gzip: 8.71kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-d3xid_cm.js.gz            23.83kb / gzip: 6.48kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-D54V5wvm.js.gz            36.73kb / gzip: 8.72kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-DC6AEwV0.js.gz            24.06kb / gzip: 6.31kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-DAsAgAmE.js.gz            36.74kb / gzip: 8.71kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-D3IkQdQ6.js.gz            36.74kb / gzip: 8.71kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-D70W5l-6.js.gz            29.21kb / gzip: 9.74kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-dCmhTPNt.js.gz            10.89kb / gzip: 4.66kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-DE4KBY1c.js.gz            12.46kb / gzip: 3.96kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-D5OtbWVV.js.gz            11.88kb / gzip: 3.90kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-DdberXzy.js.gz            29.41kb / gzip: 9.82kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-DeVUUyni.js.gz            21.88kb / gzip: 5.52kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-Di-rftFH.js.gz            29.21kb / gzip: 9.74kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-DGZdVbBW.js.gz            24.07kb / gzip: 6.30kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-DkmbSmpK.js.gz            21.71kb / gzip: 5.53kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-Dkd6-8Uw.js.gz            10.54kb / gzip: 3.94kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-DSFyBSLu.js.gz            19.73kb / gzip: 5.25kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-DpWjVM7H.js.gz            23.82kb / gzip: 6.48kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-DXAlMQJP.js.gz            15.29kb / gzip: 4.66kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-dyzA5Gh_.js.gz            23.04kb / gzip: 5.52kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-DWdOvk-h.js.gz            10.79kb / gzip: 4.59kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-DYgbeta-.js.gz            11.47kb / gzip: 3.64kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-Gm92t1A-.js.gz            10.54kb / gzip: 3.94kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-k2UpIxmk.js.gz            12.46kb / gzip: 3.97kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-jE_5opDk.js.gz            15.29kb / gzip: 4.66kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-K4kYv9LP.js.gz            21.72kb / gzip: 5.52kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-h7p1TPvU.js.gz            36.74kb / gzip: 8.71kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-iL_CP3bq.js.gz            15.28kb / gzip: 4.66kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-M99704d2.js.gz            11.47kb / gzip: 3.64kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-lWHmLHL2.js.gz            10.89kb / gzip: 4.66kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-N3RCY6HH.js.gz            21.88kb / gzip: 5.52kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-RkiO8Sa2.js.gz            11.46kb / gzip: 3.64kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-rgjFPvKB.js.gz            21.87kb / gzip: 5.52kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-qtv-oY55.js.gz            19.74kb / gzip: 5.25kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-u7ntKinN.js.gz            12.46kb / gzip: 3.96kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-iCY-AkJL.js.gz            19.74kb / gzip: 5.25kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-uANVavTE.js.gz            23.03kb / gzip: 5.52kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-rzlqHF2s.js.gz            23.03kb / gzip: 5.52kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-yfj0uDKk.js.gz            23.04kb / gzip: 5.53kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-WnnscF-E.js.gz            19.36kb / gzip: 5.45kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-zDMkwSF2.js.gz            12.46kb / gzip: 3.97kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-YzL7h1Ru.js.gz            11.30kb / gzip: 4.72kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-zqjx7rL3.js.gz            21.73kb / gzip: 5.53kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/vendor-utils-C3E7LipZ.js.gz     44.53kb / gzip: 16.52kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/vendor-utils-CZ8oOnp1.js.gz     44.49kb / gzip: 16.49kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/vendor-vue-BWuaBeO0.js.gz       106.52kb / gzip: 40.10kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/css/index-D5GqBL8L.css.gz          372.19kb / gzip: 50.70kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/vendor-vue-DGTKrvxv.js.gz       198.77kb / gzip: 72.10kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-0KL1LoyO.js.gz            813.47kb / gzip: 273.11kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-1EfopoHU.js.gz            813.45kb / gzip: 273.12kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-Ch4zigS3.js.gz            813.45kb / gzip: 273.12kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-DCkosfTy.js.gz            813.47kb / gzip: 273.11kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-s2OCd-mv.js.gz            813.45kb / gzip: 273.12kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/vendor-element-BnTkOvXq.js.gz   1029.84kb / gzip: 313.27kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/vendor-element-DAMd08vv.js.gz   1029.90kb / gzip: 313.30kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/vendor-element-C5fdKSiF.js.gz   1029.86kb / gzip: 313.28kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/vendor-element-C1DQvUSn.js.gz   1029.91kb / gzip: 313.31kb
+dist/C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/static/js/index-C0IdZp_5.js.gz            1086.64kb / gzip: 356.32kb
+
+
+x Build failed in 11.34s
+error during build:
+src/api/system/role.js (13:10): Expression expected
+file: C:/Users/38429/Desktop/物业管理系统/propertyManagementSystem/frontend/src/api/system/role.js:13:10
+
+11: export function getRoleInfo(roleId) {
+12:   return request({
+13:     url: \/system/role/\\,
+              ^
+14:     method: 'get'
+15:   })
+
+    at getRollupError (file:///C:/Users/38429/Desktop/%E7%89%A9%E4%B8%9A%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/propertyManagementSystem/frontend/node_modules/rollup/dist/es/shared/parseAst.js:317:41)
+    at ParseError.initialise (file:///C:/Users/38429/Desktop/%E7%89%A9%E4%B8%9A%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/propertyManagementSystem/frontend/node_modules/rollup/dist/es/shared/node-entry.js:14814:28)
+    at convertNode (file:///C:/Users/38429/Desktop/%E7%89%A9%E4%B8%9A%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/propertyManagementSystem/frontend/node_modules/rollup/dist/es/shared/node-entry.js:16790:10)
+    at convertProgram (file:///C:/Users/38429/Desktop/%E7%89%A9%E4%B8%9A%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/propertyManagementSystem/frontend/node_modules/rollup/dist/es/shared/node-entry.js:16026:12)
+    at Module.setSource (file:///C:/Users/38429/Desktop/%E7%89%A9%E4%B8%9A%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/propertyManagementSystem/frontend/node_modules/rollup/dist/es/shared/node-entry.js:17769:24)
+    at async ModuleLoader.addModuleSource (file:///C:/Users/38429/Desktop/%E7%89%A9%E4%B8%9A%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/propertyManagementSystem/frontend/node_modules/rollup/dist/es/shared/node-entry.js:21946:13)

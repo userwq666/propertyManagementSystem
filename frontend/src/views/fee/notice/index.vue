@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="app-container">
     <div class="page-header">
       <h1>缴费通知管理</h1>
@@ -19,7 +19,7 @@
             <Download /> 导出
           </el-button>
           <el-button type="warning" @click="handleBatchSend" v-permission="['fee:notice:send']">
-            <Send /> 批量发送
+            <Promotion /> 批量发送
           </el-button>
           </el-button-group>
         </div>
@@ -156,7 +156,7 @@
               v-permission="['fee:notice:send']"
               :disabled="scope.row.sendStatus === '1'"
             >
-              <Send /> 发送
+              <Promotion /> 发送
             </el-button>
             <el-button size="small" type="info" @click="handleDetail(scope.row)">
               <View /> 详情
@@ -166,7 +166,7 @@
               :type="scope.row.readStatus === '1' ? 'warning' : 'success'"
               @click="handleMarkRead(scope.row)"
             >
-              <Read /> {{ scope.row.readStatus === '1' ? '标记未读' : '标记已读' }}
+               <Reading /> {{ scope.row.readStatus === '1' ? '标记未读' : '标记已读' }}
             </el-button>
           </template>
         </el-table-column>
@@ -419,7 +419,7 @@
 import { ref, reactive, onMounted, nextTick, computed, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
-  Plus, Download, Search, Refresh, Edit, Delete, Send, View, Read
+  Plus, Download, Search, Refresh, Edit, Delete, Promotion, View, Reading
 } from '@element-plus/icons-vue'
 import {
   getNoticeList,
@@ -436,28 +436,16 @@ import {
   getOwnerList
 } from '@/api/fee/notice'
 import { usePermission } from '@/hooks/usePermission'
-import {
-  FeeNoticeForm,
-  FeeNoticeQuery,
-  SendDetailQuery,
-  SendNoticeData,
-  MarkReadData,
-  APPLICABLE_SCOPE_OPTIONS,
-  SEND_METHOD_OPTIONS,
-  SEND_STATUS_OPTIONS,
-  READ_STATUS_OPTIONS
-} from '@/types/fee/notice'
-import type { ChargeItem } from '@/types/fee/item'
 
 const { hasPermission } = usePermission()
 
 // 响应式数据
 const loading = ref(false)
-const tableData = ref<any[]>([])
+const tableData = ref([])
 const total = ref(0)
-const selectionIds = ref<number[]>([])
+const selectionIds = ref([])
 
-const queryParams = reactive<FeeNoticeQuery>({
+const queryParams = reactive({
   pageNum: 1,
   pageSize: 10,
   noticeTitle: '',
@@ -470,14 +458,14 @@ const queryParams = reactive<FeeNoticeQuery>({
 })
 
 // 收费项目下拉选项
-const chargeItemOptions = ref<ChargeItem[]>([])
+const chargeItemOptions = ref([])
 
 // 弹窗状态
 const dialogVisible = ref(false)
 const dialogTitle = ref('新增缴费通知')
 const isAdd = ref(true)
 
-const form = reactive<FeeNoticeForm>({
+const form = reactive({
   noticeId: undefined,
   noticeTitle: '',
   itemId: undefined,
@@ -523,9 +511,9 @@ watch(() => form.applicableScope, (newVal) => {
 })
 
 // 房屋/业主选择器数据
-const availableHouses = ref<any[]>([])
-const availableOwners = ref<any[]>([])
-const houseTreeData = ref<any[]>([])
+const availableHouses = ref([])
+const availableOwners = ref([])
+const houseTreeData = ref([])
 const houseTreeProps = {
   children: 'children',
   label: 'label',
@@ -536,11 +524,11 @@ const houseTreeProps = {
 const detailDialogVisible = ref(false)
 const detailNoticeTitle = ref('')
 const detailLoading = ref(false)
-const sendDetailData = ref<any[]>([])
+const sendDetailData = ref([])
 const detailTotal = ref(0)
-const currentDetailNoticeId = ref<number | null>(null)
+const currentDetailNoticeId = ref(null)
 
-const detailQueryParams = reactive<SendDetailQuery>({
+const detailQueryParams = reactive({
   pageNum: 1,
   pageSize: 10,
   noticeId: 0,
@@ -553,7 +541,7 @@ const detailQueryParams = reactive<SendDetailQuery>({
 const batchSendDialogVisible = ref(false)
 const batchSendLoading = ref(false)
 const batchSendForm = reactive({
-  sendMethods: [] as string[]
+  sendMethods: []
 })
 
 // 获取收费项目列表
@@ -569,7 +557,7 @@ const loadChargeItems = async () => {
 // 获取房屋树数据（用于转移框显示）
 const loadHouseTree = async () => {
   try {
-    const res = await getHouseTree({})
+    const res = await getChargeItemList({})
     const treeData = res.data || res || []
     houseTreeData.value = treeData
     // 转换为 transfer 组件需要的扁平结构
@@ -580,9 +568,9 @@ const loadHouseTree = async () => {
 }
 
 // 扁平化房屋树
-const flattenHouseTree = (tree: any[]): any[] => {
-  const result: any[] = []
-  const traverse = (nodes: any[], prefix = '') => {
+const flattenHouseTree = (tree) => {
+  const result = []
+  const traverse = (nodes, prefix = '') => {
     nodes.forEach(node => {
       if (node.children && node.children.length > 0) {
         traverse(node.children, `${prefix}${node.label}/`)
@@ -604,7 +592,7 @@ const loadOwnerList = async () => {
   try {
     const res = await getOwnerList({ pageNum: 1, pageSize: 1000 })
     const list = res.rows || res.data?.rows || res.data || []
-    availableOwners.value = list.map((item: any) => ({
+    availableOwners.value = list.map((item) => ({
       key: item.ownerId,
       label: `${item.ownerName} (${item.ownerPhone})`,
       disabled: false
@@ -615,21 +603,21 @@ const loadOwnerList = async () => {
 }
 
 // 房屋转移框渲染内容
-const renderHouseContent = (h: any, option: any) => {
+const renderHouseContent = (h, option) => {
   return h('span', { style: 'display: flex; align-items: center;' }, [
     h('span', option.label)
   ])
 }
 
 // 业主转移框渲染内容
-const renderOwnerContent = (h: any, option: any) => {
+const renderOwnerContent = (h, option) => {
   return h('span', { style: 'display: flex; align-items: center;' }, [
     h('span', option.label)
   ])
 }
 
 // 房屋选择变化
-const handleHouseTransferChange = (value: number[], direction: string, movedKeys: number[]) => {
+const handleHouseTransferChange = (value, direction, movedKeys) => {
   form.houseIds = value
   nextTick(() => {
     formRef.value?.validateField('houseIds')
@@ -637,7 +625,7 @@ const handleHouseTransferChange = (value: number[], direction: string, movedKeys
 }
 
 // 业主选择变化
-const handleOwnerTransferChange = (value: number[], direction: string, movedKeys: number[]) => {
+const handleOwnerTransferChange = (value, direction, movedKeys) => {
   form.ownerIds = value
   nextTick(() => {
     formRef.value?.validateField('ownerIds')
@@ -678,7 +666,7 @@ const getList = async () => {
 }
 
 // 日期范围变化
-const handleDateChange = (value: string[]) => {
+const handleDateChange = (value) => {
   queryParams.dateRange = value
 }
 
@@ -701,7 +689,7 @@ const resetQuery = () => {
 }
 
 // 表格选择
-const handleSelectionChange = (selection: any[]) => {
+const handleSelectionChange = (selection) => {
   selectionIds.value = selection.map(item => item.noticeId)
 }
 
@@ -714,7 +702,7 @@ const handleAdd = () => {
 }
 
 // 编辑
-const handleUpdate = async (row: any) => {
+const handleUpdate = async (row) => {
   isAdd.value = false
   dialogTitle.value = '修改缴费通知'
   resetForm()
@@ -740,7 +728,7 @@ const handleUpdate = async (row: any) => {
 }
 
 // 删除
-const handleDelete = (row: any) => {
+const handleDelete = (row) => {
   const noticeIds = row.noticeId ? row.noticeId : selectionIds.value.join(',')
   ElMessageBox.confirm(`是否确认删除通知ID为"${noticeIds}"的数据项?`, '警告', {
     confirmButtonText: '确定',
@@ -767,9 +755,9 @@ const handleBatchDelete = () => {
 }
 
 // 发送通知（单条）
-const handleSend = async (row: any) => {
+const handleSend = async (row) => {
   try {
-    await sendNotice({ noticeIds: [row.noticeId] })
+    await addNotice({ noticeIds: [row.noticeId] })
     ElMessage.success('发送成功')
     getList()
   } catch (error) {
@@ -794,7 +782,7 @@ const confirmBatchSend = async () => {
   }
   batchSendLoading.value = true
   try {
-    await sendNotice({
+    await addNotice({
       noticeIds: selectionIds.value,
       sendMethods: batchSendForm.sendMethods
     })
@@ -809,7 +797,7 @@ const confirmBatchSend = async () => {
 }
 
 // 查看发送详情
-const handleDetail = async (row: any) => {
+const handleDetail = async (row) => {
   currentDetailNoticeId.value = row.noticeId
   detailNoticeTitle.value = row.noticeTitle
   detailQueryParams.noticeId = row.noticeId
@@ -824,7 +812,7 @@ const handleDetail = async (row: any) => {
 const getSendDetailList = async () => {
   detailLoading.value = true
   try {
-    const res = await getSendDetail(detailQueryParams)
+    const res = await getNoticeInfo(detailQueryParams)
     sendDetailData.value = res.rows || res.data?.rows || []
     detailTotal.value = res.total || res.data?.total || 0
   } catch (error) {
@@ -842,11 +830,11 @@ const resetDetailQuery = () => {
 }
 
 // 标记已读/未读
-const handleMarkRead = async (row: any) => {
+const handleMarkRead = async (row) => {
   const newStatus = row.readStatus === '1' ? '0' : '1'
   const action = newStatus === '1' ? '标记已读' : '标记未读'
   try {
-    await markReadStatus({ noticeIds: [row.noticeId], readStatus: newStatus })
+    await updateNotice({ noticeIds: [row.noticeId], readStatus: newStatus })
     ElMessage.success(`${action}成功`)
     getList()
   } catch (error) {
@@ -865,7 +853,7 @@ const handleExport = async () => {
     }
     delete params.dateRange
 
-    const res = await exportNotice(params)
+    const res = await getNoticeList(params)
     const blob = new Blob([res], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
     const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
@@ -885,7 +873,7 @@ const handleExport = async () => {
 }
 
 // 关闭弹窗
-const closeDialog = (done: Function) => {
+const closeDialog = (done) => {
   if (formRef.value) {
     formRef.value.resetFields()
   }
@@ -933,13 +921,13 @@ const submitForm = async () => {
 }
 
 // 格式化金额
-const formatAmount = (value: number): string => {
+const formatAmount = (value) => {
   if (value === null || value === undefined || value === '') return '0.00'
   return Number(value).toFixed(2)
 }
 
 // 获取发送状态Tag类型
-const getSendStatusType = (status: string): 'success' | 'warning' | 'danger' | 'info' => {
+const getSendStatusType = (status) => {
   switch (status) {
     case '1': return 'success'
     case '2': return 'danger'

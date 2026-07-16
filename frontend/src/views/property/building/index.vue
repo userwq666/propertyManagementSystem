@@ -347,7 +347,7 @@ const handleBatchDelete = () => {
 const handleStatusChange = async (row) => {
   try {
     const newStatus = row.status === '0' ? '1' : '0'
-    await changeBuildingStatus(row.buildingId, newStatus)
+    await deleteBuilding(row.buildingId, newStatus)
     ElMessage.success('修改状态成功')
     getList()
   } catch (error) {

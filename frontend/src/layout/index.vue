@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <el-container class="layout-container">
     <el-aside :class="['layout-aside', { collapse: isCollapse }]" :width="isCollapse ? '64px' : '210px'">
       <div class="logo-container" :class="{ collapse: isCollapse }">
@@ -12,8 +12,8 @@
           :collapse="isCollapse"
           :collapse-transition="false"
           mode="vertical"
-          background-color="#ffffff"
-          text-color="#303133"
+          background-color="#304156"
+          text-color="#bfcbd9"
           active-text-color="#409eff"
           router
           @select="handleSelect"
@@ -30,71 +30,42 @@
       </el-scrollbar>
     </el-aside>
 
-    <el-container>
-      <el-header class="layout-header">
+    <el-container class="main-container">
+      <el-header class="layout-header" height="50px">
         <div class="header-left">
-          <el-button
-            type="text"
-            class="toggle-button"
-            @click="toggleSidebar"
-            :aria-label="isCollapse ? '展开菜单' : '折叠菜单'"
-          >
+          <el-icon class="toggle-button" @click="toggleSidebar" :size="20">
             <component :is="isCollapse ? Expand : Fold" />
-          </el-button>
+          </el-icon>
           <breadcrumb />
         </div>
         <div class="header-right">
+          <el-tooltip content="全屏" placement="bottom">
+            <el-icon class="header-action" :size="18" @click="toggleFullScreen">
+              <full-screen />
+            </el-icon>
+          </el-tooltip>
           <el-dropdown trigger="click" @command="handleCommand">
-            <span class="el-dropdown-link header-action">
-              <bell />
-              <el-badge :is-dot="true" class="notification-badge" />
-            </span>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item disabled>
-                  <div class="dropdown-header">消息通知</div>
-                </el-dropdown-item>
-                <el-dropdown-item divided>
-                  暂无新消息
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-
-          <el-dropdown trigger="click" @command="handleCommand">
-            <span class="el-dropdown-link header-action header-avatar">
-              <el-avatar :size="32" :src="avatarUrl" alt="用户头像">
+            <span class="header-action header-avatar">
+              <el-avatar :size="30" :src="avatarUrl">
                 <user-filled />
               </el-avatar>
-              <span v-show="!isCollapse" class="username">{{ name }}</span>
-              <arrow-down />
+              <span class="username">{{ name }}</span>
+              <el-icon><arrow-down /></el-icon>
             </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item :command="'profile'">
+                <el-dropdown-item command="profile">
                   <user-filled /> 个人中心
                 </el-dropdown-item>
-                <el-dropdown-item :command="'password'">
+                <el-dropdown-item command="password">
                   <lock /> 修改密码
                 </el-dropdown-item>
-                <el-dropdown-item divided :command="'setting'">
-                  <setting /> 设置
-                </el-dropdown-item>
-                <el-dropdown-item :command="'logout'">
-                  <logout /> 退出登录
+                <el-dropdown-item divided command="logout">
+                  <switch-button /> 退出登录
                 </el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
-
-          <el-button
-            type="text"
-            class="toggle-button"
-            @click="toggleSidebar"
-            :aria-label="isCollapse ? '展开菜单' : '折叠菜单'"
-          >
-            <component :is="isCollapse ? Expand : Fold" />
-          </el-button>
         </div>
       </el-header>
 
@@ -117,12 +88,13 @@ import { useUserStore } from '@/store/modules/user'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useAppStore } from '@/store/modules/app'
 import {
-  HomeFilled, UserFilled, Lock, Setting, Logout, Bell, ArrowDown,
-  Expand, Fold, User, Menu as MenuIcon, House, OfficeBuilding, Grid,
-  Tickets, SwitchButton, StarFilled, ChatLineSquare, Document, Megaphone,
-  MessageBox, DocumentAdd, Key, Parking, Truck, DocumentCopy, Money, Coin,
-  DocumentChecked, ListCheck, ScaleToOriginal, WarningFilled, RefreshRight,
-  Wrench, Monitor, Timer, Box, Cpu, Tools, Avatar
+  HomeFilled, User, UserFilled, Avatar, Lock, Setting, SwitchButton, ArrowDown,
+  Expand, Fold, FullScreen, Menu, House, OfficeBuilding, Grid,
+  Tickets, StarFilled, ChatLineSquare, Document, Notification, Bell,
+  MessageBox, DocumentAdd, Key, Location, Van, DocumentCopy, Money, Coin,
+  DocumentChecked, Finished, ScaleToOriginal, WarningFilled, RefreshRight,
+  Tools, Monitor, Timer, Box, Cpu, DataAnalysis,
+  DataBoard, List, EditPen, BellFilled, Star
 } from '@element-plus/icons-vue'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
@@ -156,6 +128,14 @@ const toggleSidebar = () => {
   appStore.toggleSidebar()
 }
 
+const toggleFullScreen = () => {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen()
+  } else {
+    document.exitFullscreen()
+  }
+}
+
 const handleCommand = (command) => {
   switch (command) {
     case 'profile':
@@ -175,15 +155,15 @@ const handleCommand = (command) => {
 }
 
 const getMenuIcon = (icon) => {
-  if (!icon) return MenuIcon
+  if (!icon) return Menu
   const icons = {
-    HomeFilled, User, UserFilled, Avatar, MenuIcon, Setting, Lock, Logout, Bell, MessageBox,
-    House, OfficeBuilding, Grid, Tickets, SwitchButton, StarFilled, ChatLineSquare,
-    Document, Megaphone, MessageBox, DocumentAdd, Key, Parking, Truck, DocumentCopy,
-    Money, Coin, DocumentChecked, ListCheck, ScaleToOriginal, WarningFilled, RefreshRight,
-    Wrench, Monitor, Timer, Box, Cpu, Tools
+    HomeFilled, User, UserFilled, Avatar, Menu, Setting, Lock, SwitchButton, Bell, BellFilled,
+    House, OfficeBuilding, Grid, Tickets, StarFilled, ChatLineSquare, EditPen, Star,
+    Document, Notification, MessageBox, DocumentAdd, Key, Location, Van, DocumentCopy,
+    Money, Coin, DocumentChecked, Finished, ScaleToOriginal, WarningFilled, RefreshRight,
+    Tools, Monitor, Timer, Box, Cpu, DataAnalysis, DataBoard, List
   }
-  return icons[icon] || MenuIcon
+  return icons[icon] || Menu
 }
 
 const renderMenuComponent = (route) => {
@@ -241,8 +221,7 @@ onMounted(() => {
 
 .layout-aside {
   height: 100%;
-  background-color: #fff;
-  border-right: 1px solid #ebeef5;
+  background-color: #304156;
   transition: width 0.3s ease;
   overflow: hidden;
   z-index: 100;
@@ -257,8 +236,8 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 10px;
-  border-bottom: 1px solid #ebeef5;
+  padding: 0 15px;
+  background-color: #2b2f3a;
   transition: all 0.3s ease;
 
   &.collapse {
@@ -268,16 +247,16 @@ onMounted(() => {
 }
 
 .logo-image {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   margin-right: 10px;
   flex-shrink: 0;
 }
 
 .logo-title {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
-  color: #303133;
+  color: #fff;
   white-space: nowrap;
   overflow: hidden;
 }
@@ -291,13 +270,13 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 15px;
   background-color: #fff;
-  border-bottom: 1px solid #ebeef5;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid #d8dce5;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 0 3px 0 rgba(0, 0, 0, 0.04);
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 9;
 }
 
 .header-left {
@@ -308,28 +287,8 @@ onMounted(() => {
 
 .toggle-button {
   padding: 8px;
-  color: #606266;
-  font-size: 18px;
-
-  &:hover {
-    color: #409eff;
-    background-color: #f5f7fa;
-  }
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.header-action {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 10px;
-  color: #606266;
   cursor: pointer;
+  color: #5a5e66;
   transition: color 0.3s;
 
   &:hover {
@@ -337,13 +296,30 @@ onMounted(() => {
   }
 }
 
-.notification-badge {
-  margin-left: -8px;
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header-action {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 5px;
+  color: #5a5e66;
+  cursor: pointer;
+  font-size: 14px;
+  transition: color 0.3s;
+
+  &:hover {
+    color: #409eff;
+  }
 }
 
 .header-avatar {
-  padding: 0 5px 0 10px;
-  border-left: 1px solid #ebeef5;
+  padding: 0 10px;
+  border-left: 1px solid #d8dce5;
 }
 
 .username {
@@ -362,90 +338,33 @@ onMounted(() => {
   overflow: auto;
 }
 
-/* 菜单样式覆盖 */
+/* 菜单样式 */
 :deep(.el-menu--vertical) {
   border-right: none;
 }
 
-:deep(.el-menu-item) {
-  height: auto;
-  padding: 0 15px;
-  line-height: normal;
-  border-radius: 6px;
-  margin: 4px 8px;
+:deep(.el-menu-item),
+:deep(.el-sub-menu__title) {
+  height: 50px;
+  line-height: 50px;
 
   &:hover {
-    background-color: #f5f7fa;
-  }
-
-  &.is-active {
-    background-color: rgba(64, 158, 255, 0.1);
-    color: #409eff;
-    font-weight: 500;
-
-    .el-icon {
-      color: #409eff;
-    }
+    background-color: #263445 !important;
   }
 }
 
-:deep(.el-sub-menu__title) {
-  height: auto;
-  padding: 0 15px;
-  line-height: normal;
-  border-radius: 6px;
-  margin: 4px 8px;
+:deep(.el-menu-item.is-active) {
+  background-color: #409eff !important;
+  color: #fff !important;
+}
 
-  &:hover {
-    background-color: #f5f7fa;
-  }
+:deep(.el-sub-menu .el-menu-item) {
+  min-width: 0 !important;
 }
 
 :deep(.el-menu--collapse .el-sub-menu__title) {
   padding: 0;
-  margin: 4px 0;
   text-align: center;
-}
-
-:deep(.el-menu-item__content) {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  height: 38px;
-}
-
-:deep(.el-sub-menu__title-content) {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  height: 38px;
-}
-
-:deep(.el-menu--collapse .el-menu-item__content,
-  .el-menu--collapse .el-sub-menu__title-content) {
-  justify-content: center;
-  gap: 0;
-}
-
-/* 面包屑样式 */
-:deep(.el-breadcrumb) {
-  font-size: 14px;
-}
-
-:deep(.el-breadcrumb__inner) {
-  color: #606266;
-
-  &:hover {
-    color: #409eff;
-  }
-}
-
-:deep(.el-breadcrumb__inner.is-link) {
-  color: #409eff;
-}
-
-:deep(.el-breadcrumb__separator) {
-  color: #c0c4cc;
 }
 
 /* 过渡动画 */
@@ -459,7 +378,7 @@ onMounted(() => {
   opacity: 0;
 }
 
-/* 滚动条样式 */
+/* 滚动条 */
 :deep(.el-scrollbar__wrap) {
   overflow-x: hidden !important;
 }
@@ -472,17 +391,9 @@ onMounted(() => {
     top: 0;
     height: 100vh;
     z-index: 1000;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
 
     &.collapse {
-      transform: translateX(-100%);
-      width: 210px;
-    }
-
-    &.open {
-      transform: translateX(0);
+      width: 210px !important;
     }
   }
 

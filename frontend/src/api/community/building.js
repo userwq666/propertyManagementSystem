@@ -1,8 +1,8 @@
-import request from '@/utils/request'
+﻿import request from '@/utils/request'
 
 export function getBuildingList(params) {
   return request({
-    url: '/property/building/list',
+    url: '/community/building/page',
     method: 'get',
     params
   })
@@ -10,14 +10,14 @@ export function getBuildingList(params) {
 
 export function getBuildingInfo(buildingId) {
   return request({
-    url: `/property/building/${buildingId}`,
+    url: `/community/building/${buildingId}`,
     method: 'get'
   })
 }
 
 export function addBuilding(data) {
   return request({
-    url: '/property/building',
+    url: '/community/building',
     method: 'post',
     data
   })
@@ -25,38 +25,22 @@ export function addBuilding(data) {
 
 export function updateBuilding(data) {
   return request({
-    url: '/property/building',
+    url: '/community/building',
     method: 'put',
     data
   })
 }
 
-export function deleteBuilding(buildingIds) {
+export function deleteBuilding(id) {
   return request({
-    url: `/property/building/${buildingIds}`,
+    url: `/community/building/${buildingId}`,
     method: 'delete'
-  })
-}
-
-export function changeBuildingStatus(buildingId, status) {
-  return request({
-    url: `/property/building/${buildingId}/status/${status}`,
-    method: 'put'
-  })
-}
-
-export function exportBuilding(params) {
-  return request({
-    url: '/property/building/export',
-    method: 'get',
-    params,
-    responseType: 'blob'
   })
 }
 
 export function getBuildingRoomList(params) {
   return request({
-    url: '/property/building/rooms',
+    url: '/community/building/rooms',
     method: 'get',
     params
   })

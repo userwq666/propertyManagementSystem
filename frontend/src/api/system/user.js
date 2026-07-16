@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getUserList(params) {
   return request({
-    url: '/system/user/list',
+    url: '/system/user/page',
     method: 'get',
     params
   })
@@ -31,26 +31,26 @@ export function updateUser(data) {
   })
 }
 
-export function deleteUser(userIds) {
+export function deleteUser(id) {
   return request({
-    url: `/system/user/${userIds}`,
+    url: `/system/user/${id}`,
     method: 'delete'
   })
 }
 
-export function resetPassword(userId, password) {
+export function resetPassword(id, newPassword) {
   return request({
-    url: `/system/user/resetPwd`,
+    url: '/system/user/password',
     method: 'put',
-    data: { userId, password }
+    params: { id, newPassword }
   })
 }
 
-export function updateStatus(userId, status) {
+export function updateStatus(id, status) {
   return request({
-    url: `/system/user/changeStatus`,
+    url: '/system/user/status',
     method: 'put',
-    data: { userId, status }
+    params: { id, status }
   })
 }
 
@@ -59,38 +59,5 @@ export function getRoleList(params) {
     url: '/system/role/list',
     method: 'get',
     params
-  })
-}
-
-export function getDeptTree(params) {
-  return request({
-    url: '/system/dept/tree',
-    method: 'get',
-    params
-  })
-}
-
-export function exportUser(params) {
-  return request({
-    url: '/system/user/export',
-    method: 'get',
-    params,
-    responseType: 'blob'
-  })
-}
-
-export function importUser(data) {
-  return request({
-    url: '/system/user/importData',
-    method: 'post',
-    data
-  })
-}
-
-export function getImportTemplate() {
-  return request({
-    url: '/system/user/importTemplate',
-    method: 'get',
-    responseType: 'blob'
   })
 }

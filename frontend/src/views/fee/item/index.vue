@@ -491,22 +491,16 @@ import {
   getChargeStandardList
 } from '@/api/fee/item'
 import { usePermission } from '@/hooks/usePermission'
-import type {
-  ChargeItem,
-  ChargeItemForm,
-  ChargeItemQuery,
-  DictOption
-} from '@/types/fee/item'
 
 const { hasPermission } = usePermission()
 
 // 响应式数据
 const loading = ref(false)
-const tableData = ref<ChargeItem[]>([])
+const tableData = ref([])
 const total = ref(0)
-const selectionIds = ref<number[]>([])
+const selectionIds = ref([])
 
-const queryParams = reactive<ChargeItemQuery>({
+const queryParams = reactive({
   pageNum: 1,
   pageSize: 10,
   itemName: '',
@@ -521,7 +515,7 @@ const dialogVisible = ref(false)
 const dialogTitle = ref('新增收费项目')
 const isAdd = ref(true)
 
-const form = reactive<ChargeItemForm>({
+const form = reactive({
   itemId: undefined,
   itemName: '',
   itemType: '',
@@ -551,7 +545,7 @@ const rules = reactive({
 const formRef = ref()
 
 // 字典选项
-const itemTypeOptions = ref<DictOption[]>([
+const itemTypeOptions = ref([
   { dictValue: '1', dictLabel: '物业费' },
   { dictValue: '2', dictLabel: '车位费' },
   { dictValue: '3', dictLabel: '水电费' },
@@ -560,7 +554,7 @@ const itemTypeOptions = ref<DictOption[]>([
   { dictValue: '6', dictLabel: '其他' }
 ])
 
-const chargeCycleOptions = ref<DictOption[]>([
+const chargeCycleOptions = ref([
   { dictValue: '1', dictLabel: '月' },
   { dictValue: '2', dictLabel: '季' },
   { dictValue: '3', dictLabel: '半年' },
@@ -568,14 +562,14 @@ const chargeCycleOptions = ref<DictOption[]>([
   { dictValue: '5', dictLabel: '一次性' }
 ])
 
-const billingMethodOptions = ref<DictOption[]>([
+const billingMethodOptions = ref([
   { dictValue: '1', dictLabel: '按套' },
   { dictValue: '2', dictLabel: '按面积' },
   { dictValue: '3', dictLabel: '按车位' },
   { dictValue: '4', dictLabel: '固定金额' }
 ])
 
-const applicableObjectOptions = ref<DictOption[]>([
+const applicableObjectOptions = ref([
   { dictValue: '1', dictLabel: '全体' },
   { dictValue: '2', dictLabel: '住宅' },
   { dictValue: '3', dictLabel: '商铺' },
@@ -583,7 +577,7 @@ const applicableObjectOptions = ref<DictOption[]>([
   { dictValue: '5', dictLabel: '办公' }
 ])
 
-const chargeUnitOptions = ref<DictOption[]>([
+const chargeUnitOptions = ref([
   { dictValue: '元/月', dictLabel: '元/月' },
   { dictValue: '元/季', dictLabel: '元/季' },
   { dictValue: '元/半年', dictLabel: '元/半年' },
@@ -594,7 +588,7 @@ const chargeUnitOptions = ref<DictOption[]>([
   { dictValue: '元/套', dictLabel: '元/套' }
 ])
 
-const statusOptions = ref<DictOption[]>([
+const statusOptions = ref([
   { dictValue: '0', dictLabel: '启用' },
   { dictValue: '1', dictLabel: '禁用' }
 ])
@@ -602,37 +596,37 @@ const statusOptions = ref<DictOption[]>([
 // 标签显示用 computed
 const itemTypeLabel = computed(() => {
   const map = Object.fromEntries(itemTypeOptions.value.map(o => [o.dictValue, o.dictLabel]))
-  return (val: string) => map[val] || val
+  return (val) => map[val] || val
 })
 
 const chargeCycleLabel = computed(() => {
   const map = Object.fromEntries(chargeCycleOptions.value.map(o => [o.dictValue, o.dictLabel]))
-  return (val: string) => map[val] || val
+  return (val) => map[val] || val
 })
 
 const billingMethodLabel = computed(() => {
   const map = Object.fromEntries(billingMethodOptions.value.map(o => [o.dictValue, o.dictLabel]))
-  return (val: string) => map[val] || val
+  return (val) => map[val] || val
 })
 
 const applicableObjectLabel = computed(() => {
   const map = Object.fromEntries(applicableObjectOptions.value.map(o => [o.dictValue, o.dictLabel]))
-  return (val: string) => map[val] || val
+  return (val) => map[val] || val
 })
 
 // 收费标准相关
 const standardDialogVisible = ref(false)
 const standardDialogTitle = ref('收费标准列表')
-const currentChargeItem = ref<ChargeItem | null>(null)
+const currentChargeItem = ref(null)
 
 const standardLoading = ref(false)
-const standardTableData = ref<any[]>([])
+const standardTableData = ref([])
 const standardTotal = ref(0)
 
 const standardQueryParams = reactive({
   pageNum: 1,
   pageSize: 10,
-  itemId: undefined as number | undefined,
+  itemId: undefined | undefined,
   itemName: '',
   billingMethod: '',
   status: ''
@@ -696,7 +690,7 @@ const resetQuery = () => {
 }
 
 // 表格选择
-const handleSelectionChange = (selection: ChargeItem[]) => {
+const handleSelectionChange = (selection) => {
   selectionIds.value = selection.map(item => item.itemId)
 }
 
@@ -709,7 +703,7 @@ const handleAdd = () => {
 }
 
 // 编辑
-const handleUpdate = async (row: ChargeItem) => {
+const handleUpdate = async (row) => {
   isAdd.value = false
   dialogTitle.value = '修改收费项目'
   resetForm()
@@ -718,8 +712,7 @@ const handleUpdate = async (row: ChargeItem) => {
     const data = res.data || res
     form.itemId = data.itemId
     form.itemName = data.itemName
-    form.itemType = data.itemType
-    form.chargeCycle = data.chargeCycle
+    form.itemType = data.itemform.chargeCycle = data.chargeCycle
     form.chargeAmount = data.chargeAmount
     form.chargeUnit = data.chargeUnit
     form.billingMethod = data.billingMethod
@@ -733,7 +726,7 @@ const handleUpdate = async (row: ChargeItem) => {
 }
 
 // 删除
-const handleDelete = (row: ChargeItem) => {
+const handleDelete = (row) => {
   const itemIds = row.itemId ? row.itemId : selectionIds.value.join(',')
   ElMessageBox.confirm(`是否确认删除收费项目ID为"${itemIds}"的数据项?`, '警告', {
     confirmButtonText: '确定',
@@ -760,10 +753,10 @@ const handleBatchDelete = () => {
 }
 
 // 状态修改
-const handleStatusChange = async (row: ChargeItem) => {
+const handleStatusChange = async (row) => {
   try {
     const newStatus = row.status === '0' ? '1' : '0'
-    await changeChargeItemStatus(row.itemId, newStatus)
+    await deleteChargeItem(row.itemId, newStatus)
     ElMessage.success(newStatus === '0' ? '启用成功' : '禁用成功')
     getList()
   } catch (error) {
@@ -773,7 +766,7 @@ const handleStatusChange = async (row: ChargeItem) => {
 }
 
 // 查看收费标准
-const handleViewStandard = (row: ChargeItem) => {
+const handleViewStandard = (row) => {
   currentChargeItem.value = row
   standardDialogTitle.value = `收费标准列表 - ${row.itemName}`
   standardQueryParams.itemId = row.itemId
@@ -813,7 +806,7 @@ const resetStandardQuery = () => {
 }
 
 // 查看收费标准详情
-const handleViewStandardDetail = async (row: any) => {
+const handleViewStandardDetail = async (row) => {
   standardDetailTitle.value = `收费标准详情 - ${row.standardName}`
   standardDetail.standardId = row.standardId
   standardDetail.itemName = currentChargeItem.value?.itemName || ''
@@ -833,7 +826,7 @@ const handleViewStandardDetail = async (row: any) => {
 const handleExport = async () => {
   try {
     loading.value = true
-    const res = await exportChargeItem(queryParams)
+    const res = await getChargeItemList(queryParams)
     const blob = new Blob([res], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
     const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
@@ -853,7 +846,7 @@ const handleExport = async () => {
 }
 
 // 关闭弹窗
-const closeDialog = (done: () => void) => {
+const closeDialog = (done) => {
   if (formRef.value) {
     formRef.value.resetFields()
   }

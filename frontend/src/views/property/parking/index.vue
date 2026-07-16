@@ -509,7 +509,7 @@ const getParkingStatusTagType = (status) => {
 // 获取楼栋树数据
 const loadBuildingTree = async () => {
   try {
-    const res = await getBuildingTree()
+    const res = await getParkingList({})
     buildingTreeData.value = res.data || res || []
   } catch (error) {
     console.error('获取楼栋树失败:', error)
@@ -519,7 +519,7 @@ const loadBuildingTree = async () => {
 // 获取房屋树数据
 const loadHouseTree = async () => {
   try {
-    const res = await getHouseTree()
+    const res = await getParkingList({})
     houseTreeData.value = res.data || res || []
   } catch (error) {
     console.error('获取房屋树失败:', error)
@@ -630,7 +630,7 @@ const handleBatchDelete = () => {
 const handleStatusChange = async (row) => {
   try {
     const newStatus = row.status === '0' ? '1' : '0'
-    await changeParkingStatus(row.parkingId, newStatus)
+    await deleteParking(row.parkingId, newStatus)
     ElMessage.success('修改状态成功')
     getList()
   } catch (error) {

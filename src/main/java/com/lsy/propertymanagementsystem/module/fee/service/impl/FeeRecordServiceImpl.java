@@ -1,4 +1,4 @@
-package com.lsy.propertymanagementsystem.module.fee.service.impl;
+﻿package com.lsy.propertymanagementsystem.module.fee.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -84,7 +84,7 @@ public class FeeRecordServiceImpl implements FeeRecordService {
     @Override
     public Map<String, Object> getStatistics(Long ownerId, Long houseId) {
         LambdaQueryWrapper<FeeRecordDomain> wrapper = new LambdaQueryWrapper<>();
-        wrapper.in(FeeRecordDomain::getStatus, FeeRecordStatus.UNPAID, FeeRecordStatus.PAID);
+        wrapper.in(FeeRecordDomain::getStatus, FeeRecordStatus.UNPAID, FeeRecordStatus.OVERDUE);
         if (ownerId != null) {
             wrapper.eq(FeeRecordDomain::getOwnerId, ownerId);
         }

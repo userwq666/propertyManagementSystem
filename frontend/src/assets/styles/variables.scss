@@ -242,29 +242,3 @@ $--duration-fast: 150ms;
 $--duration-base: 200ms;
 $--duration-slow: 300ms;
 
-// Element Plus 变量覆盖
-@forward "element-plus/theme-chalk/src/common/var.scss" with (
-  $colors: (
-    "primary": (
-      "base": $--color-primary,
-      "light-3": $--color-primary-lighter,
-      "light-5": $--color-primary-light,
-      "light-7": $--color-primary-light,
-      "light-8": $--color-primary-light,
-      "light-9": $--color-primary-lighter,
-      "dark-2": $--color-primary-dark,
-    ),
-    "success": (
-      "base": $--color-success,
-    ),
-    "warning": (
-      "base": $--color-warning,
-    ),
-    "danger": (
-      "base": $--color-danger,
-    ),
-    "info": (
-      "base": $--color-info,
-    ),
-  ),
-);

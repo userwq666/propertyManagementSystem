@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="app-container">
     <div class="page-header">
       <h1>缴费记录管理</h1>
@@ -403,33 +403,17 @@ import {
   getChargeItemListForSelect
 } from '@/api/fee/record'
 import { usePermission } from '@/hooks/usePermission'
-import {
-  FeeRecordQuery,
-  FeeRecordStatistics,
-  RefundForm,
-  RefundFormExtend,
-  PAY_METHOD_OPTIONS,
-  PAY_STATUS_OPTIONS,
-  REFUND_STATUS_OPTIONS,
-  REFUND_METHOD_OPTIONS,
-  REFUND_REASON_OPTIONS,
-  CHARGE_CYCLE_OPTIONS,
-  getPayStatusType,
-  getRefundStatusType,
-  formatAmount,
-  type ChargeItem
-} from '@/types/fee/record'
 
 const { hasPermission } = usePermission()
 
 // 响应式数据
 const loading = ref(false)
-const tableData = ref<any[]>([])
+const tableData = ref([])
 const total = ref(0)
-const selectionIds = ref<number[]>([])
+const selectionIds = ref([])
 
 // 统计数据
-const statistics = reactive<FeeRecordStatistics>({
+const statistics = reactive({
   totalAmount: 0,
   paidAmount: 0,
   refundAmount: 0,
@@ -437,10 +421,10 @@ const statistics = reactive<FeeRecordStatistics>({
 })
 
 // 缴费项目下拉选项
-const chargeItemOptions = ref<ChargeItem[]>([])
+const chargeItemOptions = ref([])
 
 // 查询参数
-const queryParams = reactive<FeeRecordQuery>({
+const queryParams = reactive({
   pageNum: 1,
   pageSize: 10,
   ownerName: '',
@@ -484,9 +468,9 @@ const detailForm = reactive({
 // 退费弹窗
 const refundDialogVisible = ref(false)
 const refundLoading = ref(false)
-const currentRefundRecord = ref<any>(null)
+const currentRefundRecord = ref(null)
 
-const refundForm = reactive<RefundFormExtend>({
+const refundForm = reactive({
   recordId: 0,
   recordNo: '',
   ownerHouse: '',
@@ -575,7 +559,7 @@ const getList = async () => {
 }
 
 // 日期范围变化
-const handleDateChange = (value: string[]) => {
+const handleDateChange = (value) => {
   queryParams.dateRange = value
 }
 
@@ -599,12 +583,12 @@ const resetQuery = () => {
 }
 
 // 表格选择
-const handleSelectionChange = (selection: any[]) => {
+const handleSelectionChange = (selection) => {
   selectionIds.value = selection.map(item => item.recordId)
 }
 
 // 查看详情
-const handleDetail = async (row: any) => {
+const handleDetail = async (row) => {
   try {
     const res = await getFeeRecordInfo(row.recordId)
     const data = res.data || res
@@ -639,7 +623,7 @@ const handleDetail = async (row: any) => {
 }
 
 // 退费操作
-const handleRefund = (row: any) => {
+const handleRefund = (row) => {
   if (row.paidAmount <= 0) {
     ElMessage.warning('该记录无实缴金额，不能退费')
     return
@@ -719,7 +703,7 @@ const submitRefund = async () => {
 }
 
 // 关闭退费弹窗
-const closeRefundDialog = (done: Function) => {
+const closeRefundDialog = (done) => {
   if (refundFormRef.value) {
     refundFormRef.value.resetFields()
   }
@@ -740,7 +724,7 @@ const handleExport = async () => {
     delete params.pageNum
     delete params.pageSize
 
-    const res = await exportFeeRecord(params)
+    const res = await getFeeRecordList(params)
     const blob = new Blob([res], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
     const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')

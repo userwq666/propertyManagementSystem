@@ -3,6 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import compression from 'vite-plugin-compression'
 import path from 'path'
 
 export default defineConfig({
@@ -17,20 +18,25 @@ export default defineConfig({
     Components({
       resolvers: [ElementPlusResolver({ importStyle: 'sass' })],
       dts: 'src/components.d.ts'
+    }),
+    compression({
+      algorithm: 'gzip',
+      ext: '.gz',
+      threshold: 10240
     })
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src')
+      '@': path.resolve(__dirname, 'src'),
+      'vue': 'vue/dist/vue.esm-bundler.js'
     }
   },
   server: {
-    port: 8081,
+    port: 5173,
     proxy: {
       '/api': {
         target: 'http://localhost:8080',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
+        changeOrigin: true
       }
     }
   },

@@ -58,43 +58,7 @@ export const asyncRoutes = [
         name: 'SystemMenu',
         meta: { title: '菜单管理', icon: 'Menu', roles: ['admin'] }
       },
-      {
-        path: 'dept',
-        component: () => import('@/views/system/dept/index.vue'),
-        name: 'SystemDept',
-        meta: { title: '部门管理', icon: 'OfficeBuilding', roles: ['admin'] }
-      },
-      {
-        path: 'dict',
-        component: () => import('@/views/system/dict/index.vue'),
-        name: 'SystemDict',
-        meta: { title: '字典管理', icon: 'Document', roles: ['admin'] }
-      },
-      {
-        path: 'dict/data/:dictType',
-        component: () => import('@/views/system/dict/data.vue'),
-        name: 'SystemDictData',
-        hidden: true,
-        meta: { title: '字典数据', icon: 'Document', roles: ['admin'], activeMenu: '/system/dict' }
-      },
-      {
-        path: 'config',
-        component: () => import('@/views/system/config/index.vue'),
-        name: 'SystemConfig',
-        meta: { title: '参数配置', icon: 'Tools', roles: ['admin'] }
-      },
-      {
-        path: 'log/login',
-        component: () => import('@/views/system/log/login.vue'),
-        name: 'SystemLogLogin',
-        meta: { title: '登录日志', icon: 'ListCheck', roles: ['admin'] }
-      },
-      {
-        path: 'log/operation',
-        component: () => import('@/views/system/log/operation.vue'),
-        name: 'SystemLogOperation',
-        meta: { title: '操作日志', icon: 'DocumentCopy', roles: ['admin'] }
-      }
+
     ]
   },
   {
@@ -138,7 +102,7 @@ export const asyncRoutes = [
         path: 'parking',
         component: () => import('@/views/property/parking/index.vue'),
         name: 'PropertyParking',
-        meta: { title: '车位管理', icon: 'Parking', roles: ['admin', 'property'] }
+        meta: { title: '车位管理', icon: 'OfficeBuilding', roles: ['admin', 'property'] }
       }
     ]
   },
@@ -171,7 +135,7 @@ export const asyncRoutes = [
         path: 'item',
         component: () => import('@/views/fee/item/index.vue'),
         name: 'FeeItem',
-        meta: { title: '收费项目', icon: 'ListCheck', roles: ['admin', 'finance'] }
+        meta: { title: '收费项目', icon: 'List', roles: ['admin', 'finance'] }
       },
       {
         path: 'standard',
@@ -204,7 +168,7 @@ export const asyncRoutes = [
     component: () => import('@/layout/index.vue'),
     redirect: '/repair/order',
     name: 'Repair',
-    meta: { title: '报修管理', icon: 'Wrench', roles: ['admin', 'property'] },
+    meta: { title: '报修管理', icon: 'Tools', roles: ['admin', 'property'] },
     children: [
       {
         path: 'order',
@@ -260,18 +224,27 @@ export const asyncRoutes = [
     ]
   },
   {
-    path: '/notice',
+    path: '/announcement',
     component: () => import('@/layout/index.vue'),
-    redirect: '/notice/announcement',
-    name: 'Notice',
-    meta: { title: '通知公告', icon: 'Megaphone', roles: ['admin', 'property', 'owner'] },
+    redirect: '/announcement/notice',
+    name: 'Announcement',
+    meta: { title: '公告通知', icon: 'Notification', roles: ['admin', 'property'] },
     children: [
       {
-        path: 'announcement',
-        component: () => import('@/views/notice/announcement/index.vue'),
-        name: 'NoticeAnnouncement',
-        meta: { title: '公告管理', icon: 'Megaphone', roles: ['admin', 'property'] }
-      },
+        path: 'notice',
+        component: () => import('@/views/announcement/notice/index.vue'),
+        name: 'AnnouncementNotice',
+        meta: { title: '公告管理', icon: 'Notification', roles: ['admin', 'property'] }
+      }
+    ]
+  },
+  {
+    path: '/notice',
+    component: () => import('@/layout/index.vue'),
+    redirect: '/notice/message',
+    name: 'Notice',
+    meta: { title: '消息通知', icon: 'MessageBox', roles: ['admin', 'property', 'owner'] },
+    children: [
       {
         path: 'message',
         component: () => import('@/views/notice/message/index.vue'),
@@ -291,13 +264,13 @@ export const asyncRoutes = [
     component: () => import('@/layout/index.vue'),
     redirect: '/parking/space',
     name: 'Parking',
-    meta: { title: '车位管理', icon: 'Parking', roles: ['admin', 'property'] },
+    meta: { title: '车位管理', icon: 'OfficeBuilding', roles: ['admin', 'property'] },
     children: [
       {
         path: 'space',
         component: () => import('@/views/parking/space/index.vue'),
         name: 'ParkingSpace',
-        meta: { title: '车位信息', icon: 'Parking', roles: ['admin', 'property'] }
+        meta: { title: '车位信息', icon: 'OfficeBuilding', roles: ['admin', 'property'] }
       },
       {
         path: 'rent',
@@ -309,13 +282,28 @@ export const asyncRoutes = [
         path: 'vehicle',
         component: () => import('@/views/parking/vehicle/index.vue'),
         name: 'ParkingVehicle',
-        meta: { title: '车辆登记', icon: 'Truck', roles: ['admin', 'property', 'owner'] }
+        meta: { title: '车辆登记', icon: 'Van', roles: ['admin', 'property', 'owner'] }
       },
       {
         path: 'record',
         component: () => import('@/views/parking/record/index.vue'),
         name: 'ParkingRecord',
         meta: { title: '进出记录', icon: 'DocumentCopy', roles: ['admin', 'property'] }
+      }
+    ]
+  },
+  {
+    path: '/statistics',
+    component: () => import('@/layout/index.vue'),
+    redirect: '/statistics/dashboard',
+    name: 'Statistics',
+    meta: { title: '统计分析', icon: 'DataAnalysis', roles: ['admin', 'property'] },
+    children: [
+      {
+        path: 'dashboard',
+        component: () => import('@/views/statistics/dashboard/index.vue'),
+        name: 'StatisticsDashboard',
+        meta: { title: '统计仪表盘', icon: 'DataBoard', roles: ['admin', 'property'] }
       }
     ]
   },

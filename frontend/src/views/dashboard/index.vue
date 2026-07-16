@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="dashboard-container">
     <page-header title="数据概览" :breadcrumbs="breadcrumbs">
       <template #actions>
@@ -106,7 +106,7 @@
           <template #header>
             <div class="card-header">
               <span>待办事项</span>
-              <el-button type="text" size="small" @click="goToRepair">更多</el-button>
+              <el-button type="link" size="small" @click="goToRepair">更多</el-button>
             </div>
           </template>
           <el-table :data="pendingTasks" border style="width: 100%" size="small">
@@ -133,7 +133,7 @@
           <template #header>
             <div class="card-header">
               <span>房屋入住率</span>
-              <el-button type="text" size="small" @click="goToProperty">更多</el-button>
+              <el-button type="link" size="small" @click="goToProperty">更多</el-button>
             </div>
           </template>
           <el-table :data="occupancyData" border style="width: 100%" size="small">
@@ -156,7 +156,7 @@
 import { ref, onMounted, onBeforeUnmount, nextTick, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import * as echarts from 'echarts'
-import { ArrowUp, ArrowDown, Refresh, House, Coin, Tickets, UserFilled, WarningFilled, ArrowUp as TrendUp, ArrowDown as TrendDown } from '@element-plus/icons-vue'
+import { ArrowUp, ArrowDown, Refresh, House, Coin, Tickets, UserFilled, WarningFilled } from '@element-plus/icons-vue'
 import PageHeader from '@/components/PageHeader/index.vue'
 
 const router = useRouter()

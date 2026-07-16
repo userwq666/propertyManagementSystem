@@ -1,9 +1,9 @@
-import request from '@/utils/request'
+﻿import request from '@/utils/request'
 
 // 获取缴费记录列表
 export function getFeeRecordList(params) {
   return request({
-    url: '/fee/record/list',
+    url: '/fee/record/page',
     method: 'get',
     params
   })
@@ -48,7 +48,7 @@ export function getFeeRecordStatistics(params) {
 // 获取缴费项目列表（用于下拉选择）
 export function getChargeItemListForSelect(params) {
   return request({
-    url: '/fee/item/list',
+    url: '/fee/item/page',
     method: 'get',
     params
   })

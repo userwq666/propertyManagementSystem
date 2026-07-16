@@ -3,13 +3,18 @@ import { ElMessage } from 'element-plus'
 import { getToken } from '@/utils/auth'
 
 const service = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || '',
   timeout: 10000,
   headers: { 'Content-Type': 'application/json;charset=utf-8' }
 })
 
+const EXCLUDE_PREFIX = ['/auth/', '/common/upload']
+
 service.interceptors.request.use(
   config => {
+    if (!EXCLUDE_PREFIX.some(p => config.url.startsWith(p))) {
+      config.url = '/api' + config.url
+    }
     const token = getToken()
     if (token) {
       config.headers['Authorization'] = 'Bearer ' + token

@@ -1,8 +1,9 @@
-package com.lsy.propertymanagementsystem.module.community.service.impl;
+﻿package com.lsy.propertymanagementsystem.module.community.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.lsy.propertymanagementsystem.common.exception.BusinessException;
 import com.lsy.propertymanagementsystem.module.community.domain.CommunityOwnerDomain;
 import com.lsy.propertymanagementsystem.module.community.dto.CommunityOwnerDTO;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityOwnerMapper;
@@ -40,11 +41,10 @@ public class CommunityOwnerServiceImpl extends ServiceImpl<CommunityOwnerMapper,
     public void updateOwner(CommunityOwnerDTO owner) {
         CommunityOwnerDomain existing = this.getById(owner.getId());
         if (existing == null) {
-            throw new com.lsy.propertymanagementsystem.common.exception.BusinessException("业主不存在");
+            throw new BusinessException("业主不存在");
         }
-        CommunityOwnerDomain domain = new CommunityOwnerDomain();
-        BeanUtils.copyProperties(owner, domain);
-        this.updateById(domain);
+        BeanUtils.copyProperties(owner, existing);
+        this.updateById(existing);
     }
 
     @Override

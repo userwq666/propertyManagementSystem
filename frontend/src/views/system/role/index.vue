@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="app-container">
     <div class="page-header">
       <h1>角色管理</h1>
@@ -15,9 +15,7 @@
             <el-button type="danger" :disabled="multiple" @click="handleBatchDelete" v-permission="['system:role:remove']">
               <delete /> 删除
             </el-button>
-            <el-button type="warning" @click="handleExport" v-permission="['system:role:export']">
-              <download /> 导出
-            </el-button>
+            
           </el-button-group>
         </div>
       </template>
@@ -194,7 +192,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
@@ -212,18 +210,17 @@ import {
   getRoleMenuTreeselect
 } from '@/api/system/role'
 import { usePermission } from '@/hooks/usePermission'
-import type { Role, RoleQueryParams, RoleFormData, MenuTreeNode, DeptTreeNode } from '@/types/system/role'
 
 const { hasPermission } = usePermission()
 
 // 响应式数据
 const loading = ref(false)
-const tableData = ref<Role[]>([])
+const tableData = ref([])
 const total = ref(0)
-const selectionIds = ref<number[]>([])
+const selectionIds = ref([])
 const multiple = ref(true)
 
-const queryParams = reactive<RoleQueryParams>({
+const queryParams = reactive({
   pageNum: 1,
   pageSize: 10,
   roleName: '',
@@ -235,7 +232,7 @@ const dialogVisible = ref(false)
 const dialogTitle = ref('新增角色')
 const isAdd = ref(true)
 
-const form = reactive<RoleFormData>({
+const form = reactive({
   roleId: undefined,
   roleName: '',
   roleKey: '',
@@ -257,7 +254,7 @@ const rules = reactive({
 })
 
 // 菜单树
-const menuTreeData = ref<MenuTreeNode[]>([])
+const menuTreeData = ref([])
 const menuTreeProps = ref({
   label: 'menuName',
   value: 'menuId',
@@ -265,7 +262,7 @@ const menuTreeProps = ref({
 })
 
 // 部门树
-const deptTreeData = ref<DeptTreeNode[]>([])
+const deptTreeData = ref([])
 const deptTreeProps = ref({
   label: 'deptName',
   value: 'deptId',
@@ -277,10 +274,10 @@ const assignPermDialogVisible = ref(false)
 const assignPermForm = reactive({
   roleId: 0,
   roleName: '',
-  menuIds: [] as number[]
+  menuIds: []
 })
 
-const assignMenuTreeData = ref<MenuTreeNode[]>([])
+const assignMenuTreeData = ref([])
 
 const formRef = ref()
 const assignPermFormRef = ref()
@@ -315,7 +312,7 @@ const resetQuery = () => {
 }
 
 // 表格选择
-const handleSelectionChange = (selection: Role[]) => {
+const handleSelectionChange = (selection) => {
   selectionIds.value = selection.map(item => item.roleId)
   multiple.value = !selection.length
 }
@@ -351,7 +348,7 @@ const handleAdd = async () => {
 }
 
 // 编辑
-const handleUpdate = async (row: Role) => {
+const handleUpdate = async (row) => {
   isAdd.value = false
   dialogTitle.value = '修改角色'
   resetForm()
@@ -375,7 +372,7 @@ const handleUpdate = async (row: Role) => {
 }
 
 // 删除
-const handleDelete = (row: Role) => {
+const handleDelete = (row) => {
   const roleIds = row.roleId ? row.roleId : selectionIds.value.join(',')
   ElMessageBox.confirm(`是否确认删除角色ID为"${roleIds}"的数据项?`, '警告', {
     confirmButtonText: '确定',
@@ -398,11 +395,11 @@ const handleBatchDelete = () => {
     ElMessage.warning('请选择要删除的角色')
     return
   }
-  handleDelete({ roleId: selectionIds.value.join(',') } as Role)
+  handleDelete({ roleId: selectionIds.value.join(',') })
 }
 
 // 分配权限
-const handleAssignPerm = async (row: Role) => {
+const handleAssignPerm = async (row) => {
   assignPermForm.roleId = row.roleId
   assignPermForm.roleName = row.roleName
   assignPermForm.menuIds = []
@@ -441,7 +438,7 @@ const handleExport = async () => {
 }
 
 // 关闭弹窗
-const closeDialog = (done: () => void) => {
+const closeDialog = (done) => {
   if (formRef.value) {
     formRef.value.resetFields()
   }

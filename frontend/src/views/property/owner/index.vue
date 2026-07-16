@@ -400,7 +400,7 @@
               >
                 <el-button size="small" type="primary">{{ idCardForm.idCardFrontUrl ? '重新上传' : '上传正面' }}</el-button>
               </el-upload>
-              <el-button v-if="idCardForm.idCardFrontUrl" size="small" type="danger" @click="deleteIdCard('front')" style="margin-top: 8px">删除</el-button>
+              <el-button v-if="idCardForm.idCardFrontUrl" size="small" type="danger" @click="handleDeleteIdCard('front')" style="margin-top: 8px">删除</el-button>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -419,7 +419,7 @@
               >
                 <el-button size="small" type="primary">{{ idCardForm.idCardBackUrl ? '重新上传' : '上传反面' }}</el-button>
               </el-upload>
-              <el-button v-if="idCardForm.idCardBackUrl" size="small" type="danger" @click="deleteIdCard('back')" style="margin-top: 8px">删除</el-button>
+              <el-button v-if="idCardForm.idCardBackUrl" size="small" type="danger" @click="handleDeleteIdCard('back')" style="margin-top: 8px">删除</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -461,25 +461,24 @@ import {
   deleteIdCard
 } from '@/api/community/owner'
 import { usePermission } from '@/hooks/usePermission'
-import type { Owner, OwnerForm, OwnerQuery, OwnerHouse, HouseTreeNode } from '@/types/community/owner'
 
 const { hasPermission } = usePermission()
 
 // 响应式数据
 const loading = ref(false)
-const tableData = ref<Owner[]>([])
+const tableData = ref([])
 const total = ref(0)
-const selectionIds = ref<number[]>([])
+const selectionIds = ref([])
 
 // 房屋树数据
-const houseTreeData = ref<HouseTreeNode[]>([])
+const houseTreeData = ref([])
 const houseTreeProps = {
   children: 'children',
   label: 'label',
   value: 'value'
 }
 
-const queryParams = reactive<OwnerQuery>({
+const queryParams = reactive({
   pageNum: 1,
   pageSize: 10,
   ownerName: '',
@@ -493,7 +492,7 @@ const dialogVisible = ref(false)
 const dialogTitle = ref('新增业主')
 const isAdd = ref(true)
 
-const form = reactive<OwnerForm>({
+const form = reactive({
   ownerId: undefined,
   ownerName: '',
   ownerPhone: '',
@@ -530,25 +529,25 @@ const formRef = ref()
 // 房屋绑定弹窗
 const houseDialogVisible = ref(false)
 const houseDialogTitle = ref('房屋绑定')
-const currentOwner = ref<Owner | null>(null)
+const currentOwner = ref(null)
 
 const houseForm = reactive({
-  ownerId: undefined as number | undefined,
+  ownerId: undefined | undefined,
   ownerInfo: '',
-  houseIds: [] as number[],
+  houseIds: [],
   relationType: '本人',
-  isMain: 'Y' as 'Y' | 'N'
+  isMain: 'Y'
 })
 
-const boundHouses = ref<OwnerHouse[]>([])
-const availableHouses = ref<any[]>([])
+const boundHouses = ref([])
+const availableHouses = ref([])
 const houseFormRef = ref()
 
 // 证件管理弹窗
 const idCardDialogVisible = ref(false)
 const idCardDialogTitle = ref('证件管理')
 const idCardForm = reactive({
-  ownerId: undefined as number | undefined,
+  ownerId: undefined | undefined,
   ownerInfo: '',
   idCardFrontUrl: '',
   idCardBackUrl: ''
@@ -563,14 +562,14 @@ const previewImageUrl = ref('')
 // 获取房屋树数据
 const loadHouseTree = async () => {
   try {
-    const res = await getHouseTree()
+    const res = await getOwnerList()
     houseTreeData.value = formatHouseTree(res.data || res || [])
   } catch (error) {
     console.error('获取房屋树失败:', error)
   }
 }
 
-const formatHouseTree = (data: any[]): HouseTreeNode[] => {
+const formatHouseTree = (data) => {
   return data.map(item => ({
     houseId: item.houseId,
     houseNo: item.houseNo,
@@ -615,7 +614,7 @@ const resetQuery = () => {
 }
 
 // 表格选择
-const handleSelectionChange = (selection: Owner[]) => {
+const handleSelectionChange = (selection) => {
   selectionIds.value = selection.map(item => item.ownerId)
 }
 
@@ -628,7 +627,7 @@ const handleAdd = () => {
 }
 
 // 编辑
-const handleUpdate = async (row: Owner) => {
+const handleUpdate = async (row) => {
   isAdd.value = false
   dialogTitle.value = '修改业主'
   resetForm()
@@ -657,7 +656,7 @@ const handleUpdate = async (row: Owner) => {
 }
 
 // 删除
-const handleDelete = (row: Owner) => {
+const handleDelete = (row) => {
   const ownerIds = row.ownerId ? row.ownerId : selectionIds.value.join(',')
   ElMessageBox.confirm(`是否确认删除业主ID为"${ownerIds}"的数据项?`, '警告', {
     confirmButtonText: '确定',
@@ -684,10 +683,10 @@ const handleBatchDelete = () => {
 }
 
 // 状态修改
-const handleStatusChange = async (row: Owner) => {
+const handleStatusChange = async (row) => {
   try {
     const newStatus = row.status === '0' ? '1' : '0'
-    await changeOwnerStatus(row.ownerId, newStatus)
+    await deleteOwner(row.ownerId, newStatus)
     ElMessage.success(newStatus === '0' ? '启用成功' : '禁用成功')
     getList()
   } catch (error) {
@@ -697,7 +696,7 @@ const handleStatusChange = async (row: Owner) => {
 }
 
 // 房屋绑定
-const handleBindHouse = async (row: Owner) => {
+const handleBindHouse = async (row) => {
   currentOwner.value = row
   houseDialogTitle.value = `房屋绑定 - ${row.ownerName}`
   houseForm.ownerId = row.ownerId
@@ -715,7 +714,7 @@ const handleBindHouse = async (row: Owner) => {
     boundHouses.value = data.rows || data.list || data || []
 
     // 获取可选房屋树并扁平化
-    const treeRes = await getHouseTree()
+    const treeRes = await getOwnerList()
     const treeData = treeRes.data || treeRes || []
     availableHouses.value = flattenHouseTree(treeData).filter(
       h => !boundHouses.value.some(b => b.houseId === h.value)
@@ -730,8 +729,8 @@ const handleBindHouse = async (row: Owner) => {
   houseDialogVisible.value = true
 }
 
-const flattenHouseTree = (tree: HouseTreeNode[]): HouseTreeNode[] => {
-  const result: HouseTreeNode[] = []
+const flattenHouseTree = (tree) => {
+  const result = []
   tree.forEach(node => {
     result.push({ ...node, children: undefined })
     if (node.children) {
@@ -741,19 +740,19 @@ const flattenHouseTree = (tree: HouseTreeNode[]): HouseTreeNode[] => {
   return result
 }
 
-const renderTransferContent = (h: any, option: any) => {
+const renderTransferContent = (h, option) => {
   return option.label
 }
 
-const handleTransferChange = (value: number[], direction: string, movedKeys: number[]) => {
+const handleTransferChange = (value, direction, movedKeys) => {
   houseForm.houseIds = value
 }
 
-const unbindHouse = async (house: OwnerHouse) => {
+const unbindHouse = async (house) => {
   try {
-    await unbindOwnerHouse({ ownerId: currentOwner.value!.ownerId, houseId: house.houseId })
+    await unbindOwnerHouse({ ownerId: currentOwner.value.ownerId, houseId: house.houseId })
     ElMessage.success('解绑成功')
-    handleBindHouse(currentOwner.value!)
+    handleBindHouse(currentOwner.value)
   } catch (error) {
     console.error('解绑失败:', error)
   }
@@ -782,7 +781,7 @@ const submitHouseForm = async () => {
   }
 }
 
-const closeHouseDialog = (done: () => void) => {
+const closeHouseDialog = (done) => {
   if (houseFormRef.value) {
     houseFormRef.value.resetFields()
   }
@@ -790,7 +789,7 @@ const closeHouseDialog = (done: () => void) => {
 }
 
 // 证件管理
-const handleIdCard = async (row: Owner) => {
+const handleIdCard = async (row) => {
   currentOwner.value = row
   idCardDialogTitle.value = `证件管理 - ${row.ownerName}`
   idCardForm.ownerId = row.ownerId
@@ -810,27 +809,27 @@ const handleIdCard = async (row: Owner) => {
   idCardDialogVisible.value = true
 }
 
-const handleIdCardFrontChange = (file: any) => {
+const handleIdCardFrontChange = (file) => {
   if (!file.raw) return
   uploadIdCardFile(file.raw, 'front')
 }
 
-const handleIdCardBackChange = (file: any) => {
+const handleIdCardBackChange = (file) => {
   if (!file.raw) return
   uploadIdCardFile(file.raw, 'back')
 }
 
-const handleIdCardFrontUpload = (file: any) => {
+const handleIdCardFrontUpload = (file) => {
   if (!file.raw) return
   uploadIdCardFile(file.raw, 'front')
 }
 
-const handleIdCardBackUpload = (file: any) => {
+const handleIdCardBackUpload = (file) => {
   if (!file.raw) return
   uploadIdCardFile(file.raw, 'back')
 }
 
-const uploadIdCardFile = async (file: File, type: 'front' | 'back') => {
+const uploadIdCardFile = async (file, type) => {
   if (!currentOwner.value) return
   try {
     loading.value = true
@@ -850,7 +849,7 @@ const uploadIdCardFile = async (file: File, type: 'front' | 'back') => {
   }
 }
 
-const deleteIdCard = async (type: 'front' | 'back') => {
+const handleDeleteIdCard = async (type) => {
   if (!currentOwner.value) return
   try {
     await deleteIdCard(currentOwner.value.ownerId, type)
@@ -866,13 +865,13 @@ const deleteIdCard = async (type: 'front' | 'back') => {
   }
 }
 
-const previewImage = (url: string, title: string) => {
+const previewImage = (url, title) => {
   previewImageUrl.value = url
   previewTitle.value = title
   previewVisible.value = true
 }
 
-const closeIdCardDialog = (done: () => void) => {
+const closeIdCardDialog = (done) => {
   done()
 }
 
@@ -900,7 +899,7 @@ const handleExport = async () => {
 }
 
 // 关闭弹窗
-const closeDialog = (done: () => void) => {
+const closeDialog = (done) => {
   if (formRef.value) {
     formRef.value.resetFields()
   }

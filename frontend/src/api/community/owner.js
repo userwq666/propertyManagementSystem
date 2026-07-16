@@ -1,8 +1,8 @@
-import request from '@/utils/request'
+﻿import request from '@/utils/request'
 
 export function getOwnerList(params) {
   return request({
-    url: '/community/owner/list',
+    url: '/community/owner/page',
     method: 'get',
     params
   })
@@ -31,26 +31,10 @@ export function updateOwner(data) {
   })
 }
 
-export function deleteOwner(ownerIds) {
+export function deleteOwner(id) {
   return request({
-    url: `/community/owner/${ownerIds}`,
+    url: `/community/owner/${ownerId}`,
     method: 'delete'
-  })
-}
-
-export function changeOwnerStatus(ownerId, status) {
-  return request({
-    url: `/community/owner/${ownerId}/status/${status}`,
-    method: 'put'
-  })
-}
-
-export function exportOwner(params) {
-  return request({
-    url: '/community/owner/export',
-    method: 'get',
-    params,
-    responseType: 'blob'
   })
 }
 
@@ -78,13 +62,6 @@ export function unbindOwnerHouse(data) {
   })
 }
 
-export function getHouseTree() {
-  return request({
-    url: '/community/house/tree',
-    method: 'get'
-  })
-}
-
 export function uploadIdCard(file, ownerId, type) {
   const formData = new FormData()
   formData.append('file', file)
@@ -102,14 +79,14 @@ export function uploadIdCard(file, ownerId, type) {
 
 export function getIdCardInfo(ownerId) {
   return request({
-    url: `/community/owner/${ownerId}/idCard`,
+    url: \/community/owner/\/idCard\,
     method: 'get'
   })
 }
 
 export function deleteIdCard(ownerId, type) {
   return request({
-    url: `/community/owner/${ownerId}/idCard/${type}`,
+    url: \/community/owner/\/idCard/\\,
     method: 'delete'
   })
 }

@@ -1,4 +1,4 @@
-package com.lsy.propertymanagementsystem.config;
+﻿package com.lsy.propertymanagementsystem.config;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.baomidou.mybatisplus.extension.ddl.DdlScriptErrorHandler.PrintlnLogErrorHandler.log;
 
 @Slf4j
 @Component

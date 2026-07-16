@@ -440,7 +440,7 @@ const ownerFormRef = ref(null)
 // 获取楼栋树数据
 const loadBuildingTree = async () => {
   try {
-    const res = await getBuildingTree()
+    const res = await getHouseList({})
     buildingTreeData.value = res.data || res || []
   } catch (error) {
     console.error('获取楼栋树失败:', error)
@@ -550,7 +550,7 @@ const handleBatchDelete = () => {
 const handleStatusChange = async (row) => {
   try {
     const newStatus = row.status === '0' ? '1' : '0'
-    await changeHouseStatus(row.houseId, newStatus)
+    await deleteHouse(row.houseId, newStatus)
     ElMessage.success('修改状态成功')
     getList()
   } catch (error) {

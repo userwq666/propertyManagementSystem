@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="app-container">
     <div class="page-header">
       <h1>菜单管理</h1>
@@ -12,9 +12,7 @@
             <el-button type="primary" @click="handleAdd" v-permission="['system:menu:add']">
               <plus /> 新增
             </el-button>
-            <el-button type="success" @click="handleExport" v-permission="['system:menu:export']">
-              <download /> 导出
-            </el-button>
+            
             <el-button type="warning" @click="handleRefresh" v-permission="['system:menu:list']">
               <refresh /> 刷新
             </el-button>
@@ -245,7 +243,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
@@ -262,18 +260,17 @@ import {
   exportMenu
 } from '@/api/system/menu'
 import { usePermission } from '@/hooks/usePermission'
-import type { Menu, MenuQueryParams, MenuFormData, MenuTreeNode } from '@/types/system/menu'
 
 const { hasPermission } = usePermission()
 
 // 响应式数据
 const loading = ref(false)
-const tableData = ref<Menu[]>([])
+const tableData = ref([])
 const total = ref(0)
-const selectionIds = ref<number[]>([])
+const selectionIds = ref([])
 const multiple = ref(true)
 
-const queryParams = reactive<MenuQueryParams>({
+const queryParams = reactive({
   pageNum: 1,
   pageSize: 10,
   menuName: '',
@@ -285,7 +282,7 @@ const dialogVisible = ref(false)
 const dialogTitle = ref('新增菜单')
 const isAdd = ref(true)
 
-const form = reactive<MenuFormData>({
+const form = reactive({
   menuId: undefined,
   menuName: '',
   parentId: 0,
@@ -315,7 +312,7 @@ const rules = reactive({
 })
 
 // 父级菜单树
-const parentMenuTreeData = ref<MenuTreeNode[]>([])
+const parentMenuTreeData = ref([])
 const menuTreeProps = ref({
   label: 'menuName',
   value: 'menuId',
@@ -354,7 +351,7 @@ const resetQuery = () => {
 }
 
 // 表格选择
-const handleSelectionChange = (selection: Menu[]) => {
+const handleSelectionChange = (selection) => {
   selectionIds.value = selection.map(item => item.menuId)
   multiple.value = !selection.length
 }
@@ -370,8 +367,8 @@ const getParentMenuTree = async () => {
 }
 
 // 菜单类型标签类型
-const getMenuTypeTagType = (type: string) => {
-  const map: Record<string, string> = {
+const getMenuTypeTagType = (type) => {
+  const map = {
     M: 'primary',
     C: 'success',
     F: 'warning'
@@ -380,8 +377,8 @@ const getMenuTypeTagType = (type: string) => {
 }
 
 // 菜单类型标签文本
-const getMenuTypeLabel = (type: string) => {
-  const map: Record<string, string> = {
+const getMenuTypeLabel = (type) => {
+  const map = {
     M: '目录',
     C: '菜单',
     F: '按钮'
@@ -399,7 +396,7 @@ const handleAdd = async () => {
 }
 
 // 新增子菜单
-const handleAddChild = async (row: Menu) => {
+const handleAddChild = async (row) => {
   isAdd.value = true
   dialogTitle.value = '新增子菜单'
   resetForm()
@@ -409,7 +406,7 @@ const handleAddChild = async (row: Menu) => {
 }
 
 // 编辑
-const handleUpdate = async (row: Menu) => {
+const handleUpdate = async (row) => {
   isAdd.value = false
   dialogTitle.value = '修改菜单'
   resetForm()
@@ -426,8 +423,7 @@ const handleUpdate = async (row: Menu) => {
     form.query = data.query
     form.isFrame = data.isFrame
     form.isCache = data.isCache
-    form.menuType = data.menuType
-    form.visible = data.visible
+    form.menuType = data.menuform.visible = data.visible
     form.status = data.status
     form.perms = data.perms
     form.icon = data.icon
@@ -439,7 +435,7 @@ const handleUpdate = async (row: Menu) => {
 }
 
 // 删除
-const handleDelete = (row: Menu) => {
+const handleDelete = (row) => {
   const menuIds = row.menuId ? row.menuId : selectionIds.value.join(',')
   ElMessageBox.confirm(`是否确认删除菜单ID为"${menuIds}"的数据项?`, '警告', {
     confirmButtonText: '确定',
@@ -457,7 +453,7 @@ const handleDelete = (row: Menu) => {
 }
 
 // 切换状态
-const handleToggleStatus = async (row: Menu) => {
+const handleToggleStatus = async (row) => {
   const newStatus = row.status === '0' ? '1' : '0'
   try {
     await updateMenu({
@@ -510,7 +506,7 @@ const expandAll = () => {
 }
 
 // 关闭弹窗
-const closeDialog = (done: () => void) => {
+const closeDialog = (done) => {
   if (formRef.value) {
     formRef.value.resetFields()
   }

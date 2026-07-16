@@ -11,16 +11,7 @@
           <el-button-group>
             <el-button type="primary" @click="handleAdd" v-permission="['system:user:add']">
               <plus /> 新增
-            </el-button>
-            <el-button type="success" @click="handleExport" v-permission="['system:user:export']">
-              <download /> 导出
-            </el-button>
-            <el-button type="warning" @click="handleImport" v-permission="['system:user:import']">
-              <upload /> 导入
-            </el-button>
-            <el-button type="info" @click="downloadTemplate">
-              <document /> 下载模板
-            </el-button>
+            </el-button>
           </el-button-group>
         </div>
       </template>
@@ -38,19 +29,7 @@
             <el-option label="正常" value="0" />
             <el-option label="停用" value="1" />
           </el-select>
-        </el-form-item>
-        <el-form-item label="部门">
-          <el-tree-select
-            v-model="queryParams.deptId"
-            :props="deptTreeProps"
-            :data="deptTreeData"
-            placeholder="请选择部门"
-            style="width: 200px"
-            clearable
-            show-checkbox
-            check-strictly
-          />
-        </el-form-item>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleQuery">
             <search /> 查询
@@ -156,18 +135,7 @@
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" class="dialog-form">
         <el-form-item label="用户ID" prop="userId">
           <el-input v-model="form.userId" disabled placeholder="自动生成" />
-        </el-form-item>
-
-        <el-form-item label="部门" prop="deptId" :rules="[{ required: true, message: '请选择部门', trigger: 'change' }]">
-          <el-tree-select
-            v-model="form.deptId"
-            :props="deptTreeProps"
-            :data="deptTreeData"
-            placeholder="请选择部门"
-            style="width: 100%"
-            check-strictly
-          />
-        </el-form-item>
+        </el-form-item>
 
         <el-form-item label="用户名" prop="userName" :rules="[{ required: true, message: '请输入用户名', trigger: 'blur' }]">
           <el-input v-model="form.userName" :disabled="!isAdd" placeholder="请输入用户名" />
@@ -278,64 +246,12 @@
       </template>
     </el-dialog>
 
-    <!-- 导入弹窗 -->
-    <el-dialog
-      v-model="importDialogVisible"
-      title="导入用户"
-      width="500px"
-      :close-on-click-modal="false"
-      destroy-on-close
-    >
-      <el-form ref="importFormRef" :model="importForm" label-width="80px">
-        <el-form-item label="文件">
-          <el-upload
-            action="#"
-            :auto-upload="false"
-            :on-change="handleFileChange"
-            :limit="1"
-            :on-exceed="handleExceed"
-            accept=".xlsx,.xls"
-          >
-            <el-button type="primary">点击上传</el-button>
-            <template #tip>
-              <div class="el-upload__tip">只能上传 xlsx/xls 文件，且不超过 1 个文件</div>
-            </template>
-          </el-upload>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="default" @click="downloadTemplate">下载模板</el-button>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="importDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitImport" :loading="importLoading">导入</el-button>
-        </div>
-      </template>
-    </el-dialog>
+    
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick, computed, h } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import {
-  Plus, Download, Upload, Document, Search, Refresh, Edit, User, Lock, Delete,
-  ArrowRight, ArrowLeft, Check, Close, UserFilled, User as UserIcon
-} from '@element-plus/icons-vue'
-import {
-  getUserList,
-  addUser,
-  updateUser,
-  deleteUser,
-  resetPassword,
-  updateStatus,
-  getRoleList,
-  getDeptTree,
-  exportUser,
-  importUser,
-  getImportTemplate
-} from '@/api/system/user'
+import { getRoleList } from '@/api/system/user'
 import { usePermission } from '@/hooks/usePermission'
 
 const { hasPermission } = usePermission()
@@ -404,8 +320,7 @@ const sexOptions = [
   { value: '2', label: '未知' }
 ]
 
-// 部门树
-const deptTreeData = ref([])
+// 部门树
 const deptTreeProps = ref({
   label: 'deptName',
   value: 'deptId',
@@ -439,17 +354,11 @@ const assignRoleForm = reactive({
 })
 const roleOptions = ref([])
 
-// 导入弹窗
-const importDialogVisible = ref(false)
-const importLoading = ref(false)
-const importForm = reactive({
-  file: null
-})
+// 导入弹窗
 
 const formRef = ref(null)
 const resetPwdFormRef = ref(null)
-const assignRoleFormRef = ref(null)
-const importFormRef = ref(null)
+const assignRoleFormRef = ref(null)
 
 // 验证确认密码
 const validateConfirmPassword = (rule, value, callback) => {
@@ -516,7 +425,7 @@ const handleAdd = async () => {
   dialogTitle.value = '新增用户'
   resetForm()
   await getDeptTreeData()
-  await getRoleListData()
+  await getRoleList()
   dialogVisible.value = true
 }
 
@@ -526,7 +435,7 @@ const handleUpdate = async (row) => {
   dialogTitle.value = '修改用户'
   resetForm()
   await getDeptTreeData()
-  await getRoleListData()
+  await getRoleList()
   try {
     const res = await getUserInfo(row.userId)
     const data = res.data || res
@@ -588,7 +497,7 @@ const handleAssignRole = async (row) => {
   assignRoleForm.userId = row.userId
   assignRoleForm.userName = row.userName
   assignRoleForm.roleIds = row.roleIds || []
-  await getRoleListData()
+  await getRoleList()
   assignRoleDialogVisible.value = true
 }
 
@@ -601,95 +510,6 @@ const handleStatusChange = async (row) => {
   } catch (error) {
     console.error('修改状态失败:', error)
     getList()
-  }
-}
-
-// 导出
-const handleExport = async () => {
-  try {
-    loading.value = true
-    const res = await exportUser(queryParams)
-    const blob = new Blob([res], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `用户数据_${new Date().getTime()}.xlsx`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
-    ElMessage.success('导出成功')
-  } catch (error) {
-    console.error('导出失败:', error)
-    ElMessage.error('导出失败')
-  } finally {
-    loading.value = false
-  }
-}
-
-// 导入
-const handleImport = () => {
-  importDialogVisible.value = true
-}
-
-// 下载模板
-const downloadTemplate = async () => {
-  try {
-    const res = await getImportTemplate()
-    const blob = new Blob([res], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = '用户导入模板.xlsx'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
-  } catch (error) {
-    console.error('下载模板失败:', error)
-    ElMessage.error('下载模板失败')
-  }
-}
-
-// 文件变化
-const handleFileChange = (file) => {
-  importForm.file = file.raw
-}
-
-// 超过文件数量限制
-const handleExceed = () => {
-  ElMessage.warning('只能上传一个文件')
-}
-
-// 提交导入
-const submitImport = async () => {
-  if (!importForm.file) {
-    ElMessage.warning('请选择文件')
-    return
-  }
-  importLoading.value = true
-  try {
-    const formData = new FormData()
-    formData.append('file', importForm.file)
-    await importUser(formData)
-    ElMessage.success('导入成功')
-    importDialogVisible.value = false
-    importForm.file = null
-    getList()
-  } catch (error) {
-    console.error('导入失败:', error)
-  } finally {
-    importLoading.value = false
-  }
-}
-
-// 获取部门树
-const getDeptTreeData = async () => {
-  try {
-    const res = await getDeptTree({})
-    deptTreeData.value = res.data || res || []
-  } catch (error) {
-    console.error('获取部门树失败:', error)
   }
 }
 
@@ -788,7 +608,6 @@ const submitAssignRole = async () => {
 
 // 初始化
 onMounted(() => {
-  getDeptTreeData()
   getList()
 })
 </script>
