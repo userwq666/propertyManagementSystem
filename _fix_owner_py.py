@@ -1,4 +1,5 @@
-import request from '@/utils/request'
+﻿import os
+content = """import request from '@/utils/request'
 
 export function getOwnerList(params) {
   return request({
@@ -90,3 +91,7 @@ export function deleteIdCard(ownerId, type) {
     method: 'delete'
   })
 }
+"""
+with open("frontend/src/api/community/owner.js", "w", encoding="utf-8") as f:
+    f.write(content)
+print("done")

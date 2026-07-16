@@ -1,4 +1,5 @@
-import request from '@/utils/request'
+﻿with open("frontend/src/api/user.js", "w", encoding="utf-8") as f:
+    f.write("""import request from '@/utils/request'
 
 export function login(data) {
   return request({
@@ -35,3 +36,5 @@ export function getRouters() {
     method: 'get'
   })
 }
+""")
+print("done")

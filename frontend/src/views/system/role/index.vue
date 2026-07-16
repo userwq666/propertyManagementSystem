@@ -204,7 +204,6 @@ import {
   addRole,
   updateRole,
   deleteRole,
-  getMenuTree,
   getDeptTree,
   exportRole,
   getRoleMenuTreeselect
@@ -318,9 +317,9 @@ const handleSelectionChange = (selection) => {
 }
 
 // 获取菜单树
-const getMenuTreeData = async () => {
+const getRoleListData = async () => {
   try {
-    const res = await getMenuTree({})
+    const res = await getRoleList({})
     menuTreeData.value = res.data || res || []
   } catch (error) {
     console.error('获取菜单树失败:', error)
@@ -342,7 +341,7 @@ const handleAdd = async () => {
   isAdd.value = true
   dialogTitle.value = '新增角色'
   resetForm()
-  await getMenuTreeData()
+  await getRoleListData()
   await getDeptTreeData()
   dialogVisible.value = true
 }
@@ -352,7 +351,7 @@ const handleUpdate = async (row) => {
   isAdd.value = false
   dialogTitle.value = '修改角色'
   resetForm()
-  await getMenuTreeData()
+  await getRoleListData()
   await getDeptTreeData()
   try {
     const res = await getRoleInfo(row.roleId)

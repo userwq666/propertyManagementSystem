@@ -1,8 +1,9 @@
-package com.lsy.propertymanagementsystem.module.community.service.impl;
+﻿package com.lsy.propertymanagementsystem.module.community.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.lsy.propertymanagementsystem.common.exception.BusinessException;
 import com.lsy.propertymanagementsystem.module.community.domain.CommunityHouseDomain;
 import com.lsy.propertymanagementsystem.module.community.dto.CommunityHouseDTO;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityHouseMapper;
@@ -40,18 +41,17 @@ public class CommunityHouseServiceImpl extends ServiceImpl<CommunityHouseMapper,
     public void updateHouse(CommunityHouseDTO house) {
         CommunityHouseDomain existing = this.getById(house.getId());
         if (existing == null) {
-            throw new com.lsy.propertymanagementsystem.common.exception.BusinessException("房屋不存在");
+            throw new BusinessException("房屋不存在");
         }
         LambdaQueryWrapper<CommunityHouseDomain> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(CommunityHouseDomain::getRoomNo, house.getRoomNo());
         wrapper.eq(CommunityHouseDomain::getBuildingId, house.getBuildingId());
         wrapper.ne(CommunityHouseDomain::getId, house.getId());
         if (this.count(wrapper) > 0) {
-            throw new com.lsy.propertymanagementsystem.common.exception.BusinessException("同一楼栋下房间号已存在");
+            throw new BusinessException("同一楼栋下房间号已存在");
         }
-        CommunityHouseDomain domain = new CommunityHouseDomain();
-        BeanUtils.copyProperties(house, domain);
-        this.updateById(domain);
+        BeanUtils.copyProperties(house, existing);
+        this.updateById(existing);
     }
 
     @Override

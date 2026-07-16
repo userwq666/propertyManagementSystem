@@ -1,8 +1,9 @@
-package com.lsy.propertymanagementsystem.module.community.service.impl;
+﻿package com.lsy.propertymanagementsystem.module.community.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.lsy.propertymanagementsystem.common.exception.BusinessException;
 import com.lsy.propertymanagementsystem.module.community.domain.CommunityParkingDomain;
 import com.lsy.propertymanagementsystem.module.community.dto.CommunityParkingDTO;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityParkingMapper;
@@ -40,11 +41,10 @@ public class CommunityParkingServiceImpl extends ServiceImpl<CommunityParkingMap
     public void updateParking(CommunityParkingDTO parking) {
         CommunityParkingDomain existing = this.getById(parking.getId());
         if (existing == null) {
-            throw new com.lsy.propertymanagementsystem.common.exception.BusinessException("车位不存在");
+            throw new BusinessException("车位不存在");
         }
-        CommunityParkingDomain domain = new CommunityParkingDomain();
-        BeanUtils.copyProperties(parking, domain);
-        this.updateById(domain);
+        BeanUtils.copyProperties(parking, existing);
+        this.updateById(existing);
     }
 
     @Override
