@@ -52,9 +52,6 @@
             <el-button type="primary" @click="handleAdd" v-permission="['inspection:plan:add']">
               <plus /> 新增计划
             </el-button>
-            <el-button type="success" @click="handleExport" v-permission="['inspection:plan:export']">
-              <download /> 导出
-            </el-button>
             <el-button type="info" @click="handleRefresh">
               <refresh /> 刷新
             </el-button>

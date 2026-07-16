@@ -15,9 +15,6 @@
             <el-button type="danger" @click="handleBatchDelete" v-permission="['property:house:delete']">
               <Delete /> 批量删除
             </el-button>
-            <el-button type="success" @click="handleExport" v-permission="['property:house:export']">
-              <Download /> 导出
-            </el-button>
           </el-button-group>
         </div>
       </template>

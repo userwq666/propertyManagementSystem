@@ -2,10 +2,6 @@
   <div class="app-container">
     <page-header title="公告通知管理" :breadcrumbs="breadcrumbs">
       <template #actions>
-        <el-button type="primary" @click="handleExport" v-permission="'announcement:notice:export'">
-          <el-icon><Download /></el-icon>
-          导出
-        </el-button>
       </template>
     </page-header>
 
@@ -641,30 +637,6 @@ const handleUploadRemove = () => {
   noticeForm.attachmentUrl = ''
   noticeForm.attachmentName = ''
 }
-
-const handleExport = async () => {
-  try {
-    const params = { ...queryParams }
-    if (dateRange.value && dateRange.value.length === 2) {
-      params.beginTime = dateRange.value[0]
-      params.endTime = dateRange.value[1]
-    }
-    const res = await getNoticeList(params)
-    const blob = new Blob([res], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = '公告通知列表.xlsx'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
-    ElMessage.success('导出成功')
-  } catch (e) {
-    ElMessage.error('导出失败')
-  }
-}
-
 const handleResizeCharts = () => {
   readTrendChart?.resize()
 }

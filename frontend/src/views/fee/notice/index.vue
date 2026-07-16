@@ -15,9 +15,6 @@
           <el-button type="danger" @click="handleBatchDelete" v-permission="['fee:notice:delete']">
             <Delete /> 批量删除
           </el-button>
-          <el-button type="success" @click="handleExport" v-permission="['fee:notice:export']">
-            <Download /> 导出
-          </el-button>
           <el-button type="warning" @click="handleBatchSend" v-permission="['fee:notice:send']">
             <Promotion /> 批量发送
           </el-button>

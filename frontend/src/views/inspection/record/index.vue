@@ -40,9 +40,6 @@
             <el-button type="primary" @click="handleAdd" v-permission="['inspection:record:add']">
               <plus /> 新增记录
             </el-button>
-            <el-button type="success" @click="handleExport" v-permission="['inspection:record:export']">
-              <download /> 导出
-            </el-button>
             <el-button type="info" @click="handleRefresh">
               <refresh /> 刷新
             </el-button>
@@ -822,28 +819,6 @@ const handleDelete = (row) => {
       console.error('删除失败:', error)
     }
   }).catch(() => {})
-}
-
-const handleExport = async () => {
-  try {
-    loading.value = true
-    const res = await getInspectionRecordList(queryParams)
-    const blob = new Blob([res], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `巡检记录_${new Date().getTime()}.xlsx`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
-    ElMessage.success('导出成功')
-  } catch (error) {
-    console.error('导出失败:', error)
-    ElMessage.error('导出失败')
-  } finally {
-    loading.value = false
-  }
 }
 </script>
 

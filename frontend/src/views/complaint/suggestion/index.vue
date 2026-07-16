@@ -52,9 +52,6 @@
             <el-button type="primary" @click="handleAdd" v-permission="['complaint:suggestion:add']">
               <plus /> 新增
             </el-button>
-            <el-button type="success" @click="handleExport" v-permission="['complaint:suggestion:export']">
-              <download /> 导出
-            </el-button>
             <el-button type="info" @click="handleRefresh">
               <refresh /> 刷新
             </el-button>
@@ -866,18 +863,6 @@ const handleClose = (row) => {
       console.error('关闭失败:', error)
     }
   }).catch(() => {})
-}
-
-const handleExport = async () => {
-  try {
-    loading.value = true
-    // 导出已移除
-    ElMessage.success('导出成功')
-  } catch (error) {
-    console.error('导出失败:', error)
-  } finally {
-    loading.value = false
-  }
 }
 </script>
 
