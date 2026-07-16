@@ -1,12 +1,14 @@
-package com.lsy.propertymanagementsystem.module.statistics.service.impl;
+﻿package com.lsy.propertymanagementsystem.module.statistics.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityHouseMapper;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityOwnerMapper;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityParkingMapper;
 import com.lsy.propertymanagementsystem.module.fee.domain.FeeRecordDomain;
+import com.lsy.propertymanagementsystem.module.fee.enums.FeeRecordStatus;
 import com.lsy.propertymanagementsystem.module.fee.mapper.FeeRecordMapper;
 import com.lsy.propertymanagementsystem.module.repair.domain.RepairRecordDomain;
+import com.lsy.propertymanagementsystem.module.repair.enums.RepairStatus;
 import com.lsy.propertymanagementsystem.module.repair.mapper.RepairRecordMapper;
 import com.lsy.propertymanagementsystem.module.statistics.service.StatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -45,30 +46,30 @@ public class StatisticsServiceImpl implements StatisticsService {
         long parkingCount = parkingMapper.selectCount(new LambdaQueryWrapper<>());
 
         LambdaQueryWrapper<FeeRecordDomain> paidWrapper = new LambdaQueryWrapper<>();
-        paidWrapper.eq(FeeRecordDomain::getStatus, 2);
+        paidWrapper.eq(FeeRecordDomain::getStatus, FeeRecordStatus.PAID);
         List<FeeRecordDomain> paidRecords = feeRecordMapper.selectList(paidWrapper);
         BigDecimal totalPaid = paidRecords.stream()
                 .map(FeeRecordDomain::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         LambdaQueryWrapper<FeeRecordDomain> overdueWrapper = new LambdaQueryWrapper<>();
-        overdueWrapper.eq(FeeRecordDomain::getStatus, 3);
+        overdueWrapper.eq(FeeRecordDomain::getStatus, FeeRecordStatus.OVERDUE);
         List<FeeRecordDomain> overdueRecords = feeRecordMapper.selectList(overdueWrapper);
         BigDecimal totalOverdue = overdueRecords.stream()
                 .map(FeeRecordDomain::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         LambdaQueryWrapper<FeeRecordDomain> unpaidWrapper = new LambdaQueryWrapper<>();
-        unpaidWrapper.eq(FeeRecordDomain::getStatus, 0);
+        unpaidWrapper.eq(FeeRecordDomain::getStatus, FeeRecordStatus.UNPAID);
         List<FeeRecordDomain> unpaidRecords = feeRecordMapper.selectList(unpaidWrapper);
         BigDecimal totalUnpaid = unpaidRecords.stream()
                 .map(FeeRecordDomain::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         long repairPending = repairRecordMapper.selectCount(
-                new LambdaQueryWrapper<RepairRecordDomain>().eq(RepairRecordDomain::getStatus, 0));
+                new LambdaQueryWrapper<RepairRecordDomain>().eq(RepairRecordDomain::getStatus, RepairStatus.PENDING));
         long repairProcessing = repairRecordMapper.selectCount(
-                new LambdaQueryWrapper<RepairRecordDomain>().eq(RepairRecordDomain::getStatus, 1));
+                new LambdaQueryWrapper<RepairRecordDomain>().eq(RepairRecordDomain::getStatus, RepairStatus.PROCESSING));
 
         result.put("ownerCount", ownerCount);
         result.put("houseCount", houseCount);
@@ -89,7 +90,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         }
 
         LambdaQueryWrapper<FeeRecordDomain> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(FeeRecordDomain::getStatus, 2);
+        wrapper.eq(FeeRecordDomain::getStatus, FeeRecordStatus.PAID);
         List<FeeRecordDomain> records = feeRecordMapper.selectList(wrapper);
 
         Map<Integer, BigDecimal> monthlyData = new TreeMap<>();
@@ -118,7 +119,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Override
     public List<Map<String, Object>> getFeeByItem() {
         LambdaQueryWrapper<FeeRecordDomain> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(FeeRecordDomain::getStatus, 2);
+        wrapper.eq(FeeRecordDomain::getStatus, FeeRecordStatus.PAID);
         List<FeeRecordDomain> records = feeRecordMapper.selectList(wrapper);
 
         Map<Long, BigDecimal> itemMap = records.stream()
@@ -143,11 +144,11 @@ public class StatisticsServiceImpl implements StatisticsService {
         Map<String, Object> result = new HashMap<>();
         long total = repairRecordMapper.selectCount(new LambdaQueryWrapper<>());
         long pending = repairRecordMapper.selectCount(
-                new LambdaQueryWrapper<RepairRecordDomain>().eq(RepairRecordDomain::getStatus, 0));
+                new LambdaQueryWrapper<RepairRecordDomain>().eq(RepairRecordDomain::getStatus, RepairStatus.PENDING));
         long processing = repairRecordMapper.selectCount(
-                new LambdaQueryWrapper<RepairRecordDomain>().eq(RepairRecordDomain::getStatus, 1));
+                new LambdaQueryWrapper<RepairRecordDomain>().eq(RepairRecordDomain::getStatus, RepairStatus.PROCESSING));
         long completed = repairRecordMapper.selectCount(
-                new LambdaQueryWrapper<RepairRecordDomain>().eq(RepairRecordDomain::getStatus, 3));
+                new LambdaQueryWrapper<RepairRecordDomain>().eq(RepairRecordDomain::getStatus, RepairStatus.COMPLETED));
         result.put("total", total);
         result.put("pending", pending);
         result.put("processing", processing);

@@ -427,12 +427,7 @@ import {
   addNotice,
   updateNotice,
   deleteNotice,
-  sendNotice,
-  getSendDetail,
-  markReadStatus,
-  exportNotice,
   getChargeItemList,
-  getHouseTree,
   getOwnerList
 } from '@/api/fee/notice'
 import { usePermission } from '@/hooks/usePermission'
@@ -842,35 +837,7 @@ const handleMarkRead = async (row) => {
   }
 }
 
-// 导出
-const handleExport = async () => {
-  try {
-    loading.value = true
-    const params = { ...queryParams }
-    if (params.dateRange && params.dateRange.length === 2) {
-      params.beginTime = params.dateRange[0]
-      params.endTime = params.dateRange[1]
-    }
-    delete params.dateRange
 
-    const res = await getNoticeList(params)
-    const blob = new Blob([res], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `缴费通知数据_${new Date().getTime()}.xlsx`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
-    ElMessage.success('导出成功')
-  } catch (error) {
-    console.error('导出失败:', error)
-    ElMessage.error('导出失败')
-  } finally {
-    loading.value = false
-  }
-}
 
 // 关闭弹窗
 const closeDialog = (done) => {

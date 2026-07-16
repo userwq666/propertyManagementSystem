@@ -1,4 +1,4 @@
-package com.lsy.propertymanagementsystem.module.equipment.controller;
+﻿package com.lsy.propertymanagementsystem.module.equipment.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.common.result.Result;
@@ -8,6 +8,7 @@ import com.lsy.propertymanagementsystem.module.equipment.service.EquipmentMainte
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,6 +18,7 @@ public class EquipmentMaintenanceController {
     @Autowired
     private EquipmentMaintenanceService equipmentMaintenanceService;
 
+    @PreAuthorize("hasAuthority('equipment:maintenance:add')")
     @PostMapping
     public Result add(@Valid @RequestBody EquipmentMaintenanceDTO dto) {
         EquipmentMaintenanceDomain domain = new EquipmentMaintenanceDomain();
@@ -25,6 +27,7 @@ public class EquipmentMaintenanceController {
         return Result.success();
     }
 
+    @PreAuthorize("hasAuthority('equipment:maintenance:edit')")
     @PutMapping
     public Result update(@Valid @RequestBody EquipmentMaintenanceDTO dto) {
         EquipmentMaintenanceDomain domain = new EquipmentMaintenanceDomain();
@@ -33,18 +36,21 @@ public class EquipmentMaintenanceController {
         return Result.success();
     }
 
+    @PreAuthorize("hasAuthority('equipment:maintenance:delete')")
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Long id) {
         equipmentMaintenanceService.delete(id);
         return Result.success();
     }
 
+    @PreAuthorize("hasAuthority('equipment:maintenance:list')")
     @GetMapping("/{id}")
     public Result getById(@PathVariable Long id) {
         EquipmentMaintenanceDomain domain = equipmentMaintenanceService.getById(id);
         return Result.success(domain);
     }
 
+    @PreAuthorize("hasAuthority('equipment:maintenance:list')")
     @GetMapping("/page")
     public Result page(@RequestParam(defaultValue = "1") int pageNum,
                        @RequestParam(defaultValue = "10") int pageSize,
@@ -55,12 +61,14 @@ public class EquipmentMaintenanceController {
         return Result.success(page);
     }
 
+    @PreAuthorize("hasAuthority('equipment:maintenance:edit')")
     @PutMapping("/start/{id}")
     public Result startMaintenance(@PathVariable Long id) {
         equipmentMaintenanceService.startMaintenance(id);
         return Result.success();
     }
 
+    @PreAuthorize("hasAuthority('equipment:maintenance:edit')")
     @PutMapping("/complete/{id}")
     public Result completeMaintenance(@PathVariable Long id) {
         equipmentMaintenanceService.completeMaintenance(id);

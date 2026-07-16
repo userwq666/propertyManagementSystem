@@ -256,8 +256,6 @@ import {
   addMenu,
   updateMenu,
   deleteMenu,
-  getMenuTreeselect,
-  exportMenu
 } from '@/api/system/menu'
 import { usePermission } from '@/hooks/usePermission'
 
@@ -467,30 +465,7 @@ const handleToggleStatus = async (row) => {
   }
 }
 
-// 导出
-const handleExport = async () => {
-  try {
-    loading.value = true
-    const res = await exportMenu(queryParams)
-    const blob = new Blob([res], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `菜单数据_${new Date().getTime()}.xlsx`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
-    ElMessage.success('导出成功')
-  } catch (error) {
-    console.error('导出失败:', error)
-    ElMessage.error('导出失败')
-  } finally {
-    loading.value = false
-  }
-}
-
-// 刷新
+// 导出// 刷新
 const handleRefresh = () => {
   getList()
   ElMessage.success('刷新成功')

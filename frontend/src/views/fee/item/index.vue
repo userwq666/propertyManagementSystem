@@ -486,8 +486,6 @@ import {
   addChargeItem,
   updateChargeItem,
   deleteChargeItem,
-  changeChargeItemStatus,
-  exportChargeItem,
   getChargeStandardList
 } from '@/api/fee/item'
 import { usePermission } from '@/hooks/usePermission'
@@ -822,28 +820,7 @@ const handleViewStandardDetail = async (row) => {
   standardDetailVisible.value = true
 }
 
-// 导出
-const handleExport = async () => {
-  try {
-    loading.value = true
-    const res = await getChargeItemList(queryParams)
-    const blob = new Blob([res], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `收费项目数据_${new Date().getTime()}.xlsx`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
-    ElMessage.success('导出成功')
-  } catch (error) {
-    console.error('导出失败:', error)
-    ElMessage.error('导出失败')
-  } finally {
-    loading.value = false
-  }
-}
+
 
 // 关闭弹窗
 const closeDialog = (done) => {

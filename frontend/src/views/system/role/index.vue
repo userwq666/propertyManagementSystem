@@ -15,8 +15,7 @@
             <el-button type="danger" :disabled="multiple" @click="handleBatchDelete" v-permission="['system:role:remove']">
               <delete /> 删除
             </el-button>
-            
-          </el-button-group>
+                    </el-button-group>
         </div>
       </template>
 
@@ -204,10 +203,9 @@ import {
   addRole,
   updateRole,
   deleteRole,
-  getDeptTree,
-  exportRole,
-  getRoleMenuTreeselect
+  getRoleMenuIds
 } from '@/api/system/role'
+import { getMenuTree } from '@/api/system/menu'
 import { usePermission } from '@/hooks/usePermission'
 
 const { hasPermission } = usePermission()
@@ -317,22 +315,12 @@ const handleSelectionChange = (selection) => {
 }
 
 // 获取菜单树
-const getRoleListData = async () => {
+const getMenuTreeData = async () => {
   try {
-    const res = await getRoleList({})
+    const res = await getMenuTree({})
     menuTreeData.value = res.data || res || []
   } catch (error) {
     console.error('获取菜单树失败:', error)
-  }
-}
-
-// 获取部门树
-const getDeptTreeData = async () => {
-  try {
-    const res = await getDeptTree({})
-    deptTreeData.value = res.data || res || []
-  } catch (error) {
-    console.error('获取部门树失败:', error)
   }
 }
 
@@ -341,8 +329,7 @@ const handleAdd = async () => {
   isAdd.value = true
   dialogTitle.value = '新增角色'
   resetForm()
-  await getRoleListData()
-  await getDeptTreeData()
+  await getMenuTreeData()
   dialogVisible.value = true
 }
 
@@ -351,8 +338,7 @@ const handleUpdate = async (row) => {
   isAdd.value = false
   dialogTitle.value = '修改角色'
   resetForm()
-  await getRoleListData()
-  await getDeptTreeData()
+  await getMenuTreeData()
   try {
     const res = await getRoleInfo(row.roleId)
     const data = res.data || res
@@ -403,39 +389,17 @@ const handleAssignPerm = async (row) => {
   assignPermForm.roleName = row.roleName
   assignPermForm.menuIds = []
   try {
-    const res = await getRoleMenuTreeselect(row.roleId)
-    const data = res.data || res
-    assignMenuTreeData.value = data.menus || data.menuTree || []
-    assignPermForm.menuIds = data.checkedKeys || data.menuIds || []
+    const [menuRes, roleMenuRes] = await Promise.all([
+      getMenuTree({}),
+      getRoleMenuIds(row.roleId)
+    ])
+    assignMenuTreeData.value = menuRes.data || menuRes || []
+    assignPermForm.menuIds = roleMenuRes.data || roleMenuRes || []
     assignPermDialogVisible.value = true
   } catch (error) {
     console.error('获取角色菜单失败:', error)
   }
 }
-
-// 导出
-const handleExport = async () => {
-  try {
-    loading.value = true
-    const res = await exportRole(queryParams)
-    const blob = new Blob([res], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `角色数据_${new Date().getTime()}.xlsx`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
-    ElMessage.success('导出成功')
-  } catch (error) {
-    console.error('导出失败:', error)
-    ElMessage.error('导出失败')
-  } finally {
-    loading.value = false
-  }
-}
-
 // 关闭弹窗
 const closeDialog = (done) => {
   if (formRef.value) {

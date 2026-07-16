@@ -1,16 +1,4 @@
-﻿<template>
-  <div class="app-container">
-    <div class="page-header">
-      <h1>巡检记录管理</h1>
-    </div>
-
-    <!-- 统计卡片 -->
-    <el-row :gutter="20" class="mb-4">
-      <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-        <el-card shadow="never" class="stat-card">
-          <div class="stat-content">
-            <div class="stat-label">总记录数</div>
-            <div class="stat-value primary">{{ statistics.totalCount }}</div>
+</div>
           </div>
           <el-icon class="stat-icon primary"><document /></el-icon>
         </el-card>
@@ -416,13 +404,9 @@ import {
   getInspectionRecordInfo,
   addInspectionRecord,
   deleteInspectionRecord,
-  executeInspectionRecord,
-  handleAbnormal,
-  exportInspectionRecord,
   getInspectionRecordStatistics,
   getInspectionPlanOptions,
   getUserList,
-  uploadImage
 } from '@/api/inspection/record'
 
 const executeStatusOptions = ref(ExecuteStatusOptions)

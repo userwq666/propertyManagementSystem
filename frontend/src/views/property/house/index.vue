@@ -327,11 +327,8 @@ import {
   addHouse,
   updateHouse,
   deleteHouse,
-  changeHouseStatus,
-  exportHouse,
   bindHouseOwner,
   unbindHouseOwner,
-  getBuildingTree
 } from '@/api/community/house'
 import { useRouter, useRoute } from 'vue-router'
 import { usePermission } from '@/hooks/usePermission'
@@ -570,28 +567,7 @@ const handleBindOwner = (row) => {
   ownerDialogVisible.value = true
 }
 
-// 导出
-const handleExport = async () => {
-  try {
-    loading.value = true
-    const res = await exportHouse(queryParams)
-    const blob = new Blob([res], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `房屋数据_${new Date().getTime()}.xlsx`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
-    ElMessage.success('导出成功')
-  } catch (error) {
-    console.error('导出失败:', error)
-    ElMessage.error('导出失败')
-  } finally {
-    loading.value = false
-  }
-}
+
 
 // 关闭弹窗
 const closeDialog = (done) => {

@@ -577,16 +577,8 @@ import {
   addRepairOrder,
   updateRepairOrder,
   deleteRepairOrder,
-  cancelRepairOrder,
-  dispatchRepairOrder,
-  processRepairOrder,
-  finishRepairOrder,
-  replyEvaluate,
-  exportRepairOrder,
   getRepairStatistics,
-  getHouseTree,
   getRepairWorkerList,
-  uploadImage
 } from '@/api/repair/order'
 import { getBuildingList } from '@/api/community/building'
 import { usePermission } from '@/hooks/usePermission'
@@ -1281,33 +1273,7 @@ const submitCancelForm = async () => {
   }
 }
 
-// 导出
-const handleExport = async () => {
-  try {
-    loading.value = true
-    const params = { ...queryParams }
-    if (activeTab.value !== 'mine' && activeTab.value !== 'all') {
-      const tab = tabs.value.find(t => t.key === activeTab.value)
-      if (tab) params.status = tab.status
-    }
-    const res = await getRepairOrderList(params)
-    const blob = new Blob([res], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `报修工单_${new Date().getTime()}.xlsx`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
-    ElMessage.success('导出成功')
-  } catch (error) {
-    console.error('导出失败:', error)
-    ElMessage.error('导出失败')
-  } finally {
-    loading.value = false
-  }
-}
+
 </script>
 
 <style lang="scss" scoped>

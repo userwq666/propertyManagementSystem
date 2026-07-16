@@ -1,4 +1,4 @@
-package com.lsy.propertymanagementsystem.module.system.controller;
+﻿package com.lsy.propertymanagementsystem.module.system.controller;
 
 import com.lsy.propertymanagementsystem.common.result.Result;
 import com.lsy.propertymanagementsystem.module.system.dto.LoginRequest;
@@ -8,6 +8,7 @@ import com.lsy.propertymanagementsystem.module.system.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,6 +24,7 @@ public class AuthController {
         return Result.success(response);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/logout")
     public Result<Void> logout(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
@@ -33,6 +35,7 @@ public class AuthController {
         return Result.success();
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/me")
     public Result<UserResponse> getCurrentUser(HttpServletRequest request) {
         String token = request.getHeader("Authorization");

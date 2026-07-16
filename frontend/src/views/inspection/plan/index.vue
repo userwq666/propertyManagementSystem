@@ -431,12 +431,8 @@ import {
   addInspectionPlan,
   updateInspectionPlan,
   deleteInspectionPlan,
-  changeInspectionPlanStatus,
-  exportInspectionPlan,
   getInspectionPlanStatistics,
   getInspectionPlanRecords,
-  getBuildingTree,
-  getEquipmentTree,
   getUserList
 } from '@/api/inspection/plan'
 import { usePermission } from '@/hooks/usePermission'
@@ -848,29 +844,7 @@ const handleStatusChange = (row, status) => {
   }).catch(() => {})
 }
 
-// 导出
-const handleExport = async () => {
-  try {
-    loading.value = true
-    const params = { ...queryParams }
-    const res = await getInspectionPlanList(params)
-    const blob = new Blob([res], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `巡检计划_${new Date().getTime()}.xlsx`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
-    ElMessage.success('导出成功')
-  } catch (error) {
-    console.error('导出失败:', error)
-    ElMessage.error('导出失败')
-  } finally {
-    loading.value = false
-  }
-}
+
 </script>
 
 <style lang="scss" scoped>

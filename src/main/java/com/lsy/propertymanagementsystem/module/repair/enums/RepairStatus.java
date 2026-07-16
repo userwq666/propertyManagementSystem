@@ -1,4 +1,4 @@
-package com.lsy.propertymanagementsystem.module.repair.enums;
+﻿package com.lsy.propertymanagementsystem.module.repair.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;

@@ -37,3 +37,9 @@ export function deleteRole(id) {
     method: 'delete'
   })
 }
+export function getRoleMenuIds(roleId) {
+  return request({
+    url: `/system/role/${roleId}/menus`,
+    method: 'get'
+  })
+}

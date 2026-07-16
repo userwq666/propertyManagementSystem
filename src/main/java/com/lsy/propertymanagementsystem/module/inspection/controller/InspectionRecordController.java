@@ -1,4 +1,4 @@
-package com.lsy.propertymanagementsystem.module.inspection.controller;
+﻿package com.lsy.propertymanagementsystem.module.inspection.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.common.result.Result;
@@ -7,6 +7,7 @@ import com.lsy.propertymanagementsystem.module.inspection.dto.InspectionRecordDT
 import com.lsy.propertymanagementsystem.module.inspection.service.InspectionRecordService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,18 +17,28 @@ public class InspectionRecordController {
     @Autowired
     private InspectionRecordService inspectionRecordService;
 
+    @PreAuthorize("hasAuthority('inspection:record:add')")
     @PostMapping
     public Result add(@Valid @RequestBody InspectionRecordDTO record) {
         inspectionRecordService.addRecord(record);
         return Result.success();
     }
 
+    @PreAuthorize("hasAuthority('inspection:record:edit')")
     @PutMapping
     public Result update(@Valid @RequestBody InspectionRecordDTO record) {
         inspectionRecordService.updateRecord(record);
         return Result.success();
     }
 
+    @PreAuthorize("hasAuthority('inspection:record:list')")
+    @GetMapping("/{id}")
+    public Result getById(@PathVariable Long id) {
+        InspectionRecordDomain domain = inspectionRecordService.getRecordById(id);
+        return Result.success(domain);
+    }
+
+    @PreAuthorize("hasAuthority('inspection:record:list')")
     @GetMapping("/page")
     public Result page(@RequestParam(defaultValue = "1") int pageNum,
                        @RequestParam(defaultValue = "10") int pageSize,
@@ -35,11 +46,5 @@ public class InspectionRecordController {
                        @RequestParam(required = false) Long equipmentId) {
         Page<InspectionRecordDomain> page = inspectionRecordService.page(pageNum, pageSize, planId, equipmentId);
         return Result.success(page);
-    }
-
-    @GetMapping("/{id}")
-    public Result getRecordById(@PathVariable Long id) {
-        InspectionRecordDomain record = inspectionRecordService.getRecordById(id);
-        return Result.success(record);
     }
 }
