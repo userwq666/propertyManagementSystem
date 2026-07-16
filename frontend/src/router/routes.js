@@ -334,7 +334,8 @@ export const asyncRoutes = [
         meta: { title: '维保记录', icon: 'Setting', roles: ['admin', 'property'] }
       }
     ]
-  }  {
+  },
+  {
     path: '/profile',
     component: () => import('@/layout/index.vue'),
     redirect: '/profile/index',

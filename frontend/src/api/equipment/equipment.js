@@ -10,7 +10,7 @@ export function getEquipmentPage(params) {
 
 export function getEquipmentInfo(id) {
   return request({
-    url: \/equipment/\\,
+    url: '/equipment/' + id,
     method: 'get'
   })
 }
@@ -33,15 +33,15 @@ export function updateEquipment(data) {
 
 export function deleteEquipment(id) {
   return request({
-    url: \/equipment/\\,
+    url: '/equipment/' + id,
     method: 'delete'
   })
 }
 
-export function updateEquipmentStatus(data) {
+export function updateEquipmentStatus(id, status) {
   return request({
     url: '/equipment/status',
     method: 'put',
-    params: data
+    params: { id, status }
   })
 }

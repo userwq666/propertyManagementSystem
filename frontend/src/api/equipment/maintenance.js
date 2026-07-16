@@ -10,7 +10,7 @@ export function getMaintenancePage(params) {
 
 export function getMaintenanceInfo(id) {
   return request({
-    url: \/equipment/maintenance/\\,
+    url: '/equipment/maintenance/' + id,
     method: 'get'
   })
 }
@@ -33,21 +33,22 @@ export function updateMaintenance(data) {
 
 export function deleteMaintenance(id) {
   return request({
-    url: \/equipment/maintenance/\\,
+    url: '/equipment/maintenance/' + id,
     method: 'delete'
   })
 }
 
 export function startMaintenance(id) {
   return request({
-    url: \/equipment/maintenance/start/\\,
+    url: '/equipment/maintenance/start/' + id,
     method: 'put'
   })
 }
 
-export function completeMaintenance(id) {
+export function completeMaintenance(id, data) {
   return request({
-    url: \/equipment/maintenance/complete/\\,
-    method: 'put'
+    url: '/equipment/maintenance/complete/' + id,
+    method: 'put',
+    data
   })
 }
