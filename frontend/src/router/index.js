@@ -7,6 +7,26 @@ const router = createRouter({
   scrollBehavior: () => ({ left: 0, top: 0 })
 })
 
+import { getToken } from '@/utils/auth'
+
+const whiteList = ['/login', '/404', '/403']
+
+router.beforeEach((to, from, next) => {
+  if (getToken()) {
+    if (to.path === '/login') {
+      next({ path: '/dashboard' })
+    } else {
+      next()
+    }
+  } else {
+    if (whiteList.includes(to.path)) {
+      next()
+    } else {
+      next({ path: '/login' })
+    }
+  }
+})
+
 export const resetRouter = () => {
   router.getRoutes().forEach(route => {
     if (route.name !== 'Login' && route.name !== '404' && route.name !== '403') {
