@@ -307,34 +307,7 @@ export const asyncRoutes = [
       }
     ]
   },
-,
   {
-    path: '/equipment',
-    component: () => import('@/layout/index.vue'),
-    redirect: '/equipment/equipment',
-    name: 'Equipment',
-    meta: { title: '设备管理', icon: 'Tools', roles: ['admin', 'property'] },
-    children: [
-      {
-        path: 'category',
-        component: () => import('@/views/equipment/category/index.vue'),
-        name: 'EquipmentCategory',
-        meta: { title: '设备分类', icon: 'Collection', roles: ['admin', 'property'] }
-      },
-      {
-        path: 'equipment',
-        component: () => import('@/views/equipment/equipment/index.vue'),
-        name: 'EquipmentList',
-        meta: { title: '设备列表', icon: 'Monitor', roles: ['admin', 'property'] }
-      },
-      {
-        path: 'maintenance',
-        component: () => import('@/views/equipment/maintenance/index.vue'),
-        name: 'EquipmentMaintenance',
-        meta: { title: '维保记录', icon: 'Setting', roles: ['admin', 'property'] }
-      }
-    ]
-  }  {
     path: '/profile',
     component: () => import('@/layout/index.vue'),
     redirect: '/profile/index',

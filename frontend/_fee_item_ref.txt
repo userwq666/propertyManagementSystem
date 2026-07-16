@@ -1,0 +1,11 @@
+﻿python : Traceback (most recent call last):
+At line:2 char:71
++ ... \frontend"; python -c "c=open('src/views/fee/item/index.vue','r',enco ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "<string>", line 1, in <module>
+    c=open('src/views/fee/item/index.vue','r',encoding='utf-8').read(); print(c)
+                                                                        ~~~~~^^^
+UnicodeEncodeError: 'gbk' codec can't encode character '\ufeff' in position 0: illegal multibyte sequence
