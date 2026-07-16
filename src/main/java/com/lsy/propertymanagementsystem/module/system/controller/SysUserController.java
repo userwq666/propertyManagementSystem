@@ -1,4 +1,4 @@
-﻿package com.lsy.propertymanagementsystem.module.system.controller;
+package com.lsy.propertymanagementsystem.module.system.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.lsy.propertymanagementsystem.common.result.Result;

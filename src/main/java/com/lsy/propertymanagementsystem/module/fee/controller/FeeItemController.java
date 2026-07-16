@@ -1,4 +1,4 @@
-﻿package com.lsy.propertymanagementsystem.module.fee.controller;
+package com.lsy.propertymanagementsystem.module.fee.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.common.result.Result;

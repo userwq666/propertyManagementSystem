@@ -1,6 +1,7 @@
 package com.lsy.propertymanagementsystem.module.equipment.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lsy.propertymanagementsystem.common.exception.BusinessException;
 import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentCategoryDomain;
@@ -53,5 +54,10 @@ public class EquipmentCategoryServiceImpl extends ServiceImpl<EquipmentCategoryM
             throw new BusinessException("该分类下存在设备，不允许删除");
         }
         this.removeById(id);
+    }
+
+    @Override
+    public Page<EquipmentCategoryDomain> page(int pageNum, int pageSize) {
+        return super.page(new Page<>(pageNum, pageSize));
     }
 }

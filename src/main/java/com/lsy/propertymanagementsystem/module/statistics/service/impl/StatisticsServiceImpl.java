@@ -1,4 +1,4 @@
-﻿package com.lsy.propertymanagementsystem.module.statistics.service.impl;
+package com.lsy.propertymanagementsystem.module.statistics.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityHouseMapper;

@@ -1,4 +1,4 @@
-﻿package com.lsy.propertymanagementsystem.config;
+package com.lsy.propertymanagementsystem.config;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

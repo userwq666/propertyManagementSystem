@@ -1,4 +1,4 @@
-﻿package com.lsy.propertymanagementsystem.interceptor;
+package com.lsy.propertymanagementsystem.interceptor;
 
 import com.lsy.propertymanagementsystem.common.utils.JwtUtils;
 import io.jsonwebtoken.Claims;

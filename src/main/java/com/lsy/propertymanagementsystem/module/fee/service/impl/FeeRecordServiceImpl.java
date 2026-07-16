@@ -1,4 +1,4 @@
-﻿package com.lsy.propertymanagementsystem.module.fee.service.impl;
+package com.lsy.propertymanagementsystem.module.fee.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

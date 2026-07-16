@@ -1,4 +1,4 @@
-﻿package com.lsy.propertymanagementsystem.module.system.mapper;
+package com.lsy.propertymanagementsystem.module.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.lsy.propertymanagementsystem.module.system.domain.SysOperLogDomain;

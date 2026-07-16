@@ -1,4 +1,4 @@
-﻿package com.lsy.propertymanagementsystem.module.fee.domain;
+package com.lsy.propertymanagementsystem.module.fee.domain;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;

@@ -1,4 +1,4 @@
-﻿package com.lsy.propertymanagementsystem.module.system.controller;
+package com.lsy.propertymanagementsystem.module.system.controller;
 
 import com.lsy.propertymanagementsystem.common.result.Result;
 import com.lsy.propertymanagementsystem.module.system.dto.MenuRequest;

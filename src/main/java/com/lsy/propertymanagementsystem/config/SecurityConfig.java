@@ -1,4 +1,4 @@
-﻿package com.lsy.propertymanagementsystem.config;
+package com.lsy.propertymanagementsystem.config;
 
 import java.util.Arrays;
 

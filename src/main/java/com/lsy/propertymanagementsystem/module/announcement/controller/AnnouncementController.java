@@ -1,4 +1,4 @@
-﻿package com.lsy.propertymanagementsystem.module.announcement.controller;
+package com.lsy.propertymanagementsystem.module.announcement.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.common.result.Result;

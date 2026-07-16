@@ -1,4 +1,4 @@
-﻿package com.lsy.propertymanagementsystem.module.complaint.controller;
+package com.lsy.propertymanagementsystem.module.complaint.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.common.result.Result;
