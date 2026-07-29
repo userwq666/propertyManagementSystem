@@ -3,12 +3,13 @@ package com.lsy.propertymanagementsystem.module.inspection.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.module.inspection.domain.InspectionRecordDomain;
 import com.lsy.propertymanagementsystem.module.inspection.dto.InspectionRecordDTO;
+import com.lsy.propertymanagementsystem.module.inspection.dto.InspectionRecordVO;
 
 public interface InspectionRecordService {
-    Page<InspectionRecordDomain> page(int pageNum, int pageSize, Long planId, Long equipmentId);
+    Page<InspectionRecordVO> page(int pageNum, int pageSize, Long planId, Long equipmentId);
     void addRecord(InspectionRecordDTO dto);
     void addRecordDomain(InspectionRecordDomain record);
-    InspectionRecordDomain getRecordById(Long id);
+    InspectionRecordVO getRecordById(Long id);
     void updateRecord(InspectionRecordDTO dto);
     void deleteRecord(Long id);
     long countByPlanId(Long planId);

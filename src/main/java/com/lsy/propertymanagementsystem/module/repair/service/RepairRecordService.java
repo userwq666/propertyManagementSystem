@@ -1,12 +1,12 @@
 package com.lsy.propertymanagementsystem.module.repair.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.lsy.propertymanagementsystem.module.repair.domain.RepairRecordDomain;
 import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordDTO;
+import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordVO;
 
 public interface RepairRecordService {
-    Page<RepairRecordDomain> page(int pageNum, int pageSize, Long ownerId, Integer status);
-    RepairRecordDomain getById(Long id);
+    Page<RepairRecordVO> page(int pageNum, int pageSize, Long ownerId, Integer status);
+    RepairRecordVO getById(Long id);
     void addRepair(RepairRecordDTO domain);
     void updateRepair(RepairRecordDTO domain);
     void deleteRepair(Long id);

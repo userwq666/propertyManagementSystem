@@ -1,13 +1,14 @@
 package com.lsy.propertymanagementsystem.module.fee.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.lsy.propertymanagementsystem.module.fee.domain.FeeNoticeDomain;
+import com.lsy.propertymanagementsystem.module.fee.dto.FeeNoticeDTO;
+import com.lsy.propertymanagementsystem.module.fee.dto.FeeNoticeVO;
 
 public interface FeeNoticeService {
-    void add(FeeNoticeDomain domain);
-    void update(FeeNoticeDomain domain);
+    void add(FeeNoticeDTO dto);
+    void update(FeeNoticeDTO dto);
     void delete(Long id);
-    FeeNoticeDomain getById(Long id);
-    Page<FeeNoticeDomain> page(int pageNum, int pageSize, Integer noticeType, Integer sendStatus);
+    FeeNoticeVO getById(Long id);
+    Page<FeeNoticeVO> page(int pageNum, int pageSize, Integer noticeType, Integer sendStatus);
     void publish(Long id);
 }

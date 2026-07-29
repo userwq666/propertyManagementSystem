@@ -2,13 +2,20 @@ package com.lsy.propertymanagementsystem.module.fee.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.lsy.propertymanagementsystem.common.exception.BusinessException;
+import com.lsy.propertymanagementsystem.common.utils.SecurityUtils;
+import com.lsy.propertymanagementsystem.module.community.domain.CommunityHouseDomain;
+import com.lsy.propertymanagementsystem.module.community.domain.CommunityOwnerDomain;
+import com.lsy.propertymanagementsystem.module.community.mapper.CommunityHouseMapper;
+import com.lsy.propertymanagementsystem.module.community.mapper.CommunityOwnerMapper;
+import com.lsy.propertymanagementsystem.module.fee.domain.FeeItemDomain;
 import com.lsy.propertymanagementsystem.module.fee.domain.FeeRecordDomain;
 import com.lsy.propertymanagementsystem.module.fee.dto.FeeRecordDTO;
+import com.lsy.propertymanagementsystem.module.fee.dto.FeeRecordVO;
 import com.lsy.propertymanagementsystem.module.fee.enums.FeeRecordStatus;
 import com.lsy.propertymanagementsystem.module.fee.enums.PayType;
 import com.lsy.propertymanagementsystem.module.fee.mapper.FeeRecordMapper;
 import com.lsy.propertymanagementsystem.module.fee.service.FeeItemService;
-import com.lsy.propertymanagementsystem.common.utils.SecurityUtils;
 import com.lsy.propertymanagementsystem.module.fee.service.FeeRecordService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +27,9 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class FeeRecordServiceImpl implements FeeRecordService {
@@ -30,12 +40,18 @@ public class FeeRecordServiceImpl implements FeeRecordService {
     @Autowired
     private FeeItemService feeItemService;
 
+    @Autowired
+    private CommunityOwnerMapper communityOwnerMapper;
+
+    @Autowired
+    private CommunityHouseMapper communityHouseMapper;
+
     @Override
     @Transactional
     public void generateBills(List<FeeRecordDTO> domains) {
         for (FeeRecordDTO dto : domains) {
             if (feeItemService.getById(dto.getItemId()) == null) {
-                throw new com.lsy.propertymanagementsystem.common.exception.BusinessException("收费项目不存在，itemId=" + dto.getItemId());
+                throw new BusinessException("收费项目不存在，itemId=" + dto.getItemId());
             }
             FeeRecordDomain domain = new FeeRecordDomain();
             BeanUtils.copyProperties(dto, domain);
@@ -44,12 +60,13 @@ public class FeeRecordServiceImpl implements FeeRecordService {
     }
 
     @Override
-    public FeeRecordDomain getById(Long id) {
-        return feeRecordMapper.selectById(id);
+    public FeeRecordVO getById(Long id) {
+        FeeRecordDomain domain = feeRecordMapper.selectById(id);
+        return convertToVO(domain);
     }
 
     @Override
-    public Page<FeeRecordDomain> page(int pageNum, int pageSize, Long ownerId, Long houseId, Integer status) {
+    public Page<FeeRecordVO> page(int pageNum, int pageSize, Long ownerId, Long houseId, Integer status) {
         LambdaQueryWrapper<FeeRecordDomain> wrapper = new LambdaQueryWrapper<>();
         if (ownerId != null) {
             wrapper.eq(FeeRecordDomain::getOwnerId, SecurityUtils.isOwner() ? SecurityUtils.getCurrentUserId() : ownerId);
@@ -61,7 +78,11 @@ public class FeeRecordServiceImpl implements FeeRecordService {
             wrapper.eq(FeeRecordDomain::getStatus, FeeRecordStatus.of(status));
         }
         wrapper.orderByDesc(FeeRecordDomain::getCreateTime);
-        return feeRecordMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
+        Page<FeeRecordDomain> domainPage = feeRecordMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
+        Page<FeeRecordVO> voPage = new Page<>(pageNum, pageSize);
+        voPage.setTotal(domainPage.getTotal());
+        voPage.setRecords(convertToVOList(domainPage.getRecords()));
+        return voPage;
     }
 
     @Override
@@ -69,10 +90,10 @@ public class FeeRecordServiceImpl implements FeeRecordService {
     public void confirmPay(Long id, String payWay) {
         FeeRecordDomain domain = feeRecordMapper.selectById(id);
         if (domain == null) {
-            throw new com.lsy.propertymanagementsystem.common.exception.BusinessException("账单不存在");
+            throw new BusinessException("账单不存在");
         }
         if (domain.getStatus() == FeeRecordStatus.PAID) {
-            throw new com.lsy.propertymanagementsystem.common.exception.BusinessException("账单已支付");
+            throw new BusinessException("账单已支付");
         }
         Integer payType = 1;
         if (payWay != null) {
@@ -134,5 +155,60 @@ public class FeeRecordServiceImpl implements FeeRecordService {
             record.markOverdue();
             feeRecordMapper.updateById(record);
         }
+    }
+
+    private List<FeeRecordVO> convertToVOList(List<FeeRecordDomain> domains) {
+        if (domains == null || domains.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+
+        Set<Long> ownerIds = domains.stream().map(FeeRecordDomain::getOwnerId).collect(Collectors.toSet());
+        Set<Long> houseIds = domains.stream().map(FeeRecordDomain::getHouseId).collect(Collectors.toSet());
+        Set<Long> itemIds = domains.stream().map(FeeRecordDomain::getItemId).collect(Collectors.toSet());
+
+        Map<Long, String> ownerNameMap = java.util.Collections.emptyMap();
+        if (!ownerIds.isEmpty()) {
+            List<CommunityOwnerDomain> owners = communityOwnerMapper.selectBatchIds(ownerIds);
+            ownerNameMap = owners.stream().collect(Collectors.toMap(CommunityOwnerDomain::getId, CommunityOwnerDomain::getName));
+        }
+
+        Map<Long, String> houseRoomMap = java.util.Collections.emptyMap();
+        if (!houseIds.isEmpty()) {
+            List<CommunityHouseDomain> houses = communityHouseMapper.selectBatchIds(houseIds);
+            houseRoomMap = houses.stream().collect(Collectors.toMap(CommunityHouseDomain::getId, CommunityHouseDomain::getRoomNo));
+        }
+
+        Map<Long, String> itemNameMap = java.util.Collections.emptyMap();
+        if (!itemIds.isEmpty()) {
+            FeeItemService itemSvc = feeItemService;
+            if (itemSvc instanceof com.baomidou.mybatisplus.extension.service.IService) {
+                List<FeeItemDomain> items = ((com.baomidou.mybatisplus.extension.service.IService<FeeItemDomain>) itemSvc).listByIds(itemIds);
+                itemNameMap = items.stream().collect(Collectors.toMap(FeeItemDomain::getId, FeeItemDomain::getItemName));
+            }
+        }
+
+        return domains.stream().map(domain -> convertToVO(domain, ownerNameMap, houseRoomMap, itemNameMap)).collect(Collectors.toList());
+    }
+
+    private FeeRecordVO convertToVO(FeeRecordDomain domain) {
+        return convertToVO(domain, null, null, null);
+    }
+
+    private FeeRecordVO convertToVO(FeeRecordDomain domain, Map<Long, String> ownerNameMap, Map<Long, String> houseRoomMap, Map<Long, String> itemNameMap) {
+        if (domain == null) {
+            return null;
+        }
+        FeeRecordVO vo = new FeeRecordVO();
+        BeanUtils.copyProperties(domain, vo);
+        if (ownerNameMap != null && ownerNameMap.containsKey(domain.getOwnerId())) {
+            vo.setOwnerName(ownerNameMap.get(domain.getOwnerId()));
+        }
+        if (houseRoomMap != null && houseRoomMap.containsKey(domain.getHouseId())) {
+            vo.setRoomNo(houseRoomMap.get(domain.getHouseId()));
+        }
+        if (itemNameMap != null && itemNameMap.containsKey(domain.getItemId())) {
+            vo.setItemName(itemNameMap.get(domain.getItemId()));
+        }
+        return vo;
     }
 }

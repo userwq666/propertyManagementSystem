@@ -2,8 +2,8 @@ package com.lsy.propertymanagementsystem.module.inspection.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.common.result.Result;
-import com.lsy.propertymanagementsystem.module.inspection.domain.InspectionPlanDomain;
 import com.lsy.propertymanagementsystem.module.inspection.dto.InspectionPlanDTO;
+import com.lsy.propertymanagementsystem.module.inspection.dto.InspectionPlanVO;
 import com.lsy.propertymanagementsystem.module.inspection.service.InspectionPlanService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ public class InspectionPlanController {
     @PreAuthorize("hasAuthority('inspection:plan:list')")
     @GetMapping("/{id}")
     public Result getPlanById(@PathVariable Long id) {
-        InspectionPlanDomain plan = inspectionPlanService.getPlanById(id);
+        InspectionPlanVO plan = inspectionPlanService.getPlanById(id);
         return Result.success(plan);
     }
 
@@ -51,7 +51,7 @@ public class InspectionPlanController {
                        @RequestParam(defaultValue = "10") int pageSize,
                        @RequestParam(required = false) String planName,
                        @RequestParam(required = false) Integer status) {
-        Page<InspectionPlanDomain> page = inspectionPlanService.page(pageNum, pageSize, planName, status);
+        Page<InspectionPlanVO> page = inspectionPlanService.page(pageNum, pageSize, planName, status);
         return Result.success(page);
     }
 

@@ -2,8 +2,8 @@ package com.lsy.propertymanagementsystem.module.repair.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.common.result.Result;
-import com.lsy.propertymanagementsystem.module.repair.domain.RepairRecordDomain;
 import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordDTO;
+import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordVO;
 import com.lsy.propertymanagementsystem.module.repair.service.RepairRecordService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +41,8 @@ public class RepairRecordController {
     @PreAuthorize("hasAuthority('repair:record:list')")
     @GetMapping("/{id}")
     public Result getById(@PathVariable Long id) {
-        RepairRecordDomain domain = repairRecordService.getById(id);
-        return Result.success(domain);
+        RepairRecordVO vo = repairRecordService.getById(id);
+        return Result.success(vo);
     }
 
     @PreAuthorize("hasAuthority('repair:record:list')")
@@ -51,7 +51,7 @@ public class RepairRecordController {
                        @RequestParam(defaultValue = "10") int pageSize,
                        @RequestParam(required = false) Long ownerId,
                        @RequestParam(required = false) Integer status) {
-        Page<RepairRecordDomain> page = repairRecordService.page(pageNum, pageSize, ownerId, status);
+        Page<RepairRecordVO> page = repairRecordService.page(pageNum, pageSize, ownerId, status);
         return Result.success(page);
     }
 

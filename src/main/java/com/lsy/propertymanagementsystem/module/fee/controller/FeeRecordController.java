@@ -2,8 +2,8 @@ package com.lsy.propertymanagementsystem.module.fee.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.common.result.Result;
-import com.lsy.propertymanagementsystem.module.fee.domain.FeeRecordDomain;
 import com.lsy.propertymanagementsystem.module.fee.dto.FeeRecordDTO;
+import com.lsy.propertymanagementsystem.module.fee.dto.FeeRecordVO;
 import com.lsy.propertymanagementsystem.module.fee.service.FeeRecordService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +30,8 @@ public class FeeRecordController {
     @PreAuthorize("hasAuthority('fee:record:list')")
     @GetMapping("/{id}")
     public Result getById(@PathVariable Long id) {
-        FeeRecordDomain domain = feeRecordService.getById(id);
-        return Result.success(domain);
+        FeeRecordVO vo = feeRecordService.getById(id);
+        return Result.success(vo);
     }
 
     @PreAuthorize("hasAuthority('fee:record:list')")
@@ -41,7 +41,7 @@ public class FeeRecordController {
                        @RequestParam(required = false) Long ownerId,
                        @RequestParam(required = false) Long houseId,
                        @RequestParam(required = false) Integer payStatus) {
-        Page<FeeRecordDomain> page = feeRecordService.page(pageNum, pageSize, ownerId, houseId, payStatus);
+        Page<FeeRecordVO> page = feeRecordService.page(pageNum, pageSize, ownerId, houseId, payStatus);
         return Result.success(page);
     }
 

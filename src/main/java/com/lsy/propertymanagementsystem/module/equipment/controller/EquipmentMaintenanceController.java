@@ -2,11 +2,10 @@ package com.lsy.propertymanagementsystem.module.equipment.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.common.result.Result;
-import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentMaintenanceDomain;
 import com.lsy.propertymanagementsystem.module.equipment.dto.EquipmentMaintenanceDTO;
+import com.lsy.propertymanagementsystem.module.equipment.dto.EquipmentMaintenanceVO;
 import com.lsy.propertymanagementsystem.module.equipment.service.EquipmentMaintenanceService;
 import jakarta.validation.Valid;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,18 +20,14 @@ public class EquipmentMaintenanceController {
     @PreAuthorize("hasAuthority('equipment:maintenance:add')")
     @PostMapping
     public Result add(@Valid @RequestBody EquipmentMaintenanceDTO dto) {
-        EquipmentMaintenanceDomain domain = new EquipmentMaintenanceDomain();
-        BeanUtils.copyProperties(dto, domain);
-        equipmentMaintenanceService.add(domain);
+        equipmentMaintenanceService.add(dto);
         return Result.success();
     }
 
     @PreAuthorize("hasAuthority('equipment:maintenance:edit')")
     @PutMapping
     public Result update(@Valid @RequestBody EquipmentMaintenanceDTO dto) {
-        EquipmentMaintenanceDomain domain = new EquipmentMaintenanceDomain();
-        BeanUtils.copyProperties(dto, domain);
-        equipmentMaintenanceService.update(domain);
+        equipmentMaintenanceService.update(dto);
         return Result.success();
     }
 
@@ -46,8 +41,8 @@ public class EquipmentMaintenanceController {
     @PreAuthorize("hasAuthority('equipment:maintenance:list')")
     @GetMapping("/{id}")
     public Result getById(@PathVariable Long id) {
-        EquipmentMaintenanceDomain domain = equipmentMaintenanceService.getById(id);
-        return Result.success(domain);
+        EquipmentMaintenanceVO vo = equipmentMaintenanceService.getById(id);
+        return Result.success(vo);
     }
 
     @PreAuthorize("hasAuthority('equipment:maintenance:list')")
@@ -57,7 +52,7 @@ public class EquipmentMaintenanceController {
                        @RequestParam(required = false) Long equipmentId,
                        @RequestParam(required = false) Integer maintenanceType,
                        @RequestParam(required = false) Integer status) {
-        Page<EquipmentMaintenanceDomain> page = equipmentMaintenanceService.page(pageNum, pageSize, equipmentId, maintenanceType, status);
+        Page<EquipmentMaintenanceVO> page = equipmentMaintenanceService.page(pageNum, pageSize, equipmentId, maintenanceType, status);
         return Result.success(page);
     }
 

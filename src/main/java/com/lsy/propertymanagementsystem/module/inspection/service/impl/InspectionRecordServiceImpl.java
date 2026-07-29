@@ -2,17 +2,26 @@ package com.lsy.propertymanagementsystem.module.inspection.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentDomain;
+import com.lsy.propertymanagementsystem.module.equipment.mapper.EquipmentMapper;
+import com.lsy.propertymanagementsystem.module.inspection.domain.InspectionPlanDomain;
 import com.lsy.propertymanagementsystem.module.inspection.domain.InspectionRecordDomain;
 import com.lsy.propertymanagementsystem.module.inspection.dto.InspectionRecordDTO;
+import com.lsy.propertymanagementsystem.module.inspection.dto.InspectionRecordVO;
 import com.lsy.propertymanagementsystem.module.inspection.enums.InspectResult;
+import com.lsy.propertymanagementsystem.module.inspection.mapper.InspectionPlanMapper;
 import com.lsy.propertymanagementsystem.module.inspection.mapper.InspectionRecordMapper;
 import com.lsy.propertymanagementsystem.module.inspection.service.InspectionRecordService;
+import com.lsy.propertymanagementsystem.module.system.domain.SysUserDomain;
+import com.lsy.propertymanagementsystem.module.system.mapper.SysUserMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class InspectionRecordServiceImpl implements InspectionRecordService {
@@ -20,8 +29,17 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
     @Autowired
     private InspectionRecordMapper inspectionRecordMapper;
 
+    @Autowired
+    private InspectionPlanMapper inspectionPlanMapper;
+
+    @Autowired
+    private EquipmentMapper equipmentMapper;
+
+    @Autowired
+    private SysUserMapper sysUserMapper;
+
     @Override
-    public Page<InspectionRecordDomain> page(int pageNum, int pageSize, Long planId, Long equipmentId) {
+    public Page<InspectionRecordVO> page(int pageNum, int pageSize, Long planId, Long equipmentId) {
         LambdaQueryWrapper<InspectionRecordDomain> wrapper = new LambdaQueryWrapper<>();
         if (planId != null) {
             wrapper.eq(InspectionRecordDomain::getPlanId, planId);
@@ -30,7 +48,57 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
             wrapper.eq(InspectionRecordDomain::getEquipmentId, equipmentId);
         }
         wrapper.orderByDesc(InspectionRecordDomain::getCreateTime);
-        return inspectionRecordMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
+        Page<InspectionRecordDomain> domainPage = inspectionRecordMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
+
+        List<InspectionRecordDomain> records = domainPage.getRecords();
+        Page<InspectionRecordVO> voPage = new Page<>(pageNum, pageSize, domainPage.getTotal());
+        if (records.isEmpty()) {
+            return voPage;
+        }
+
+        Set<Long> planIds = records.stream().map(InspectionRecordDomain::getPlanId).filter(Objects::nonNull).collect(Collectors.toSet());
+        Map<Long, String> planNameMap = new HashMap<>();
+        if (!planIds.isEmpty()) {
+            List<InspectionPlanDomain> plans = inspectionPlanMapper.selectBatchIds(planIds);
+            for (InspectionPlanDomain plan : plans) {
+                planNameMap.put(plan.getId(), plan.getPlanName());
+            }
+        }
+
+        Set<Long> eqIds = records.stream().map(InspectionRecordDomain::getEquipmentId).filter(Objects::nonNull).collect(Collectors.toSet());
+        Map<Long, String> eqNameMap = new HashMap<>();
+        if (!eqIds.isEmpty()) {
+            List<EquipmentDomain> equipments = equipmentMapper.selectBatchIds(eqIds);
+            for (EquipmentDomain eq : equipments) {
+                eqNameMap.put(eq.getId(), eq.getEquipmentName());
+            }
+        }
+
+        Set<Long> userIds = new HashSet<>();
+        for (InspectionRecordDomain r : records) {
+            if (r.getInspectorUserId() != null) userIds.add(r.getInspectorUserId());
+            if (r.getHandlerId() != null) userIds.add(r.getHandlerId());
+        }
+        Map<Long, String> userNameMap = new HashMap<>();
+        if (!userIds.isEmpty()) {
+            List<SysUserDomain> users = sysUserMapper.selectBatchIds(userIds);
+            for (SysUserDomain user : users) {
+                userNameMap.put(user.getId(), user.getRealName());
+            }
+        }
+
+        List<InspectionRecordVO> voList = records.stream().map(record -> {
+            InspectionRecordVO vo = new InspectionRecordVO();
+            BeanUtils.copyProperties(record, vo);
+            vo.setPlanName(planNameMap.get(record.getPlanId()));
+            vo.setEquipmentName(eqNameMap.get(record.getEquipmentId()));
+            vo.setInspectorName(userNameMap.get(record.getInspectorUserId()));
+            vo.setHandlerName(userNameMap.get(record.getHandlerId()));
+            return vo;
+        }).collect(Collectors.toList());
+
+        voPage.setRecords(voList);
+        return voPage;
     }
 
     @Override
@@ -54,8 +122,12 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
     }
 
     @Override
-    public InspectionRecordDomain getRecordById(Long id) {
-        return inspectionRecordMapper.selectById(id);
+    public InspectionRecordVO getRecordById(Long id) {
+        InspectionRecordDomain record = inspectionRecordMapper.selectById(id);
+        if (record == null) {
+            return null;
+        }
+        return convertToVO(record);
     }
 
     @Override
@@ -82,5 +154,40 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
     @Override
     public long countByPlanId(Long planId) {
         return inspectionRecordMapper.selectCount(new LambdaQueryWrapper<InspectionRecordDomain>().eq(InspectionRecordDomain::getPlanId, planId));
+    }
+
+    private InspectionRecordVO convertToVO(InspectionRecordDomain record) {
+        InspectionRecordVO vo = new InspectionRecordVO();
+        BeanUtils.copyProperties(record, vo);
+
+        if (record.getPlanId() != null) {
+            InspectionPlanDomain plan = inspectionPlanMapper.selectById(record.getPlanId());
+            if (plan != null) {
+                vo.setPlanName(plan.getPlanName());
+            }
+        }
+
+        if (record.getEquipmentId() != null) {
+            EquipmentDomain equipment = equipmentMapper.selectById(record.getEquipmentId());
+            if (equipment != null) {
+                vo.setEquipmentName(equipment.getEquipmentName());
+            }
+        }
+
+        if (record.getInspectorUserId() != null) {
+            SysUserDomain user = sysUserMapper.selectById(record.getInspectorUserId());
+            if (user != null) {
+                vo.setInspectorName(user.getRealName());
+            }
+        }
+
+        if (record.getHandlerId() != null) {
+            SysUserDomain user = sysUserMapper.selectById(record.getHandlerId());
+            if (user != null) {
+                vo.setHandlerName(user.getRealName());
+            }
+        }
+
+        return vo;
     }
 }

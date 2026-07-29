@@ -6,12 +6,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lsy.propertymanagementsystem.common.exception.BusinessException;
 import com.lsy.propertymanagementsystem.module.fee.domain.FeeItemDomain;
 import com.lsy.propertymanagementsystem.module.fee.dto.FeeItemDTO;
-import com.lsy.propertymanagementsystem.module.fee.enums.FeeCycleType;
-import com.lsy.propertymanagementsystem.module.fee.enums.FeeItemType;
-import com.lsy.propertymanagementsystem.module.system.enums.EnableStatus;
+import com.lsy.propertymanagementsystem.module.fee.dto.FeeItemVO;
 import com.lsy.propertymanagementsystem.module.fee.mapper.FeeItemMapper;
 import com.lsy.propertymanagementsystem.module.fee.service.FeeItemService;
 import com.lsy.propertymanagementsystem.module.fee.service.FeeRecordService;
+import com.lsy.propertymanagementsystem.module.system.enums.EnableStatus;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -26,12 +25,13 @@ public class FeeItemServiceImpl extends ServiceImpl<FeeItemMapper, FeeItemDomain
     private FeeRecordService feeRecordService;
 
     @Override
-    public FeeItemDomain getById(Long id) {
-        return super.getById(id);
+    public FeeItemVO getById(Long id) {
+        FeeItemDomain domain = super.getById(id);
+        return convertToVO(domain);
     }
 
     @Override
-    public Page<FeeItemDomain> page(int pageNum, int pageSize, String itemName, Integer status) {
+    public Page<FeeItemVO> page(int pageNum, int pageSize, String itemName, Integer status) {
         LambdaQueryWrapper<FeeItemDomain> wrapper = new LambdaQueryWrapper<>();
         if (itemName != null && !itemName.isEmpty()) {
             wrapper.like(FeeItemDomain::getItemName, itemName);
@@ -40,7 +40,11 @@ public class FeeItemServiceImpl extends ServiceImpl<FeeItemMapper, FeeItemDomain
             wrapper.eq(FeeItemDomain::getStatus, EnableStatus.of(status));
         }
         wrapper.orderByDesc(FeeItemDomain::getCreateTime);
-        return this.page(new Page<>(pageNum, pageSize), wrapper);
+        Page<FeeItemDomain> domainPage = this.page(new Page<>(pageNum, pageSize), wrapper);
+        Page<FeeItemVO> voPage = new Page<>(pageNum, pageSize);
+        voPage.setTotal(domainPage.getTotal());
+        voPage.setRecords(domainPage.getRecords().stream().map(this::convertToVO).collect(java.util.stream.Collectors.toList()));
+        return voPage;
     }
 
     @Override
@@ -54,7 +58,7 @@ public class FeeItemServiceImpl extends ServiceImpl<FeeItemMapper, FeeItemDomain
     @Override
     @Transactional
     public void update(FeeItemDTO domain) {
-        FeeItemDomain existing = this.getById(domain.getId());
+        FeeItemDomain existing = super.getById(domain.getId());
         if (existing == null) {
             throw new BusinessException("收费项目不存在");
         }
@@ -75,11 +79,20 @@ public class FeeItemServiceImpl extends ServiceImpl<FeeItemMapper, FeeItemDomain
     @Override
     @Transactional
     public void updateStatus(Long id, Integer status) {
-        FeeItemDomain domain = this.getById(id);
+        FeeItemDomain domain = super.getById(id);
         if (domain == null) {
             throw new BusinessException("收费项目不存在");
         }
         domain.changeStatus(EnableStatus.of(status));
         this.updateById(domain);
+    }
+
+    private FeeItemVO convertToVO(FeeItemDomain domain) {
+        if (domain == null) {
+            return null;
+        }
+        FeeItemVO vo = new FeeItemVO();
+        BeanUtils.copyProperties(domain, vo);
+        return vo;
     }
 }

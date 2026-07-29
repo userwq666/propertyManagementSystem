@@ -2,8 +2,8 @@ package com.lsy.propertymanagementsystem.module.equipment.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.common.result.Result;
-import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentDomain;
 import com.lsy.propertymanagementsystem.module.equipment.dto.EquipmentDTO;
+import com.lsy.propertymanagementsystem.module.equipment.dto.EquipmentVO;
 import com.lsy.propertymanagementsystem.module.equipment.service.EquipmentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +41,8 @@ public class EquipmentController {
     @PreAuthorize("hasAuthority('equipment:list:list')")
     @GetMapping("/{id}")
     public Result getById(@PathVariable Long id) {
-        EquipmentDomain domain = equipmentService.getById(id);
-        return Result.success(domain);
+        EquipmentVO vo = equipmentService.getById(id);
+        return Result.success(vo);
     }
 
     @PreAuthorize("hasAuthority('equipment:list:list')")
@@ -51,7 +51,7 @@ public class EquipmentController {
                        @RequestParam(defaultValue = "10") int pageSize,
                        @RequestParam(required = false) Long categoryId,
                        @RequestParam(required = false) Integer status) {
-        Page<EquipmentDomain> page = equipmentService.page(pageNum, pageSize, categoryId, status);
+        Page<EquipmentVO> page = equipmentService.page(pageNum, pageSize, categoryId, status);
         return Result.success(page);
     }
 

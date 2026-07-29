@@ -2,8 +2,8 @@ package com.lsy.propertymanagementsystem.module.complaint.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.common.result.Result;
-import com.lsy.propertymanagementsystem.module.complaint.domain.ComplaintSuggestDomain;
 import com.lsy.propertymanagementsystem.module.complaint.dto.ComplaintSuggestDTO;
+import com.lsy.propertymanagementsystem.module.complaint.dto.ComplaintSuggestVO;
 import com.lsy.propertymanagementsystem.module.complaint.service.ComplaintSuggestService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ public class ComplaintSuggestController {
                        @RequestParam(required = false) Long ownerId,
                        @RequestParam(required = false) String type,
                        @RequestParam(required = false) Integer status) {
-        Page<ComplaintSuggestDomain> page = complaintSuggestService.page(pageNum, pageSize, ownerId, type, status);
+        Page<ComplaintSuggestVO> page = complaintSuggestService.page(pageNum, pageSize, ownerId, type, status);
         return Result.success(page);
     }
 

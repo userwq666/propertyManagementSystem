@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lsy.propertymanagementsystem.common.exception.BusinessException;
 import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentCategoryDomain;
 import com.lsy.propertymanagementsystem.module.equipment.dto.EquipmentCategoryDTO;
+import com.lsy.propertymanagementsystem.module.equipment.dto.EquipmentCategoryVO;
 import com.lsy.propertymanagementsystem.module.equipment.mapper.EquipmentCategoryMapper;
 import com.lsy.propertymanagementsystem.module.equipment.service.EquipmentCategoryService;
 import com.lsy.propertymanagementsystem.module.equipment.service.EquipmentService;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EquipmentCategoryServiceImpl extends ServiceImpl<EquipmentCategoryMapper, EquipmentCategoryDomain> implements EquipmentCategoryService {
@@ -57,7 +59,19 @@ public class EquipmentCategoryServiceImpl extends ServiceImpl<EquipmentCategoryM
     }
 
     @Override
-    public Page<EquipmentCategoryDomain> page(int pageNum, int pageSize) {
-        return super.page(new Page<>(pageNum, pageSize));
+    public Page<EquipmentCategoryVO> page(int pageNum, int pageSize) {
+        Page<EquipmentCategoryDomain> domainPage = super.page(new Page<>(pageNum, pageSize));
+        List<EquipmentCategoryVO> voRecords = domainPage.getRecords().stream()
+                .map(this::convertToVO)
+                .collect(Collectors.toList());
+        Page<EquipmentCategoryVO> voPage = new Page<>(domainPage.getCurrent(), domainPage.getSize(), domainPage.getTotal());
+        voPage.setRecords(voRecords);
+        return voPage;
+    }
+
+    private EquipmentCategoryVO convertToVO(EquipmentCategoryDomain domain) {
+        EquipmentCategoryVO vo = new EquipmentCategoryVO();
+        BeanUtils.copyProperties(domain, vo);
+        return vo;
     }
 }
