@@ -2,7 +2,7 @@ package com.lsy.propertymanagementsystem.module.system.controller;
 
 import com.lsy.propertymanagementsystem.common.result.Result;
 import com.lsy.propertymanagementsystem.module.system.dto.RoleDTO;
-import com.lsy.propertymanagementsystem.module.system.domain.SysRoleDomain;
+import com.lsy.propertymanagementsystem.module.system.dto.RoleVO;
 import com.lsy.propertymanagementsystem.module.system.service.SysRoleService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,15 +41,15 @@ public class SysRoleController {
 
     @PreAuthorize("hasAuthority('system:role:list')")
     @GetMapping("/{id}")
-    public Result<SysRoleDomain> getById(@PathVariable Long id) {
-        SysRoleDomain role = roleService.getRoleById(id);
+    public Result<RoleVO> getById(@PathVariable Long id) {
+        RoleVO role = roleService.getRoleById(id);
         return Result.success(role);
     }
 
     @PreAuthorize("hasAuthority('system:role:list')")
     @GetMapping("/list")
-    public Result<List<SysRoleDomain>> getRoleList() {
-        List<SysRoleDomain> roles = roleService.getRoleList();
+    public Result<List<RoleVO>> getRoleList() {
+        List<RoleVO> roles = roleService.getRoleList();
         return Result.success(roles);
     }
 

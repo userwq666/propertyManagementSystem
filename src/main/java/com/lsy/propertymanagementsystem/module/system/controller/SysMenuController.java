@@ -42,8 +42,8 @@ public class SysMenuController {
 
     @PreAuthorize("hasAuthority('system:menu:list')")
     @GetMapping("/{id}")
-    public Result<SysMenuDomain> getById(@PathVariable Long id) {
-        SysMenuDomain menu = menuService.getMenuById(id);
+    public Result<MenuVO> getById(@PathVariable Long id) {
+        MenuVO menu = menuService.getMenuById(id);
         return Result.success(menu);
     }
 

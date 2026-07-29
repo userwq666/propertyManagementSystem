@@ -82,8 +82,22 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDomain
     }
 
     @Override
-    public SysMenuDomain getMenuById(Long id) {
-        return this.getById(id);
+    public MenuVO getMenuById(Long id) {
+        SysMenuDomain menu = this.getById(id);
+        if (menu == null) {
+            return null;
+        }
+        MenuVO vo = new MenuVO();
+        vo.setId(menu.getId());
+        vo.setParentId(menu.getParentId());
+        vo.setMenuName(menu.getMenuName());
+        vo.setPath(menu.getPath());
+        vo.setComponent(menu.getComponent());
+        vo.setPerms(menu.getPerms());
+        vo.setMenuType(menu.getMenuType());
+        vo.setSort(menu.getSort());
+        vo.setStatus(menu.getStatus());
+        return vo;
     }
 
     private List<MenuVO> buildMenuTree(List<SysMenuDomain> menus, Long parentId) {

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lsy.propertymanagementsystem.common.exception.BusinessException;
 import com.lsy.propertymanagementsystem.module.system.dto.RoleDTO;
+import com.lsy.propertymanagementsystem.module.system.dto.RoleVO;
 import com.lsy.propertymanagementsystem.module.system.domain.SysRoleDomain;
 import com.lsy.propertymanagementsystem.module.system.domain.SysRoleMenuDomain;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserRoleDomain;
@@ -11,6 +12,7 @@ import com.lsy.propertymanagementsystem.module.system.mapper.SysRoleMapper;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysRoleMenuMapper;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserRoleMapper;
 import com.lsy.propertymanagementsystem.module.system.service.SysRoleService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,10 +30,10 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDomain
     private SysUserRoleMapper userRoleMapper;
 
     @Override
-    public List<SysRoleDomain> getRoleList() {
+    public List<RoleVO> getRoleList() {
         LambdaQueryWrapper<SysRoleDomain> wrapper = new LambdaQueryWrapper<>();
         wrapper.orderByAsc(SysRoleDomain::getId);
-        return this.list(wrapper);
+        return this.list(wrapper).stream().map(this::convertToVO).collect(Collectors.toList());
     }
 
     @Override
@@ -88,8 +90,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDomain
     }
 
     @Override
-    public SysRoleDomain getRoleById(Long id) {
-        return this.getById(id);
+    public RoleVO getRoleById(Long id) {
+        SysRoleDomain domain = this.getById(id);
+        return domain != null ? convertToVO(domain) : null;
     }
 
     @Override
@@ -113,5 +116,11 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDomain
         wrapper.eq(SysRoleMenuDomain::getRoleId, roleId);
         List<SysRoleMenuDomain> roleMenus = roleMenuMapper.selectList(wrapper);
         return roleMenus.stream().map(SysRoleMenuDomain::getMenuId).collect(Collectors.toList());
+    }
+
+    private RoleVO convertToVO(SysRoleDomain domain) {
+        RoleVO vo = new RoleVO();
+        BeanUtils.copyProperties(domain, vo);
+        return vo;
     }
 }

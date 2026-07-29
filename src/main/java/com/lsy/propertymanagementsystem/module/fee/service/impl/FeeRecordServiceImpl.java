@@ -124,7 +124,7 @@ public class FeeRecordServiceImpl implements FeeRecordService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         Map<String, Object> result = new HashMap<>();
-        result.put("arrearsList", arrearsList);
+        result.put("arrearsList", convertToVOList(arrearsList));
         result.put("totalArrears", totalArrears);
         result.put("count", arrearsList.size());
         return result;
