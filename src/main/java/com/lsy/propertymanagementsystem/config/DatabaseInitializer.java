@@ -2,9 +2,10 @@ package com.lsy.propertymanagementsystem.config;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 @Profile("!test")
@@ -39,26 +39,29 @@ public class DatabaseInitializer {
 
     @PostConstruct
     public void init() {
-        log.info("==========================================");
-        log.info("开始初始化数据库...");
-        log.info("==========================================");
+        System.out.println("==========================================");
+        System.out.println("开始初始化数据库...");
+        System.out.println("==========================================");
 
         createDatabaseIfNotExists();
 
         try (Connection connection = dataSource.getConnection()) {
             executeSqlFile(connection, "sql/01_schema.sql", "数据库结构");
             executeSqlFile(connection, "sql/02_data.sql", "基础数据");
-
-            log.info("==========================================");
-            log.info("数据库初始化成功！");
-            log.info("==========================================");
-            log.info("超级管理员账号：root / 123456");
-            log.info("物业管理员账号：admin / 123456");
-            log.info("==========================================");
         } catch (SQLException e) {
-            log.error("数据库初始化失败: {}", e.getMessage(), e);
+            System.out.println("数据库初始化失败: " + e.getMessage());
             throw new RuntimeException("数据库初始化失败", e);
         }
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void onReady() {
+        System.out.println("==========================================");
+        System.out.println("数据库初始化成功！");
+        System.out.println("==========================================");
+        System.out.println("超级管理员账号：root / 123456");
+        System.out.println("物业管理员账号：admin / 123456");
+        System.out.println("==========================================");
     }
 
     private void createDatabaseIfNotExists() {
@@ -67,7 +70,7 @@ public class DatabaseInitializer {
              Statement stmt = conn.createStatement()) {
             stmt.execute("CREATE DATABASE IF NOT EXISTS property_management_system DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci");
         } catch (SQLException e) {
-            log.error("创建数据库失败: {}", e.getMessage(), e);
+            System.out.println("创建数据库失败: " + e.getMessage());
             throw new RuntimeException("创建数据库失败", e);
         }
     }
@@ -76,7 +79,7 @@ public class DatabaseInitializer {
         try {
             ClassPathResource resource = new ClassPathResource(resourcePath);
             if (!resource.exists()) {
-                log.warn("SQL文件不存在，跳过: {}", resourcePath);
+                System.out.println("SQL文件不存在，跳过: " + resourcePath);
                 return;
             }
 
@@ -105,9 +108,9 @@ public class DatabaseInitializer {
                 }
             }
 
-            log.info("{}初始化完成 (执行: {}, 跳过: {})", description, successCount, skipCount);
+            System.out.println(description + "初始化完成 (执行: " + successCount + ", 跳过: " + skipCount + ")");
         } catch (Exception e) {
-            log.error("执行SQL失败 [{}]: {}", description, e.getMessage(), e);
+            System.out.println("执行SQL失败 [" + description + "]: " + e.getMessage());
             throw new RuntimeException("执行SQL失败: " + description, e);
         }
     }

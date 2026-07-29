@@ -129,7 +129,9 @@ function handleCommand(command) {
   if (command === 'password') {
     ElMessageBox.prompt('请输入新密码', '修改密码', { inputType: 'password', confirmButtonText: '确定', cancelButtonText: '取消' }).then(({ value }) => {
       if (value && value.length >= 6) {
-        userStore.changePassword(value).then(() => {
+        import('@/api/system/user').then(({ resetPassword }) => {
+        return resetPassword({ id: userStore.userInfo.id, newPassword: value })
+      }).then(() => {
           ElMessage.success('密码修改成功，请重新登录')
           router.push('/login')
         }).catch(() => {})
