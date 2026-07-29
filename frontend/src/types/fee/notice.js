@@ -1,4 +1,4 @@
-﻿export const APPLICABLE_SCOPE_OPTIONS = [
+export const APPLICABLE_SCOPE_OPTIONS = [
   { dictValue: '1', dictLabel: '全体' },
   { dictValue: '2', dictLabel: '指定房屋' },
   { dictValue: '3', dictLabel: '指定业主' }

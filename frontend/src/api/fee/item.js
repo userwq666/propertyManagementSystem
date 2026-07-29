@@ -1,4 +1,4 @@
-﻿import request from "@/utils/request"
+import request from "@/utils/request"
 
 export function getItemList(params) {
   return request({ url: "/fee/item/page", method: "get", params })

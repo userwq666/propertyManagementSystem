@@ -1,4 +1,4 @@
-﻿export const ExecuteStatusOptions = [
+export const ExecuteStatusOptions = [
   { value: '1', label: '正常' },
   { value: '2', label: '异常' },
   { value: '3', label: '部分异常' },

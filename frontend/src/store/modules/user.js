@@ -1,4 +1,4 @@
-﻿import { defineStore } from "pinia"
+import { defineStore } from "pinia"
 import { login, logout, getInfo } from "@/api/user"
 import { getToken, setToken, removeToken } from "@/utils/auth"
 import router from "@/router"
@@ -38,7 +38,7 @@ export const useUserStore = defineStore("user", {
       }
       this.userId = data.userId || ""
       this.deptId = data.deptId || ""
-      this.name = data.name || data.username || ""
+      this.name = data.realName || data.username || ""
       this.avatar = data.avatar || ""
       this.email = data.email || ""
       this.phone = data.phone || ""

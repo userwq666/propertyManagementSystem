@@ -1,6 +1,6 @@
 -- =====================================================================
 -- 物业管理系统 - 完整数据库结构初始化脚本
--- 包含：建库、建表、外键约束、索引、视图
+-- 包含：建库、建表、外键约束、索引
 -- 执行顺序：第 1 步
 -- =====================================================================
 
@@ -24,7 +24,7 @@ CREATE TABLE sys_user (
     real_name VARCHAR(50) COMMENT '真实姓名',
     phone VARCHAR(20) COMMENT '手机号',
     avatar VARCHAR(255) COMMENT '头像地址',
-    user_type TINYINT NOT NULL DEFAULT 3 COMMENT '用户类型：1超级管理员 2物业管理员 3业主',
+    user_type TINYINT NOT NULL DEFAULT 3 COMMENT '用户类型：1超级管理员 2物业管理员 3业主 4维修工 5巡检员',
     status TINYINT NOT NULL DEFAULT 1 COMMENT '账号状态：0禁用 1正常',
     create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -47,6 +47,7 @@ CREATE TABLE sys_user_role (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     user_id BIGINT NOT NULL COMMENT '用户id',
     role_id BIGINT NOT NULL COMMENT '角色id',
+    UNIQUE KEY uk_user_role (user_id, role_id),
     CONSTRAINT fk_user_role_user FOREIGN KEY (user_id) REFERENCES sys_user(id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT fk_user_role_role FOREIGN KEY (role_id) REFERENCES sys_role(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) COMMENT '用户角色关联表';
@@ -72,6 +73,7 @@ CREATE TABLE sys_role_menu (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     role_id BIGINT NOT NULL COMMENT '角色id',
     menu_id BIGINT NOT NULL COMMENT '菜单id',
+    UNIQUE KEY uk_role_menu (role_id, menu_id),
     CONSTRAINT fk_role_menu_role FOREIGN KEY (role_id) REFERENCES sys_role(id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT fk_role_menu_menu FOREIGN KEY (menu_id) REFERENCES sys_menu(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) COMMENT '角色菜单关联表';
@@ -114,7 +116,25 @@ CREATE TABLE community_building (
     deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除'
 ) COMMENT '楼栋表';
 
--- 房屋表
+-- 业主信息表（必须在 community_house 之前创建）
+CREATE TABLE community_owner (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT COMMENT '关联系统登录账号',
+    name VARCHAR(50) NOT NULL COMMENT '业主姓名',
+    phone VARCHAR(20) COMMENT '联系电话',
+    id_card VARCHAR(18) COMMENT '身份证号（应用层需加密存储）',
+    id_card_front VARCHAR(255) COMMENT '身份证正面',
+    id_card_back VARCHAR(255) COMMENT '身份证反面',
+    owner_type TINYINT NOT NULL DEFAULT 1 COMMENT '业主类型：1本人 2家属 3租客',
+    status TINYINT NOT NULL DEFAULT 1 COMMENT '状态：0禁用 1正常',
+    remark VARCHAR(500) COMMENT '备注',
+    create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除',
+    CONSTRAINT fk_owner_user FOREIGN KEY (user_id) REFERENCES sys_user(id) ON UPDATE CASCADE ON DELETE SET NULL
+) COMMENT '业主信息表';
+
+-- 房屋表（依赖 community_building 和 community_owner）
 CREATE TABLE community_house (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     building_id BIGINT NOT NULL COMMENT '楼栋id',
@@ -130,24 +150,6 @@ CREATE TABLE community_house (
     CONSTRAINT fk_house_building FOREIGN KEY (building_id) REFERENCES community_building(id) ON UPDATE CASCADE ON DELETE RESTRICT,
     CONSTRAINT fk_house_owner FOREIGN KEY (owner_id) REFERENCES community_owner(id) ON UPDATE CASCADE ON DELETE SET NULL
 ) COMMENT '房屋表';
-
--- 业主信息表
-CREATE TABLE community_owner (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT COMMENT '关联系统登录账号',
-    name VARCHAR(50) NOT NULL COMMENT '业主姓名',
-    phone VARCHAR(20) COMMENT '联系电话',
-    id_card VARCHAR(18) COMMENT '身份证号',
-    id_card_front VARCHAR(255) COMMENT '身份证正面',
-    id_card_back VARCHAR(255) COMMENT '身份证反面',
-    owner_type TINYINT NOT NULL DEFAULT 1 COMMENT '业主类型：1本人 2家属 3租客',
-    status TINYINT NOT NULL DEFAULT 1 COMMENT '状态：0禁用 1正常',
-    remark VARCHAR(500) COMMENT '备注',
-    create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除',
-    CONSTRAINT fk_owner_user FOREIGN KEY (user_id) REFERENCES sys_user(id) ON UPDATE CASCADE ON DELETE SET NULL
-) COMMENT '业主信息表';
 
 -- 车位表
 CREATE TABLE community_parking (
@@ -166,9 +168,14 @@ CREATE TABLE community_parking (
 ) COMMENT '车位表';
 
 -- 索引
+CREATE INDEX idx_building_no ON community_building(building_no);
 CREATE INDEX idx_house_building ON community_house(building_id);
+CREATE INDEX idx_house_room ON community_house(building_id, room_no);
 CREATE INDEX idx_house_owner ON community_house(owner_id);
 CREATE INDEX idx_owner_user ON community_owner(user_id);
+CREATE INDEX idx_owner_phone ON community_owner(phone);
+CREATE INDEX idx_owner_idcard ON community_owner(id_card);
+CREATE INDEX idx_parking_no ON community_parking(parking_no);
 CREATE INDEX idx_parking_owner ON community_parking(owner_id);
 
 -- =====================================================================
@@ -221,15 +228,32 @@ CREATE TABLE fee_notice (
     notice_content TEXT COMMENT '通知内容',
     notice_type TINYINT NOT NULL DEFAULT 1 COMMENT '通知类型：1缴费通知 2欠费催缴 3费率调整 4其他',
     send_scope TINYINT NOT NULL DEFAULT 1 COMMENT '发送范围：1全体 2指定楼栋 3指定业主',
-    building_ids VARCHAR(500) COMMENT '指定楼栋ID，逗号分隔',
-    owner_ids VARCHAR(500) COMMENT '指定业主ID，逗号分隔',
     send_status TINYINT NOT NULL DEFAULT 0 COMMENT '发送状态：0草稿 1已发送 2发送失败',
     send_time DATETIME COMMENT '发送时间',
     creator_id BIGINT COMMENT '创建人ID',
     create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除'
+    deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除',
+    CONSTRAINT fk_notice_creator FOREIGN KEY (creator_id) REFERENCES sys_user(id) ON UPDATE CASCADE ON DELETE SET NULL
 ) COMMENT '收费通知表';
+
+-- 收费通知-楼栋关联表
+CREATE TABLE fee_notice_building (
+    notice_id BIGINT NOT NULL COMMENT '通知ID',
+    building_id BIGINT NOT NULL COMMENT '楼栋ID',
+    PRIMARY KEY (notice_id, building_id),
+    CONSTRAINT fk_fnb_notice FOREIGN KEY (notice_id) REFERENCES fee_notice(id) ON DELETE CASCADE,
+    CONSTRAINT fk_fnb_building FOREIGN KEY (building_id) REFERENCES community_building(id) ON DELETE CASCADE
+) COMMENT '收费通知-楼栋关联表';
+
+-- 收费通知-业主关联表
+CREATE TABLE fee_notice_owner (
+    notice_id BIGINT NOT NULL COMMENT '通知ID',
+    owner_id BIGINT NOT NULL COMMENT '业主ID',
+    PRIMARY KEY (notice_id, owner_id),
+    CONSTRAINT fk_fno_notice FOREIGN KEY (notice_id) REFERENCES fee_notice(id) ON DELETE CASCADE,
+    CONSTRAINT fk_fno_owner FOREIGN KEY (owner_id) REFERENCES community_owner(id) ON DELETE CASCADE
+) COMMENT '收费通知-业主关联表';
 
 -- 索引
 CREATE INDEX idx_fee_owner ON fee_record(owner_id);
@@ -237,7 +261,10 @@ CREATE INDEX idx_fee_house ON fee_record(house_id);
 CREATE INDEX idx_fee_item ON fee_record(item_id);
 CREATE INDEX idx_fee_status ON fee_record(status);
 CREATE INDEX idx_fee_no ON fee_record(fee_no);
+CREATE INDEX idx_fee_create_time ON fee_record(create_time);
 CREATE INDEX idx_notice_creator ON fee_notice(creator_id);
+CREATE INDEX idx_fnb_building ON fee_notice_building(building_id);
+CREATE INDEX idx_fno_owner ON fee_notice_owner(owner_id);
 
 -- =====================================================================
 -- 4. 报修管理表
@@ -275,6 +302,7 @@ CREATE INDEX idx_repair_house ON repair_record(house_id);
 CREATE INDEX idx_repair_handler ON repair_record(handler_id);
 CREATE INDEX idx_repair_status ON repair_record(status);
 CREATE INDEX idx_repair_no ON repair_record(repair_no);
+CREATE INDEX idx_repair_create_time ON repair_record(create_time);
 
 -- =====================================================================
 -- 5. 投诉建议表
@@ -310,6 +338,7 @@ CREATE INDEX idx_complaint_house ON complaint_suggest(house_id);
 CREATE INDEX idx_complaint_handler ON complaint_suggest(handler_id);
 CREATE INDEX idx_complaint_status ON complaint_suggest(status);
 CREATE INDEX idx_complaint_no ON complaint_suggest(complaint_no);
+CREATE INDEX idx_complaint_create_time ON complaint_suggest(create_time);
 
 -- =====================================================================
 -- 6. 设备管理表
@@ -347,7 +376,8 @@ CREATE TABLE equipment (
     create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除',
-    CONSTRAINT fk_equip_category FOREIGN KEY (category_id) REFERENCES equipment_category(id) ON UPDATE CASCADE ON DELETE RESTRICT
+    CONSTRAINT fk_equip_category FOREIGN KEY (category_id) REFERENCES equipment_category(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT fk_equip_building FOREIGN KEY (building_id) REFERENCES community_building(id) ON UPDATE CASCADE ON DELETE SET NULL
 ) COMMENT '设备表';
 
 -- 设备维护记录表
@@ -366,7 +396,8 @@ CREATE TABLE equipment_maintenance (
     remark VARCHAR(500) COMMENT '备注',
     create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除'
+    deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除',
+    CONSTRAINT fk_maint_personnel FOREIGN KEY (maintenance_personnel_id) REFERENCES sys_user(id) ON UPDATE CASCADE ON DELETE SET NULL
 ) COMMENT '设备维护记录表';
 
 -- 索引
@@ -479,17 +510,21 @@ CREATE TABLE announcement (
 ) COMMENT '公告表';
 
 -- 公告阅读记录表
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    announcement_id BIGINT NOT NULL COMMENT '公告id',
-    user_id BIGINT NOT NULL COMMENT '阅读用户id',
+CREATE TABLE announcement_read (
+    announcement_id BIGINT NOT NULL COMMENT '公告ID',
+    user_id BIGINT NOT NULL COMMENT '用户ID',
     read_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '阅读时间',
-    UNIQUE KEY uk_announcement_user (announcement_id, user_id)
+    PRIMARY KEY (announcement_id, user_id),
+    CONSTRAINT fk_ar_announcement FOREIGN KEY (announcement_id) REFERENCES announcement(id) ON DELETE CASCADE,
+    CONSTRAINT fk_ar_user FOREIGN KEY (user_id) REFERENCES sys_user(id) ON DELETE CASCADE
 ) COMMENT '公告阅读记录表';
 
 -- 索引
 CREATE INDEX idx_announcement_creator ON announcement(creator_id);
 CREATE INDEX idx_announcement_status ON announcement(publish_status);
 CREATE INDEX idx_announcement_type ON announcement(type);
+CREATE INDEX idx_announcement_create_time ON announcement(create_time);
+CREATE INDEX idx_ar_user ON announcement_read(user_id);
 
 -- =====================================================================
 -- 完成

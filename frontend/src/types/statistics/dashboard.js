@@ -1,4 +1,4 @@
-﻿export const TIME_RANGE_OPTIONS = [
+export const TIME_RANGE_OPTIONS = [
   { label: '近7天', value: '7d' },
   { label: '近30天', value: '30d' },
   { label: '近3月', value: '3m' },

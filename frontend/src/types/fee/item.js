@@ -1,4 +1,4 @@
-﻿export const CHARGE_ITEM_TYPE_OPTIONS = [
+export const CHARGE_ITEM_TYPE_OPTIONS = [
   { dictValue: '1', dictLabel: '物业费' },
   { dictValue: '2', dictLabel: '车位费' },
   { dictValue: '3', dictLabel: '水电费' },

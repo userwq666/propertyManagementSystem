@@ -1,4 +1,4 @@
-﻿import request from "@/utils/request"
+import request from "@/utils/request"
 
 export function getHouseList(params) {
   return request({ url: "/community/house/page", method: "get", params })

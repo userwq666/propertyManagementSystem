@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="app-container">
     <div class="page-header">
       <h1>设备列表管理</h1>

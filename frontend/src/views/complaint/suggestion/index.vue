@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="app-container">
     <div class="page-header">
       <h1>投诉建议管理</h1>

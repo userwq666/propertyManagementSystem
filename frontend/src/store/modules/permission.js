@@ -1,4 +1,4 @@
-﻿import { defineStore } from "pinia"
+import { defineStore } from "pinia"
 import { constantRoutes, asyncRoutes } from "@/router/routes"
 import router from "@/router"
 

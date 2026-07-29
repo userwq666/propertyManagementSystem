@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="error-page">
     <div class="error-code">403</div>
     <div class="error-desc">抱歉，您没有权限访问此页面</div>

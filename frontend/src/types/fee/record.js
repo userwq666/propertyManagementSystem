@@ -1,4 +1,4 @@
-﻿export const PAY_METHOD_OPTIONS = [
+export const PAY_METHOD_OPTIONS = [
   { dictValue: '1', dictLabel: '现金' },
   { dictValue: '2', dictLabel: '微信' },
   { dictValue: '3', dictLabel: '支付宝' },

@@ -1,4 +1,4 @@
-﻿export const RepairTypeOptions = [
+export const RepairTypeOptions = [
   { value: '1', label: '水电维修' },
   { value: '2', label: '设备维修' },
   { value: '3', label: '公共设施' },

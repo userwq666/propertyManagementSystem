@@ -1,4 +1,4 @@
-﻿export const NOTICE_TYPE_OPTIONS = [
+export const NOTICE_TYPE_OPTIONS = [
   { dictValue: '1', dictLabel: '物业公告' },
   { dictValue: '2', dictLabel: '安全通知' },
   { dictValue: '3', dictLabel: '活动通知' },

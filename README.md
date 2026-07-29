@@ -161,7 +161,7 @@ mybatis-plus.configuration.log-impl=org.apache.ibatis.logging.stdout.StdOutImpl
 #### 系统基础表
 | 表名 | 说明 | 核心字段 |
 |------|------|----------|
-| `sys_user` | 系统用户 | id, username, password, real_name, phone, user_type, status |
+| `sys_user` | 系统用户 | id, username, password, real_name, phone, user_type(1-5), status |
 | `sys_role` | 角色表 | id, role_name, role_key, remark |
 | `sys_menu` | 菜单权限 | id, parent_id, menu_name, path, component, perms, menu_type |
 | `sys_user_role` | 用户角色关联 | user_id, role_id |
@@ -180,8 +180,10 @@ mybatis-plus.configuration.log-impl=org.apache.ibatis.logging.stdout.StdOutImpl
 | 表名 | 说明 | 核心字段 |
 |------|------|----------|
 | `fee_item` | 收费项目 | id, item_name, item_type, fee_cycle, unit_price, unit |
-| `fee_notice` | 收费通知 | id, notice_no, owner_id, house_id, fee_item_id, total_amount, status, due_date |
-| `fee_record` | 缴费记录 | id, record_no, notice_id, pay_amount, pay_type, pay_time, status |
+| `fee_notice` | 收费通知 | id, notice_title, notice_content, notice_type, send_scope, send_status, send_time, creator_id |
+| `fee_notice_building` | 收费通知-楼栋关联 | notice_id, building_id |
+| `fee_notice_owner` | 收费通知-业主关联 | notice_id, owner_id |
+| `fee_record` | 缴费记录 | id, fee_no, owner_id, house_id, item_id, amount, paid_amount, discount_amount, status, pay_type, pay_time, start_date, end_date |
 
 #### 设备管理表
 | 表名 | 说明 | 核心字段 |
@@ -198,13 +200,15 @@ mybatis-plus.configuration.log-impl=org.apache.ibatis.logging.stdout.StdOutImpl
 | `announcement` | 公告通知 |
 | `announcement_read` | 公告阅读记录 |
 | `inspection_plan` | 巡检计划 |
+| `inspection_plan_equipment` | 巡检计划-设备关联 |
+| `inspection_plan_inspector` | 巡检计划-人员关联 |
 | `inspection_record` | 巡检记录 |
 
 ### 4.3 核心枚举值
 
 ```java
 // 用户类型
-UserType: 1-超级管理员, 2-物业管理员, 3-业主
+UserType: 1-超级管理员, 2-物业管理员, 3-业主, 4-维修工, 5-巡检员
 
 // 用户状态
 UserStatus: 0-禁用, 1-正常
@@ -222,31 +226,31 @@ OwnerType: 1-本人, 2-家属, 3-租客
 ParkingStatus: 0-空闲, 1-已租, 2-已售, 3-维修中
 
 // 收费项目类型
-FeeItemType: 1-物业费, 2-车位费, 3-水费, 4-电费, 5-燃气费, 6-其他
+FeeItemType: 1-物业费, 2-车位费, 3-水费, 4-电费, 5-燃气费, 6-暖气费, 9-其他
 
 // 收费周期
 FeeCycleType: 1-按月, 2-按季, 3-按半年, 4-按年, 5-一次性
 
 // 缴费状态
-FeeRecordStatus: 0-待缴费, 1-已缴费, 2-逾期, 3-减免, 4-作废
+FeeRecordStatus: 0-未缴费, 1-部分缴费, 2-已缴费, 3-逾期, 4-作废
 
 // 缴费方式
-PayType: 1-现金, 2-微信, 3-支付宝, 4-银行卡, 5-转账, 6-其他
+PayType: 1-现金, 2-微信, 3-支付宝, 4-银行卡, 5-转账
 
 // 设备状态
-EquipmentStatus: 1-运行中, 2-停用, 3-维修中, 4-报废
+EquipmentStatus: 1-正常, 2-故障, 3-维修中, 4-停用, 5-报废
 
 // 维修类型
-MaintenanceType: 1-日常维护, 2-故障维修, 3-定期检修, 4-技改升级
+MaintenanceType: 1-日常巡检, 2-定期保养, 3-故障维修, 4-更换配件, 5-其他
 
 // 维修状态
-MaintenanceStatus: 0-待派单, 1-处理中, 2-已完成, 3-已取消
+MaintenanceStatus: 0-待维护, 1-进行中, 2-已完成, 3-取消
 
 // 报修状态
-RepairStatus: 0-待受理, 1-处理中, 2-已完成, 3-已取消, 4-已评价
+RepairStatus: 0-待派单, 1-处理中, 2-待评价, 3-已完成, 4-已取消
 
 // 投诉状态
-ComplaintStatus: 0-待受理, 1-处理中, 2-已回复, 3-已关闭
+ComplaintStatus: 0-待受理, 1-处理中, 2-已回复, 3-已关闭, 4-已撤销
 
 // 公告类型
 AnnouncementType: 1-通知公告, 2-政策法规, 3-便民服务, 4-活动通知, 5-紧急通知

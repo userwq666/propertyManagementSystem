@@ -1,4 +1,4 @@
-﻿import request from "@/utils/request"
+import request from "@/utils/request"
 
 export function getNoticeList(params) {
   return request({ url: "/announcement/page", method: "get", params })

@@ -1,4 +1,4 @@
-﻿package com.lsy.propertymanagementsystem.module.statistics.controller;
+package com.lsy.propertymanagementsystem.module.statistics.controller;
 
 import com.lsy.propertymanagementsystem.common.result.Result;
 import com.lsy.propertymanagementsystem.module.statistics.service.StatisticsService;

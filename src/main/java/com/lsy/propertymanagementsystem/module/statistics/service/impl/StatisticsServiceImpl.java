@@ -1,23 +1,9 @@
-﻿package com.lsy.propertymanagementsystem.module.statistics.service.impl;
+package com.lsy.propertymanagementsystem.module.statistics.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityHouseMapper;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityOwnerMapper;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityParkingMapper;
-import com.lsy.propertymanagementsystem.module.fee.domain.FeeItemDomain;
-import com.lsy.propertymanagementsystem.module.fee.domain.FeeRecordDomain;
-import com.lsy.propertymanagementsystem.module.fee.enums.FeeRecordStatus;
-import com.lsy.propertymanagementsystem.module.fee.mapper.FeeItemMapper;
-import com.lsy.propertymanagementsystem.module.fee.mapper.FeeRecordMapper;
-import com.lsy.propertymanagementsystem.module.repair.domain.RepairRecordDomain;
-import com.lsy.propertymanagementsystem.module.repair.enums.RepairStatus;
-import com.lsy.propertymanagementsystem.module.repair.enums.RepairType;
-import com.lsy.propertymanagementsystem.module.repair.mapper.RepairRecordMapper;
-import com.lsy.propertymanagementsystem.module.statistics.service.StatisticsService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
 import com.lsy.propertymanagementsystem.module.complaint.domain.ComplaintSuggestDomain;
 import com.lsy.propertymanagementsystem.module.complaint.enums.ComplaintStatus;
 import com.lsy.propertymanagementsystem.module.complaint.enums.ComplaintType;
@@ -27,9 +13,23 @@ import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentMainten
 import com.lsy.propertymanagementsystem.module.equipment.enums.EquipmentStatus;
 import com.lsy.propertymanagementsystem.module.equipment.mapper.EquipmentMaintenanceMapper;
 import com.lsy.propertymanagementsystem.module.equipment.mapper.EquipmentMapper;
+import com.lsy.propertymanagementsystem.module.fee.domain.FeeItemDomain;
+import com.lsy.propertymanagementsystem.module.fee.domain.FeeRecordDomain;
+import com.lsy.propertymanagementsystem.module.fee.enums.FeeRecordStatus;
+import com.lsy.propertymanagementsystem.module.fee.mapper.FeeItemMapper;
+import com.lsy.propertymanagementsystem.module.fee.mapper.FeeRecordMapper;
 import com.lsy.propertymanagementsystem.module.inspection.domain.InspectionRecordDomain;
 import com.lsy.propertymanagementsystem.module.inspection.enums.InspectResult;
 import com.lsy.propertymanagementsystem.module.inspection.mapper.InspectionRecordMapper;
+import com.lsy.propertymanagementsystem.module.repair.domain.RepairRecordDomain;
+import com.lsy.propertymanagementsystem.module.repair.enums.RepairStatus;
+import com.lsy.propertymanagementsystem.module.repair.enums.RepairType;
+import com.lsy.propertymanagementsystem.module.repair.mapper.RepairRecordMapper;
+import com.lsy.propertymanagementsystem.module.statistics.service.StatisticsService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -54,6 +54,18 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Autowired
     private CommunityParkingMapper parkingMapper;
+
+    @Autowired
+    private ComplaintSuggestMapper complaintSuggestMapper;
+
+    @Autowired
+    private EquipmentMapper equipmentMapper;
+
+    @Autowired
+    private EquipmentMaintenanceMapper equipmentMaintenanceMapper;
+
+    @Autowired
+    private InspectionRecordMapper inspectionRecordMapper;
 
     @Override
     public Map<String, Object> getOverview() {
@@ -146,7 +158,6 @@ public class StatisticsServiceImpl implements StatisticsService {
                         Collectors.reducing(BigDecimal.ZERO, FeeRecordDomain::getAmount, BigDecimal::add)
                 ));
 
-        // 批量查询收费项目名称
         List<Long> itemIds = new ArrayList<>(itemMap.keySet());
         Map<Long, String> itemNameMap = new HashMap<>();
         if (!itemIds.isEmpty()) {
@@ -199,5 +210,50 @@ public class StatisticsServiceImpl implements StatisticsService {
         }
 
         return result;
+    }
+
+    @Override
+    public List<Map<String, Object>> getFeeTrend(String timeRange) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Map<String, Object>> getRepairTrend(String timeRange) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Map<String, Object>> getRepairTypeRatio(String timeRange) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Map<String, Object>> getDeviceStatus(String timeRange) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Map<String, Object>> getMaintenanceWarning(String timeRange) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Map<String, Object>> getSatisfactionTrend(String timeRange) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Map<String, Object>> getComplaintTypeRatio(String timeRange) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Map<String, Object>> getInspectionCompletion(String timeRange) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Map<String, Object>> getInspectionAbnormal(String timeRange) {
+        return Collections.emptyList();
     }
 }

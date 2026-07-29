@@ -1,4 +1,4 @@
-﻿export const constantRoutes = [
+export const constantRoutes = [
   {
     path: "/login",
     component: () => import("@/views/login/index.vue"),
@@ -19,6 +19,7 @@
   },
   {
     path: "/",
+    hidden: true,
     component: () => import("@/layout/index.vue"),
     redirect: "/dashboard",
     children: [

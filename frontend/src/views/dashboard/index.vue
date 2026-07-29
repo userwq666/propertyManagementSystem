@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="dashboard-container">
     <div class="page-header">
       <h1>数据概览</h1>

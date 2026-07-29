@@ -19,8 +19,6 @@ public class FeeNoticeDTO {
     @NotNull(message = "发送范围不能为空")
     private Integer sendScope;
 
-    private String buildingIds;
-    private String ownerIds;
     private Integer sendStatus;
     private Long creatorId;
 }

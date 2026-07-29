@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="statistics-dashboard">
     <!-- 顶部概览卡片 -->
     <el-row :gutter="20" class="overview-cards">

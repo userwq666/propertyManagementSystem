@@ -2,6 +2,7 @@ package com.lsy.propertymanagementsystem.module.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.lsy.propertymanagementsystem.common.exception.BusinessException;
+import com.lsy.propertymanagementsystem.common.result.ResultCode;
 import com.lsy.propertymanagementsystem.common.utils.JwtUtils;
 import com.lsy.propertymanagementsystem.common.utils.PasswordUtils;
 import com.lsy.propertymanagementsystem.module.system.dto.LoginDTO;
@@ -56,7 +57,6 @@ public class AuthServiceImpl implements AuthService {
             throw new BusinessException("用户名或密码错误");
         }
 
-        // 先收集角色和权限
         LambdaQueryWrapper<SysUserRoleDomain> roleWrapper = new LambdaQueryWrapper<>();
         roleWrapper.eq(SysUserRoleDomain::getUserId, user.getId());
         List<SysUserRoleDomain> userRoles = userRoleMapper.selectList(roleWrapper);
@@ -112,11 +112,16 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void logout(String token) {
-        JwtUtils.invalidateToken(token);
+        if (token != null) {
+            JwtUtils.invalidateToken(token);
+        }
     }
 
     @Override
     public UserVO getCurrentUser(String token) {
+        if (token == null || token.isEmpty()) {
+            throw new BusinessException(ResultCode.UNAUTHORIZED);
+        }
         Long userId = JwtUtils.getUserId(token);
         SysUserDomain user = userService.getById(userId);
 

@@ -1,4 +1,4 @@
-﻿import request from "@/utils/request"
+import request from "@/utils/request"
 
 export function getParkingList(params) {
   return request({ url: "/community/parking/page", method: "get", params })

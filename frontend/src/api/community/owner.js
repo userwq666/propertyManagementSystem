@@ -1,4 +1,4 @@
-﻿import request from "@/utils/request"
+import request from "@/utils/request"
 
 export function getOwnerList(params) {
   return request({ url: "/community/owner/page", method: "get", params })

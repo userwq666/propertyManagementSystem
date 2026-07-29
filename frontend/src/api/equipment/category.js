@@ -1,4 +1,4 @@
-﻿import request from "@/utils/request"
+import request from "@/utils/request"
 
 export function getCategoryPage(params) {
   return request({ url: "/equipment/category/page", method: "get", params })

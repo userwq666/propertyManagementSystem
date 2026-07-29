@@ -1,4 +1,4 @@
-﻿export const PlanTypeOptions = [
+export const PlanTypeOptions = [
   { value: '1', label: '日常巡检' },
   { value: '2', label: '专项巡检' },
   { value: '3', label: '设备巡检' },

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <el-container class="layout-container">
     <el-aside :class="['layout-aside', { collapse: isCollapse }]" :width="isCollapse ? '64px' : '210px'">
       <div class="logo-container" :class="{ collapse: isCollapse }">
@@ -155,11 +155,11 @@ const handleCommand = (command) => {
 const getMenuIcon = (icon) => {
   if (!icon) return Menu
   const icons = {
-    HomeFilled, User, UserFilled, Avatar, Menu, Setting, Lock, SwitchButton, Bell, BellFilled,
-    House, OfficeBuilding, Grid, Tickets, StarFilled, ChatLineSquare, EditPen, Star,
-    Document, Notification, MessageBox, DocumentAdd, Key, Location, Van, DocumentCopy,
-    Money, Coin, DocumentChecked, Finished, ScaleToOriginal, WarningFilled, RefreshRight,
-    Tools, Monitor, Timer, Box, Cpu, DataAnalysis, DataBoard, List
+    HomeFilled, User, UserFilled, Avatar, Menu, Setting, Lock, SwitchButton, BellFilled,
+    House, OfficeBuilding, Tickets, ChatLineSquare,
+    Notification, DocumentCopy,
+    Money, Coin, DocumentChecked, WarningFilled,
+    Tools, Monitor, Timer, DataAnalysis, DataBoard, List
   }
   return icons[icon] || Menu
 }

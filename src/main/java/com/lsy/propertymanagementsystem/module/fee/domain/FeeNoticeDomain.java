@@ -14,8 +14,6 @@ public class FeeNoticeDomain {
     private String noticeContent;
     private Integer noticeType;
     private Integer sendScope;
-    private String buildingIds;
-    private String ownerIds;
     private Integer sendStatus;
     private LocalDateTime sendTime;
     private Long creatorId;
