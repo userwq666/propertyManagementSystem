@@ -1,42 +1,29 @@
-import request from "@/utils/request"
+﻿import request from '@/utils/request'
 
-export function getInspectionPlanList(params) {
-  return request({ url: "/inspection/plan/page", method: "get", params })
+export function addPlan(data) {
+  return request({ url: '/inspection/plan', method: 'post', data })
 }
 
-export function getInspectionPlanInfo(id) {
-  return request({ url: `/inspection/plan/${id}`, method: "get" })
+export function updatePlan(data) {
+  return request({ url: '/inspection/plan', method: 'put', data })
 }
 
-export function addInspectionPlan(data) {
-  return request({ url: "/inspection/plan", method: "post", data })
+export function deletePlan(id) {
+  return request({ url: `/inspection/plan/${id}`, method: 'delete' })
 }
 
-export function updateInspectionPlan(data) {
-  return request({ url: "/inspection/plan", method: "put", data })
+export function getPlanById(id) {
+  return request({ url: `/inspection/plan/${id}`, method: 'get' })
 }
 
-export function deleteInspectionPlan(id) {
-  return request({ url: `/inspection/plan/${id}`, method: "delete" })
+export function getPlanPage(params) {
+  return request({ url: '/inspection/plan/page', method: 'get', params })
 }
 
-export function updateInspectionPlanStatus(id, status) {
-  return request({ url: "/inspection/plan/status", method: "put", params: { id, status } })
+export function updatePlanStatus(params) {
+  return request({ url: '/inspection/plan/status', method: 'put', params })
 }
 
-export function getUserList(params) {
-  return request({ url: "/system/user/page", method: "get", params })
-}
-
-export function generatePlan() {
-  return request({ url: "/inspection/plan/generate", method: "post" })
-}
-
-
-export function getInspectionPlanStatistics(params) {
-  return request({ url: "/inspection/plan/statistics", method: "get", params })
-}
-
-export function getInspectionPlanRecords(params) {
-  return request({ url: "/inspection/record/page", method: "get", params })
+export function generateRecords(params) {
+  return request({ url: '/inspection/plan/generate', method: 'post', params })
 }

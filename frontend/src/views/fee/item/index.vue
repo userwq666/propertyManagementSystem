@@ -1,182 +1,201 @@
-<template>
-  <div class="app-container">
-    <div class="page-header">
-      <h1>收费项目管理</h1>
-      <el-button type="primary" @click="handleAdd" :icon="Plus">新增项目</el-button>
-    </div>
-
-    <el-form :inline="true" :model="query" class="search-form">
+﻿<template>
+  <div>
+    <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="项目名称">
-        <el-input v-model="query.itemName" placeholder="搜索" clearable @keyup.enter="loadData" style="width:180px" />
+        <el-input v-model="searchForm.itemName" placeholder="请输入项目名称" clearable />
+      </el-form-item>
+      <el-form-item label="状态">
+        <el-select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 150px">
+          <el-option label="启用" :value="0" />
+          <el-option label="停用" :value="1" />
+        </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="loadData" :icon="Search">搜索</el-button>
-        <el-button @click="resetQuery" :icon="RefreshRight">重置</el-button>
+        <el-button type="primary" @click="handleSearch">搜索</el-button>
+        <el-button @click="resetSearch">重置</el-button>
       </el-form-item>
     </el-form>
 
-    <el-table v-loading="loading" :data="tableData" border stripe>
-      <el-table-column prop="id" label="ID" width="60" />
-      <el-table-column prop="itemName" label="项目名称" min-width="120" />
-      <el-table-column prop="itemType" label="类型" width="100">
-        <template #default="{ row }">{{ itemTypeLabel(row.itemType) }}</template>
-      </el-table-column>
-      <el-table-column prop="unitPrice" label="单价" width="100" />
-      <el-table-column prop="unit" label="单位" width="80" />
-      <el-table-column prop="cycleType" label="周期" width="100">
-        <template #default="{ row }">{{ cycleTypeLabel(row.cycleType) }}</template>
-      </el-table-column>
-      <el-table-column label="状态" width="80">
-        <template #default="{ row }">
-          <el-switch :model-value="row.status===1" @change="(v) => handleStatusChange(row, v)" />
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="160" fixed="right">
-        <template #default="{ row }">
-          <el-button type="primary" size="small" link @click="handleEdit(row)">编辑</el-button>
-          <el-button type="danger" size="small" link @click="handleDelete(row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <div class="table-container">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <el-button type="primary" @click="handleAdd">新增项目</el-button>
+        </div>
+        <div class="toolbar-right">
+          <el-button @click="fetchData">刷新</el-button>
+        </div>
+      </div>
 
-    <div class="pagination-container">
-      <el-pagination v-model:current-page="query.pageNum" v-model:page-size="query.pageSize" :page-sizes="[10,20,50]" layout="total,sizes,prev,pager,next" :total="total" @size-change="loadData" @current-change="loadData" />
+      <el-table :data="tableData" border stripe v-loading="loading">
+        <el-table-column prop="itemName" label="项目名称" width="140" />
+        <el-table-column label="类型" width="100">
+          <template #default="{ row }">{{ itemTypeLabel(row.itemType) }}</template>
+        </el-table-column>
+        <el-table-column prop="unitPrice" label="单价" width="100" />
+        <el-table-column prop="unit" label="单位" width="80" />
+        <el-table-column label="周期" width="80">
+          <template #default="{ row }">{{ cycleTypeLabel(row.cycleType) }}</template>
+        </el-table-column>
+        <el-table-column label="状态" width="80">
+          <template #default="{ row }">
+            <el-tag :type="row.status === 0 ? 'success' : 'danger'">{{ row.status === 0 ? '启用' : '停用' }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="description" label="描述" show-overflow-tooltip />
+        <el-table-column prop="createTime" label="创建时间" width="180" />
+        <el-table-column label="操作" width="280" fixed="right">
+          <template #default="{ row }">
+            <el-button type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
+            <el-button type="danger" size="small" @click="handleDelete(row)">删除</el-button>
+            <el-button
+              :type="row.status === 0 ? 'warning' : 'success'"
+              size="small"
+              @click="handleToggleStatus(row)"
+            >{{ row.status === 0 ? '停用' : '启用' }}</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <el-pagination
+        v-model:current-page="searchForm.pageNum"
+        v-model:page-size="searchForm.pageSize"
+        :total="total"
+        :page-sizes="[10, 20, 50]"
+        layout="total, sizes, prev, pager, next"
+        @size-change="fetchData"
+        @current-change="fetchData"
+        style="margin-top: 16px; justify-content: flex-end;"
+      />
     </div>
 
-    <el-dialog v-model="dialog.visible" :title="dialog.title" width="500px" @close="formRef?.resetFields()">
-      <el-form ref="formRef" :model="dialog.form" :rules="rules" label-width="90px">
+    <el-dialog :title="dialogTitle" v-model="dialogVisible" width="550px" @close="resetForm">
+      <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <el-form-item label="项目名称" prop="itemName">
-          <el-input v-model="dialog.form.itemName" placeholder="如：物业管理费" />
+          <el-input v-model="form.itemName" placeholder="请输入项目名称" />
         </el-form-item>
         <el-form-item label="类型" prop="itemType">
-          <el-select v-model="dialog.form.itemType" style="width:100%">
-            <el-option v-for="o in itemTypes" :key="o.value" :label="o.label" :value="o.value" />
+          <el-select v-model="form.itemType" placeholder="请选择类型" style="width: 100%">
+            <el-option label="物业费" :value="0" />
+            <el-option label="水费" :value="1" />
+            <el-option label="电费" :value="2" />
+            <el-option label="燃气费" :value="3" />
+            <el-option label="停车费" :value="4" />
+            <el-option label="其他" :value="5" />
           </el-select>
         </el-form-item>
         <el-form-item label="单价" prop="unitPrice">
-          <el-input-number v-model="dialog.form.unitPrice" :min="0" :precision="2" style="width:100%" />
+          <el-input-number v-model="form.unitPrice" :min="0" :precision="2" placeholder="请输入单价" style="width: 100%" />
         </el-form-item>
-        <el-form-item label="单位">
-          <el-input v-model="dialog.form.unit" placeholder="如：元/m²·月" />
+        <el-form-item label="单位" prop="unit">
+          <el-input v-model="form.unit" placeholder="请输入单位（如：元/㎡、元/吨）" />
         </el-form-item>
         <el-form-item label="周期" prop="cycleType">
-          <el-select v-model="dialog.form.cycleType" style="width:100%">
-            <el-option v-for="o in cycleTypes" :key="o.value" :label="o.label" :value="o.value" />
+          <el-select v-model="form.cycleType" placeholder="请选择周期" style="width: 100%">
+            <el-option label="月" :value="0" />
+            <el-option label="季" :value="1" />
+            <el-option label="年" :value="2" />
+            <el-option label="一次性" :value="3" />
           </el-select>
         </el-form-item>
-        <el-form-item label="状态">
-          <el-radio-group v-model="dialog.form.status">
-            <el-radio :value="1">启用</el-radio>
-            <el-radio :value="0">禁用</el-radio>
+        <el-form-item label="描述" prop="description">
+          <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入描述" />
+        </el-form-item>
+        <el-form-item label="状态" prop="status">
+          <el-radio-group v-model="form.status">
+            <el-radio :value="0">启用</el-radio>
+            <el-radio :value="1">停用</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialog.visible=false">取消</el-button>
-        <el-button type="primary" :loading="dialog.loading" @click="submitForm">确定</el-button>
+        <div class="dialog-footer">
+          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="handleSubmit">确定</el-button>
+        </div>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from "vue"
-import { ElMessage, ElMessageBox } from "element-plus"
-import { Plus, Search, RefreshRight } from "@element-plus/icons-vue"
-import { getItemList, getItemInfo, addItem, updateItem, deleteItem, updateItemStatus } from "@/api/fee/item"
+import { ref, reactive, computed, onMounted } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { addFeeItem, updateFeeItem, deleteFeeItem, getFeeItemPage, updateFeeItemStatus } from '@/api/fee/item'
 
 const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)
+const dialogVisible = ref(false)
 const formRef = ref(null)
+const isEdit = ref(false)
 
-const query = reactive({ pageNum: 1, pageSize: 10, itemName: "" })
-const dialog = reactive({ visible: false, title: "", loading: false, form: {} })
+const searchForm = reactive({ pageNum: 1, pageSize: 10, itemName: '', status: null })
+const form = reactive({ id: null, itemName: '', itemType: 0, unitPrice: null, unit: '', cycleType: 0, description: '', status: 0 })
+
+const dialogTitle = computed(() => isEdit.value ? '编辑收费项目' : '新增收费项目')
+
 const rules = {
-  itemName: [{ required: true, message: "请输入项目名称", trigger: "blur" }],
-  itemType: [{ required: true, message: "请选择类型", trigger: "change" }],
-  unitPrice: [{ required: true, message: "请输入单价", trigger: "blur" }],
-  cycleType: [{ required: true, message: "请选择周期", trigger: "change" }]
+  itemName: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
+  itemType: [{ required: true, message: '请选择类型', trigger: 'change' }],
+  unitPrice: [{ required: true, message: '请输入单价', trigger: 'blur' }],
+  unit: [{ required: true, message: '请输入单位', trigger: 'blur' }],
+  cycleType: [{ required: true, message: '请选择周期', trigger: 'change' }]
 }
 
-const itemTypes = [
-  { value: 1, label: "物业管理费" }, { value: 2, label: "水费" }, { value: 3, label: "电费" },
-  { value: 4, label: "燃气费" }, { value: 5, label: "供暖费" }, { value: 6, label: "停车费" },
-  { value: 7, label: "垃圾处理费" }, { value: 8, label: "维修基金" }, { value: 9, label: "其他" }
-]
-const cycleTypes = [
-  { value: 1, label: "每月" }, { value: 2, label: "每季" },
-  { value: 3, label: "每年" }, { value: 4, label: "一次性" }, { value: 5, label: "自定义" }
-]
+const itemTypeMap = { 0: '物业费', 1: '水费', 2: '电费', 3: '燃气费', 4: '停车费', 5: '其他' }
+const cycleTypeMap = { 0: '月', 1: '季', 2: '年', 3: '一次性' }
+function itemTypeLabel(t) { return itemTypeMap[t] || '未知' }
+function cycleTypeLabel(t) { return cycleTypeMap[t] || '未知' }
 
-const itemTypeLabel = (v) => itemTypes.find(o => o.value === v)?.label || "未知"
-const cycleTypeLabel = (v) => cycleTypes.find(o => o.value === v)?.label || "未知"
+onMounted(() => fetchData())
 
-const loadData = async () => {
+async function fetchData() {
   loading.value = true
   try {
-    const res = await getItemList(query)
-    tableData.value = res.data?.records || []
-    total.value = res.data?.total || 0
-  } catch { tableData.value = [] }
-  loading.value = false
+    const res = await getFeeItemPage({ ...searchForm })
+    tableData.value = res.data.records
+    total.value = res.data.total
+  } finally {
+    loading.value = false
+  }
 }
 
-const resetQuery = () => { query.itemName = ""; query.pageNum = 1; loadData() }
+function handleSearch() { searchForm.pageNum = 1; fetchData() }
+function resetSearch() { searchForm.itemName = ''; searchForm.status = null; handleSearch() }
 
-const handleAdd = () => {
-  dialog.title = "新增项目"
-  dialog.form = { id: null, itemName: "", itemType: 1, unitPrice: 0, unit: "", cycleType: 1, status: 1 }
-  dialog.visible = true
-}
+function handleAdd() { isEdit.value = false; resetForm(); dialogVisible.value = true }
+function handleEdit(row) { isEdit.value = true; Object.assign(form, row); dialogVisible.value = true }
+function resetForm() { formRef.value?.resetFields(); form.id = null; form.itemType = 0; form.cycleType = 0; form.status = 0 }
 
-const handleEdit = async (row) => {
-  dialog.title = "编辑项目"
+async function handleSubmit() {
+  const valid = await formRef.value.validate().catch(() => false)
+  if (!valid) return
   try {
-    const res = await getItemInfo(row.id)
-    dialog.form = { ...res.data }
-    dialog.visible = true
-  } catch {}
+    if (isEdit.value) { await updateFeeItem(form) }
+    else { await addFeeItem(form) }
+    ElMessage.success(isEdit.value ? '编辑成功' : '新增成功')
+    dialogVisible.value = false
+    fetchData()
+  } catch (e) { /* handled by interceptor */ }
 }
 
-const submitForm = async () => {
-  try { await formRef.value.validate() } catch { return }
-  dialog.loading = true
+async function handleDelete(row) {
+  await ElMessageBox.confirm('确定要删除该收费项目吗？', '提示', { type: 'warning' })
   try {
-    if (dialog.form.id) await updateItem(dialog.form)
-    else await addItem(dialog.form)
-    ElMessage.success(dialog.form.id ? "修改成功" : "新增成功")
-    dialog.visible = false
-    loadData()
-  } catch {}
-  dialog.loading = false
+    await deleteFeeItem(row.id)
+    ElMessage.success('删除成功')
+    fetchData()
+  } catch (e) { /* handled */ }
 }
 
-const handleDelete = async (row) => {
+async function handleToggleStatus(row) {
+  const newStatus = row.status === 0 ? 1 : 0
+  const action = newStatus === 1 ? '停用' : '启用'
+  await ElMessageBox.confirm(`确定要${action}该收费项目吗？`, '提示', { type: 'warning' })
   try {
-    await ElMessageBox.confirm(`确定删除 "${row.itemName}" 吗？`, "提示", { type: "warning" })
-    await deleteItem(row.id)
-    ElMessage.success("删除成功")
-    loadData()
-  } catch {}
+    await updateFeeItemStatus(row.id, newStatus)
+    ElMessage.success(`${action}成功`)
+    fetchData()
+  } catch (e) { /* handled */ }
 }
-
-const handleStatusChange = async (row, v) => {
-  try {
-    await updateItemStatus(row.id, v ? 1 : 0)
-    ElMessage.success(v ? "已启用" : "已禁用")
-    loadData()
-  } catch {}
-}
-
-onMounted(() => { loadData() })
 </script>
-
-<style lang="scss" scoped>
-.app-container { padding: 20px; }
-.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;
-  h1 { font-size: 20px; font-weight: 600; margin: 0; }
-}
-.search-form { margin-bottom: 16px; }
-.pagination-container { display: flex; justify-content: flex-end; margin-top: 16px; }
-</style>

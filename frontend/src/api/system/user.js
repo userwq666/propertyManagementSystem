@@ -1,80 +1,29 @@
-import request from '@/utils/request'
+﻿import request from '@/utils/request'
 
-export function getUserList(params) {
-  return request({
-    url: '/system/user/page',
-    method: 'get',
-    params
-  })
+export function getUserPage(params) {
+  return request({ url: '/system/user/page', method: 'get', params })
 }
 
-export function getUserInfo(userId) {
-  return request({
-    url: `/system/user/${userId}`,
-    method: 'get'
-  })
+export function getUserById(id) {
+  return request({ url: `/system/user/${id}`, method: 'get' })
 }
 
 export function addUser(data) {
-  return request({
-    url: '/system/user',
-    method: 'post',
-    data
-  })
+  return request({ url: '/system/user', method: 'post', data })
 }
 
 export function updateUser(data) {
-  return request({
-    url: '/system/user',
-    method: 'put',
-    data
-  })
+  return request({ url: '/system/user', method: 'put', data })
 }
 
 export function deleteUser(id) {
-  return request({
-    url: `/system/user/${id}`,
-    method: 'delete'
-  })
+  return request({ url: `/system/user/${id}`, method: 'delete' })
 }
 
-export function resetPassword(id, newPassword) {
-  return request({
-    url: '/system/user/password',
-    method: 'put',
-    params: { id, newPassword }
-  })
+export function resetPassword(id) {
+  return request({ url: `/system/user/${id}/resetPwd`, method: 'put' })
 }
 
-export function updateStatus(id, status) {
-  return request({
-    url: '/system/user/status',
-    method: 'put',
-    params: { id, status }
-  })
-}
-
-export function getRoleList(params) {
-  return request({
-    url: '/system/role/list',
-    method: 'get',
-    params
-  })
-}
-
-// 个人中心接口
-export function updateUserProfile(data) {
-  return request({
-    url: '/system/user/profile',
-    method: 'put',
-    data
-  })
-}
-
-export function updateUserPassword(data) {
-  return request({
-    url: '/system/user/password/change',
-    method: 'put',
-    data
-  })
+export function updateUserStatus(id, status) {
+  return request({ url: `/system/user/${id}/status`, method: 'put', params: { status } })
 }

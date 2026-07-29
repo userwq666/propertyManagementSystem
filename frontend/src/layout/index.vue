@@ -1,68 +1,65 @@
 <template>
   <el-container class="layout-container">
-    <el-aside :class="['layout-aside', { collapse: isCollapse }]" :width="isCollapse ? '64px' : '210px'">
-      <div class="logo-container" :class="{ collapse: isCollapse }">
-        <el-image class="logo-image" src="@/assets/logo.png" fit="contain" />
-        <span v-show="!isCollapse" class="logo-title">物业管理系统</span>
+    <el-aside :width="isCollapse ? '64px' : '220px'" class="layout-aside">
+      <div class="logo" @click="$router.push('/')">
+        <img src="/favicon.svg" alt="" />
+        <span v-show="!isCollapse">物业管理系统</span>
       </div>
-      <el-scrollbar class="menu-scrollbar">
-        <el-menu
-          :default-active="activeMenu"
-          :unique-opened="true"
-          :collapse="isCollapse"
-          :collapse-transition="false"
-          mode="vertical"
-          background-color="#304156"
-          text-color="#bfcbd9"
-          active-text-color="#409eff"
-          router
-          @select="handleSelect"
-          @openchange="handleOpenChange"
-        >
-          <el-menu-item index="/dashboard">
-            <home-filled />
-            <template #title>首页</template>
+      <el-menu
+        :default-active="activeMenu"
+        :collapse="isCollapse"
+        :collapse-transition="false"
+        background-color="#304156"
+        text-color="#bfcbd9"
+        active-text-color="#409EFF"
+        router
+      >
+        <template v-for="route in menuRoutes" :key="route.path">
+          <el-sub-menu v-if="route.children && route.children.length" :index="route.path">
+            <template #title>
+              <el-icon><component :is="route.meta.icon" /></el-icon>
+              <span>{{ route.meta.title }}</span>
+            </template>
+            <el-menu-item
+              v-for="child in route.children"
+              :key="child.path"
+              :index="'/' + child.path"
+            >
+              <el-icon><component :is="child.meta.icon" /></el-icon>
+              <span>{{ child.meta.title }}</span>
+            </el-menu-item>
+          </el-sub-menu>
+          <el-menu-item v-else :index="'/' + route.path">
+            <el-icon><component :is="route.meta.icon" /></el-icon>
+            <span>{{ route.meta.title }}</span>
           </el-menu-item>
-          <template v-for="route in sidebarRouters" :key="route.path">
-            <component :is="renderMenuComponent(route)" :route="route" />
-          </template>
-        </el-menu>
-      </el-scrollbar>
+        </template>
+      </el-menu>
     </el-aside>
 
-    <el-container class="main-container">
-      <el-header class="layout-header" height="50px">
+    <el-container>
+      <el-header class="layout-header">
         <div class="header-left">
-          <el-icon class="toggle-button" @click="toggleSidebar" :size="20">
-            <component :is="isCollapse ? Expand : Fold" />
+          <el-icon class="collapse-btn" @click="isCollapse = !isCollapse">
+            <Fold v-if="!isCollapse" /><Expand v-else />
           </el-icon>
-          <breadcrumb />
+          <el-breadcrumb separator="/">
+            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item v-for="item in breadcrumbs" :key="item.path">{{ item.meta.title }}</el-breadcrumb-item>
+          </el-breadcrumb>
         </div>
         <div class="header-right">
-          <el-tooltip content="全屏" placement="bottom">
-            <el-icon class="header-action" :size="18" @click="toggleFullScreen">
-              <full-screen />
-            </el-icon>
-          </el-tooltip>
-          <el-dropdown trigger="click" @command="handleCommand">
-            <span class="header-action header-avatar">
-              <el-avatar :size="30" :src="avatarUrl">
-                <user-filled />
-              </el-avatar>
-              <span class="username">{{ name }}</span>
-              <el-icon><arrow-down /></el-icon>
+          <el-dropdown @command="handleCommand">
+            <span class="user-info">
+              <el-avatar :size="32" :src="userStore.avatar" />
+              <span class="username">{{ userStore.realName }}</span>
+              <el-icon><ArrowDown /></el-icon>
             </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item command="profile">
-                  <user-filled /> 个人中心
-                </el-dropdown-item>
-                <el-dropdown-item command="password">
-                  <lock /> 修改密码
-                </el-dropdown-item>
-                <el-dropdown-item divided command="logout">
-                  <switch-button /> 退出登录
-                </el-dropdown-item>
+                <el-dropdown-item command="profile">个人信息</el-dropdown-item>
+                <el-dropdown-item command="password">修改密码</el-dropdown-item>
+                <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -70,333 +67,105 @@
       </el-header>
 
       <el-main class="layout-main">
-        <router-view v-slot="{ Component }">
-          <transition name="fade" mode="out-in">
-            <component :is="Component" />
-          </transition>
-        </router-view>
+        <router-view />
       </el-main>
     </el-container>
   </el-container>
 </template>
 
 <script setup>
-import { useRouter, useRoute } from 'vue-router'
-import { storeToRefs } from 'pinia'
-import { computed, ref, onMounted, watch } from 'vue'
-import { useUserStore } from '@/store/modules/user'
-import { usePermissionStore } from '@/store/modules/permission'
-import { useAppStore } from '@/store/modules/app'
-import {
-  HomeFilled, User, UserFilled, Avatar, Lock, Setting, SwitchButton, ArrowDown,
-  Expand, Fold, FullScreen, Menu, House, OfficeBuilding,
-  Tickets, ChatLineSquare, Notification, DocumentCopy, Money, Coin,
-  DocumentChecked, WarningFilled, Tools, Monitor, Timer, DataAnalysis,
-  DataBoard, List, BellFilled, Collection
-} from '@element-plus/icons-vue'
-import NProgress from 'nprogress'
-import 'nprogress/nprogress.css'
-import Breadcrumb from '@/components/Breadcrumb/index.vue'
+import { ref, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
+import { ElMessageBox } from 'element-plus'
 
-const router = useRouter()
 const route = useRoute()
+const router = useRouter()
 const userStore = useUserStore()
-const permissionStore = usePermissionStore()
-const appStore = useAppStore()
+const isCollapse = ref(false)
 
-const { sidebar } = storeToRefs(appStore)
-const { name, avatar, roles } = storeToRefs(userStore)
-const { sidebarRouters } = storeToRefs(permissionStore)
-
-const isCollapse = computed(() => !sidebar.value.opened)
-const activeMenu = ref(route.path)
-const avatarUrl = computed(() => avatar.value || '')
-
-const handleSelect = (key, keyPath) => {
-  if (key === '/') return
-  router.push(key).catch(() => {})
-}
-
-const handleOpenChange = (names) => {
-  if (isCollapse.value) return
-  activeMenu.value = names[names.length - 1]
-}
-
-const toggleSidebar = () => {
-  appStore.toggleSidebar()
-}
-
-const toggleFullScreen = () => {
-  if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen()
-  } else {
-    document.exitFullscreen()
-  }
-}
-
-const handleCommand = (command) => {
-  switch (command) {
-    case 'profile':
-      router.push('/profile/index')
-      break
-    case 'password':
-      router.push('/profile/index')
-      break
-    case 'setting':
-      router.push('/profile/index')
-      break
-    case 'logout':
-      userStore.logout()
-      router.push('/login')
-      break
-  }
-}
-
-const getMenuIcon = (icon) => {
-  if (!icon) return Menu
-  const icons = {
-    HomeFilled, User, UserFilled, Avatar, Menu, Setting, Lock, SwitchButton, BellFilled,
-    House, OfficeBuilding, Tickets, ChatLineSquare,
-    Notification, DocumentCopy,
-    Money, Coin, DocumentChecked, WarningFilled,
-    Tools, Monitor, Timer, DataAnalysis, DataBoard, List
-  }
-  return icons[icon] || Menu
-}
-
-const renderMenuComponent = (route) => {
-  if (route.hidden) return () => null
-
-  const hasChildren = route.children && route.children.length > 0
-
-  if (hasChildren) {
-    return {
-      name: `SubMenu-${route.name}`,
-      props: ['route'],
-      template: `
-        <el-sub-menu :index="route.path">
-          <template #title>
-            <component :is="getMenuIcon(route.meta?.icon)" />
-            <span>{{ route.meta?.title }}</span>
-          </template>
-          <template v-for="child in route.children" :key="child.path">
-            <component :is="renderMenuComponent(child)" :route="child" />
-          </template>
-        </el-sub-menu>
-      `,
-      methods: { getMenuIcon, renderMenuComponent }
-    }
-  }
-
-  return {
-    name: `MenuItem-${route.name}`,
-    props: ['route'],
-    template: `
-      <el-menu-item :index="route.path">
-        <component :is="getMenuIcon(route.meta?.icon)" />
-        <span>{{ route.meta?.title }}</span>
-      </el-menu-item>
-    `,
-    methods: { getMenuIcon }
-  }
-}
-
-watch(() => route.path, (val) => {
-  activeMenu.value = val
+const menuRoutes = computed(() => {
+  return router.options.routes.find(r => r.path === '/')?.children?.filter(r => r.meta?.title) || []
 })
 
-onMounted(() => {
-  NProgress.configure({ showSpinner: false })
+const activeMenu = computed(() => {
+  const { path } = route
+  return '/' + path.split('/').slice(1, 3).join('/')
 })
+
+const breadcrumbs = computed(() => {
+  const matched = route.matched.filter(r => r.meta.title && r.path !== '/')
+  return matched
+})
+
+function handleCommand(command) {
+  if (command === 'logout') {
+    ElMessageBox.confirm('确定要退出登录吗？', '提示', { type: 'warning' }).then(() => {
+      userStore.logout().then(() => router.push('/login'))
+    })
+  }
+}
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .layout-container {
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
+  height: 100vh;
 }
-
 .layout-aside {
-  height: 100%;
   background-color: #304156;
-  transition: width 0.3s ease;
-  overflow: hidden;
-  z-index: 100;
-
-  &.collapse {
-    width: 64px;
-  }
+  overflow-x: hidden;
+  transition: width 0.3s;
 }
-
-.logo-container {
-  height: 50px;
+.logo {
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 15px;
-  background-color: #2b2f3a;
-  transition: all 0.3s ease;
-
-  &.collapse {
-    justify-content: center;
-    padding: 0;
-  }
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
-
-.logo-image {
+.logo img {
   width: 32px;
   height: 32px;
-  margin-right: 10px;
-  flex-shrink: 0;
+  margin-right: 8px;
 }
-
-.logo-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #fff;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.menu-scrollbar {
-  height: calc(100% - 50px);
-}
-
 .layout-header {
-  height: 50px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 15px;
-  background-color: #fff;
-  border-bottom: 1px solid #d8dce5;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 0 3px 0 rgba(0, 0, 0, 0.04);
-  position: sticky;
-  top: 0;
-  z-index: 9;
+  background: #fff;
+  border-bottom: 1px solid #e6e6e6;
+  height: 60px;
+  padding: 0 20px;
 }
-
 .header-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 16px;
 }
-
-.toggle-button {
-  padding: 8px;
+.collapse-btn {
+  font-size: 20px;
   cursor: pointer;
-  color: #5a5e66;
-  transition: color 0.3s;
-
-  &:hover {
-    color: #409eff;
-  }
 }
-
 .header-right {
   display: flex;
   align-items: center;
-  gap: 15px;
 }
-
-.header-action {
+.user-info {
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 0 5px;
-  color: #5a5e66;
+  gap: 8px;
   cursor: pointer;
-  font-size: 14px;
-  transition: color 0.3s;
-
-  &:hover {
-    color: #409eff;
-  }
 }
-
-.header-avatar {
-  padding: 0 10px;
-  border-left: 1px solid #d8dce5;
-}
-
 .username {
   font-size: 14px;
-  color: #303133;
-  max-width: 120px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
-
 .layout-main {
+  background: #f0f2f5;
   padding: 20px;
-  background-color: #f0f2f5;
-  min-height: calc(100vh - 50px);
-  overflow: auto;
-}
-
-/* 菜单样式 */
-:deep(.el-menu--vertical) {
-  border-right: none;
-}
-
-:deep(.el-menu-item),
-:deep(.el-sub-menu__title) {
-  height: 50px;
-  line-height: 50px;
-
-  &:hover {
-    background-color: #263445 !important;
-  }
-}
-
-:deep(.el-menu-item.is-active) {
-  background-color: #409eff !important;
-  color: #fff !important;
-}
-
-:deep(.el-sub-menu .el-menu-item) {
-  min-width: 0 !important;
-}
-
-:deep(.el-menu--collapse .el-sub-menu__title) {
-  padding: 0;
-  text-align: center;
-}
-
-/* 过渡动画 */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-/* 滚动条 */
-:deep(.el-scrollbar__wrap) {
-  overflow-x: hidden !important;
-}
-
-/* 响应式 */
-@media (max-width: 768px) {
-  .layout-aside {
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 100vh;
-    z-index: 1000;
-
-    &.collapse {
-      width: 210px !important;
-    }
-  }
-
-  .layout-main {
-    padding: 15px;
-  }
+  overflow-y: auto;
 }
 </style>

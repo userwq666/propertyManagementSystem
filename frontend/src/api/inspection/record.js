@@ -1,34 +1,21 @@
-import request from "@/utils/request"
+﻿import request from '@/utils/request'
 
-export function getInspectionRecordList(params) {
-  return request({ url: "/inspection/record/page", method: "get", params })
+export function addRecord(data) {
+  return request({ url: '/inspection/record', method: 'post', data })
 }
 
-export function getInspectionRecordInfo(id) {
-  return request({ url: `/inspection/record/${id}`, method: "get" })
+export function updateRecord(data) {
+  return request({ url: '/inspection/record', method: 'put', data })
 }
 
-export function addInspectionRecord(data) {
-  return request({ url: "/inspection/record", method: "post", data })
+export function deleteRecord(id) {
+  return request({ url: `/inspection/record/${id}`, method: 'delete' })
 }
 
-export function updateInspectionRecord(data) {
-  return request({ url: "/inspection/record", method: "put", data })
+export function getRecordById(id) {
+  return request({ url: `/inspection/record/${id}`, method: 'get' })
 }
 
-export function deleteInspectionRecord(id) {
-  return request({ url: `/inspection/record/${id}`, method: "delete" })
-}
-
-export function getInspectionPlanOptions(params) {
-  return request({ url: "/inspection/plan/page", method: "get", params })
-}
-
-export function getUserList(params) {
-  return request({ url: "/system/user/page", method: "get", params })
-}
-
-
-export function getInspectionRecordStatistics(params) {
-  return request({ url: "/inspection/record/statistics", method: "get", params })
+export function getRecordPage(params) {
+  return request({ url: '/inspection/record/page', method: 'get', params })
 }

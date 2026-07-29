@@ -1,25 +1,25 @@
-import request from "@/utils/request"
+﻿import request from '@/utils/request'
 
-export function getItemList(params) {
-  return request({ url: "/fee/item/page", method: "get", params })
+export function addFeeItem(data) {
+  return request({ url: '/fee/item', method: 'post', data })
 }
 
-export function getItemInfo(id) {
-  return request({ url: `/fee/item/${id}`, method: "get" })
+export function updateFeeItem(data) {
+  return request({ url: '/fee/item', method: 'put', data })
 }
 
-export function addItem(data) {
-  return request({ url: "/fee/item", method: "post", data })
+export function deleteFeeItem(id) {
+  return request({ url: `/fee/item/${id}`, method: 'delete' })
 }
 
-export function updateItem(data) {
-  return request({ url: "/fee/item", method: "put", data })
+export function getFeeItemById(id) {
+  return request({ url: `/fee/item/${id}`, method: 'get' })
 }
 
-export function deleteItem(id) {
-  return request({ url: `/fee/item/${id}`, method: "delete" })
+export function getFeeItemPage(params) {
+  return request({ url: '/fee/item/page', method: 'get', params })
 }
 
-export function updateItemStatus(id, status) {
-  return request({ url: "/fee/item/status", method: "put", params: { id, status } })
+export function updateFeeItemStatus(params) {
+  return request({ url: '/fee/item/status', method: 'put', params })
 }
