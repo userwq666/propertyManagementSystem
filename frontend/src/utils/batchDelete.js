@@ -1,4 +1,5 @@
-﻿export async function batchDelete(deleteFn, ids, options = {}) {
+﻿import { ElMessage } from 'element-plus'
+export async function batchDelete(deleteFn, ids, options = {}) {
   const { onProgress, onError, continueOnError = true } = options
   const results = { success: [], failed: [] }
 
@@ -20,7 +21,7 @@
     if (!continueOnError) throw new Error(msg)
     console.warn(msg)
   } else {
-    console.log(\批量删除成功 \ 条\)
+    ElMessage.success(\批量删除成功 \ 条\)
   }
   return results
 }

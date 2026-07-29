@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <el-container class="layout-container">
     <el-aside :class="['layout-aside', { collapse: isCollapse }]" :width="isCollapse ? '64px' : '210px'">
       <div class="logo-container" :class="{ collapse: isCollapse }">
@@ -140,7 +140,7 @@ const handleCommand = (command) => {
       router.push('/profile/index')
       break
     case 'password':
-      router.push('/profile/password')
+      router.push('/profile/index')
       break
     case 'setting':
       router.push('/profile/index')

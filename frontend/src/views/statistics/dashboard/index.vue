@@ -149,7 +149,7 @@
 </template>
 
 <script setup>
-import { getOverview, getMonthlyFeeStatistics, getFeeByItem, getRepairOverview, getRepairByType } from '@/api/statistics/dashboard'
+import { getOverview, getMonthlyFeeStatistics, getFeeByItem, getRepairOverview, getRepairByType, getFeeTrend, getRepairTrend, getRepairTypeRatio, getDeviceStatus, getMaintenanceWarning, getSatisfactionTrend, getComplaintTypeRatio, getInspectionCompletion, getInspectionAbnormal } from '@/api/statistics/dashboard'
 
 const timeRange = ref('30d')
 const timeRangeOptions = TIME_RANGE_OPTIONS
@@ -222,7 +222,7 @@ const loadOverview = async () => {
 const loadFeeTrend = async () => {
   feeTrendLoading.value = true
   try {
-    const res = await console.log({ timeRange: timeRange.value })
+    const res = await getFeeTrend({ timeRange: timeRange.value })
     const data = res.data || res || []
     const dates = data.map(item => item.date)
     const amounts = data.map(item => item.amount)
@@ -252,7 +252,7 @@ const loadFeeTrend = async () => {
 const loadFeeItemRatio = async () => {
   feeItemRatioLoading.value = true
   try {
-    const res = await console.log({ timeRange: timeRange.value })
+    const res = await getFeeByItem({ timeRange: timeRange.value })
     const data = res.data || res || []
     if (feeItemRatioChartRef.value) {
       initChart(feeItemRatioChartRef.value, {
@@ -284,7 +284,7 @@ const loadFeeItemRatio = async () => {
 const loadRepairTrend = async () => {
   repairTrendLoading.value = true
   try {
-    const res = await console.log({ timeRange: timeRange.value })
+    const res = await getRepairTrend({ timeRange: timeRange.value })
     const data = res.data || res || []
     const dates = data.map(item => item.date)
     const counts = data.map(item => item.count)
@@ -314,7 +314,7 @@ const loadRepairTrend = async () => {
 const loadRepairTypeRatio = async () => {
   repairTypeRatioLoading.value = true
   try {
-    const res = await console.log({ timeRange: timeRange.value })
+    const res = await getRepairTypeRatio({ timeRange: timeRange.value })
     const data = res.data || res || []
     if (repairTypeRatioChartRef.value) {
       initChart(repairTypeRatioChartRef.value, {
@@ -346,7 +346,7 @@ const loadRepairTypeRatio = async () => {
 const loadDeviceStatus = async () => {
   deviceStatusLoading.value = true
   try {
-    const res = await console.log({ timeRange: timeRange.value })
+    const res = await getDeviceStatus({ timeRange: timeRange.value })
     const data = res.data || res || []
     if (deviceStatusChartRef.value) {
       initChart(deviceStatusChartRef.value, {
@@ -382,7 +382,7 @@ const loadDeviceStatus = async () => {
 const loadMaintenanceWarning = async () => {
   maintenanceWarningLoading.value = true
   try {
-    const res = await console.log({ timeRange: timeRange.value })
+    const res = await getMaintenanceWarning({ timeRange: timeRange.value })
     maintenanceWarnings.value = res.data || res || []
   } catch (error) {
     console.error('加载维保预警失败:', error)
@@ -394,7 +394,7 @@ const loadMaintenanceWarning = async () => {
 const loadSatisfactionTrend = async () => {
   satisfactionTrendLoading.value = true
   try {
-    const res = await console.log({ timeRange: timeRange.value })
+    const res = await getSatisfactionTrend({ timeRange: timeRange.value })
     const data = res.data || res || []
     const dates = data.map(item => item.date)
     const scores = data.map(item => item.score)
@@ -424,7 +424,7 @@ const loadSatisfactionTrend = async () => {
 const loadComplaintType = async () => {
   complaintTypeLoading.value = true
   try {
-    const res = await console.log({ timeRange: timeRange.value })
+    const res = await getComplaintTypeRatio({ timeRange: timeRange.value })
     const data = res.data || res || []
     if (complaintTypeChartRef.value) {
       initChart(complaintTypeChartRef.value, {
@@ -456,7 +456,7 @@ const loadComplaintType = async () => {
 const loadInspectionCompletion = async () => {
   inspectionCompletionLoading.value = true
   try {
-    const res = await console.log({ timeRange: timeRange.value })
+    const res = await getInspectionCompletion({ timeRange: timeRange.value })
     const data = res.data || res || []
     const dates = data.map(item => item.date)
     const rates = data.map(item => item.rate)
@@ -486,7 +486,7 @@ const loadInspectionCompletion = async () => {
 const loadInspectionAbnormal = async () => {
   inspectionAbnormalLoading.value = true
   try {
-    const res = await console.log({ timeRange: timeRange.value })
+    const res = await getInspectionAbnormal({ timeRange: timeRange.value })
     const data = res.data || res || []
     const dates = data.map(item => item.date)
     const rates = data.map(item => item.rate)
