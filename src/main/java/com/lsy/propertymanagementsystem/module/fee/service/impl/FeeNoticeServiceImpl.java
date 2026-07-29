@@ -85,11 +85,10 @@ public class FeeNoticeServiceImpl extends ServiceImpl<FeeNoticeMapper, FeeNotice
                 .map(FeeNoticeDomain::getCreatorId)
                 .collect(Collectors.toSet());
 
-        Map<Long, String> creatorNameMap = Collections.emptyMap();
-        if (!creatorIds.isEmpty()) {
-            creatorNameMap = sysUserMapper.selectBatchIds(creatorIds).stream()
-                    .collect(Collectors.toMap(SysUserDomain::getId, SysUserDomain::getRealName));
-        }
+        Map<Long, String> creatorNameMap = !creatorIds.isEmpty()
+                ? sysUserMapper.selectBatchIds(creatorIds).stream()
+                    .collect(Collectors.toMap(SysUserDomain::getId, SysUserDomain::getRealName))
+                : Collections.emptyMap();
 
         Page<FeeNoticeVO> voPage = new Page<>(pageNum, pageSize);
         voPage.setTotal(domainPage.getTotal());

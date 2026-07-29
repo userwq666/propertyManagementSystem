@@ -140,15 +140,11 @@ public class AnnouncementServiceImpl extends ServiceImpl<AnnouncementMapper, Ann
                 .map(AnnouncementDomain::getCreatorId)
                 .filter(id -> id != null)
                 .collect(Collectors.toSet());
-        Map<Long, String> creatorNameMap;
-        if (!creatorIds.isEmpty()) {
-            List<SysUserDomain> users = sysUserMapper.selectBatchIds(creatorIds);
-            creatorNameMap = users.stream()
+        Map<Long, String> creatorNameMap = !creatorIds.isEmpty()
+                ? sysUserMapper.selectBatchIds(creatorIds).stream()
                     .filter(u -> u.getRealName() != null)
-                    .collect(Collectors.toMap(SysUserDomain::getId, SysUserDomain::getRealName, (a, b) -> a));
-        } else {
-            creatorNameMap = Collections.emptyMap();
-        }
+                    .collect(Collectors.toMap(SysUserDomain::getId, SysUserDomain::getRealName, (a, b) -> a))
+                : Collections.emptyMap();
         return domains.stream().map(domain -> {
             AnnouncementVO vo = new AnnouncementVO();
             BeanUtils.copyProperties(domain, vo);

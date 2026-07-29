@@ -14,6 +14,7 @@ import com.lsy.propertymanagementsystem.module.fee.dto.FeeRecordDTO;
 import com.lsy.propertymanagementsystem.module.fee.dto.FeeRecordVO;
 import com.lsy.propertymanagementsystem.module.fee.enums.FeeRecordStatus;
 import com.lsy.propertymanagementsystem.module.fee.enums.PayType;
+import com.lsy.propertymanagementsystem.module.fee.mapper.FeeItemMapper;
 import com.lsy.propertymanagementsystem.module.fee.mapper.FeeRecordMapper;
 import com.lsy.propertymanagementsystem.module.fee.service.FeeItemService;
 import com.lsy.propertymanagementsystem.module.fee.service.FeeRecordService;
@@ -45,6 +46,9 @@ public class FeeRecordServiceImpl implements FeeRecordService {
 
     @Autowired
     private CommunityHouseMapper communityHouseMapper;
+
+    @Autowired
+    private FeeItemMapper feeItemMapper;
 
     @Override
     @Transactional
@@ -166,26 +170,20 @@ public class FeeRecordServiceImpl implements FeeRecordService {
         Set<Long> houseIds = domains.stream().map(FeeRecordDomain::getHouseId).collect(Collectors.toSet());
         Set<Long> itemIds = domains.stream().map(FeeRecordDomain::getItemId).collect(Collectors.toSet());
 
-        Map<Long, String> ownerNameMap = java.util.Collections.emptyMap();
-        if (!ownerIds.isEmpty()) {
-            List<CommunityOwnerDomain> owners = communityOwnerMapper.selectBatchIds(ownerIds);
-            ownerNameMap = owners.stream().collect(Collectors.toMap(CommunityOwnerDomain::getId, CommunityOwnerDomain::getName));
-        }
+        Map<Long, String> ownerNameMap = !ownerIds.isEmpty()
+                ? communityOwnerMapper.selectBatchIds(ownerIds).stream()
+                    .collect(Collectors.toMap(CommunityOwnerDomain::getId, CommunityOwnerDomain::getName))
+                : java.util.Collections.emptyMap();
 
-        Map<Long, String> houseRoomMap = java.util.Collections.emptyMap();
-        if (!houseIds.isEmpty()) {
-            List<CommunityHouseDomain> houses = communityHouseMapper.selectBatchIds(houseIds);
-            houseRoomMap = houses.stream().collect(Collectors.toMap(CommunityHouseDomain::getId, CommunityHouseDomain::getRoomNo));
-        }
+        Map<Long, String> houseRoomMap = !houseIds.isEmpty()
+                ? communityHouseMapper.selectBatchIds(houseIds).stream()
+                    .collect(Collectors.toMap(CommunityHouseDomain::getId, CommunityHouseDomain::getRoomNo))
+                : java.util.Collections.emptyMap();
 
-        Map<Long, String> itemNameMap = java.util.Collections.emptyMap();
-        if (!itemIds.isEmpty()) {
-            FeeItemService itemSvc = feeItemService;
-            if (itemSvc instanceof com.baomidou.mybatisplus.extension.service.IService) {
-                List<FeeItemDomain> items = ((com.baomidou.mybatisplus.extension.service.IService<FeeItemDomain>) itemSvc).listByIds(itemIds);
-                itemNameMap = items.stream().collect(Collectors.toMap(FeeItemDomain::getId, FeeItemDomain::getItemName));
-            }
-        }
+        Map<Long, String> itemNameMap = !itemIds.isEmpty()
+                ? feeItemMapper.selectBatchIds(itemIds).stream()
+                    .collect(Collectors.toMap(FeeItemDomain::getId, FeeItemDomain::getItemName))
+                : java.util.Collections.emptyMap();
 
         return domains.stream().map(domain -> convertToVO(domain, ownerNameMap, houseRoomMap, itemNameMap)).collect(Collectors.toList());
     }

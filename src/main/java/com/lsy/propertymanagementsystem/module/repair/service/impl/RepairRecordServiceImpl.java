@@ -153,21 +153,18 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         Set<Long> houseIds = records.stream().map(RepairRecordDomain::getHouseId).filter(Objects::nonNull).collect(Collectors.toSet());
         Set<Long> handlerIds = records.stream().map(RepairRecordDomain::getHandlerId).filter(Objects::nonNull).collect(Collectors.toSet());
 
-        Map<Long, String> ownerNameMap = new HashMap<>();
-        if (!ownerIds.isEmpty()) {
-            List<CommunityOwnerDomain> owners = communityOwnerMapper.selectBatchIds(ownerIds);
-            ownerNameMap = owners.stream().collect(Collectors.toMap(CommunityOwnerDomain::getId, CommunityOwnerDomain::getName));
-        }
-        Map<Long, String> roomNoMap = new HashMap<>();
-        if (!houseIds.isEmpty()) {
-            List<CommunityHouseDomain> houses = communityHouseMapper.selectBatchIds(houseIds);
-            roomNoMap = houses.stream().collect(Collectors.toMap(CommunityHouseDomain::getId, CommunityHouseDomain::getRoomNo));
-        }
-        Map<Long, String> handlerNameMap = new HashMap<>();
-        if (!handlerIds.isEmpty()) {
-            List<SysUserDomain> users = sysUserMapper.selectBatchIds(handlerIds);
-            handlerNameMap = users.stream().collect(Collectors.toMap(SysUserDomain::getId, SysUserDomain::getRealName));
-        }
+        Map<Long, String> ownerNameMap = !ownerIds.isEmpty()
+                ? communityOwnerMapper.selectBatchIds(ownerIds).stream()
+                    .collect(Collectors.toMap(CommunityOwnerDomain::getId, CommunityOwnerDomain::getName))
+                : new HashMap<>();
+        Map<Long, String> roomNoMap = !houseIds.isEmpty()
+                ? communityHouseMapper.selectBatchIds(houseIds).stream()
+                    .collect(Collectors.toMap(CommunityHouseDomain::getId, CommunityHouseDomain::getRoomNo))
+                : new HashMap<>();
+        Map<Long, String> handlerNameMap = !handlerIds.isEmpty()
+                ? sysUserMapper.selectBatchIds(handlerIds).stream()
+                    .collect(Collectors.toMap(SysUserDomain::getId, SysUserDomain::getRealName))
+                : new HashMap<>();
 
         return records.stream().map(domain -> {
             RepairRecordVO vo = new RepairRecordVO();
