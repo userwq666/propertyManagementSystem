@@ -20,8 +20,9 @@ import java.util.stream.Collectors;
 public class CommunityBuildingServiceImpl extends ServiceImpl<CommunityBuildingMapper, CommunityBuildingDomain> implements CommunityBuildingService {
 
     @Override
-    public Page<CommunityBuildingVO> page(int pageNum, int pageSize) {
+    public Page<CommunityBuildingVO> page(int pageNum, int pageSize, String buildingNo) {
         LambdaQueryWrapper<CommunityBuildingDomain> wrapper = new LambdaQueryWrapper<>();
+        if (buildingNo != null && !buildingNo.isBlank()) { wrapper.like(CommunityBuildingDomain::getBuildingNo, buildingNo); }
         wrapper.orderByDesc(CommunityBuildingDomain::getCreateTime);
         Page<CommunityBuildingDomain> domainPage = this.page(new Page<>(pageNum, pageSize), wrapper);
         List<CommunityBuildingVO> voList = domainPage.getRecords().stream()
@@ -45,7 +46,7 @@ public class CommunityBuildingServiceImpl extends ServiceImpl<CommunityBuildingM
     public void updateBuilding(CommunityBuildingDTO building) {
         CommunityBuildingDomain existing = this.getById(building.getId());
         if (existing == null) {
-            throw new BusinessException("楼栋不存在");
+            throw new BusinessException("楼栋不存�?);
         }
         BeanUtils.copyProperties(building, existing);
         this.updateById(existing);

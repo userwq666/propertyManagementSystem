@@ -29,7 +29,7 @@
         <el-table-column label="报修类型" width="100">
           <template #default="{ row }">{{ typeText(row.repairType) }}</template>
         </el-table-column>
-        <el-table-column prop="description" label="报修描述" show-overflow-tooltip />
+        <el-table-column prop="repairContent" label="报修描述" show-overflow-tooltip />
         <el-table-column label="状态" width="100">
           <template #default="{ row }">
             <el-tag :type="statusTag(row.status)">{{ statusText(row.status) }}</el-tag>
@@ -66,15 +66,13 @@
           </el-select>
         </el-form-item>
         <el-form-item label="报修类型" prop="repairType">
-          <el-select v-model="form.repairType">
-            <el-option label="水电维修" :value="0" /><el-option label="门窗维修" :value="1" /><el-option label="管道疏通" :value="2" /><el-option label="电器维修" :value="3" /><el-option label="其他" :value="4" />
-          </el-select>
+          <el-select v-model="form.repairType"><el-option label="水电维修" value="WATER_ELECTRICITY" /><el-option label="门窗维修" value="DOOR_WINDOW" /><el-option label="管道疏通" value="PIPE_DREDGE" /><el-option label="电器维修" value="ELECTRICAL" /><el-option label="其他" value="OTHER" /></el-select>
         </el-form-item>
-        <el-form-item label="报修描述" prop="description">
-          <el-input v-model="form.description" type="textarea" :rows="3" />
+        <el-form-item label="报修描述" prop="repairContent">
+          <el-input v-model="form.repairContent" type="textarea" :rows="3" />
         </el-form-item>
         <el-form-item label="图片">
-          <el-input v-model="form.images" placeholder="图片URL" />
+          <el-input v-model="form.repairImages" placeholder="图片URL" />
         </el-form-item>
         <el-form-item label="备注">
           <el-input v-model="form.remark" type="textarea" :rows="2" />
@@ -148,7 +146,7 @@ const houses = ref([])
 const currentRow = ref(null)
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, ownerId: '', status: '' })
-const form = reactive({ id: null, ownerId: null, houseId: null, repairType: 0, description: '', images: '', remark: '' })
+const form = reactive({ id: null, ownerId: null, houseId: null, repairType: 'WATER_ELECTRICITY', repairContent: '', repairImages: '', remark: '' })
 const statusForm = reactive({ status: 1, handleContent: '' })
 const ratingForm = reactive({ score: 5, content: '' })
 
@@ -163,7 +161,7 @@ const rules = {
   ownerId: [{ required: true, message: '请选择业主', trigger: 'change' }],
   houseId: [{ required: true, message: '请选择房屋', trigger: 'change' }],
   repairType: [{ required: true, message: '请选择报修类型', trigger: 'change' }],
-  description: [{ required: true, message: '请输入报修描述', trigger: 'blur' }]
+  repairContent: [{ required: true, message: '请输入报修描述', trigger: 'blur' }]
 }
 
 onMounted(async () => {
@@ -186,7 +184,7 @@ async function fetchData() {
 function handleSearch() { searchForm.pageNum = 1; fetchData() }
 function resetSearch() { searchForm.ownerId = ''; searchForm.status = ''; handleSearch() }
 function handleAdd() { isEdit.value = false; resetForm(); dialogVisible.value = true }
-function handleEdit(row) { isEdit.value = true; Object.assign(form, row); dialogVisible.value = true }
+function handleEdit(row) { isEdit.value = true; Object.assign(form, { ...row, repairType: row.repairType || 'WATER_ELECTRICITY', repairContent: row.repairContent || row.description || '', repairImages: row.repairImages || row.images || '' }); dialogVisible.value = true }
 function resetForm() { formRef.value?.resetFields(); form.id = null }
 
 async function handleSubmit() {

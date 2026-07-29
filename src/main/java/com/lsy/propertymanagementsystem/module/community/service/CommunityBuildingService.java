@@ -9,5 +9,5 @@ public interface CommunityBuildingService {
     void updateBuilding(CommunityBuildingDTO building);
     void deleteBuilding(Long id);
     CommunityBuildingVO getBuildingById(Long id);
-    Page<CommunityBuildingVO> page(int pageNum, int pageSize);
+    Page<CommunityBuildingVO> page(int pageNum, int pageSize, String buildingNo);
 }

@@ -117,7 +117,7 @@ const formRef = ref(null); const isEdit = ref(false)
 const owners = ref([]); const currentRow = ref(null)
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, ownerId: '', type: '', status: '' })
-const form = reactive({ id: null, ownerId: null, type: 'complaint', content: '', images: '' })
+const form = reactive({ id: null, ownerId: null, houseId: null, type: 'complaint', content: '', images: '' })
 const statusForm = reactive({ status: 1, handleContent: '' })
 
 const submitting = ref(false)
@@ -146,7 +146,7 @@ function handleSearch() { searchForm.pageNum = 1; fetchData() }
 function resetSearch() { searchForm.ownerId = ''; searchForm.type = ''; searchForm.status = ''; handleSearch() }
 function handleAdd() { isEdit.value = false; resetForm(); dialogVisible.value = true }
 function handleEdit(row) { isEdit.value = true; Object.assign(form, row); dialogVisible.value = true }
-function resetForm() { formRef.value?.resetFields(); form.id = null; form.type = 'complaint' }
+function resetForm() { formRef.value?.resetFields(); form.id = null; form.type = 'complaint'; form.houseId = null }
 
 async function handleSubmit() {
   if (submitting.value) return

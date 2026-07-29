@@ -9,7 +9,7 @@ public interface EquipmentService {
     void updateEquipment(EquipmentDTO domain);
     void deleteEquipment(Long id);
     EquipmentVO getById(Long id);
-    Page<EquipmentVO> page(int pageNum, int pageSize, Long categoryId, Integer status);
+    Page<EquipmentVO> page(int pageNum, int pageSize, Long categoryId, Integer status, String equipmentName);
     void updateStatus(Long id, Integer status);
     long countByCategoryId(Long categoryId);
 }

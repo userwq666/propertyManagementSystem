@@ -50,8 +50,9 @@ public class EquipmentController {
     public Result page(@RequestParam(defaultValue = "1") int pageNum,
                        @RequestParam(defaultValue = "10") int pageSize,
                        @RequestParam(required = false) Long categoryId,
-                       @RequestParam(required = false) Integer status) {
-        Page<EquipmentVO> page = equipmentService.page(pageNum, pageSize, categoryId, status);
+                       @RequestParam(required = false) Integer status,
+                       @RequestParam(required = false) String equipmentName) {
+        Page<EquipmentVO> page = equipmentService.page(pageNum, pageSize, categoryId, status, equipmentName);
         return Result.success(page);
     }
 

@@ -80,11 +80,11 @@
             <el-option v-for="b in buildings" :key="b.id" :label="b.buildingNo" :value="b.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="购买日期">
-          <el-date-picker v-model="form.purchaseDate" type="date" placeholder="选择日期" value-format="YYYY-MM-DD" />
+        <el-form-item label="安装日期">
+          <el-date-picker v-model="form.installDate" type="date" placeholder="选择日期" value-format="YYYY-MM-DD" />
         </el-form-item>
         <el-form-item label="维保到期日">
-          <el-date-picker v-model="form.warrantyExpire" type="date" placeholder="选择日期" value-format="YYYY-MM-DD" />
+          <el-date-picker v-model="form.warrantyEndDate" type="date" placeholder="选择日期" value-format="YYYY-MM-DD" />
         </el-form-item>
         <el-form-item label="设备状态" prop="status">
           <el-select v-model="form.status">
@@ -124,7 +124,7 @@ const buildings = ref([])
 const searchForm = reactive({ pageNum: 1, pageSize: 10, categoryId: '', status: '', equipmentName: '' })
 const form = reactive({
   id: null, equipmentName: '', equipmentNo: '', categoryId: null, model: '', spec: '',
-  location: '', buildingId: null, purchaseDate: '', warrantyExpire: '', status: 1, remark: ''
+  location: '', buildingId: null, installDate: '', warrantyEndDate: '', status: 1, remark: ''
 })
 
 const submitting = ref(false)
@@ -160,7 +160,7 @@ async function fetchData() {
 function handleSearch() { searchForm.pageNum = 1; fetchData() }
 function resetSearch() { Object.assign(searchForm, { pageNum: 1, pageSize: 10, categoryId: '', status: '', equipmentName: '' }); fetchData() }
 function handleAdd() { isEdit.value = false; resetForm(); dialogVisible.value = true }
-function handleEdit(row) { isEdit.value = true; Object.assign(form, { ...row, purchaseDate: row.purchaseDate || '', warrantyExpire: row.warrantyExpire || '' }); dialogVisible.value = true }
+function handleEdit(row) { isEdit.value = true; Object.assign(form, { ...row, installDate: row.installDate || row.purchaseDate || '', warrantyEndDate: row.warrantyEndDate || row.warrantyExpire || '' }); dialogVisible.value = true }
 function resetForm() { formRef.value?.resetFields(); form.id = null }
 
 async function handleSubmit() {

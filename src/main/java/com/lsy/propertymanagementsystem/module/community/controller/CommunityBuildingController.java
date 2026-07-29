@@ -47,8 +47,9 @@ public class CommunityBuildingController {
     @PreAuthorize("hasAuthority('community:building:list')")
     @GetMapping("/page")
     public Result page(@RequestParam(defaultValue = "1") int pageNum,
-                       @RequestParam(defaultValue = "10") int pageSize) {
-        Page<CommunityBuildingVO> page = buildingService.page(pageNum, pageSize);
+                       @RequestParam(defaultValue = "10") int pageSize,
+                       @RequestParam(required = false) String buildingNo) {
+        Page<CommunityBuildingVO> page = buildingService.page(pageNum, pageSize, buildingNo);
         return Result.success(page);
     }
 }
