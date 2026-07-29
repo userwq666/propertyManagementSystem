@@ -51,12 +51,12 @@
       <el-form :model="form" :rules="rules" ref="formRef" label-width="90px">
         <el-row :gutter="20">
           <el-col :span="12"><el-form-item label="计划名称" prop="planName"><el-input v-model="form.planName" /></el-form-item></el-col>
-          <el-col :span="12"><el-form-item label="计划类型" prop="planType"><el-select v-model="form.planType" style="width:100%"><el-option label="日常巡检" value="DAILY" /><el-option label="专项巡检" value="SPECIAL" /></el-select></el-form-item></el-col>
+          <el-col :span="12"><el-form-item label="计划类型" prop="planType"><el-select v-model="form.planType" style="width:100%"><el-option label="日常巡检" :value="1" /><el-option label="专项巡检" :value="2" /><el-option label="季节性巡检" :value="3" /><el-option label="临时巡检" :value="4" /></el-select></el-form-item></el-col>
         </el-row>
         <el-row :gutter="20">
-          <el-col :span="12"><el-form-item label="巡检频率"><el-select v-model="form.frequencyType" style="width:100%"><el-option label="每天" value="daily" /><el-option label="每周" value="weekly" /><el-option label="每月" value="monthly" /><el-option label="自定义" value="custom" /></el-select></el-form-item></el-col>
-          <el-col :span="12"><el-form-item v-if="form.frequencyType==='weekly'" label="星期"><el-select v-model="form.frequencyValue" multiple style="width:100%"><el-option v-for="(d,i) in 7" :key="i" :label="'周'+(i+1)" :value="i+1" /></el-select></el-form-item>
-          <el-form-item v-if="form.frequencyType==='monthly'" label="日期"><el-select v-model="form.frequencyValue" style="width:100%"><el-option v-for="d in 28" :key="d" :label="d+'号'" :value="d" /></el-select></el-form-item>
+          <el-col :span="12"><el-form-item label="巡检频率"><el-select v-model="form.frequencyType" style="width:100%"><el-option label="每日" :value="1" /><el-option label="每周" :value="2" /><el-option label="每月" :value="3" /><el-option label="每季度" :value="4" /><el-option label="每半年" :value="5" /><el-option label="每年" :value="6" /></el-select></el-form-item></el-col>
+          <el-col :span="12"><el-form-item v-if="form.frequencyType===2" label="星期"><el-select v-model="form.frequencyValue" multiple style="width:100%"><el-option v-for="(d,i) in 7" :key="i" :label="'周'+(i+1)" :value="i+1" /></el-select></el-form-item>
+          <el-form-item v-if="form.frequencyType===3" label="日期"><el-select v-model="form.frequencyValue" style="width:100%"><el-option v-for="d in 28" :key="d" :label="d+'号'" :value="d" /></el-select></el-form-item>
           <el-form-item v-if="form.frequencyType==='custom'" label="间隔天数"><el-input-number v-model="form.frequencyValue" :min="1" :max="365" style="width:100%" /></el-form-item></el-col>
         </el-row>
         <el-row :gutter="20">
@@ -83,7 +83,7 @@ const loading = ref(false); const tableData = ref([]); const total = ref(0)
 const dialogVisible = ref(false); const formRef = ref(null); const isEdit = ref(false)
 const equipments = ref([]); const users = ref([])
 const searchForm = reactive({ pageNum: 1, pageSize: 10, planName: '', status: '' })
-const form = reactive({ id: null, planName: '', planType: 'DAILY', frequencyType: '', frequencyValue: '', startDate: '', endDate: '', remark: '', equipmentIds: [], inspectorIds: [] })
+const form = reactive({ id: null, planName: '', planType: 1, frequencyType: 1, frequencyValue: '', startDate: '', endDate: '', remark: '', equipmentIds: [], inspectorIds: [] })
 const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑计划' : '新增计划')
@@ -100,7 +100,7 @@ function handleSearch(){searchForm.pageNum=1;fetchData()}
 function resetSearch(){searchForm.planName='';searchForm.status='';handleSearch()}
 function handleAdd(){isEdit.value=false;resetForm();dialogVisible.value=true}
 function handleEdit(row){isEdit.value=true;Object.assign(form,{...row,equipmentIds:row.equipmentIds||[],inspectorIds:row.inspectorIds||[]});dialogVisible.value=true}
-function resetForm(){formRef.value?.resetFields();Object.assign(form,{id:null,planName:'',planType:'DAILY',frequencyType:'',frequencyValue:'',startDate:'',endDate:'',remark:'',equipmentIds:[],inspectorIds:[]})}
+function resetForm(){formRef.value?.resetFields();Object.assign(form,{id:null,planName:'',planType:1,frequencyType:1,frequencyValue:'',startDate:'',endDate:'',remark:'',equipmentIds:[],inspectorIds:[]})}
 async function handleSubmit(){const v=await formRef.value.validate().catch(()=>false);if(!v)return;try{if(isEdit.value)await updatePlan(form);else await addPlan(form);ElMessage.success(isEdit.value?'编辑成功':'新增成功');dialogVisible.value=false;fetchData()}catch(e){}}
 async function handleDelete(row){await ElMessageBox.confirm('确定删除？','提示',{type:'warning'});try{await deletePlan(row.id);ElMessage.success('删除成功');fetchData()}catch(e){}}
 async function handleStatus(row){const s=row.status==='ENABLED'?1:0;try{await updatePlanStatus({id:row.id,status:s});ElMessage.success('操作成功');fetchData()}catch(e){}}

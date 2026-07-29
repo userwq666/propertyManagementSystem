@@ -24,7 +24,7 @@
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="title" label="标题" show-overflow-tooltip />
         <el-table-column label="类型" width="100">
-          <template #default="{ row }">{{ row.type==='notice'?'通知':row.type==='announcement'?'公告':'活动' }}</template>
+          <template #default="{ row }">{{ row.type===1?'通知':row.type===2?'公告':'活动' }}</template>
         </el-table-column>
         <el-table-column label="置顶" width="80">
           <template #default="{ row }">
@@ -61,9 +61,7 @@
           <el-input v-model="form.title" />
         </el-form-item>
         <el-form-item label="类型" prop="type">
-          <el-select v-model="form.type">
-            <el-option label="通知" value="notice" /><el-option label="公告" value="announcement" /><el-option label="活动" value="activity" />
-          </el-select>
+          <el-select v-model="form.type"><el-option label="通知" :value="1" /><el-option label="公告" :value="2" /><el-option label="活动" :value="3" /></el-select>
         </el-form-item>
         <el-form-item label="内容" prop="content">
           <el-input v-model="form.content" type="textarea" :rows="6" />
@@ -97,7 +95,7 @@ const loading = ref(false); const tableData = ref([]); const total = ref(0)
 const dialogVisible = ref(false); const formRef = ref(null); const isEdit = ref(false)
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, title: '', status: '' })
-const form = reactive({ id: null, title: '', type: 'notice', content: '', coverImage: '', isTop: 0, topExpireTime: '' })
+const form = reactive({ id: null, title: '', type: 1, content: '', coverImage: '', isTop: 0, topExpireTime: '' })
 
 const submitting = ref(false)
 
@@ -121,7 +119,7 @@ function handleSearch() { searchForm.pageNum = 1; fetchData() }
 function resetSearch() { searchForm.title = ''; searchForm.status = ''; handleSearch() }
 function handleAdd() { isEdit.value = false; resetForm(); dialogVisible.value = true }
 function handleEdit(row) { isEdit.value = true; Object.assign(form, row); dialogVisible.value = true }
-function resetForm() { formRef.value?.resetFields(); Object.assign(form, { id: null, title: '', type: 'notice', content: '', coverImage: '', isTop: 0, topExpireTime: '' }) }
+function resetForm() { formRef.value?.resetFields(); Object.assign(form, { id: null, title: '', type: 1, content: '', coverImage: '', isTop: 0, topExpireTime: '' }) }
 
 async function handleSubmit() {
   if (submitting.value) return

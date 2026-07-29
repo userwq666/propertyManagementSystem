@@ -31,7 +31,7 @@
         <el-table-column prop="parkingNo" label="车位编号" width="120" />
         <el-table-column label="类型" width="80">
           <template #default="{ row }">
-            <el-tag :type="row.parkingType === 0 ? '' : 'warning'">{{ row.parkingType === 0 ? '地面' : '地下' }}</el-tag>
+            <el-tag :type="row.parkingType === 1 ? '' : 'warning'">{{ row.parkingType === 1 ? '地面' : '地下' }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="状态" width="80">
@@ -70,10 +70,7 @@
           <el-input v-model="form.parkingNo" placeholder="请输入车位编号" />
         </el-form-item>
         <el-form-item label="类型" prop="parkingType">
-          <el-radio-group v-model="form.parkingType">
-            <el-radio :value="0">地面</el-radio>
-            <el-radio :value="1">地下</el-radio>
-          </el-radio-group>
+          <el-radio-group v-model="form.parkingType"><el-radio :value="1">地面</el-radio><el-radio :value="2">地下</el-radio></el-radio-group>
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-select v-model="form.status" placeholder="请选择状态" style="width: 100%">
@@ -122,7 +119,7 @@ const isEdit = ref(false)
 const ownerList = ref([])
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, parkingNo: '', status: null })
-const form = reactive({ id: null, parkingNo: '', parkingType: 0, status: 0, ownerId: null, rentPrice: null, sellPrice: null, remark: '' })
+const form = reactive({ id: null, parkingNo: '', parkingType: 1, status: 0, ownerId: null, rentPrice: null, sellPrice: null, remark: '' })
 
 const submitting = ref(false)
 
@@ -132,8 +129,8 @@ const rules = {
   parkingNo: [{ required: true, message: '请输入车位编号', trigger: 'blur' }]
 }
 
-const statusMap = { 0: '空闲', 1: '已租', 2: '已售' }
-const statusTypeMap = { 0: 'success', 1: 'warning', 2: 'info' }
+const statusMap = { 0: '空闲', 1: '已租', 2: '已售', 3: '维修中' }
+const statusTypeMap = { 0: 'success', 1: 'warning', 2: 'info', 3: 'danger' }
 function statusLabel(s) { return statusMap[s] || '未知' }
 function statusType(s) { return statusTypeMap[s] || 'info' }
 
@@ -162,7 +159,7 @@ function resetSearch() { searchForm.parkingNo = ''; searchForm.status = null; ha
 
 function handleAdd() { isEdit.value = false; resetForm(); dialogVisible.value = true }
 function handleEdit(row) { isEdit.value = true; Object.assign(form, row); dialogVisible.value = true }
-function resetForm() { formRef.value?.resetFields(); form.id = null; form.parkingType = 0; form.status = 0 }
+function resetForm() { formRef.value?.resetFields(); form.id = null; form.parkingType = 1; form.status = 0 }
 
 async function handleSubmit() {
   if (submitting.value) return

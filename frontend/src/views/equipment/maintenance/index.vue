@@ -35,8 +35,8 @@
             <el-tag :type="statusTag(row.status)">{{ statusText(row.status) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="maintenancePerson" label="维保人员" width="100" />
-        <el-table-column prop="planDate" label="计划日期" width="120" />
+        <el-table-column prop="maintenancePersonnelId" label="维保人员ID" width="100" />
+        <el-table-column prop="startTime" label="开始时间" width="120" />
         <el-table-column prop="completeDate" label="完成日期" width="120" />
         <el-table-column prop="cost" label="费用" width="100" />
         <el-table-column prop="createTime" label="创建时间" width="180" />
@@ -66,11 +66,11 @@
             <el-option label="日常保养" :value="0" /><el-option label="定期检修" :value="1" /><el-option label="故障维修" :value="2" /><el-option label="大修" :value="3" />
           </el-select>
         </el-form-item>
-        <el-form-item label="维保人员" prop="maintenancePerson">
-          <el-input v-model="form.maintenancePerson" />
+        <el-form-item label="维保人员ID" prop="maintenancePersonnelId">
+          <el-input v-model="form.maintenancePersonnelId" />
         </el-form-item>
-        <el-form-item label="计划日期">
-          <el-date-picker v-model="form.planDate" type="date" value-format="YYYY-MM-DD" />
+        <el-form-item label="开始时间">
+          <el-date-picker v-model="form.startTime" type="date" value-format="YYYY-MM-DD HH:mm:ss" />
         </el-form-item>
         <el-form-item label="维保内容">
           <el-input v-model="form.maintenanceContent" type="textarea" :rows="3" />
@@ -108,9 +108,9 @@ const equipments = ref([])
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, equipmentId: '', status: '' })
 const form = reactive({
-  id: null, equipmentId: null, maintenanceType: 0, maintenancePerson: '',
-  planDate: '', maintenanceContent: '', cost: 0, remark: ''
-})
+    id: null, equipmentId: null, maintenanceType: 0, maintenancePersonnelId: null,
+    startTime: '', maintenanceContent: '', cost: 0, remark: ''
+  })
 
 const submitting = ref(false)
 
@@ -122,7 +122,7 @@ const statusText = (s) => ({ 0: '待维保', 1: '维保中', 2: '已完成' }[s]
 const rules = {
   equipmentId: [{ required: true, message: '请选择设备', trigger: 'change' }],
   maintenanceType: [{ required: true, message: '请选择维保类型', trigger: 'change' }],
-  maintenancePerson: [{ required: true, message: '请输入维保人员', trigger: 'blur' }]
+  maintenancePersonnelId: [{ required: true, message: '请输入维保人员ID', trigger: 'blur' }]
 }
 
 onMounted(async () => {

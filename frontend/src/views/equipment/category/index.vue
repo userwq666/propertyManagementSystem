@@ -80,7 +80,7 @@ const formRef = ref(null)
 const isEdit = ref(false)
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, categoryName: '' })
-const form = reactive({ id: null, categoryName: '', description: '' })
+const form = reactive({ id: null, categoryName: '', parentId: null, sort: 0, status: 1 })
 
 const submitting = ref(false)
 

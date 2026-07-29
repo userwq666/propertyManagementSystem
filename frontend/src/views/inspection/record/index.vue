@@ -83,7 +83,7 @@ const loading = ref(false); const tableData = ref([]); const total = ref(0)
 const dialogVisible = ref(false); const formRef = ref(null); const isEdit = ref(false)
 const plans = ref([]); const equipments = ref([]); const users = ref([])
 const searchForm = reactive({ pageNum: 1, pageSize: 10, planId: '', equipmentId: '' })
-const form = reactive({ id: null, planId: null, equipmentId: null, inspectorUserId: null, inspectionTime: '', status: 'NORMAL', abnormalDesc: '', handleStatus: 'UNHANDLED', handleContent: '', remark: '' })
+const form = reactive({ id: null, planId: null, equipmentId: null, inspectorUserId: null, inspectionTime: '', status: 1, abnormalDesc: '', handleStatus: 0, handleContent: '', remark: '' })
 const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑记录' : '新增记录')

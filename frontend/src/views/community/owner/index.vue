@@ -86,10 +86,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="form.status">
-            <el-radio :value="0">正常</el-radio>
-            <el-radio :value="1">禁用</el-radio>
-          </el-radio-group>
+          <el-radio-group v-model="form.status"><el-radio :value="1">正常</el-radio><el-radio :value="0">禁用</el-radio></el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备注" />
@@ -118,7 +115,7 @@ const formRef = ref(null)
 const isEdit = ref(false)
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, name: '', phone: '' })
-const form = reactive({ id: null, userId: null, name: '', phone: '', idCard: '', idCardFront: '', idCardBack: '', ownerType: 0, status: 0, remark: '' })
+const form = reactive({ id: null, userId: null, name: '', phone: '', idCard: '', idCardFront: '', idCardBack: '', ownerType: 1, status: 1, remark: '' })
 
 const submitting = ref(false)
 
