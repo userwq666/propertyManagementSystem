@@ -1,6 +1,5 @@
 package com.lsy.propertymanagementsystem.module.equipment.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lsy.propertymanagementsystem.common.exception.BusinessException;
@@ -23,11 +22,6 @@ public class EquipmentCategoryServiceImpl extends ServiceImpl<EquipmentCategoryM
 
     @Autowired
     private EquipmentService equipmentService;
-
-    @Override
-    public List<EquipmentCategoryDomain> getList() {
-        return this.list(new LambdaQueryWrapper<EquipmentCategoryDomain>().orderByAsc(EquipmentCategoryDomain::getSort));
-    }
 
     @Override
     @Transactional

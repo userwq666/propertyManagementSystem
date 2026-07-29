@@ -106,11 +106,6 @@ public class CommunityOwnerServiceImpl extends ServiceImpl<CommunityOwnerMapper,
         return convertToVO(domain, userMap);
     }
 
-    @Override
-    public CommunityOwnerDomain getByUserId(Long userId) {
-        return this.getOne(new LambdaQueryWrapper<CommunityOwnerDomain>().eq(CommunityOwnerDomain::getUserId, userId));
-    }
-
     private CommunityOwnerVO convertToVO(CommunityOwnerDomain domain, Map<Long, SysUserDomain> userMap) {
         CommunityOwnerVO vo = new CommunityOwnerVO();
         BeanUtils.copyProperties(domain, vo);
