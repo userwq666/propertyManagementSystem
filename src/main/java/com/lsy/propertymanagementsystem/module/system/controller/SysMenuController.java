@@ -3,7 +3,6 @@ package com.lsy.propertymanagementsystem.module.system.controller;
 import com.lsy.propertymanagementsystem.common.result.Result;
 import com.lsy.propertymanagementsystem.module.system.dto.MenuDTO;
 import com.lsy.propertymanagementsystem.module.system.dto.MenuVO;
-import com.lsy.propertymanagementsystem.module.system.domain.SysMenuDomain;
 import com.lsy.propertymanagementsystem.module.system.service.SysMenuService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
