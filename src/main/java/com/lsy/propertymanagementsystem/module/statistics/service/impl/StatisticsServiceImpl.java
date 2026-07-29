@@ -4,11 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityHouseMapper;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityOwnerMapper;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityParkingMapper;
+import com.lsy.propertymanagementsystem.module.fee.domain.FeeItemDomain;
 import com.lsy.propertymanagementsystem.module.fee.domain.FeeRecordDomain;
 import com.lsy.propertymanagementsystem.module.fee.enums.FeeRecordStatus;
+import com.lsy.propertymanagementsystem.module.fee.mapper.FeeItemMapper;
 import com.lsy.propertymanagementsystem.module.fee.mapper.FeeRecordMapper;
 import com.lsy.propertymanagementsystem.module.repair.domain.RepairRecordDomain;
 import com.lsy.propertymanagementsystem.module.repair.enums.RepairStatus;
+import com.lsy.propertymanagementsystem.module.repair.enums.RepairType;
 import com.lsy.propertymanagementsystem.module.repair.mapper.RepairRecordMapper;
 import com.lsy.propertymanagementsystem.module.statistics.service.StatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +27,9 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Autowired
     private FeeRecordMapper feeRecordMapper;
+
+    @Autowired
+    private FeeItemMapper feeItemMapper;
 
     @Autowired
     private RepairRecordMapper repairRecordMapper;
@@ -128,10 +134,19 @@ public class StatisticsServiceImpl implements StatisticsService {
                         Collectors.reducing(BigDecimal.ZERO, FeeRecordDomain::getAmount, BigDecimal::add)
                 ));
 
+        // 批量查询收费项目名称
+        List<Long> itemIds = new ArrayList<>(itemMap.keySet());
+        Map<Long, String> itemNameMap = new HashMap<>();
+        if (!itemIds.isEmpty()) {
+            List<FeeItemDomain> items = feeItemMapper.selectBatchIds(itemIds);
+            itemNameMap = items.stream().collect(Collectors.toMap(FeeItemDomain::getId, FeeItemDomain::getItemName));
+        }
+
         List<Map<String, Object>> result = new ArrayList<>();
         for (Map.Entry<Long, BigDecimal> entry : itemMap.entrySet()) {
             Map<String, Object> item = new HashMap<>();
             item.put("itemId", entry.getKey());
+            item.put("itemName", itemNameMap.getOrDefault(entry.getKey(), "未知项目"));
             item.put("amount", entry.getValue());
             result.add(item);
         }
@@ -160,13 +175,13 @@ public class StatisticsServiceImpl implements StatisticsService {
     public List<Map<String, Object>> getRepairByType() {
         List<RepairRecordDomain> records = repairRecordMapper.selectList(new LambdaQueryWrapper<>());
 
-        Map<String, Long> typeMap = records.stream()
+        Map<RepairType, Long> typeMap = records.stream()
                 .collect(Collectors.groupingBy(RepairRecordDomain::getRepairType, Collectors.counting()));
 
         List<Map<String, Object>> result = new ArrayList<>();
-        for (Map.Entry<String, Long> entry : typeMap.entrySet()) {
+        for (Map.Entry<RepairType, Long> entry : typeMap.entrySet()) {
             Map<String, Object> item = new HashMap<>();
-            item.put("type", entry.getKey());
+            item.put("type", entry.getKey() != null ? entry.getKey().getValue() : null);
             item.put("count", entry.getValue());
             result.add(item);
         }

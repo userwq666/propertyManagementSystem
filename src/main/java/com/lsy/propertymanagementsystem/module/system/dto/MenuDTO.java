@@ -5,7 +5,7 @@ import lombok.Data;
 import jakarta.validation.constraints.NotBlank;
 
 @Data
-public class MenuRequest {
+public class MenuDTO {
     private Long id;
 
     private Long parentId;

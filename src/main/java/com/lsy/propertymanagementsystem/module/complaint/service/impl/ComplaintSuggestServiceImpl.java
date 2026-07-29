@@ -9,6 +9,7 @@ import com.lsy.propertymanagementsystem.module.complaint.dto.ComplaintSuggestDTO
 import com.lsy.propertymanagementsystem.module.complaint.enums.ComplaintStatus;
 import com.lsy.propertymanagementsystem.module.complaint.enums.ComplaintType;
 import com.lsy.propertymanagementsystem.module.complaint.mapper.ComplaintSuggestMapper;
+import com.lsy.propertymanagementsystem.common.utils.SecurityUtils;
 import com.lsy.propertymanagementsystem.module.complaint.service.ComplaintSuggestService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
     public Page<ComplaintSuggestDomain> page(int pageNum, int pageSize, Long ownerId, String type, Integer status) {
         LambdaQueryWrapper<ComplaintSuggestDomain> wrapper = new LambdaQueryWrapper<>();
         if (ownerId != null) {
-            wrapper.eq(ComplaintSuggestDomain::getOwnerId, ownerId);
+            wrapper.eq(ComplaintSuggestDomain::getOwnerId, SecurityUtils.isOwner() ? SecurityUtils.getCurrentUserId() : ownerId);
         }
         if (type != null && !type.isEmpty()) {
             wrapper.eq(ComplaintSuggestDomain::getType, ComplaintType.of(Integer.parseInt(type)));

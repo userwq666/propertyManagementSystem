@@ -13,15 +13,15 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 -- 超级管理员（密码：123456 -> BCrypt加密）
 INSERT INTO sys_user (username, password, real_name, phone, user_type, status) VALUES
-('root', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '超级管理员', '13800000000', 1, 1),
-('admin', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '物业管理员', '13800000001', 2, 1),
-('owner001', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '张三', '13800000002', 3, 1),
-('owner002', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '李四', '13800000003', 3, 1),
-('owner003', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '王五', '13800000004', 3, 1),
-('owner004', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '赵六', '13800000005', 3, 1),
-('worker001', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '维修工王师傅', '13800000010', 2, 1),
-('worker002', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '保洁员李阿姨', '13800000011', 2, 1),
-('inspector001', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '巡检员张工', '13800000012', 2, 1);
+('root', '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '超级管理员', '13800000000', 1, 1),
+('admin', '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '物业管理员', '13800000001', 2, 1),
+('owner001', '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '张三', '13800000002', 3, 1),
+('owner002', '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '李四', '13800000003', 3, 1),
+('owner003', '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '王五', '13800000004', 3, 1),
+('owner004', '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '赵六', '13800000005', 3, 1),
+('worker001', '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '维修工王师傅', '13800000010', 4, 1),
+('worker002', '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '保洁员李阿姨', '13800000011', 4, 1),
+('inspector001', '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '巡检员张工', '13800000012', 5, 1);
 
 -- 角色
 INSERT INTO sys_role (role_name, role_key, remark) VALUES
@@ -71,7 +71,64 @@ INSERT INTO sys_menu (parent_id, menu_name, path, component, perms, menu_type, s
 (23, '巡检计划', '/inspection/plan', 'inspection/plan/index', 'inspection:plan:list', 1, 1, 1),
 (23, '巡检记录', '/inspection/record', 'inspection/record/index', 'inspection:record:list', 1, 2, 1),
 (0, '公告管理', '/announcement', NULL, NULL, 0, 8, 1),
-(26, '公告列表', '/announcement/list', 'announcement/list/index', 'announcement:list:list', 1, 1, 1);
+(26, '公告列表', '/announcement/list', 'announcement/list/index', 'announcement:list:list', 1, 1, 1),
+(0, '统计分析', '/statistics', NULL, NULL, 0, 9, 1),
+(28, '数据概览', '/statistics/overview', 'statistics/overview/index', 'statistics:overview:list', 1, 1, 1),
+(28, '费用统计', '/statistics/fee', 'statistics/fee/index', 'statistics:fee:list', 1, 2, 1),
+(28, '报修统计', '/statistics/repair', 'statistics/repair/index', 'statistics:repair:list', 1, 3, 1),
+(1, '新增用户', '', '', 'system:user:add', 2, 1, 1),
+(1, '编辑用户', '', '', 'system:user:edit', 2, 2, 1),
+(1, '删除用户', '', '', 'system:user:delete', 2, 3, 1),
+(1, '新增角色', '', '', 'system:role:add', 2, 4, 1),
+(1, '编辑角色', '', '', 'system:role:edit', 2, 5, 1),
+(1, '删除角色', '', '', 'system:role:delete', 2, 6, 1),
+(1, '新增菜单', '', '', 'system:menu:add', 2, 7, 1),
+(1, '编辑菜单', '', '', 'system:menu:edit', 2, 8, 1),
+(1, '删除菜单', '', '', 'system:menu:delete', 2, 9, 1),
+(6, '新增楼栋', '', '', 'community:building:add', 2, 10, 1),
+(6, '编辑楼栋', '', '', 'community:building:edit', 2, 11, 1),
+(6, '删除楼栋', '', '', 'community:building:delete', 2, 12, 1),
+(8, '新增房屋', '', '', 'community:house:add', 2, 13, 1),
+(8, '编辑房屋', '', '', 'community:house:edit', 2, 14, 1),
+(8, '删除房屋', '', '', 'community:house:delete', 2, 15, 1),
+(9, '新增业主', '', '', 'community:owner:add', 2, 16, 1),
+(9, '编辑业主', '', '', 'community:owner:edit', 2, 17, 1),
+(9, '删除业主', '', '', 'community:owner:delete', 2, 18, 1),
+(10, '新增车位', '', '', 'community:parking:add', 2, 19, 1),
+(10, '编辑车位', '', '', 'community:parking:edit', 2, 20, 1),
+(10, '删除车位', '', '', 'community:parking:delete', 2, 21, 1),
+(11, '新增收费项目', '', '', 'fee:item:add', 2, 22, 1),
+(11, '编辑收费项目', '', '', 'fee:item:edit', 2, 23, 1),
+(11, '删除收费项目', '', '', 'fee:item:delete', 2, 24, 1),
+(12, '生成账单', '', '', 'fee:record:add', 2, 25, 1),
+(12, '确认缴费', '', '', 'fee:record:edit', 2, 26, 1),
+(13, '新增通知', '', '', 'fee:notice:add', 2, 27, 1),
+(13, '编辑通知', '', '', 'fee:notice:edit', 2, 28, 1),
+(13, '删除通知', '', '', 'fee:notice:delete', 2, 29, 1),
+(15, '提交报修', '', '', 'repair:record:add', 2, 30, 1),
+(15, '处理报修', '', '', 'repair:record:edit', 2, 31, 1),
+(15, '删除报修', '', '', 'repair:record:delete', 2, 32, 1),
+(17, '提交投诉', '', '', 'complaint:list:add', 2, 33, 1),
+(17, '处理投诉', '', '', 'complaint:list:edit', 2, 34, 1),
+(17, '删除投诉', '', '', 'complaint:list:delete', 2, 35, 1),
+(19, '新增分类', '', '', 'equipment:category:add', 2, 36, 1),
+(19, '编辑分类', '', '', 'equipment:category:edit', 2, 37, 1),
+(19, '删除分类', '', '', 'equipment:category:delete', 2, 38, 1),
+(20, '新增设备', '', '', 'equipment:list:add', 2, 39, 1),
+(20, '编辑设备', '', '', 'equipment:list:edit', 2, 40, 1),
+(20, '删除设备', '', '', 'equipment:list:delete', 2, 41, 1),
+(21, '新增维保', '', '', 'equipment:maintenance:add', 2, 42, 1),
+(21, '编辑维保', '', '', 'equipment:maintenance:edit', 2, 43, 1),
+(21, '删除维保', '', '', 'equipment:maintenance:delete', 2, 44, 1),
+(23, '新增计划', '', '', 'inspection:plan:add', 2, 45, 1),
+(23, '编辑计划', '', '', 'inspection:plan:edit', 2, 46, 1),
+(23, '删除计划', '', '', 'inspection:plan:delete', 2, 47, 1),
+(24, '新增记录', '', '', 'inspection:record:add', 2, 48, 1),
+(24, '编辑记录', '', '', 'inspection:record:edit', 2, 49, 1),
+(26, '新增公告', '', '', 'announcement:list:add', 2, 50, 1),
+(26, '编辑公告', '', '', 'announcement:list:edit', 2, 51, 1),
+(26, '删除公告', '', '', 'announcement:list:delete', 2, 52, 1);
+
 
 -- 角色菜单关联（超级管理员拥有所有权限）
 INSERT INTO sys_role_menu (role_id, menu_id)
@@ -85,11 +142,62 @@ INSERT INTO sys_role_menu (role_id, menu_id) VALUES
 (2, 17), (2, 18),
 (2, 19), (2, 20), (2, 21), (2, 22),
 (2, 23), (2, 24), (2, 25),
-(2, 26), (2, 27);
+(2, 26), (2, 27),
+(2, 28), (2, 29), (2, 30), (2, 31),
+    (2, 41),
+    (2, 42),
+    (2, 43),
+    (2, 44),
+    (2, 45),
+    (2, 46),
+    (2, 47),
+    (2, 48),
+    (2, 49),
+    (2, 50),
+    (2, 51),
+    (2, 52),
+    (2, 53),
+    (2, 54),
+    (2, 55),
+    (2, 56),
+    (2, 57),
+    (2, 58),
+    (2, 59),
+    (2, 60),
+    (2, 61),
+    (2, 62),
+    (2, 63),
+    (2, 64),
+    (2, 65),
+    (2, 66),
+    (2, 67),
+    (2, 68),
+    (2, 69),
+    (2, 70),
+    (2, 71),
+    (2, 72),
+    (2, 73),
+    (2, 74),
+    (2, 75),
+    (2, 76),
+    (2, 77),
+    (2, 78),
+    (2, 79),
+    (2, 80),
+    (2, 81),
+    (2, 82),
+    (2, 83);
+
 
 -- 业主权限
 INSERT INTO sys_role_menu (role_id, menu_id) VALUES
-(3, 16), (3, 18);
+(3, 16), (3, 18),
+    (3, 12),
+    (3, 61),
+    (3, 62),
+    (3, 64),
+    (3, 65);
+
 
 -- =====================================================================
 -- 2. 小区基础数据
@@ -296,7 +404,6 @@ INSERT INTO announcement (title, content, type, cover_image, is_top, publish_sta
 ('2024年物业费缴费优惠活动', '2024年3月31日前缴纳全年物业费，享95折优惠。', 2, NULL, 0, 1, '2024-03-01 09:00:00', 2, 178);
 
 -- 公告阅读记录
-INSERT INTO announcement_read (announcement_id, user_id, read_time) VALUES
 (1, 2, '2024-01-01 09:30:00'),
 (1, 3, '2024-01-01 10:00:00'),
 (1, 4, '2024-01-01 11:00:00'),
@@ -340,4 +447,3 @@ UNION ALL SELECT 'inspection_plan_equipment', COUNT(*) FROM inspection_plan_equi
 UNION ALL SELECT 'inspection_plan_inspector', COUNT(*) FROM inspection_plan_inspector
 UNION ALL SELECT 'inspection_record', COUNT(*) FROM inspection_record
 UNION ALL SELECT 'announcement', COUNT(*) FROM announcement
-UNION ALL SELECT 'announcement_read', COUNT(*) FROM announcement_read;

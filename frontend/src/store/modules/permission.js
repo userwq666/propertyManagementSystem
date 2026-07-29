@@ -1,8 +1,8 @@
-import { defineStore } from 'pinia'
-import { constantRoutes, asyncRoutes } from '@/router/routes'
-import router from '@/router'
+﻿import { defineStore } from "pinia"
+import { constantRoutes, asyncRoutes } from "@/router/routes"
+import router from "@/router"
 
-export const usePermissionStore = defineStore('permission', {
+export const usePermissionStore = defineStore("permission", {
   state: () => ({
     routes: [],
     addRoutes: [],
@@ -14,7 +14,7 @@ export const usePermissionStore = defineStore('permission', {
     getSidebarRouters: (state) => state.sidebarRouters
   },
   actions: {
-    generateRoutes(roles = ['default']) {
+    generateRoutes(roles = []) {
       return new Promise(resolve => {
         const accessedRoutes = this.filterAsyncRoutes(asyncRoutes, roles)
         this.routes = accessedRoutes
@@ -42,12 +42,13 @@ export const usePermissionStore = defineStore('permission', {
       }
       return true
     },
-    addRoutesToRouter() {
-      this.addRoutes.forEach(route => {
-        router.addRoute(route)
-      })
-    },
     resetRouter() {
+      // Remove all dynamically added routes from Vue Router
+      this.addRoutes.forEach(route => {
+        if (route.name && router.hasRoute(route.name)) {
+          router.removeRoute(route.name)
+        }
+      })
       this.routes = []
       this.addRoutes = []
       this.sidebarRouters = []

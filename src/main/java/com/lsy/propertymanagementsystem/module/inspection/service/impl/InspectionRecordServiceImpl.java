@@ -62,6 +62,12 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
     }
 
     @Override
+    @Transactional
+    public void deleteRecord(Long id) {
+        inspectionRecordMapper.deleteById(id);
+    }
+
+    @Override
     public long countByPlanId(Long planId) {
         return inspectionRecordMapper.selectCount(new LambdaQueryWrapper<InspectionRecordDomain>().eq(InspectionRecordDomain::getPlanId, planId));
     }

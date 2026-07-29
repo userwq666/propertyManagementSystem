@@ -8,7 +8,10 @@ import io.jsonwebtoken.security.Keys;
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Collections;
+import java.util.stream.Collectors;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class JwtUtils {
@@ -41,6 +44,20 @@ public class JwtUtils {
                 .compact();
     }
 
+    public static String generateToken(Long userId, String username, Integer userType, List<String> permissions) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userId);
+        claims.put("username", username);
+        claims.put("userType", userType);
+        claims.put("permissions", permissions);
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     public static Claims parseToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -57,6 +74,18 @@ public class JwtUtils {
     public static String getUsername(String token) {
         Claims claims = parseToken(token);
         return claims.get("username", String.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static List<String> getPermissions(String token) {
+        Claims claims = parseToken(token);
+        List<String> perms = claims.get("permissions", List.class);
+        return perms != null ? perms : Collections.emptyList();
+    }
+
+    public static Integer getUserType(String token) {
+        Claims claims = parseToken(token);
+        return claims.get("userType", Integer.class);
     }
 
     public static boolean isTokenValid(String token) {

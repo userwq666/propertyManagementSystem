@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="app-container">
     <div class="page-header">
       <h1>设备分类管理</h1>
@@ -20,7 +20,7 @@
       </template>
 
       <!-- 查询表单 -->
-      <el-form :model="queryParams" :inline="true" class="search-form" label-width="90px">
+      <el-form :model="queryParams" :inline="true" class="search-form" label-width="90px" @keyup.enter="handleQuery">
         <el-form-item label="分类名称">
           <el-input
             v-model="queryParams.categoryName"

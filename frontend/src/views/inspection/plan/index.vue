@@ -60,7 +60,7 @@
       </template>
 
       <!-- 查询表单 -->
-      <el-form :model="queryParams" :inline="true" class="search-form" label-width="90px">
+      <el-form :model="queryParams" :inline="true" class="search-form" label-width="90px" @keyup.enter="handleQuery">
         <el-form-item label="计划名称" prop="planName">
           <el-input v-model="queryParams.planName" placeholder="请输入计划名称" clearable style="width: 200px" />
         </el-form-item>
@@ -155,13 +155,10 @@
         <el-table-column label="操作" align="center" width="300" fixed="right" class-name="small-padding">
           <template #default="scope">
             <el-button size="small" type="primary" link @click="handleDetail(scope.row)" v-permission="['inspection:plan:list']">详情</el-button>
-            <el-divider direction="vertical" />
             <el-button size="small" type="warning" link @click="handleEdit(scope.row)" v-if="canEdit(scope.row)" v-permission="['inspection:plan:edit']">编辑</el-button>
-            <el-divider direction="vertical" v-if="canEdit(scope.row)" />
             <el-button size="small" type="success" link @click="handleStatusChange(scope.row, '1')" v-if="canEnable(scope.row)" v-permission="['inspection:plan:enable']">启用</el-button>
             <el-button size="small" type="danger" link @click="handleStatusChange(scope.row, '3')" v-if="canPause(scope.row)" v-permission="['inspection:plan:disable']">暂停</el-button>
             <el-button size="small" type="info" link @click="handleStatusChange(scope.row, '4')" v-if="canComplete(scope.row)" v-permission="['inspection:plan:edit']">完成</el-button>
-            <el-divider direction="vertical" v-if="canDelete(scope.row)" />
             <el-button size="small" type="danger" link @click="handleDelete(scope.row)" v-if="canDelete(scope.row)" v-permission="['inspection:plan:delete']">删除</el-button>
           </template>
         </el-table-column>
@@ -940,6 +937,7 @@ const handleStatusChange = (row, status) => {
 }
 
 .small-padding {
+  :deep(.cell) { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
   :deep(.el-table__cell) {
     padding: 5px 10px;
   }

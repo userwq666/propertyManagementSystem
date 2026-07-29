@@ -7,6 +7,7 @@ import com.lsy.propertymanagementsystem.common.exception.BusinessException;
 import com.lsy.propertymanagementsystem.module.community.domain.CommunityHouseDomain;
 import com.lsy.propertymanagementsystem.module.community.dto.CommunityHouseDTO;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityHouseMapper;
+import com.lsy.propertymanagementsystem.common.utils.SecurityUtils;
 import com.lsy.propertymanagementsystem.module.community.service.CommunityHouseService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,10 @@ public class CommunityHouseServiceImpl extends ServiceImpl<CommunityHouseMapper,
         }
         if (houseStatus != null) {
             wrapper.eq(CommunityHouseDomain::getHouseStatus, houseStatus);
+        // 业主只能查看自己名下的房屋
+        if (SecurityUtils.isOwner()) {
+            wrapper.eq(CommunityHouseDomain::getOwnerId, SecurityUtils.getCurrentUserId());
+        }
         }
         wrapper.orderByDesc(CommunityHouseDomain::getCreateTime);
         return this.page(new Page<>(pageNum, pageSize), wrapper);

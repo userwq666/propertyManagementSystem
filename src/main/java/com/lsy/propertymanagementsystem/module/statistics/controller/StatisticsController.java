@@ -16,14 +16,14 @@ public class StatisticsController {
     @Autowired
     private StatisticsService statisticsService;
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('statistics:overview:list')")
     @GetMapping("/overview")
     public Result getOverview() {
         Map<String, Object> overview = statisticsService.getOverview();
         return Result.success(overview);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('statistics:fee:list')")
     @GetMapping("/fee/monthly")
     public Result getMonthlyFeeStatistics(@RequestParam(defaultValue = "2026") Integer year) {
         if (year < 1900 || year > 2100) {
@@ -33,21 +33,21 @@ public class StatisticsController {
         return Result.success(statistics);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('statistics:fee:list')")
     @GetMapping("/fee/byItem")
     public Result getFeeByItem() {
         List<Map<String, Object>> statistics = statisticsService.getFeeByItem();
         return Result.success(statistics);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('statistics:repair:list')")
     @GetMapping("/repair/overview")
     public Result getRepairOverview() {
         Map<String, Object> overview = statisticsService.getRepairOverview();
         return Result.success(overview);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('statistics:repair:list')")
     @GetMapping("/repair/byType")
     public Result getRepairByType() {
         List<Map<String, Object>> statistics = statisticsService.getRepairByType();

@@ -479,7 +479,6 @@ CREATE TABLE announcement (
 ) COMMENT '公告表';
 
 -- 公告阅读记录表
-CREATE TABLE announcement_read (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     announcement_id BIGINT NOT NULL COMMENT '公告id',
     user_id BIGINT NOT NULL COMMENT '阅读用户id',
@@ -491,8 +490,6 @@ CREATE TABLE announcement_read (
 CREATE INDEX idx_announcement_creator ON announcement(creator_id);
 CREATE INDEX idx_announcement_status ON announcement(publish_status);
 CREATE INDEX idx_announcement_type ON announcement(type);
-CREATE INDEX idx_read_announcement ON announcement_read(announcement_id);
-CREATE INDEX idx_read_user ON announcement_read(user_id);
 
 -- =====================================================================
 -- 完成

@@ -43,3 +43,12 @@ export function getRoleMenuIds(roleId) {
     method: 'get'
   })
 }
+
+export function assignMenus(roleId, menuIds) {
+  return request({
+    url: '/system/role/assignMenus',
+    method: 'post',
+    params: { roleId },
+    data: menuIds
+  })
+}

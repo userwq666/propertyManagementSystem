@@ -39,6 +39,13 @@ public class RepairRecordController {
     }
 
     @PreAuthorize("hasAuthority('repair:record:list')")
+    @GetMapping("/{id}")
+    public Result getById(@PathVariable Long id) {
+        RepairRecordDomain domain = repairRecordService.getById(id);
+        return Result.success(domain);
+    }
+
+    @PreAuthorize("hasAuthority('repair:record:list')")
     @GetMapping("/page")
     public Result page(@RequestParam(defaultValue = "1") int pageNum,
                        @RequestParam(defaultValue = "10") int pageSize,

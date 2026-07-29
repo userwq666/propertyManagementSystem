@@ -5,7 +5,7 @@ import lombok.Data;
 import jakarta.validation.constraints.NotBlank;
 
 @Data
-public class RoleRequest {
+public class RoleDTO {
     private Long id;
 
     @NotBlank(message = "角色名称不能为空")

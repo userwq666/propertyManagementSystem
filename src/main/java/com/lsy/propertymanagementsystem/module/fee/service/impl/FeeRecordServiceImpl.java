@@ -8,6 +8,7 @@ import com.lsy.propertymanagementsystem.module.fee.enums.FeeRecordStatus;
 import com.lsy.propertymanagementsystem.module.fee.enums.PayType;
 import com.lsy.propertymanagementsystem.module.fee.mapper.FeeRecordMapper;
 import com.lsy.propertymanagementsystem.module.fee.service.FeeItemService;
+import com.lsy.propertymanagementsystem.common.utils.SecurityUtils;
 import com.lsy.propertymanagementsystem.module.fee.service.FeeRecordService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,7 @@ public class FeeRecordServiceImpl implements FeeRecordService {
     public Page<FeeRecordDomain> page(int pageNum, int pageSize, Long ownerId, Long houseId, Integer status) {
         LambdaQueryWrapper<FeeRecordDomain> wrapper = new LambdaQueryWrapper<>();
         if (ownerId != null) {
-            wrapper.eq(FeeRecordDomain::getOwnerId, ownerId);
+            wrapper.eq(FeeRecordDomain::getOwnerId, SecurityUtils.isOwner() ? SecurityUtils.getCurrentUserId() : ownerId);
         }
         if (houseId != null) {
             wrapper.eq(FeeRecordDomain::getHouseId, houseId);
@@ -86,7 +87,7 @@ public class FeeRecordServiceImpl implements FeeRecordService {
         LambdaQueryWrapper<FeeRecordDomain> wrapper = new LambdaQueryWrapper<>();
         wrapper.in(FeeRecordDomain::getStatus, FeeRecordStatus.UNPAID, FeeRecordStatus.OVERDUE);
         if (ownerId != null) {
-            wrapper.eq(FeeRecordDomain::getOwnerId, ownerId);
+            wrapper.eq(FeeRecordDomain::getOwnerId, SecurityUtils.isOwner() ? SecurityUtils.getCurrentUserId() : ownerId);
         }
         if (houseId != null) {
             wrapper.eq(FeeRecordDomain::getHouseId, houseId);

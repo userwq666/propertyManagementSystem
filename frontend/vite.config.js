@@ -46,8 +46,9 @@ export default defineConfig({
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: true,
-        drop_debugger: true
+        drop_console: false,
+        drop_debugger: true,
+        pure_funcs: ['console.log','console.info','console.debug']
       }
     },
     rollupOptions: {
@@ -60,13 +61,6 @@ export default defineConfig({
           'vendor-element': ['element-plus', '@element-plus/icons-vue'],
           'vendor-utils': ['axios', '@vueuse/core']
         }
-      }
-    }
-  },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        additionalData: `@use "@/assets/styles/variables.scss" as *;`
       }
     }
   }

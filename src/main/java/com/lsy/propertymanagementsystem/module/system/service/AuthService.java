@@ -1,11 +1,11 @@
 package com.lsy.propertymanagementsystem.module.system.service;
 
-import com.lsy.propertymanagementsystem.module.system.dto.LoginRequest;
-import com.lsy.propertymanagementsystem.module.system.dto.LoginResponse;
-import com.lsy.propertymanagementsystem.module.system.dto.UserResponse;
+import com.lsy.propertymanagementsystem.module.system.dto.LoginDTO;
+import com.lsy.propertymanagementsystem.module.system.dto.LoginVO;
+import com.lsy.propertymanagementsystem.module.system.dto.UserVO;
 
 public interface AuthService {
-    LoginResponse login(LoginRequest request);
+    LoginVO login(LoginDTO request);
     void logout(String token);
-    UserResponse getCurrentUser(String token);
+    UserVO getCurrentUser(String token);
 }

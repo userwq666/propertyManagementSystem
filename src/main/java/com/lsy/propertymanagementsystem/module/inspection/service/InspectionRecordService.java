@@ -10,5 +10,6 @@ public interface InspectionRecordService {
     void addRecordDomain(InspectionRecordDomain record);
     InspectionRecordDomain getRecordById(Long id);
     void updateRecord(InspectionRecordDTO dto);
+    void deleteRecord(Long id);
     long countByPlanId(Long planId);
 }

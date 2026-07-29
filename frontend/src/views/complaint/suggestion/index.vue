@@ -60,7 +60,7 @@
       </template>
 
       <!-- 查询表单 -->
-      <el-form :model="queryParams" :inline="true" class="search-form" label-width="90px">
+      <el-form :model="queryParams" :inline="true" class="search-form" label-width="90px" @keyup.enter="handleQuery">
         <el-form-item label="投诉标题" prop="title">
           <el-input v-model="queryParams.title" placeholder="请输入投诉标题" clearable style="width: 200px" />
         </el-form-item>
@@ -147,11 +147,9 @@
         <el-table-column label="操作" align="center" width="300" fixed="right" class-name="small-padding">
           <template #default="scope">
             <el-button size="small" type="primary" link @click="handleDetail(scope.row)" v-permission="['complaint:suggestion:list']">详情</el-button>
-            <el-divider direction="vertical" />
             <el-button size="small" type="success" link @click="handleAccept(scope.row)" v-if="canAccept(scope.row)" v-permission="['complaint:suggestion:reply']">受理</el-button>
             <el-button size="small" type="warning" link @click="handleReply(scope.row)" v-if="canReply(scope.row)" v-permission="['complaint:suggestion:reply']">处理</el-button>
             <el-button size="small" type="info" link @click="handleEvaluate(scope.row)" v-if="canEvaluate(scope.row)" v-permission="['complaint:suggestion:evaluate']">评价</el-button>
-            <el-divider direction="vertical" v-if="canClose(scope.row)" />
             <el-button size="small" type="danger" link @click="handleClose(scope.row)" v-if="canClose(scope.row)" v-permission="['complaint:suggestion:reply']">关闭</el-button>
           </template>
         </el-table-column>
@@ -447,14 +445,7 @@ import {
   CircleCheck, Star, Edit, Delete, Document
 } from '@element-plus/icons-vue'
 import {
-  getSuggestionPage,
-  getSuggestionInfo,
-  addSuggestion,
-  updateSuggestion,
-  deleteSuggestion,
-
-  getSuggestionStatistics,
-  getHandlerList,
+  getSuggestionList, addSuggestion, updateSuggestion, deleteSuggestion, updateSuggestionStatus,
 } from '@/api/complaint/suggestion'
 import { usePermission } from '@/hooks/usePermission'
 
@@ -576,13 +567,15 @@ const canEvaluate = (row) => row.status === 3
 const canClose = (row) => row.status !== 4 && row.status !== 5
 
 onMounted(async () => {
-  await   await getHandlerListData()
+  await getHandlerListData()
   await getStatistics()
   getList()
 })
 
 const getHouseTreeData = async () => {
-  try { catch (error) {
+  try {
+    // TODO: 对接后端房屋树接口
+  } catch (error) {
     console.error('获取房屋树失败:', error)
   }
 }
@@ -982,6 +975,7 @@ const handleClose = (row) => {
 }
 
 .small-padding {
+  :deep(.cell) { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
   :deep(.el-table__cell) {
     padding: 5px 10px;
   }
@@ -1029,3 +1023,4 @@ const handleClose = (row) => {
   }
 }
 </style>
+

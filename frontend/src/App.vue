@@ -1,20 +1,33 @@
 <template>
   <div id="app">
-    <router-view v-slot="{ Component }">
+    <router-view v-slot="{ Component }" v-if="!hasError">
       <transition name="fade" mode="out-in">
         <component :is="Component" />
       </transition>
     </router-view>
+    <div v-else class="error-boundary">
+      <el-result icon="error" title="页面发生错误" sub-title="请刷新页面重试">
+        <template #extra>
+          <el-button type="primary" @click="handleReload">刷新页面</el-button>
+        </template>
+      </el-result>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { useUserStore } from '@/store/modules/user'
+import { ref, onErrorCaptured } from "vue"
 
-const userStore = useUserStore()
+const hasError = ref(false)
 
-if (userStore.token) {
-  userStore.getInfo()
+onErrorCaptured((err, instance, info) => {
+  console.error("[ErrorBoundary]", err, info)
+  hasError.value = true
+  return false
+})
+
+const handleReload = () => {
+  location.reload()
 }
 </script>
 
@@ -32,5 +45,12 @@ if (userStore.token) {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.error-boundary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
 }
 </style>

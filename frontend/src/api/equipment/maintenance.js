@@ -45,10 +45,9 @@ export function startMaintenance(id) {
   })
 }
 
-export function completeMaintenance(id, data) {
+export function completeMaintenance(id) {
   return request({
     url: '/equipment/maintenance/complete/' + id,
-    method: 'put',
-    data
+    method: 'put'
   })
 }

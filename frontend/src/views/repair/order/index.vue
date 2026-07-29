@@ -74,7 +74,7 @@
       </el-tabs>
 
       <!-- 查询表单 -->
-      <el-form :model="queryParams" :inline="true" class="search-form" label-width="90px">
+      <el-form :model="queryParams" :inline="true" class="search-form" label-width="90px" @keyup.enter="handleQuery">
         <el-form-item label="工单编号" prop="orderNo">
           <el-input v-model="queryParams.orderNo" placeholder="请输入工单编号" clearable style="width: 200px" />
         </el-form-item>
@@ -173,12 +173,10 @@
         <el-table-column label="操作" align="center" width="320" fixed="right" class-name="small-padding">
           <template #default="scope">
             <el-button size="small" type="primary" link @click="handleDetail(scope.row)" v-permission="['repair:order:detail']">详情</el-button>
-            <el-divider direction="vertical" />
             <el-button size="small" type="success" link @click="handleDispatch(scope.row)" v-if="canDispatch(scope.row)" v-permission="['repair:order:dispatch']">派单</el-button>
             <el-button size="small" type="warning" link @click="handleProcess(scope.row)" v-if="canProcess(scope.row)" v-permission="['repair:order:process']">处理</el-button>
             <el-button size="small" type="info" link @click="handleFinish(scope.row)" v-if="canFinish(scope.row)" v-permission="['repair:order:confirm']">完工</el-button>
             <el-button size="small" type="danger" link @click="handleEvaluate(scope.row)" v-if="canEvaluate(scope.row)" v-permission="['repair:order:evaluate']">评价</el-button>
-            <el-divider direction="vertical" v-if="canCancel(scope.row)" />
             <el-button size="small" type="danger" link @click="handleCancel(scope.row)" v-if="canCancel(scope.row)" v-permission="['repair:order:cancel']">取消</el-button>
           </template>
         </el-table-column>
@@ -575,8 +573,7 @@ import {
   updateRepairOrder,
   deleteRepairOrder,
   getRepairStatistics,
-  getRepairWorkerList,
-} from '@/api/repair/order'
+  getRepairWorkerList, updateRepairOrderStatus, } from '@/api/repair/order'
 import { getBuildingList } from '@/api/community/building'
 import { usePermission } from '@/hooks/usePermission'
 
@@ -1388,6 +1385,7 @@ const submitCancelForm = async () => {
 }
 
 .small-padding {
+  :deep(.cell) { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
   :deep(.el-table__cell) {
     padding: 5px 10px;
   }

@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+﻿import request from '@/utils/request'
 
 export function login(data) {
   return request({
@@ -18,13 +18,6 @@ export function logout() {
 export function getInfo() {
   return request({
     url: '/auth/me',
-    method: 'get'
-  })
-}
-
-export function getCaptcha() {
-  return request({
-    url: '/captchaImage',
     method: 'get'
   })
 }

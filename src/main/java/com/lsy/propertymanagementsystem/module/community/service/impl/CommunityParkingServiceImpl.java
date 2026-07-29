@@ -7,6 +7,7 @@ import com.lsy.propertymanagementsystem.common.exception.BusinessException;
 import com.lsy.propertymanagementsystem.module.community.domain.CommunityParkingDomain;
 import com.lsy.propertymanagementsystem.module.community.dto.CommunityParkingDTO;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityParkingMapper;
+import com.lsy.propertymanagementsystem.common.utils.SecurityUtils;
 import com.lsy.propertymanagementsystem.module.community.service.CommunityParkingService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,10 @@ public class CommunityParkingServiceImpl extends ServiceImpl<CommunityParkingMap
         }
         if (status != null) {
             wrapper.eq(CommunityParkingDomain::getStatus, status);
+        // 业主只能查看自己的车位
+        if (SecurityUtils.isOwner()) {
+            wrapper.eq(CommunityParkingDomain::getOwnerId, SecurityUtils.getCurrentUserId());
+        }
         }
         wrapper.orderByDesc(CommunityParkingDomain::getCreateTime);
         return this.page(new Page<>(pageNum, pageSize), wrapper);

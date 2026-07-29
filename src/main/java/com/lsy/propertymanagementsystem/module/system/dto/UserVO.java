@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class UserResponse {
+public class UserVO {
     private Long id;
     private String username;
     private String realName;
@@ -18,4 +18,5 @@ public class UserResponse {
     private UserStatus status;
     private LocalDateTime createTime;
     private List<Long> roleIds;
+    private List<String> roles;
 }

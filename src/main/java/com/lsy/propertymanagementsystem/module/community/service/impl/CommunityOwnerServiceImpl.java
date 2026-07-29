@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lsy.propertymanagementsystem.common.exception.BusinessException;
+import com.lsy.propertymanagementsystem.common.utils.SecurityUtils;
 import com.lsy.propertymanagementsystem.module.community.domain.CommunityOwnerDomain;
 import com.lsy.propertymanagementsystem.module.community.dto.CommunityOwnerDTO;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityOwnerMapper;
@@ -23,6 +24,10 @@ public class CommunityOwnerServiceImpl extends ServiceImpl<CommunityOwnerMapper,
         }
         if (phone != null && !phone.isEmpty()) {
             wrapper.like(CommunityOwnerDomain::getPhone, phone);
+        }
+        // 业主只能查看自己的信息
+        if (SecurityUtils.isOwner()) {
+            wrapper.eq(CommunityOwnerDomain::getUserId, SecurityUtils.getCurrentUserId());
         }
         wrapper.orderByDesc(CommunityOwnerDomain::getCreateTime);
         return this.page(new Page<>(pageNum, pageSize), wrapper);

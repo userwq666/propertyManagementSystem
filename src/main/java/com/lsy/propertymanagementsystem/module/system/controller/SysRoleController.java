@@ -1,7 +1,7 @@
 package com.lsy.propertymanagementsystem.module.system.controller;
 
 import com.lsy.propertymanagementsystem.common.result.Result;
-import com.lsy.propertymanagementsystem.module.system.dto.RoleRequest;
+import com.lsy.propertymanagementsystem.module.system.dto.RoleDTO;
 import com.lsy.propertymanagementsystem.module.system.domain.SysRoleDomain;
 import com.lsy.propertymanagementsystem.module.system.service.SysRoleService;
 import jakarta.validation.Valid;
@@ -20,14 +20,14 @@ public class SysRoleController {
 
     @PreAuthorize("hasAuthority('system:role:add')")
     @PostMapping
-    public Result<Void> add(@Valid @RequestBody RoleRequest request) {
+    public Result<Void> add(@Valid @RequestBody RoleDTO request) {
         roleService.addRole(request);
         return Result.success();
     }
 
     @PreAuthorize("hasAuthority('system:role:edit')")
     @PutMapping
-    public Result<Void> update(@Valid @RequestBody RoleRequest request) {
+    public Result<Void> update(@Valid @RequestBody RoleDTO request) {
         roleService.updateRole(request);
         return Result.success();
     }

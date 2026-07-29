@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class LoginResponse {
+public class LoginVO {
     private String token;
     private Long userId;
     private String username;
@@ -15,4 +15,5 @@ public class LoginResponse {
     private String avatar;
     private List<Long> roleIds;
     private List<String> permissions;
+    private List<String> roles;
 }

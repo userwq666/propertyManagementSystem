@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <el-container class="layout-container">
     <el-aside :class="['layout-aside', { collapse: isCollapse }]" :width="isCollapse ? '64px' : '210px'">
       <div class="logo-container" :class="{ collapse: isCollapse }">
@@ -89,12 +89,10 @@ import { usePermissionStore } from '@/store/modules/permission'
 import { useAppStore } from '@/store/modules/app'
 import {
   HomeFilled, User, UserFilled, Avatar, Lock, Setting, SwitchButton, ArrowDown,
-  Expand, Fold, FullScreen, Menu, House, OfficeBuilding, Grid,
-  Tickets, StarFilled, ChatLineSquare, Document, Notification, Bell,
-  MessageBox, DocumentAdd, Key, Location, Van, DocumentCopy, Money, Coin,
-  DocumentChecked, Finished, ScaleToOriginal, WarningFilled, RefreshRight,
-  Tools, Monitor, Timer, Box, Cpu, DataAnalysis,
-  DataBoard, List, EditPen, BellFilled, Star
+  Expand, Fold, FullScreen, Menu, House, OfficeBuilding,
+  Tickets, ChatLineSquare, Notification, DocumentCopy, Money, Coin,
+  DocumentChecked, WarningFilled, Tools, Monitor, Timer, DataAnalysis,
+  DataBoard, List, BellFilled, Collection
 } from '@element-plus/icons-vue'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
@@ -112,7 +110,7 @@ const { sidebarRouters } = storeToRefs(permissionStore)
 
 const isCollapse = computed(() => !sidebar.value.opened)
 const activeMenu = ref(route.path)
-const avatarUrl = computed(() => avatar.value || 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif')
+const avatarUrl = computed(() => avatar.value || '')
 
 const handleSelect = (key, keyPath) => {
   if (key === '/') return

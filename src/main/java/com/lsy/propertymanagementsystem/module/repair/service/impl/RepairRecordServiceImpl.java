@@ -9,6 +9,7 @@ import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordDTO;
 import com.lsy.propertymanagementsystem.module.repair.enums.RepairPriority;
 import com.lsy.propertymanagementsystem.module.repair.enums.RepairStatus;
 import com.lsy.propertymanagementsystem.module.repair.mapper.RepairRecordMapper;
+import com.lsy.propertymanagementsystem.common.utils.SecurityUtils;
 import com.lsy.propertymanagementsystem.module.repair.service.RepairRecordService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -18,10 +19,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, RepairRecordDomain> implements RepairRecordService {
 
     @Override
+    public RepairRecordDomain getById(Long id) {
+        return super.getById(id);
+    }
+
+    @Override
     public Page<RepairRecordDomain> page(int pageNum, int pageSize, Long ownerId, Integer status) {
         LambdaQueryWrapper<RepairRecordDomain> wrapper = new LambdaQueryWrapper<>();
         if (ownerId != null) {
-            wrapper.eq(RepairRecordDomain::getOwnerId, ownerId);
+            wrapper.eq(RepairRecordDomain::getOwnerId, SecurityUtils.isOwner() ? SecurityUtils.getCurrentUserId() : ownerId);
         }
         if (status != null) {
             wrapper.eq(RepairRecordDomain::getStatus, RepairStatus.of(status));

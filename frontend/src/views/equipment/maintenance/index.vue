@@ -19,7 +19,7 @@
       </template>
 
       <!-- 查询表单 -->
-      <el-form :model="queryParams" :inline="true" class="search-form" label-width="90px">
+      <el-form :model="queryParams" :inline="true" class="search-form" label-width="90px" @keyup.enter="handleQuery">
         <el-form-item label="设备名称" prop="equipmentId">
           <el-select v-model="queryParams.equipmentId" placeholder="请选择设备" clearable filterable style="width: 200px">
             <el-option v-for="item in equipmentOptions" :key="item.id" :label="item.name" :value="item.id" />
@@ -494,7 +494,7 @@ async function submitComplete() {
           delete data[key]
         }
       })
-      await completeMaintenance(completeRecordId.value, data)
+      await completeMaintenance(completeRecordId.value)
       ElMessage.success('维保完成')
       completeDialogVisible.value = false
       getList()
@@ -575,6 +575,7 @@ onMounted(() => {
 }
 
 .small-padding {
+  :deep(.cell) { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
   :deep(.el-table__cell) {
     padding: 5px 10px;
   }

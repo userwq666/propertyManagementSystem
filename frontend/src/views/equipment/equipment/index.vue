@@ -20,7 +20,7 @@
       </template>
 
       <!-- 查询表单 -->
-      <el-form :model="queryParams" :inline="true" class="search-form" label-width="90px">
+      <el-form :model="queryParams" :inline="true" class="search-form" label-width="90px" @keyup.enter="handleQuery">
         <el-form-item label="设备编号" prop="equipmentNo">
           <el-input v-model="queryParams.equipmentNo" placeholder="请输入设备编号" clearable style="width: 180px" />
         </el-form-item>
@@ -73,12 +73,9 @@
         <el-table-column label="操作" align="center" width="260" fixed="right" class-name="small-padding">
           <template #default="scope">
             <el-button size="small" type="primary" link @click="handleDetail(scope.row)" v-permission="['equipment:list:list']">详情</el-button>
-            <el-divider direction="vertical" />
             <el-button size="small" type="warning" link @click="handleEdit(scope.row)" v-permission="['equipment:list:edit']">编辑</el-button>
-            <el-divider direction="vertical" />
             <el-button size="small" type="success" link @click="handleStatusToggle(scope.row)" v-if="scope.row.status === '4'" v-permission="['equipment:list:edit']">启用</el-button>
             <el-button size="small" type="info" link @click="handleStatusToggle(scope.row)" v-if="scope.row.status === '1'" v-permission="['equipment:list:edit']">停用</el-button>
-            <el-divider direction="vertical" v-if="scope.row.status === '1' || scope.row.status === '4'" />
             <el-button size="small" type="danger" link @click="handleDelete(scope.row)" v-permission="['equipment:list:delete']">删除</el-button>
           </template>
         </el-table-column>
@@ -584,6 +581,7 @@ const handleStatusToggle = (row) => {
 }
 
 .small-padding {
+  :deep(.cell) { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
   :deep(.el-table__cell) {
     padding: 5px 10px;
   }

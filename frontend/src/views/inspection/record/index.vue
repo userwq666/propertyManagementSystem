@@ -1,6 +1,13 @@
-</div>
-          </div>
-          <el-icon class="stat-icon primary"><document /></el-icon>
+﻿<template>
+  <div class="app-container">
+<el-row :gutter="20">
+    <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+      <el-card shadow="never" class="stat-card">
+        <div class="stat-content">
+          <div class="stat-label">总记录数</div>
+          <div class="stat-value primary">{{ statistics.totalCount }}</div>
+        </div>
+        <el-icon class="stat-icon primary"><document /></el-icon>
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
@@ -48,7 +55,7 @@
       </template>
 
       <!-- 查询表单 -->
-      <el-form :model="queryParams" :inline="true" class="search-form" label-width="100px">
+      <el-form :model="queryParams" :inline="true" class="search-form" label-width="100px" @keyup.enter="handleQuery">
         <el-form-item label="关联计划" prop="planName">
           <el-input v-model="queryParams.planName" placeholder="请输入计划名称" clearable style="width: 200px" />
         </el-form-item>
@@ -131,10 +138,8 @@
         <el-table-column label="操作" align="center" width="280" fixed="right" class-name="small-padding">
           <template #default="scope">
             <el-button size="small" type="primary" link @click="handleDetail(scope.row)" v-permission="['inspection:record:list']">详情</el-button>
-            <el-divider direction="vertical" />
             <el-button size="small" type="success" link @click="handleExecute(scope.row)" v-if="canExecute(scope.row)" v-permission="['inspection:record:edit']">执行</el-button>
             <el-button size="small" type="warning" link @click="updateInspectionRecord(scope.row)" v-if="canHandleAbnormal(scope.row)" v-permission="['inspection:record:handle']">异常处理</el-button>
-            <el-divider direction="vertical" />
             <el-button size="small" type="danger" link @click="handleDelete(scope.row)" v-permission="['inspection:record:delete']">删除</el-button>
           </template>
         </el-table-column>
@@ -388,7 +393,6 @@
     </el-dialog>
   </div>
 </template>
-
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -1021,6 +1025,7 @@ const handleDelete = (row) => {
 }
 
 .small-padding {
+  :deep(.cell) { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
   :deep(.el-table__cell) {
     padding: 5px 10px;
   }

@@ -61,3 +61,20 @@ export function getRoleList(params) {
     params
   })
 }
+
+// 个人中心接口
+export function updateUserProfile(data) {
+  return request({
+    url: '/system/user/profile',
+    method: 'put',
+    data
+  })
+}
+
+export function updateUserPassword(data) {
+  return request({
+    url: '/system/user/password/change',
+    method: 'put',
+    data
+  })
+}

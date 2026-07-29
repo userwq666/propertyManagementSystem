@@ -1,84 +1,70 @@
-import { defineStore } from 'pinia'
-import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
-import router from '@/router'
+﻿import { defineStore } from "pinia"
+import { login, logout, getInfo } from "@/api/user"
+import { getToken, setToken, removeToken } from "@/utils/auth"
+import router from "@/router"
+import { usePermissionStore } from "@/store/modules/permission"
 
-export const useUserStore = defineStore('user', {
+export const useUserStore = defineStore("user", {
   state: () => ({
     token: getToken(),
-    name: '',
-    avatar: '',
+    name: "",
+    avatar: "",
     roles: [],
     permissions: [],
-    userId: '',
-    deptId: '',
-    email: '',
-    phone: '',
-    loginTime: 0
+    userId: "",
+    deptId: "",
+    email: "",
+    phone: ""
   }),
   getters: {
     hasToken: state => !!state.token,
-    isAdmin: state => state.roles.includes('admin')
+    isAdmin: state => state.roles.includes("admin")
   },
   actions: {
     async login(userInfo) {
-      const { username, password, code, uuid } = userInfo
-      const res = await login({ username: username.trim(), password, code, uuid })
-      this.token = res.data
+      const { username, password } = userInfo
+      const res = await login({ username: username.trim(), password })
+      this.token = res.data.token
       setToken(this.token)
     },
     async getInfo() {
       const res = await getInfo()
-      const { roles, permissions, userId, deptId, name, avatar, email, phone, loginTime } = res.data
-      if (roles && roles.length > 0) {
-        this.roles = roles
-        this.permissions = permissions
+      const data = res.data
+      if (data.roles && data.roles.length > 0) {
+        this.roles = data.roles
+        this.permissions = data.permissions || []
       } else {
-        this.roles = ['default']
+        this.roles = ["default"]
       }
-      this.userId = userId
-      this.deptId = deptId
-      this.name = name
-      this.avatar = avatar || 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'
-      this.email = email
-      this.phone = phone
-      this.loginTime = loginTime
+      this.userId = data.userId || ""
+      this.deptId = data.deptId || ""
+      this.name = data.name || data.username || ""
+      this.avatar = data.avatar || ""
+      this.email = data.email || ""
+      this.phone = data.phone || ""
     },
     async logout() {
-      await logout()
+      try { await logout() } catch {}
       this.resetState()
-      router.push('/login')
+      const permissionStore = usePermissionStore()
+      permissionStore.resetRouter()
+      router.push("/login")
     },
     resetState() {
-      this.token = ''
+      this.token = ""
       this.roles = []
       this.permissions = []
-      this.name = ''
-      this.avatar = ''
-      this.userId = ''
-      this.deptId = ''
-      this.email = ''
-      this.phone = ''
-      this.loginTime = 0
+      this.name = ""
+      this.avatar = ""
+      this.userId = ""
+      this.deptId = ""
+      this.email = ""
+      this.phone = ""
       removeToken()
-    },
-    initUserInfo() {
-      const stored = localStorage.getItem('userInfo')
-      if (stored) {
-        const info = JSON.parse(stored)
-        this.name = info.name
-        this.avatar = info.avatar
-        this.roles = info.roles
-        this.permissions = info.permissions
-        this.userId = info.userId
-        this.deptId = info.deptId
-        this.email = info.email
-        this.phone = info.phone
-      }
     }
   },
   persist: {
-    key: 'userStore',
-    paths: ['token', 'name', 'avatar', 'roles', 'permissions', 'userId', 'deptId', 'email', 'phone', 'loginTime']
+    key: "userStore",
+    paths: ["token", "name", "avatar", "roles", "permissions", "userId", "deptId", "email", "phone"]
   }
 })

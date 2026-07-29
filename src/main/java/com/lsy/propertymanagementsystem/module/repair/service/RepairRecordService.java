@@ -6,6 +6,7 @@ import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordDTO;
 
 public interface RepairRecordService {
     Page<RepairRecordDomain> page(int pageNum, int pageSize, Long ownerId, Integer status);
+    RepairRecordDomain getById(Long id);
     void addRepair(RepairRecordDTO domain);
     void updateRepair(RepairRecordDTO domain);
     void deleteRepair(Long id);

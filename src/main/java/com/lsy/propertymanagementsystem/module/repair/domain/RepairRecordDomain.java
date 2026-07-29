@@ -3,6 +3,7 @@ package com.lsy.propertymanagementsystem.module.repair.domain;
 import com.baomidou.mybatisplus.annotation.*;
 import com.lsy.propertymanagementsystem.module.repair.enums.RepairPriority;
 import com.lsy.propertymanagementsystem.module.repair.enums.RepairStatus;
+import com.lsy.propertymanagementsystem.module.repair.enums.RepairType;
 import lombok.Data;
 import java.time.LocalDateTime;
 
@@ -14,7 +15,7 @@ public class RepairRecordDomain {
     private String repairNo;
     private Long ownerId;
     private Long houseId;
-    private String repairType;
+    private RepairType repairType;
     private String repairContent;
     private String repairImages;
     private RepairStatus status;

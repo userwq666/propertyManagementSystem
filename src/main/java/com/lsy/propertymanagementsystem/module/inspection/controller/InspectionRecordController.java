@@ -31,6 +31,13 @@ public class InspectionRecordController {
         return Result.success();
     }
 
+    @PreAuthorize("hasAuthority('inspection:record:delete')")
+    @DeleteMapping("/{id}")
+    public Result delete(@PathVariable Long id) {
+        inspectionRecordService.deleteRecord(id);
+        return Result.success();
+    }
+
     @PreAuthorize("hasAuthority('inspection:record:list')")
     @GetMapping("/{id}")
     public Result getById(@PathVariable Long id) {

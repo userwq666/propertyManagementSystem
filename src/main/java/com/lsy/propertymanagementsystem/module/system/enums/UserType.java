@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 public enum UserType {
     SUPER_ADMIN(1, "超级管理员"),
     PROPERTY_ADMIN(2, "物业管理员"),
-    OWNER(3, "业主");
+    OWNER(3, "业主"),
+    REPAIR_WORKER(4, "维修工"),
+    INSPECTOR(5, "巡检员");
 
     @EnumValue
     @JsonValue

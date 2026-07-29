@@ -4,9 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.lsy.propertymanagementsystem.common.exception.BusinessException;
 import com.lsy.propertymanagementsystem.common.utils.JwtUtils;
 import com.lsy.propertymanagementsystem.common.utils.PasswordUtils;
-import com.lsy.propertymanagementsystem.module.system.dto.LoginRequest;
-import com.lsy.propertymanagementsystem.module.system.dto.LoginResponse;
-import com.lsy.propertymanagementsystem.module.system.dto.UserResponse;
+import com.lsy.propertymanagementsystem.module.system.dto.LoginDTO;
+import com.lsy.propertymanagementsystem.module.system.dto.LoginVO;
+import com.lsy.propertymanagementsystem.module.system.dto.UserVO;
 import com.lsy.propertymanagementsystem.module.system.domain.SysMenuDomain;
 import com.lsy.propertymanagementsystem.module.system.domain.SysRoleMenuDomain;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserDomain;
@@ -41,7 +41,7 @@ public class AuthServiceImpl implements AuthService {
     private SysMenuMapper menuMapper;
 
     @Override
-    public LoginResponse login(LoginRequest request) {
+    public LoginVO login(LoginDTO request) {
         SysUserDomain user = userService.getByUsername(request.getUsername());
 
         if (user == null) {
@@ -56,21 +56,11 @@ public class AuthServiceImpl implements AuthService {
             throw new BusinessException("用户名或密码错误");
         }
 
-        String token = JwtUtils.generateToken(user.getId(), user.getUsername());
-
-        LoginResponse response = new LoginResponse();
-        response.setToken(token);
-        response.setUserId(user.getId());
-        response.setUsername(user.getUsername());
-        response.setRealName(user.getRealName());
-        response.setUserType(user.getUserType());
-        response.setAvatar(user.getAvatar());
-
+        // 先收集角色和权限
         LambdaQueryWrapper<SysUserRoleDomain> roleWrapper = new LambdaQueryWrapper<>();
         roleWrapper.eq(SysUserRoleDomain::getUserId, user.getId());
         List<SysUserRoleDomain> userRoles = userRoleMapper.selectList(roleWrapper);
         List<Long> roleIds = userRoles.stream().map(SysUserRoleDomain::getRoleId).collect(Collectors.toList());
-        response.setRoleIds(roleIds);
 
         List<String> permissions = new ArrayList<>();
         if (!roleIds.isEmpty()) {
@@ -87,9 +77,37 @@ public class AuthServiceImpl implements AuthService {
                 menuMapper.selectList(menuWrapper).forEach(menu -> permissions.add(menu.getPerms()));
             }
         }
+
+        String token = JwtUtils.generateToken(user.getId(), user.getUsername(), user.getUserType().getValue(), permissions);
+
+        LoginVO response = new LoginVO();
+        response.setToken(token);
+        response.setUserId(user.getId());
+        response.setUsername(user.getUsername());
+        response.setRealName(user.getRealName());
+        response.setUserType(user.getUserType());
+        response.setAvatar(user.getAvatar());
+        response.setRoleIds(roleIds);
         response.setPermissions(permissions);
+        response.setRoles(getRoleNames(user.getUserType()));
 
         return response;
+    }
+
+    private List<String> getRoleNames(UserType userType) {
+        List<String> roleNames = new ArrayList<>();
+        if (userType == UserType.SUPER_ADMIN) {
+            roleNames.add("admin");
+        } else if (userType == UserType.PROPERTY_ADMIN) {
+            roleNames.add("property");
+        } else if (userType == UserType.OWNER) {
+            roleNames.add("owner");
+        } else if (userType == UserType.REPAIR_WORKER) {
+            roleNames.add("repair_worker");
+        } else if (userType == UserType.INSPECTOR) {
+            roleNames.add("inspector");
+        }
+        return roleNames;
     }
 
     @Override
@@ -98,7 +116,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public UserResponse getCurrentUser(String token) {
+    public UserVO getCurrentUser(String token) {
         Long userId = JwtUtils.getUserId(token);
         SysUserDomain user = userService.getById(userId);
 
@@ -106,7 +124,7 @@ public class AuthServiceImpl implements AuthService {
             throw new BusinessException("用户不存在");
         }
 
-        UserResponse response = new UserResponse();
+        UserVO response = new UserVO();
         response.setId(user.getId());
         response.setUsername(user.getUsername());
         response.setRealName(user.getRealName());
@@ -120,6 +138,8 @@ public class AuthServiceImpl implements AuthService {
         roleWrapper.eq(SysUserRoleDomain::getUserId, user.getId());
         List<SysUserRoleDomain> userRoles = userRoleMapper.selectList(roleWrapper);
         response.setRoleIds(userRoles.stream().map(SysUserRoleDomain::getRoleId).collect(Collectors.toList()));
+
+        response.setRoles(getRoleNames(user.getUserType()));
 
         return response;
     }

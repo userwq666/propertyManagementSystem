@@ -3,8 +3,8 @@ package com.lsy.propertymanagementsystem.module.system.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lsy.propertymanagementsystem.common.exception.BusinessException;
-import com.lsy.propertymanagementsystem.module.system.dto.MenuRequest;
-import com.lsy.propertymanagementsystem.module.system.dto.MenuResponse;
+import com.lsy.propertymanagementsystem.module.system.dto.MenuDTO;
+import com.lsy.propertymanagementsystem.module.system.dto.MenuVO;
 import com.lsy.propertymanagementsystem.module.system.domain.SysMenuDomain;
 import com.lsy.propertymanagementsystem.module.system.enums.EnableStatus;
 import com.lsy.propertymanagementsystem.module.system.enums.MenuType;
@@ -20,7 +20,7 @@ import java.util.List;
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDomain> implements SysMenuService {
 
     @Override
-    public List<MenuResponse> getMenuTree() {
+    public List<MenuVO> getMenuTree() {
         LambdaQueryWrapper<SysMenuDomain> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(SysMenuDomain::getStatus, EnableStatus.ENABLED);
         wrapper.orderByAsc(SysMenuDomain::getSort);
@@ -29,7 +29,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDomain
     }
 
     @Override
-    public List<MenuResponse> getMenuList() {
+    public List<MenuVO> getMenuList() {
         LambdaQueryWrapper<SysMenuDomain> wrapper = new LambdaQueryWrapper<>();
         wrapper.orderByAsc(SysMenuDomain::getSort);
         List<SysMenuDomain> menus = this.list(wrapper);
@@ -38,7 +38,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDomain
 
     @Override
     @Transactional
-    public void addMenu(MenuRequest request) {
+    public void addMenu(MenuDTO request) {
         SysMenuDomain menu = new SysMenuDomain();
         menu.setParentId(request.getParentId());
         menu.setMenuName(request.getMenuName());
@@ -53,7 +53,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDomain
 
     @Override
     @Transactional
-    public void updateMenu(MenuRequest request) {
+    public void updateMenu(MenuDTO request) {
         SysMenuDomain menu = this.getById(request.getId());
         if (menu == null) {
             throw new BusinessException("菜单不存在");
@@ -86,11 +86,11 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDomain
         return this.getById(id);
     }
 
-    private List<MenuResponse> buildMenuTree(List<SysMenuDomain> menus, Long parentId) {
-        List<MenuResponse> tree = new ArrayList<>();
+    private List<MenuVO> buildMenuTree(List<SysMenuDomain> menus, Long parentId) {
+        List<MenuVO> tree = new ArrayList<>();
         for (SysMenuDomain menu : menus) {
             if (parentId.equals(menu.getParentId())) {
-                MenuResponse response = new MenuResponse();
+                MenuVO response = new MenuVO();
                 response.setId(menu.getId());
                 response.setParentId(menu.getParentId());
                 response.setMenuName(menu.getMenuName());

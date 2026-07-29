@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 
 @Data
-public class UserRequest {
+public class UserDTO {
     private Long id;
 
     @NotBlank(message = "用户名不能为空")

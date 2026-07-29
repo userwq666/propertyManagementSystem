@@ -1,8 +1,8 @@
 package com.lsy.propertymanagementsystem.module.system.controller;
 
 import com.lsy.propertymanagementsystem.common.result.Result;
-import com.lsy.propertymanagementsystem.module.system.dto.MenuRequest;
-import com.lsy.propertymanagementsystem.module.system.dto.MenuResponse;
+import com.lsy.propertymanagementsystem.module.system.dto.MenuDTO;
+import com.lsy.propertymanagementsystem.module.system.dto.MenuVO;
 import com.lsy.propertymanagementsystem.module.system.domain.SysMenuDomain;
 import com.lsy.propertymanagementsystem.module.system.service.SysMenuService;
 import jakarta.validation.Valid;
@@ -21,14 +21,14 @@ public class SysMenuController {
 
     @PreAuthorize("hasAuthority('system:menu:add')")
     @PostMapping
-    public Result<Void> add(@Valid @RequestBody MenuRequest request) {
+    public Result<Void> add(@Valid @RequestBody MenuDTO request) {
         menuService.addMenu(request);
         return Result.success();
     }
 
     @PreAuthorize("hasAuthority('system:menu:edit')")
     @PutMapping
-    public Result<Void> update(@Valid @RequestBody MenuRequest request) {
+    public Result<Void> update(@Valid @RequestBody MenuDTO request) {
         menuService.updateMenu(request);
         return Result.success();
     }
@@ -49,15 +49,15 @@ public class SysMenuController {
 
     @PreAuthorize("hasAuthority('system:menu:list')")
     @GetMapping("/tree")
-    public Result<List<MenuResponse>> getMenuTree() {
-        List<MenuResponse> menus = menuService.getMenuTree();
+    public Result<List<MenuVO>> getMenuTree() {
+        List<MenuVO> menus = menuService.getMenuTree();
         return Result.success(menus);
     }
 
     @PreAuthorize("hasAuthority('system:menu:list')")
     @GetMapping("/list")
-    public Result<List<MenuResponse>> getMenuList() {
-        List<MenuResponse> menus = menuService.getMenuList();
+    public Result<List<MenuVO>> getMenuList() {
+        List<MenuVO> menus = menuService.getMenuList();
         return Result.success(menus);
     }
 }

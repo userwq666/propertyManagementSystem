@@ -6,8 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lsy.propertymanagementsystem.common.exception.BusinessException;
 import com.lsy.propertymanagementsystem.common.utils.PasswordUtils;
-import com.lsy.propertymanagementsystem.module.system.dto.UserRequest;
-import com.lsy.propertymanagementsystem.module.system.dto.UserResponse;
+import com.lsy.propertymanagementsystem.module.system.dto.UserDTO;
+import com.lsy.propertymanagementsystem.module.system.dto.UserVO;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserDomain;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserRoleDomain;
 import com.lsy.propertymanagementsystem.module.system.enums.UserStatus;
@@ -29,7 +29,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDomain
     private SysUserRoleMapper userRoleMapper;
 
     @Override
-    public IPage<UserResponse> getUserPage(Integer pageNum, Integer pageSize, String username, UserStatus status) {
+    public IPage<UserVO> getUserPage(Integer pageNum, Integer pageSize, String username, UserStatus status) {
         LambdaQueryWrapper<SysUserDomain> wrapper = new LambdaQueryWrapper<>();
         if (username != null && !username.isEmpty()) {
             wrapper.like(SysUserDomain::getUsername, username);
@@ -45,7 +45,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDomain
 
     @Override
     @Transactional
-    public void addUser(UserRequest request) {
+    public void addUser(UserDTO request) {
         LambdaQueryWrapper<SysUserDomain> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(SysUserDomain::getUsername, request.getUsername());
         if (this.count(wrapper) > 0) {
@@ -66,7 +66,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDomain
 
     @Override
     @Transactional
-    public void updateUser(UserRequest request) {
+    public void updateUser(UserDTO request) {
         SysUserDomain user = this.getById(request.getId());
         if (user == null) {
             throw new BusinessException("用户不存在");
@@ -125,7 +125,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDomain
     }
 
     @Override
-    public UserResponse getUserById(Long id) {
+    public UserVO getUserById(Long id) {
         SysUserDomain user = this.getById(id);
         if (user == null) {
             throw new BusinessException("用户不存在");
@@ -161,8 +161,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDomain
         }
     }
 
-    private UserResponse convertToResponse(SysUserDomain user) {
-        UserResponse response = new UserResponse();
+    private UserVO convertToResponse(SysUserDomain user) {
+        UserVO response = new UserVO();
         response.setId(user.getId());
         response.setUsername(user.getUsername());
         response.setRealName(user.getRealName());

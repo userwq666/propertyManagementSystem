@@ -3,7 +3,7 @@ package com.lsy.propertymanagementsystem.module.system.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lsy.propertymanagementsystem.common.exception.BusinessException;
-import com.lsy.propertymanagementsystem.module.system.dto.RoleRequest;
+import com.lsy.propertymanagementsystem.module.system.dto.RoleDTO;
 import com.lsy.propertymanagementsystem.module.system.domain.SysRoleDomain;
 import com.lsy.propertymanagementsystem.module.system.domain.SysRoleMenuDomain;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserRoleDomain;
@@ -36,7 +36,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDomain
 
     @Override
     @Transactional
-    public void addRole(RoleRequest request) {
+    public void addRole(RoleDTO request) {
         LambdaQueryWrapper<SysRoleDomain> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(SysRoleDomain::getRoleName, request.getRoleName());
         if (this.count(wrapper) > 0) {
@@ -52,7 +52,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDomain
 
     @Override
     @Transactional
-    public void updateRole(RoleRequest request) {
+    public void updateRole(RoleDTO request) {
         SysRoleDomain role = this.getById(request.getId());
         if (role == null) {
             throw new BusinessException("角色不存在");
