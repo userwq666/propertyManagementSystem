@@ -46,7 +46,7 @@ public class CommunityBuildingServiceImpl extends ServiceImpl<CommunityBuildingM
     public void updateBuilding(CommunityBuildingDTO building) {
         CommunityBuildingDomain existing = this.getById(building.getId());
         if (existing == null) {
-            throw new BusinessException("楼栋不存�?);
+            throw new BusinessException("楼栋不存在");
         }
         BeanUtils.copyProperties(building, existing);
         this.updateById(existing);

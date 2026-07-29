@@ -84,6 +84,7 @@
           </div>
         </el-card>
       </el-col>
+    </el-row>
 
     <!-- 设备 & 巡检 -->
     <el-row :gutter="16" style="margin-top: 16px;">

@@ -146,8 +146,16 @@ async function submitPay() {
 }
 
 function handleDetail(row) {
-  ElMessageBox.alert(账单编号: ${row.feeNo}\n业主: ${row.ownerName}\n房间号: ${row.roomNo}\n收费项目: ${row.itemName}\n应收金额: ${row.amount}\n已缴金额: ${row.paidAmount || 0}\n状态: ${statusText(row.status)}, '账单详情'
-  )
+  var detail = [
+    '账单编号: ' + (row.feeNo || ''),
+    '业主: ' + (row.ownerName || ''),
+    '房间号: ' + (row.roomNo || ''),
+    '收费项目: ' + (row.itemName || ''),
+    '应收金额: ' + (row.amount || 0),
+    '已缴金额: ' + (row.paidAmount || 0),
+    '状态: ' + statusText(row.status)
+  ].join('\n')
+  ElMessageBox.alert(detail, '账单详情')
 }
 
 async function handleGenerate() {

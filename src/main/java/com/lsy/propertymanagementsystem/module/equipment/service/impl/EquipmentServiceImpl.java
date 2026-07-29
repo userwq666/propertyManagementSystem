@@ -77,7 +77,7 @@ public class EquipmentServiceImpl extends ServiceImpl<EquipmentMapper, Equipment
         LambdaQueryWrapper<EquipmentDomain> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(EquipmentDomain::getEquipmentNo, dto.getEquipmentNo());
         if (this.count(wrapper) > 0) {
-            throw new BusinessException("设备编号已存�?);
+            throw new BusinessException("设备编号已存在");
         }
         EquipmentDomain domain = new EquipmentDomain();
         BeanUtils.copyProperties(dto, domain);
@@ -89,13 +89,13 @@ public class EquipmentServiceImpl extends ServiceImpl<EquipmentMapper, Equipment
     public void updateEquipment(EquipmentDTO dto) {
         EquipmentDomain existing = super.getById(dto.getId());
         if (existing == null) {
-            throw new BusinessException("设备不存�?);
+            throw new BusinessException("设备不存在");
         }
         LambdaQueryWrapper<EquipmentDomain> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(EquipmentDomain::getEquipmentNo, dto.getEquipmentNo());
         wrapper.ne(EquipmentDomain::getId, dto.getId());
         if (this.count(wrapper) > 0) {
-            throw new BusinessException("设备编号已存�?);
+            throw new BusinessException("设备编号已存在");
         }
         EquipmentDomain domain = new EquipmentDomain();
         BeanUtils.copyProperties(dto, domain);
@@ -113,7 +113,7 @@ public class EquipmentServiceImpl extends ServiceImpl<EquipmentMapper, Equipment
     public void updateStatus(Long id, Integer status) {
         EquipmentDomain domain = super.getById(id);
         if (domain == null) {
-            throw new BusinessException("设备不存�?);
+            throw new BusinessException("设备不存在");
         }
         domain.changeStatus(EquipmentStatus.of(status));
         this.updateById(domain);
