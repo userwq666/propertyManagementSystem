@@ -12,8 +12,8 @@ export function getFeeRecordPage(params) {
   return request({ url: '/fee/record/page', method: 'get', params })
 }
 
-export function payFeeRecord(params) {
-  return request({ url: '/fee/record/pay', method: 'put', params })
+export function payFeeRecord(id, payWay) {
+  return request({ url: '/fee/record/pay', method: 'put', params: { id, payWay } })
 }
 
 export function getFeeStatistics() {

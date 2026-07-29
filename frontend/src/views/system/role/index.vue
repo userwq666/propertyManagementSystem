@@ -140,7 +140,7 @@ async function submitMenuAssign() {
   const halfKeys = menuTreeRef.value.getHalfCheckedKeys()
   const menuIds = [...checkedKeys, ...halfKeys]
   try {
-    await assignMenus({ roleId: currentRoleId.value, menuIds })
+    await assignMenus(currentRoleId.value, menuIds)
     ElMessage.success('菜单分配成功')
     menuDialogVisible.value = false
   } catch (e) { /* handled */ } finally { submitting.value = false }

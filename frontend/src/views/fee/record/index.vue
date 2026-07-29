@@ -71,10 +71,7 @@
     <el-dialog title="确认缴费" v-model="payDialogVisible" width="400px">
       <el-form :model="payForm" label-width="80px">
         <el-form-item label="缴费方式">
-          <el-select v-model="payForm.payType" style="width:100%">
-            <el-option label="现金" :value="0" /><el-option label="微信" :value="1" />
-            <el-option label="支付宝" :value="2" /><el-option label="银行转账" :value="3" />
-          </el-select>
+          <el-select v-model="payForm.payWay" style="width:100%"><el-option label="现金" value="CASH" /><el-option label="微信" value="WECHAT" /><el-option label="支付宝" value="ALIPAY" /><el-option label="银行转账" value="BANK" /></el-select>
         </el-form-item>
         <el-form-item label="实缴金额">
           <el-input-number v-model="payForm.paidAmount" :min="0" :precision="2" style="width:100%" />
@@ -106,7 +103,7 @@ const houseList = ref([])
 const currentPayRow = ref(null)
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, ownerId: '', houseId: '', status: '' })
-const payForm = reactive({ payType: 1, paidAmount: 0 })
+const payForm = reactive({ payWay: 'WECHAT', paidAmount: 0 })
 
 const statusTag = (s) => ({ 0: 'info', 1: 'success', 2: 'danger', 3: 'warning' }[s] || 'info')
 const statusText = (s) => ({ 0: '未缴费', 1: '已缴费', 2: '逾期', 3: '减免' }[s] || '')
@@ -134,14 +131,14 @@ function resetSearch() { searchForm.ownerId = ''; searchForm.houseId = ''; searc
 
 function handlePay(row) {
   currentPayRow.value = row
-  payForm.payType = 1
+  payForm.payWay = 'WECHAT'
   payForm.paidAmount = row.amount || 0
   payDialogVisible.value = true
 }
 
 async function submitPay() {
   try {
-    await payFeeRecord({ id: currentPayRow.value.id, payType: payForm.payType, paidAmount: payForm.paidAmount })
+    await payFeeRecord(currentPayRow.value.id, payForm.payWay)
     ElMessage.success('缴费成功')
     payDialogVisible.value = false
     fetchData()
@@ -156,7 +153,7 @@ function handleDetail(row) {
 async function handleGenerate() {
   await ElMessageBox.confirm('确定要批量生成账单吗？', '提示', { type: 'warning' })
   try {
-    await generateFeeRecords({})
+    await generateFeeRecords([])
     ElMessage.success('账单生成成功')
     fetchData()
   } catch (e) {}

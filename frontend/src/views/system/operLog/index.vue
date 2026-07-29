@@ -2,10 +2,10 @@
   <div>
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="用户名">
-        <el-input v-model="searchForm.username" placeholder="请输入用户名" clearable />
+        <el-input v-model="searchForm.userName" placeholder="请输入用户名" clearable />
       </el-form-item>
       <el-form-item label="模块名称">
-        <el-input v-model="searchForm.module" placeholder="请输入模块名称" clearable />
+        <el-input v-model="searchForm.operModule" placeholder="请输入模块名称" clearable />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="handleSearch">搜索</el-button>
@@ -61,7 +61,7 @@ const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)
 
-const searchForm = reactive({ pageNum: 1, pageSize: 10, username: '', module: '' })
+const searchForm = reactive({ pageNum: 1, pageSize: 10, userName: '', operModule: '' })
 
 onMounted(() => fetchData())
 
@@ -75,7 +75,7 @@ async function fetchData() {
 }
 
 function handleSearch() { searchForm.pageNum = 1; fetchData() }
-function resetSearch() { searchForm.username = ''; searchForm.module = ''; handleSearch() }
+function resetSearch() { searchForm.userName = ''; searchForm.operModule = ''; handleSearch() }
 
 function handleDetail(row) {
   const content = [
