@@ -125,6 +125,8 @@ const ownerList = ref([])
 const searchForm = reactive({ pageNum: 1, pageSize: 10, buildingId: null, houseStatus: null })
 const form = reactive({ id: null, buildingId: null, roomNo: '', area: null, houseType: '', houseStatus: null, ownerId: null, remark: '' })
 
+const submitting = ref(false)
+
 const dialogTitle = computed(() => isEdit.value ? '编辑房屋' : '新增房屋')
 
 const rules = {
@@ -173,6 +175,7 @@ function handleEdit(row) { isEdit.value = true; Object.assign(form, row); dialog
 function resetForm() { formRef.value?.resetFields(); form.id = null }
 
 async function handleSubmit() {
+  if (submitting.value) return
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
   try {

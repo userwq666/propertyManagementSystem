@@ -136,11 +136,6 @@ public class EquipmentMaintenanceServiceImpl extends ServiceImpl<EquipmentMainte
         this.updateById(domain);
     }
 
-    @Override
-    public long countByEquipmentId(Long equipmentId) {
-        return this.count(new LambdaQueryWrapper<EquipmentMaintenanceDomain>().eq(EquipmentMaintenanceDomain::getEquipmentId, equipmentId));
-    }
-
     private EquipmentMaintenanceVO convertToVO(EquipmentMaintenanceDomain domain, Map<Long, String> equipmentNameMap, Map<Long, String> personnelNameMap) {
         EquipmentMaintenanceVO vo = new EquipmentMaintenanceVO();
         BeanUtils.copyProperties(domain, vo);

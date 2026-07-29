@@ -12,5 +12,4 @@ public interface EquipmentMaintenanceService {
     Page<EquipmentMaintenanceVO> page(int pageNum, int pageSize, Long equipmentId, Integer maintenanceType, Integer status);
     void startMaintenance(Long id);
     void completeMaintenance(Long id);
-    long countByEquipmentId(Long equipmentId);
 }

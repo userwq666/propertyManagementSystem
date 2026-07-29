@@ -8,7 +8,7 @@
       </el-form-item>
       <el-form-item label="设备状态">
         <el-select v-model="searchForm.status" placeholder="请选择" clearable>
-          <el-option label="正常" :value="0" /><el-option label="故障" :value="1" /><el-option label="维修中" :value="2" /><el-option label="报废" :value="3" />
+          <el-option label="正常" :value="1" /><el-option label="故障" :value="2" /><el-option label="维修中" :value="3" /><el-option label="停用" :value="4" /><el-option label="报废" :value="5" />
         </el-select>
       </el-form-item>
       <el-form-item label="设备名称">
@@ -88,7 +88,7 @@
         </el-form-item>
         <el-form-item label="设备状态" prop="status">
           <el-select v-model="form.status">
-            <el-option label="正常" :value="0" /><el-option label="故障" :value="1" /><el-option label="维修中" :value="2" /><el-option label="报废" :value="3" />
+            <el-option label="正常" :value="1" /><el-option label="故障" :value="2" /><el-option label="维修中" :value="3" /><el-option label="停用" :value="4" /><el-option label="报废" :value="5" />
           </el-select>
         </el-form-item>
         <el-form-item label="备注">
@@ -124,8 +124,10 @@ const buildings = ref([])
 const searchForm = reactive({ pageNum: 1, pageSize: 10, categoryId: '', status: '', equipmentName: '' })
 const form = reactive({
   id: null, equipmentName: '', equipmentNo: '', categoryId: null, model: '', spec: '',
-  location: '', buildingId: null, purchaseDate: '', warrantyExpire: '', status: 0, remark: ''
+  location: '', buildingId: null, purchaseDate: '', warrantyExpire: '', status: 1, remark: ''
 })
+
+const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑设备' : '新增设备')
 const rules = {
@@ -162,6 +164,7 @@ function handleEdit(row) { isEdit.value = true; Object.assign(form, { ...row, pu
 function resetForm() { formRef.value?.resetFields(); form.id = null }
 
 async function handleSubmit() {
+  if (submitting.value) return
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
   try {
@@ -170,17 +173,17 @@ async function handleSubmit() {
     ElMessage.success(isEdit.value ? '编辑成功' : '新增成功')
     dialogVisible.value = false
     fetchData()
-  } catch (e) {}
+  } catch (e) { /* handled */ } finally { submitting.value = false }
 }
 
 async function handleDelete(row) {
   await ElMessageBox.confirm('确定删除该设备吗？', '提示', { type: 'warning' })
-  try { await deleteEquipment(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) {}
+  try { await deleteEquipment(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) { /* handled */ } finally { submitting.value = false }
 }
 
 async function handleStatus(row) {
   const newStatus = row.status === 0 ? 1 : 0
   await ElMessageBox.confirm('确定修改设备状态吗？', '提示', { type: 'warning' })
-  try { await updateEquipmentStatus({ id: row.id, status: newStatus }); ElMessage.success('状态修改成功'); fetchData() } catch (e) {}
+  try { await updateEquipmentStatus({ id: row.id, status: newStatus }); ElMessage.success('状态修改成功'); fetchData() } catch (e) { /* handled */ } finally { submitting.value = false }
 }
 </script>

@@ -82,6 +82,8 @@ const menuTree = ref([])
 
 const form = reactive({ id: null, roleName: '', roleKey: '', remark: '' })
 
+const submitting = ref(false)
+
 const dialogTitle = computed(() => isEdit.value ? '编辑角色' : '新增角色')
 
 const rules = {
@@ -104,6 +106,7 @@ function handleEdit(row) { isEdit.value = true; Object.assign(form, row); dialog
 function resetForm() { formRef.value?.resetFields(); form.id = null }
 
 async function handleSubmit() {
+  if (submitting.value) return
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
   try {
@@ -112,12 +115,12 @@ async function handleSubmit() {
     ElMessage.success(isEdit.value ? '编辑成功' : '新增成功')
     dialogVisible.value = false
     fetchData()
-  } catch (e) {}
+  } catch (e) { /* handled */ }
 }
 
 async function handleDelete(row) {
   await ElMessageBox.confirm('确定删除该角色吗？', '提示', { type: 'warning' })
-  try { await deleteRole(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) {}
+  try { await deleteRole(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) { /* handled */ }
 }
 
 async function handleAssignMenus(row) {
@@ -129,7 +132,7 @@ async function handleAssignMenus(row) {
   try {
     const menuRes = await getRoleMenus(row.id)
     menuTreeRef.value.setCheckedKeys(menuRes.data)
-  } catch (e) {}
+  } catch (e) { /* handled */ }
 }
 
 async function submitMenuAssign() {
@@ -140,6 +143,6 @@ async function submitMenuAssign() {
     await assignMenus({ roleId: currentRoleId.value, menuIds })
     ElMessage.success('菜单分配成功')
     menuDialogVisible.value = false
-  } catch (e) {}
+  } catch (e) { /* handled */ } finally { submitting.value = false }
 }
 </script>

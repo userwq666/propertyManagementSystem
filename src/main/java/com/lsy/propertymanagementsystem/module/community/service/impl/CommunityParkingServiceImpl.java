@@ -106,11 +106,6 @@ public class CommunityParkingServiceImpl extends ServiceImpl<CommunityParkingMap
         return convertToVO(domain, ownerMap);
     }
 
-    @Override
-    public long countByOwnerId(Long ownerId) {
-        return this.count(new LambdaQueryWrapper<CommunityParkingDomain>().eq(CommunityParkingDomain::getOwnerId, ownerId));
-    }
-
     private CommunityParkingVO convertToVO(CommunityParkingDomain domain, Map<Long, CommunityOwnerDomain> ownerMap) {
         CommunityParkingVO vo = new CommunityParkingVO();
         BeanUtils.copyProperties(domain, vo);

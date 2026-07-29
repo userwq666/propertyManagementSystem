@@ -73,7 +73,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import { ElMessageBox } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 const route = useRoute()
 const router = useRouter()
@@ -122,6 +122,23 @@ const activeMenu = computed(() => '/' + route.path.split('/').slice(1, 3).join('
 const breadcrumbs = computed(() => route.matched.filter(r => r.meta.title && r.path !== '/'))
 
 function handleCommand(command) {
+  if (command === 'profile') {
+    ElMessage.info('个人信息功能开发中，请稍候')
+    return
+  }
+  if (command === 'password') {
+    ElMessageBox.prompt('请输入新密码', '修改密码', { inputType: 'password', confirmButtonText: '确定', cancelButtonText: '取消' }).then(({ value }) => {
+      if (value && value.length >= 6) {
+        userStore.changePassword(value).then(() => {
+          ElMessage.success('密码修改成功，请重新登录')
+          router.push('/login')
+        }).catch(() => {})
+      } else {
+        ElMessage.warning('密码至少6位')
+      }
+    }).catch(() => {})
+    return
+  }
   if (command === 'logout') {
     ElMessageBox.confirm('确定要退出登录吗？', '提示', { type: 'warning' }).then(() => {
       userStore.logout().then(() => router.push('/login'))

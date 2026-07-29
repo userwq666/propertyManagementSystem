@@ -47,6 +47,10 @@ export const useUserStore = defineStore('user', {
       removeToken()
       removeUserInfo()
     },
+    async changePassword(newPassword) {
+      const { changePasswordApi } = await import('@/api/auth')
+      return changePasswordApi({ newPassword })
+    },
     hasPermission(perm) {
       return this.permissions.includes(perm)
     }

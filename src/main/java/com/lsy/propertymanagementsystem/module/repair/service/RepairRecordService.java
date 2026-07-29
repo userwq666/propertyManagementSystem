@@ -12,5 +12,4 @@ public interface RepairRecordService {
     void deleteRepair(Long id);
     void updateStatus(Long id, Integer status, Long handlerId, String handleContent);
     void updateRating(Long id, Integer score, String content);
-    long countByHouseId(Long houseId);
 }

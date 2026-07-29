@@ -10,5 +10,4 @@ public interface CommunityHouseService {
     void deleteHouse(Long id);
     CommunityHouseVO getHouseById(Long id);
     Page<CommunityHouseVO> page(int pageNum, int pageSize, Long buildingId, Integer houseStatus);
-    long countByBuildingId(Long buildingId);
 }

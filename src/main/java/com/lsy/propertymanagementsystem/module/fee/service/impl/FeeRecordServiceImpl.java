@@ -131,16 +131,6 @@ public class FeeRecordServiceImpl implements FeeRecordService {
     }
 
     @Override
-    public long countByOwnerId(Long ownerId) {
-        return feeRecordMapper.selectCount(new LambdaQueryWrapper<FeeRecordDomain>().eq(FeeRecordDomain::getOwnerId, ownerId));
-    }
-
-    @Override
-    public long countByHouseId(Long houseId) {
-        return feeRecordMapper.selectCount(new LambdaQueryWrapper<FeeRecordDomain>().eq(FeeRecordDomain::getHouseId, houseId));
-    }
-
-    @Override
     public long countByItemId(Long itemId) {
         return feeRecordMapper.selectCount(new LambdaQueryWrapper<FeeRecordDomain>().eq(FeeRecordDomain::getItemId, itemId));
     }

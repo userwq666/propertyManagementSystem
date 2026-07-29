@@ -112,6 +112,8 @@ const form = reactive({
   planDate: '', maintenanceContent: '', cost: 0, remark: ''
 })
 
+const submitting = ref(false)
+
 const dialogTitle = computed(() => isEdit.value ? '编辑维保记录' : '新增维保记录')
 const typeText = (t) => ({ 0: '日常保养', 1: '定期检修', 2: '故障维修', 3: '大修' }[t] || '')
 const statusTag = (s) => ({ 0: 'info', 1: 'warning', 2: 'success' }[s] || 'info')
@@ -145,6 +147,7 @@ function handleEdit(row) { isEdit.value = true; Object.assign(form, row); dialog
 function resetForm() { formRef.value?.resetFields(); form.id = null }
 
 async function handleSubmit() {
+  if (submitting.value) return
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
   try {
@@ -153,18 +156,19 @@ async function handleSubmit() {
     ElMessage.success(isEdit.value ? '编辑成功' : '新增成功')
     dialogVisible.value = false
     fetchData()
-  } catch (e) {}
+  } catch (e) { /* handled */ }
 }
 
 async function handleDelete(row) {
   await ElMessageBox.confirm('确定删除该记录吗？', '提示', { type: 'warning' })
-  try { await deleteMaintenance(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) {}
+  try { await deleteMaintenance(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) { /* handled */ }
 }
 
 async function handleStart(row) {
-  try { await startMaintenance(row.id); ElMessage.success('已开始维保'); fetchData() } catch (e) {}
+  try { await startMaintenance(row.id); ElMessage.success('已开始维保'); fetchData() } catch (e) { /* handled */ }
 }
+
 async function handleComplete(row) {
-  try { await completeMaintenance(row.id); ElMessage.success('维保已完成'); fetchData() } catch (e) {}
+  try { await completeMaintenance(row.id); ElMessage.success('维保已完成'); fetchData() } catch (e) { /* handled */ } finally { submitting.value = false }
 }
 </script>

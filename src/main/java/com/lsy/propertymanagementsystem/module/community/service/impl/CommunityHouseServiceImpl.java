@@ -134,11 +134,6 @@ public class CommunityHouseServiceImpl extends ServiceImpl<CommunityHouseMapper,
         return convertToVO(domain, buildingMap, ownerMap);
     }
 
-    @Override
-    public long countByBuildingId(Long buildingId) {
-        return this.count(new LambdaQueryWrapper<CommunityHouseDomain>().eq(CommunityHouseDomain::getBuildingId, buildingId));
-    }
-
     private CommunityHouseVO convertToVO(CommunityHouseDomain domain, Map<Long, CommunityBuildingDomain> buildingMap, Map<Long, CommunityOwnerDomain> ownerMap) {
         CommunityHouseVO vo = new CommunityHouseVO();
         BeanUtils.copyProperties(domain, vo);

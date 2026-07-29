@@ -1,5 +1,6 @@
 ﻿import axios from 'axios'
 import { ElMessage } from 'element-plus'
+import { getToken, removeToken } from '@/utils/auth'
 import { useUserStore } from '@/stores/user'
 import router from '@/router'
 
@@ -10,7 +11,7 @@ const request = axios.create({
 
 request.interceptors.request.use(
   config => {
-    const token = localStorage.getItem('token')
+    const token = getToken()
     if (token) {
       config.headers.Authorization = 'Bearer ' + token
     }
@@ -26,7 +27,7 @@ request.interceptors.response.use(
       return res
     }
     if (res.code === 401) {
-      localStorage.removeItem('token')
+      removeToken()
       router.push('/login')
       return Promise.reject(new Error(res.msg || '认证失败'))
     }
@@ -35,7 +36,7 @@ request.interceptors.response.use(
   },
   error => {
     if (error.response && error.response.status === 401) {
-      localStorage.removeItem('token')
+      removeToken()
       router.push('/login')
     }
     ElMessage.error(error.message || '网络错误')

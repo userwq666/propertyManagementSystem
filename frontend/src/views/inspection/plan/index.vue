@@ -84,6 +84,8 @@ const dialogVisible = ref(false); const formRef = ref(null); const isEdit = ref(
 const equipments = ref([]); const users = ref([])
 const searchForm = reactive({ pageNum: 1, pageSize: 10, planName: '', status: '' })
 const form = reactive({ id: null, planName: '', planType: 'DAILY', frequencyType: '', frequencyValue: '', startDate: '', endDate: '', remark: '', equipmentIds: [], inspectorIds: [] })
+const submitting = ref(false)
+
 const dialogTitle = computed(() => isEdit.value ? '编辑计划' : '新增计划')
 const freqText = (f) => ({ daily:'每天', weekly:'每周', monthly:'每月', custom:'每' }[f]||'')
 const rules = { planName: [{ required: true, message: '请输入', trigger: 'blur' }] }

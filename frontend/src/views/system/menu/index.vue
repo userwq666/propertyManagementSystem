@@ -16,20 +16,20 @@
         <el-table-column prop="perms" label="权限标识" width="180" />
         <el-table-column label="类型" width="80">
           <template #default="{ row }">
-            <el-tag :type="row.menuType === 'DIR' ? 'primary' : row.menuType === 'MENU' ? 'success' : 'info'">
-              {{ row.menuType === 'DIR' ? '目录' : row.menuType === 'MENU' ? '菜单' : '按钮' }}
+            <el-tag :type="row.menuType === 0 ? 'primary' : row.menuType === 1 ? 'success' : 'info'">
+              {{ row.menuType === 0 ? '目录' : row.menuType === 1 ? '菜单' : '按钮' }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="sort" label="排序" width="80" />
         <el-table-column label="状态" width="80">
           <template #default="{ row }">
-            <el-tag :type="row.status === 'ENABLED' ? 'success' : 'danger'">{{ row.status === 'ENABLED' ? '启用' : '禁用' }}</el-tag>
+            <el-tag :type="row.status === 1 ? 'success' : 'danger'">{{ row.status === 1 ? '启用' : '禁用' }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="240" fixed="right">
           <template #default="{ row }">
-            <el-button v-if="row.menuType !== 'BUTTON'" type="primary" size="small" @click="handleAdd(row)" v-permission="'system:menu:add'">新增子菜单</el-button>
+            <el-button v-if="row.menuType !== 2" type="primary" size="small" @click="handleAdd(row)" v-permission="'system:menu:add'">新增子菜单</el-button>
             <el-button size="small" @click="handleEdit(row)" v-permission="'system:menu:edit'">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'system:menu:delete'">删除</el-button>
           </template>
@@ -43,7 +43,7 @@
           <el-tree-select
             v-model="form.parentId"
             :data="treeData"
-            :props="{ label: 'menuName', value: 'id', children: 'children' }"
+            :props="{ label: 'menuName', value: 'id', children: 'children', disabled: (node) => node.id === 0 }"
             placeholder="不选则为根菜单"
             check-strictly
             clearable
@@ -74,8 +74,7 @@
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="form.status" style="width:100%">
-            <el-option label="启用" :value="0" />
-            <el-option label="禁用" :value="1" />
+            <el-option label="启用" :value="1" /><el-option label="禁用" :value="0" />
           </el-select>
         </el-form-item>
       </el-form>
@@ -101,7 +100,9 @@ const dialogVisible = ref(false)
 const formRef = ref(null)
 const isEdit = ref(false)
 
-const form = reactive({ id: null, parentId: null, menuName: '', menuType: 1, path: '', component: '', perms: '', sort: 0, status: 0 })
+const form = reactive({ id: null, parentId: null, menuName: '', menuType: 1, path: '', component: '', perms: '', sort: 0, status: 1 })
+
+const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑菜单' : '新增菜单')
 const rules = {
@@ -116,7 +117,7 @@ async function fetchData() {
   try {
     const res = await getMenuTree()
     tableData.value = res.data
-    treeData.value = [{ id: 0, menuName: '根节点', children: res.data }]
+    treeData.value = [{ id: 0, menuName: '根节点', children: Array.isArray(res.data) ? res.data : [] }]
   } finally { loading.value = false }
 }
 
@@ -133,22 +134,23 @@ function handleEdit(row) {
     id: row.id,
     parentId: row.parentId || null,
     menuName: row.menuName,
-    menuType: row.menuType === 'DIR' ? 0 : row.menuType === 'MENU' ? 1 : 2,
+    menuType: row.menuType ?? 1,
     path: row.path || '',
     component: row.component || '',
     perms: row.perms || '',
     sort: row.sort || 0,
-    status: row.status === 'ENABLED' ? 0 : 1
+    status: row.status ?? 1
   })
   dialogVisible.value = true
 }
 
 function resetForm() {
   formRef.value?.resetFields()
-  Object.assign(form, { id: null, parentId: null, menuName: '', menuType: 1, path: '', component: '', perms: '', sort: 0, status: 0 })
+  Object.assign(form, { id: null, parentId: null, menuName: '', menuType: 1, path: '', component: '', perms: '', sort: 0, status: 1 })
 }
 
 async function handleSubmit() {
+  if (submitting.value) return
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
   try {
@@ -158,9 +160,8 @@ async function handleSubmit() {
     ElMessage.success(isEdit.value ? '编辑成功' : '新增成功')
     dialogVisible.value = false
     fetchData()
-  } catch (e) {}
+  } catch (e) { /* handled by interceptor */ } finally { submitting.value = false }
 }
-
 async function handleDelete(row) {
   await ElMessageBox.confirm('确定删除该菜单吗？子菜单也会一并删除。', '提示', { type: 'warning' })
   try { await deleteMenu(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) {}

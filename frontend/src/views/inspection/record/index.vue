@@ -84,6 +84,8 @@ const dialogVisible = ref(false); const formRef = ref(null); const isEdit = ref(
 const plans = ref([]); const equipments = ref([]); const users = ref([])
 const searchForm = reactive({ pageNum: 1, pageSize: 10, planId: '', equipmentId: '' })
 const form = reactive({ id: null, planId: null, equipmentId: null, inspectorUserId: null, inspectionTime: '', status: 'NORMAL', abnormalDesc: '', handleStatus: 'UNHANDLED', handleContent: '', remark: '' })
+const submitting = ref(false)
+
 const dialogTitle = computed(() => isEdit.value ? '编辑记录' : '新增记录')
 const rules = { equipmentId: [{ required: true, message: '请选择设备', trigger: 'change' }], inspectorUserId: [{ required: true, message: '请选择巡检人员', trigger: 'change' }] }
 

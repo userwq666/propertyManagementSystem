@@ -119,6 +119,8 @@ const isEdit = ref(false)
 const searchForm = reactive({ pageNum: 1, pageSize: 10, noticeType: null, sendStatus: null })
 const form = reactive({ id: null, noticeTitle: '', noticeContent: '', noticeType: 0, sendScope: 0, sendStatus: 0, creatorId: null })
 
+const submitting = ref(false)
+
 const dialogTitle = computed(() => isEdit.value ? '编辑通知' : '新增通知')
 
 const rules = {
@@ -151,6 +153,7 @@ function handleEdit(row) { isEdit.value = true; Object.assign(form, row); dialog
 function resetForm() { formRef.value?.resetFields(); form.id = null; form.noticeType = 0; form.sendScope = 0; form.sendStatus = 0 }
 
 async function handleSubmit() {
+  if (submitting.value) return
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
   try {

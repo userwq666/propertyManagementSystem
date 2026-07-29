@@ -10,5 +10,4 @@ public interface CommunityParkingService {
     void deleteParking(Long id);
     CommunityParkingVO getParkingById(Long id);
     Page<CommunityParkingVO> page(int pageNum, int pageSize, String parkingNo, Integer status);
-    long countByOwnerId(Long ownerId);
 }

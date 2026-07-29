@@ -152,6 +152,8 @@ const form = reactive({ id: null, ownerId: null, houseId: null, repairType: 0, d
 const statusForm = reactive({ status: 1, handleContent: '' })
 const ratingForm = reactive({ score: 5, content: '' })
 
+const submitting = ref(false)
+
 const dialogTitle = computed(() => isEdit.value ? '编辑报修' : '新增报修')
 const typeText = (t) => ({ 0: '水电维修', 1: '门窗维修', 2: '管道疏通', 3: '电器维修', 4: '其他' }[t] || '')
 const statusTag = (s) => ({ 0: 'info', 1: 'warning', 2: 'success', 3: 'danger' }[s] || 'info')
@@ -188,6 +190,7 @@ function handleEdit(row) { isEdit.value = true; Object.assign(form, row); dialog
 function resetForm() { formRef.value?.resetFields(); form.id = null }
 
 async function handleSubmit() {
+  if (submitting.value) return
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
   try {
@@ -196,12 +199,12 @@ async function handleSubmit() {
     ElMessage.success(isEdit.value ? '编辑成功' : '新增成功')
     dialogVisible.value = false
     fetchData()
-  } catch (e) {}
+  } catch (e) { /* handled */ }
 }
 
 async function handleDelete(row) {
   await ElMessageBox.confirm('确定删除该报修记录吗？', '提示', { type: 'warning' })
-  try { await deleteRepair(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) {}
+  try { await deleteRepair(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) { /* handled */ }
 }
 
 function handleStatus(row) { currentRow.value = row; statusForm.status = 1; statusForm.handleContent = ''; statusDialogVisible.value = true }
@@ -211,7 +214,7 @@ async function submitStatus() {
     ElMessage.success('处理成功')
     statusDialogVisible.value = false
     fetchData()
-  } catch (e) {}
+  } catch (e) { /* handled */ }
 }
 
 function handleRating(row) { currentRow.value = row; ratingForm.score = 5; ratingForm.content = ''; ratingDialogVisible.value = true }
@@ -221,6 +224,6 @@ async function submitRating() {
     ElMessage.success('评价成功')
     ratingDialogVisible.value = false
     fetchData()
-  } catch (e) {}
+  } catch (e) { /* handled */ } finally { submitting.value = false }
 }
 </script>

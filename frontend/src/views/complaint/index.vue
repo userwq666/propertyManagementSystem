@@ -120,6 +120,8 @@ const searchForm = reactive({ pageNum: 1, pageSize: 10, ownerId: '', type: '', s
 const form = reactive({ id: null, ownerId: null, type: 'complaint', content: '', images: '' })
 const statusForm = reactive({ status: 1, handleContent: '' })
 
+const submitting = ref(false)
+
 const dialogTitle = computed(() => isEdit.value ? '编辑' : '新增')
 const st = (s) => ({ 0: 'info', 1: 'warning', 2: 'success' }[s] || 'info')
 const statusText = (s) => ({ 0: '待处理', 1: '处理中', 2: '已完成' }[s] || '')
@@ -147,6 +149,7 @@ function handleEdit(row) { isEdit.value = true; Object.assign(form, row); dialog
 function resetForm() { formRef.value?.resetFields(); form.id = null; form.type = 'complaint' }
 
 async function handleSubmit() {
+  if (submitting.value) return
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
   try {
@@ -155,16 +158,16 @@ async function handleSubmit() {
     ElMessage.success(isEdit.value ? '编辑成功' : '新增成功')
     dialogVisible.value = false
     fetchData()
-  } catch (e) {}
+  } catch (e) { /* handled */ }
 }
 
 async function handleDelete(row) {
   await ElMessageBox.confirm('确定删除吗？', '提示', { type: 'warning' })
-  try { await deleteComplaint(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) {}
+  try { await deleteComplaint(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) { /* handled */ }
 }
 
 function handleStatus(row) { currentRow.value = row; statusForm.status = 1; statusForm.handleContent = ''; statusDialogVisible.value = true }
 async function submitStatus() {
-  try { await updateComplaintStatus({ id: currentRow.value.id, ...statusForm }); ElMessage.success('处理成功'); statusDialogVisible.value = false; fetchData() } catch (e) {}
+  try { await updateComplaintStatus({ id: currentRow.value.id, ...statusForm }); ElMessage.success('处理成功'); statusDialogVisible.value = false; fetchData() } catch (e) { /* handled */ } finally { submitting.value = false }
 }
 </script>

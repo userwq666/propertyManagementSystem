@@ -149,10 +149,7 @@ async function submitPay() {
 }
 
 function handleDetail(row) {
-  ElMessageBox.alert(
-    `账单编号: ${row.feeNo}<br/>业主: ${row.ownerName}<br/>房间号: ${row.roomNo}<br/>收费项目: ${row.itemName}<br/>应收金额: ${row.amount}<br/>已缴金额: ${row.paidAmount || 0}<br/>状态: ${statusText(row.status)}`,
-    '账单详情',
-    { dangerouslyUseHTMLString: true }
+  ElMessageBox.alert(账单编号: ${row.feeNo}\n业主: ${row.ownerName}\n房间号: ${row.roomNo}\n收费项目: ${row.itemName}\n应收金额: ${row.amount}\n已缴金额: ${row.paidAmount || 0}\n状态: ${statusText(row.status)}, '账单详情'
   )
 }
 

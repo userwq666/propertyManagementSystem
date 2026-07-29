@@ -6,8 +6,7 @@
       </el-form-item>
       <el-form-item label="状态">
         <el-select v-model="searchForm.status" placeholder="请选择" clearable>
-          <el-option label="启用" :value="0" />
-          <el-option label="禁用" :value="1" />
+          <el-option label="启用" :value="1" /><el-option label="禁用" :value="0" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -32,12 +31,12 @@
         <el-table-column prop="phone" label="手机号" width="130" />
         <el-table-column label="用户类型" width="100">
           <template #default="{ row }">
-            <el-tag :type="row.userType === 'ADMIN' ? 'danger' : 'info'">{{ row.userType === 'ADMIN' ? '管理员' : '业主' }}</el-tag>
+            <el-tag :type="userTypeTag(row.userType)">{{ userTypeText(row.userType) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="状态" width="80">
           <template #default="{ row }">
-            <el-tag :type="row.status === 'ENABLED' ? 'success' : 'danger'">{{ row.status === 'ENABLED' ? '启用' : '禁用' }}</el-tag>
+            <el-tag :type="row.status === 1 ? 'success' : 'danger'">{{ row.status === 1 ? '启用' : '禁用' }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" width="180" />
@@ -47,7 +46,7 @@
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'system:user:delete'">删除</el-button>
             <el-button type="warning" size="small" @click="handleResetPassword(row)" v-permission="'system:user:edit'">重置密码</el-button>
             <el-button size="small" @click="handleToggleStatus(row)" v-permission="'system:user:edit'">
-              {{ row.status === 'ENABLED' ? '禁用' : '启用' }}
+              {{ row.status === 1 ? '禁用' : '启用' }}
             </el-button>
           </template>
         </el-table-column>
@@ -79,15 +78,11 @@
           <el-input v-model="form.phone" placeholder="请输入手机号" />
         </el-form-item>
         <el-form-item label="用户类型">
-          <el-select v-model="form.userType">
-            <el-option label="系统用户" :value="0" />
-            <el-option label="业主用户" :value="1" />
-          </el-select>
+          <el-select v-model="form.userType"><el-option label="超级管理员" :value="1" /><el-option label="物业管理员" :value="2" /><el-option label="业主" :value="3" /><el-option label="维修工" :value="4" /><el-option label="巡检员" :value="5" /></el-select>
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="form.status">
-            <el-option label="启用" :value="0" />
-            <el-option label="禁用" :value="1" />
+            <el-option label="启用" :value="1" /><el-option label="禁用" :value="0" />
           </el-select>
         </el-form-item>
         <el-form-item label="角色">
@@ -121,9 +116,14 @@ const isEdit = ref(false)
 const roleList = ref([])
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, username: '', status: '' })
-const form = reactive({ id: null, username: '', realName: '', password: '', phone: '', userType: 0, status: 0, roleIds: [] })
+const form = reactive({ id: null, username: '', realName: '', password: '', phone: '', userType: 3, status: 1, roleIds: [] })
+
+const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑用户' : '新增用户')
+const userTypeTag = (t) => ({ 1: 'danger', 2: 'warning', 3: 'info', 4: '', 5: 'success' }[t] || 'info')
+const userTypeText = (t) => ({ 1: '超级管理员', 2: '物业管理员', 3: '业主', 4: '维修工', 5: '巡检员' }[t] || '未知')
+
 const rules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   realName: [{ required: true, message: '请输入真实姓名', trigger: 'blur' }],
@@ -148,14 +148,26 @@ async function fetchData() {
 function handleSearch() { searchForm.pageNum = 1; fetchData() }
 function resetSearch() { searchForm.username = ''; searchForm.status = ''; handleSearch() }
 function handleAdd() { isEdit.value = false; resetForm(); dialogVisible.value = true }
-function handleEdit(row) {
+async function handleEdit(row) {
   isEdit.value = true
-  Object.assign(form, { ...row, password: '', roleIds: row.roleIds || [] })
+  loading.value = true
+  try {
+    const res = await getUserById(row.id)
+    const detail = res.data
+    Object.assign(form, {
+      id: detail.id, username: detail.username || '', realName: detail.realName || '',
+      password: '', phone: detail.phone || '', userType: detail.userType ?? 3,
+      status: detail.status ?? 1, roleIds: detail.roleIds || []
+    })
+  } catch (e) {
+    Object.assign(form, { ...row, password: '', roleIds: row.roleIds || [] })
+  } finally { loading.value = false }
   dialogVisible.value = true
 }
-function resetForm() { formRef.value?.resetFields(); Object.assign(form, { id: null, username: '', realName: '', password: '', phone: '', userType: 0, status: 0, roleIds: [] }) }
+function resetForm() { formRef.value?.resetFields(); Object.assign(form, { id: null, username: '', realName: '', password: '', phone: '', userType: 3, status: 1, roleIds: [] }) }
 
 async function handleSubmit() {
+  if (submitting.value) return
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
   try {
@@ -164,12 +176,12 @@ async function handleSubmit() {
     ElMessage.success(isEdit.value ? '编辑成功' : '新增成功')
     dialogVisible.value = false
     fetchData()
-  } catch (e) {}
+  } catch (e) { /* handled */ } finally { submitting.value = false }
 }
 
 async function handleDelete(row) {
   await ElMessageBox.confirm('确定删除该用户吗？', '提示', { type: 'warning' })
-  try { await deleteUser(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) {}
+  try { await deleteUser(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) { /* handled */ }
 }
 
 async function handleResetPassword(row) {
@@ -177,17 +189,17 @@ async function handleResetPassword(row) {
     const { value: newPassword } = await ElMessageBox.prompt('请输入新密码', '重置密码', { type: 'warning', inputType: 'password' })
     await resetPassword({ id: row.id, newPassword })
     ElMessage.success('密码重置成功')
-  } catch (e) {}
+  } catch (e) { /* handled */ }
 }
 
 async function handleToggleStatus(row) {
-  const newStatus = row.status === 'ENABLED' ? 1 : 0
+  const newStatus = row.status === 1 ? 0 : 1
   const action = newStatus === 1 ? '禁用' : '启用'
   await ElMessageBox.confirm('确认' + action + '用户 "' + row.username + '" 吗？', '提示', { type: 'warning' })
   try {
     await updateUserStatus({ id: row.id, status: newStatus })
     ElMessage.success(action + '成功')
     fetchData()
-  } catch (e) {}
+  } catch (e) { /* handled */ } finally { submitting.value = false }
 }
 </script>

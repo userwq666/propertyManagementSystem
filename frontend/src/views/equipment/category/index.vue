@@ -82,6 +82,8 @@ const isEdit = ref(false)
 const searchForm = reactive({ pageNum: 1, pageSize: 10, categoryName: '' })
 const form = reactive({ id: null, categoryName: '', description: '' })
 
+const submitting = ref(false)
+
 const dialogTitle = computed(() => isEdit.value ? '编辑分类' : '新增分类')
 
 const rules = {
@@ -109,6 +111,7 @@ function handleEdit(row) { isEdit.value = true; Object.assign(form, row); dialog
 function resetForm() { formRef.value?.resetFields(); form.id = null }
 
 async function handleSubmit() {
+  if (submitting.value) return
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
   try {

@@ -11,3 +11,7 @@ export function logout() {
 export function getCurrentUser() {
   return request({ url: '/auth/me', method: 'get' })
 }
+
+export function changePasswordApi(data) {
+  return request({ url: '/auth/changePassword', method: 'put', data })
+}

@@ -124,6 +124,8 @@ const ownerList = ref([])
 const searchForm = reactive({ pageNum: 1, pageSize: 10, parkingNo: '', status: null })
 const form = reactive({ id: null, parkingNo: '', parkingType: 0, status: 0, ownerId: null, rentPrice: null, sellPrice: null, remark: '' })
 
+const submitting = ref(false)
+
 const dialogTitle = computed(() => isEdit.value ? '编辑车位' : '新增车位')
 
 const rules = {
@@ -163,6 +165,7 @@ function handleEdit(row) { isEdit.value = true; Object.assign(form, row); dialog
 function resetForm() { formRef.value?.resetFields(); form.id = null; form.parkingType = 0; form.status = 0 }
 
 async function handleSubmit() {
+  if (submitting.value) return
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
   try {

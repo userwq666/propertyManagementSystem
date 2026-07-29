@@ -140,11 +140,6 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         this.updateById(domain);
     }
 
-    @Override
-    public long countByHouseId(Long houseId) {
-        return this.count(new LambdaQueryWrapper<RepairRecordDomain>().eq(RepairRecordDomain::getHouseId, houseId));
-    }
-
     private List<RepairRecordVO> batchConvertToVO(List<RepairRecordDomain> records) {
         if (records == null || records.isEmpty()) {
             return Collections.emptyList();

@@ -14,7 +14,5 @@ public interface FeeRecordService {
     void confirmPay(Long id, String payWay);
     Map<String, Object> getStatistics(Long ownerId, Long houseId);
     void markOverdue();
-    long countByOwnerId(Long ownerId);
-    long countByHouseId(Long houseId);
     long countByItemId(Long itemId);
 }

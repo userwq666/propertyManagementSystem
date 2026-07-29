@@ -84,6 +84,49 @@
           </div>
         </el-card>
       </el-col>
+
+    <!-- 设备 & 巡检 -->
+    <el-row :gutter="16" style="margin-top: 16px;">
+      <el-col :span="8">
+        <el-card shadow="hover" class="chart-card">
+          <template #header>设备状态分布</template>
+          <v-chart :option="equipmentStatusOption" style="height: 300px" autoresize />
+        </el-card>
+      </el-col>
+      <el-col :span="8">
+        <el-card shadow="hover" class="chart-card">
+          <template #header>维保到期预警（未来30天）</template>
+          <div class="warning-list" v-if="maintenanceWarnings.length">
+            <div v-for="w in maintenanceWarnings" :key="w.id" class="warning-item">
+              <el-tag type="warning" size="small">{{ w.equipmentName }}</el-tag>
+              <span>到期: {{ w.nextMaintenanceDate }}</span>
+            </div>
+          </div>
+          <el-empty v-else description="无即将到期维保" :image-size="60" />
+        </el-card>
+      </el-col>
+      <el-col :span="8">
+        <el-card shadow="hover" class="chart-card">
+          <template #header>巡检概览</template>
+          <v-chart :option="inspectionOption" style="height: 300px" autoresize />
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <!-- 投诉 & 满意 -->
+    <el-row :gutter="16" style="margin-top: 16px;">
+      <el-col :span="12">
+        <el-card shadow="hover" class="chart-card">
+          <template #header>投诉类型占比</template>
+          <v-chart :option="complaintTypeOption" style="height: 300px" autoresize />
+        </el-card>
+      </el-col>
+      <el-col :span="12">
+        <el-card shadow="hover" class="chart-card">
+          <template #header>报修满意度趋势</template>
+          <v-chart :option="satisfactionOption" style="height: 300px" autoresize />
+        </el-card>
+      </el-col>
     </el-row>
   </div>
 </template>
@@ -93,11 +136,11 @@ import { ref, reactive, onMounted } from 'vue'
 import VChart from 'vue-echarts'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
-import { BarChart, PieChart } from 'echarts/charts'
+import { BarChart, PieChart, LineChart } from 'echarts/charts'
 import { GridComponent, TooltipComponent, LegendComponent, TitleComponent } from 'echarts/components'
-import { getOverview, getMonthlyFee, getFeeByItem, getRepairByType, getRepairOverview } from '@/api/statistics/index'
+import { getOverview, getMonthlyFee, getFeeByItem, getRepairByType, getRepairOverview, getEquipmentStatus, getMaintenanceWarning, getSatisfactionTrend, getComplaintTypeRatio, getInspectionCompletion, getInspectionAbnormal } from '@/api/statistics/index'
 
-use([CanvasRenderer, BarChart, PieChart, GridComponent, TooltipComponent, LegendComponent, TitleComponent])
+use([CanvasRenderer, BarChart, PieChart, LineChart, GridComponent, TooltipComponent, LegendComponent, TitleComponent])
 
 const selectedYear = ref(new Date().getFullYear())
 const overview = reactive({})
@@ -106,8 +149,23 @@ const repairOverview = reactive({})
 const monthlyFeeOption = ref({})
 const feeByItemOption = ref({})
 const repairByTypeOption = ref({})
+const equipmentStatusOption = ref({})
+const maintenanceWarnings = ref([])
+const inspectionOption = ref({})
+const complaintTypeOption = ref({})
+const satisfactionOption = ref({})
 
 onMounted(() => {
+  loadOverview()
+  loadMonthlyFee()
+  loadFeeByItem()
+  loadRepairByType()
+  loadRepairOverview()
+  loadEquipmentStatus()
+  loadMaintenanceWarning()
+  loadInspection()
+  loadComplaintType()
+  loadSatisfaction()
   loadOverview()
   loadMonthlyFee()
   loadFeeByItem()
@@ -172,6 +230,76 @@ async function loadRepairOverview() {
     Object.assign(repairOverview, res.data || {})
   } catch (e) { /* ignore */ }
 }
+async function loadEquipmentStatus() {
+  try {
+    const res = await getEquipmentStatus()
+    const data = res.data || []
+    equipmentStatusOption.value = {
+      tooltip: { trigger: 'item' },
+      legend: { bottom: 0 },
+      series: [{
+        type: 'pie', radius: ['40%', '70%'], center: ['50%', '45%'],
+        data: data.map(d => ({ name: d.statusName, value: d.count })),
+        emphasis: { itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' } }
+      }]
+    }
+  } catch (e) { /* ignore */ }
+}
+
+async function loadMaintenanceWarning() {
+  try {
+    const res = await getMaintenanceWarning()
+    maintenanceWarnings.value = res.data || []
+  } catch (e) { /* ignore */ }
+}
+
+async function loadInspection() {
+  try {
+    const [compRes, abnRes] = await Promise.all([
+      getInspectionCompletion(),
+      getInspectionAbnormal()
+    ])
+    inspectionOption.value = {
+      tooltip: { trigger: 'axis' },
+      legend: { data: ['完成率(%)', '异常率(%)'], bottom: 0 },
+      xAxis: { type: 'category', data: (compRes.data || []).map(d => d.planName || d.name || '') },
+      yAxis: { type: 'value', max: 100 },
+      series: [
+        { name: '完成率(%)', type: 'bar', data: (compRes.data || []).map(d => d.completionRate || d.rate || 0), itemStyle: { color: '#67c23a' } },
+        { name: '异常率(%)', type: 'bar', data: (abnRes.data || []).map(d => d.abnormalRate || d.rate || 0), itemStyle: { color: '#f56c6c' } }
+      ]
+    }
+  } catch (e) { /* ignore */ }
+}
+
+async function loadComplaintType() {
+  try {
+    const res = await getComplaintTypeRatio()
+    const data = res.data || []
+    complaintTypeOption.value = {
+      tooltip: { trigger: 'item' },
+      legend: { bottom: 0 },
+      series: [{
+        type: 'pie', radius: ['40%', '70%'], center: ['50%', '45%'],
+        data: data.map(d => ({ name: d.typeName, value: d.count })),
+        emphasis: { itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' } }
+      }]
+    }
+  } catch (e) { /* ignore */ }
+}
+
+async function loadSatisfaction() {
+  try {
+    const res = await getSatisfactionTrend()
+    const data = res.data || []
+    satisfactionOption.value = {
+      tooltip: { trigger: 'axis' },
+      xAxis: { type: 'category', data: data.map(d => d.month || d.period || '') },
+      yAxis: { type: 'value', name: '评分', min: 0, max: 5 },
+      series: [{ type: 'line', data: data.map(d => d.avgScore || d.score || 0), smooth: true, itemStyle: { color: '#409eff' } }]
+    }
+  } catch (e) { /* ignore */ }
+}
 </script>
 
 <style scoped>
@@ -231,6 +359,11 @@ async function loadRepairOverview() {
   color: #303133;
   line-height: 1.2;
 }
+
+.warning-list { padding: 10px 0; max-height: 260px; overflow-y: auto; }
+.warning-item { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #ebeef5; }
+.warning-item:last-child { border-bottom: none; }
+.warning-item span { font-size: 13px; color: #606266; }
 
 .ro-label {
   font-size: 14px;

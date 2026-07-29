@@ -49,7 +49,7 @@ INSERT INTO sys_menu (parent_id, menu_name, path, component, perms, menu_type, s
 (1, '用户管理', '/system/user', 'system/user/index', 'system:user:list', 1, 1, 1),
 (1, '角色管理', '/system/role', 'system/role/index', 'system:role:list', 1, 2, 1),
 (1, '菜单管理', '/system/menu', 'system/menu/index', 'system:menu:list', 1, 3, 1),
-(1, '操作日志', '/system/operlog', 'system/operlog/index', 'system:operlog:list', 1, 4, 1),
+(1, '操作日志', '/system/operlog', 'system/operlog/index', 'system:operLog:list', 1, 4, 1),
 (0, '小区管理', '/community', NULL, NULL, 0, 2, 1),
 (6, '楼栋管理', '/community/building', 'community/building/index', 'community:building:list', 1, 1, 1),
 (6, '房屋管理', '/community/house', 'community/house/index', 'community:house:list', 1, 2, 1),
@@ -76,6 +76,9 @@ INSERT INTO sys_menu (parent_id, menu_name, path, component, perms, menu_type, s
 (28, '数据概览', '/statistics/overview', 'statistics/overview/index', 'statistics:overview:list', 1, 1, 1),
 (28, '费用统计', '/statistics/fee', 'statistics/fee/index', 'statistics:fee:list', 1, 2, 1),
 (28, '报修统计', '/statistics/repair', 'statistics/repair/index', 'statistics:repair:list', 1, 3, 1),
+(28, '设备统计', '/statistics/equipment', 'statistics/equipment/index', 'statistics:equipment:list', 1, 4, 1),
+(28, '投诉统计', '/statistics/complaint', 'statistics/complaint/index', 'statistics:complaint:list', 1, 5, 1),
+(28, '巡检统计', '/statistics/inspection', 'statistics/inspection/index', 'statistics:inspection:list', 1, 6, 1),
 (1, '新增用户', '', '', 'system:user:add', 2, 1, 1),
 (1, '编辑用户', '', '', 'system:user:edit', 2, 2, 1),
 (1, '删除用户', '', '', 'system:user:delete', 2, 3, 1),
@@ -85,7 +88,8 @@ INSERT INTO sys_menu (parent_id, menu_name, path, component, perms, menu_type, s
 (1, '新增菜单', '', '', 'system:menu:add', 2, 7, 1),
 (1, '编辑菜单', '', '', 'system:menu:edit', 2, 8, 1),
 (1, '删除菜单', '', '', 'system:menu:delete', 2, 9, 1),
-(6, '新增楼栋', '', '', 'community:building:add', 2, 10, 1),
+(1, '删除日志', '', '', 'system:operLog:delete', 2, 10, 1),
+(6, '新增楼栋', '', '', 'community:building:add', 2, 11, 1),
 (6, '编辑楼栋', '', '', 'community:building:edit', 2, 11, 1),
 (6, '删除楼栋', '', '', 'community:building:delete', 2, 12, 1),
 (8, '新增房屋', '', '', 'community:house:add', 2, 13, 1),
@@ -125,6 +129,7 @@ INSERT INTO sys_menu (parent_id, menu_name, path, component, perms, menu_type, s
 (23, '删除计划', '', '', 'inspection:plan:delete', 2, 47, 1),
 (24, '新增记录', '', '', 'inspection:record:add', 2, 48, 1),
 (24, '编辑记录', '', '', 'inspection:record:edit', 2, 49, 1),
+(24, '删除记录', '', '', 'inspection:record:delete', 2, 50, 1),
 (26, '新增公告', '', '', 'announcement:list:add', 2, 50, 1),
 (26, '编辑公告', '', '', 'announcement:list:edit', 2, 51, 1),
 (26, '删除公告', '', '', 'announcement:list:delete', 2, 52, 1);
@@ -186,7 +191,12 @@ INSERT INTO sys_role_menu (role_id, menu_id) VALUES
     (2, 80),
     (2, 81),
     (2, 82),
-    (2, 83);
+    (2, 83),
+    (2, 84),
+    (2, 85),
+    (2, 86),
+    (2, 87),
+    (2, 88);
 
 
 -- 业主权限

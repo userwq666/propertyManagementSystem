@@ -99,6 +99,8 @@ const dialogVisible = ref(false); const formRef = ref(null); const isEdit = ref(
 const searchForm = reactive({ pageNum: 1, pageSize: 10, title: '', status: '' })
 const form = reactive({ id: null, title: '', type: 'notice', content: '', coverImage: '', isTop: 0, topExpireTime: '' })
 
+const submitting = ref(false)
+
 const dialogTitle = computed(() => isEdit.value ? '编辑公告' : '新增公告')
 const st = (s) => ({ 'DRAFT': 'info', 'PUBLISHED': 'success', 'REVOKED': 'warning' }[s] || 'info')
 const stText = (s) => ({ 'DRAFT': '草稿', 'PUBLISHED': '已发布', 'REVOKED': '已撤回' }[s] || '')
@@ -122,6 +124,7 @@ function handleEdit(row) { isEdit.value = true; Object.assign(form, row); dialog
 function resetForm() { formRef.value?.resetFields(); Object.assign(form, { id: null, title: '', type: 'notice', content: '', coverImage: '', isTop: 0, topExpireTime: '' }) }
 
 async function handleSubmit() {
+  if (submitting.value) return
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
   try {
@@ -130,21 +133,23 @@ async function handleSubmit() {
     ElMessage.success(isEdit.value ? '编辑成功' : '新增成功')
     dialogVisible.value = false
     fetchData()
-  } catch (e) {}
+  } catch (e) { /* handled */ }
 }
 
 async function handleDelete(row) {
   await ElMessageBox.confirm('确定删除该公告吗？', '提示', { type: 'warning' })
-  try { await deleteAnnouncement(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) {}
+  try { await deleteAnnouncement(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) { /* handled */ }
 }
 
 async function handlePublish(row) {
-  try { await updateAnnouncementStatus({ id: row.id, status: 1 }); ElMessage.success('发布成功'); fetchData() } catch (e) {}
+  try { await updateAnnouncementStatus({ id: row.id, status: 1 }); ElMessage.success('发布成功'); fetchData() } catch (e) { /* handled */ }
 }
+
 async function handleRevoke(row) {
-  try { await updateAnnouncementStatus({ id: row.id, status: 2 }); ElMessage.success('已撤回'); fetchData() } catch (e) {}
+  try { await updateAnnouncementStatus({ id: row.id, status: 2 }); ElMessage.success('已撤回'); fetchData() } catch (e) { /* handled */ }
 }
+
 async function handleTop(row) {
-  try { await updateAnnouncementTop({ id: row.id, isTop: row.isTop ? 0 : 1 }); ElMessage.success('操作成功'); fetchData() } catch (e) {}
+  try { await updateAnnouncementTop({ id: row.id, isTop: row.isTop ? 0 : 1 }); ElMessage.success('操作成功'); fetchData() } catch (e) { /* handled */ } finally { submitting.value = false }
 }
 </script>
