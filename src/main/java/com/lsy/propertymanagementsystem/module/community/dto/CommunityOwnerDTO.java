@@ -29,6 +29,4 @@ public class CommunityOwnerDTO {
     private OwnerStatus status;
 
     private String remark;
-
-    private LocalDateTime checkInTime;
 }

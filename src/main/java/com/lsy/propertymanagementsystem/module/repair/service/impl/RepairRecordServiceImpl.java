@@ -8,6 +8,7 @@ import com.lsy.propertymanagementsystem.module.repair.domain.RepairRecordDomain;
 import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordDTO;
 import com.lsy.propertymanagementsystem.module.repair.enums.RepairPriority;
 import com.lsy.propertymanagementsystem.module.repair.enums.RepairStatus;
+import com.lsy.propertymanagementsystem.module.repair.enums.RepairType;
 import com.lsy.propertymanagementsystem.module.repair.mapper.RepairRecordMapper;
 import com.lsy.propertymanagementsystem.common.utils.SecurityUtils;
 import com.lsy.propertymanagementsystem.module.repair.service.RepairRecordService;
@@ -41,6 +42,9 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
     public void addRepair(RepairRecordDTO dto) {
         RepairRecordDomain domain = new RepairRecordDomain();
         BeanUtils.copyProperties(dto, domain);
+        if (dto.getRepairType() != null) {
+            domain.setRepairType(RepairType.of(dto.getRepairType()));
+        }
         domain.prepareAdd();
         this.save(domain);
     }
@@ -54,7 +58,9 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         if (existing == null) {
             throw new BusinessException("报修记录不存在");
         }
-        existing.setRepairType(domain.getRepairType());
+        if (dto.getRepairType() != null) {
+            existing.setRepairType(RepairType.of(dto.getRepairType()));
+        }
         existing.setRepairContent(domain.getRepairContent());
         existing.setRepairImages(domain.getRepairImages());
         this.updateById(existing);

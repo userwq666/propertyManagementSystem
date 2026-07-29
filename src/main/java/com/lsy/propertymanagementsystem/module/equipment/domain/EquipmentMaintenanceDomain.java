@@ -1,6 +1,8 @@
 package com.lsy.propertymanagementsystem.module.equipment.domain;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.lsy.propertymanagementsystem.module.equipment.enums.MaintenanceStatus;
+import com.lsy.propertymanagementsystem.module.equipment.enums.MaintenanceType;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -13,7 +15,7 @@ public class EquipmentMaintenanceDomain {
     @TableId(type = IdType.AUTO)
     private Long id;
     private Long equipmentId;
-    private Integer maintenanceType;
+    private MaintenanceType maintenanceType;
     private String maintenanceContent;
     private Long maintenancePersonnelId;
     private LocalDateTime startTime;
@@ -21,7 +23,7 @@ public class EquipmentMaintenanceDomain {
     private BigDecimal cost;
     private String partsReplaced;
     private LocalDate nextMaintenanceDate;
-    private Integer status;
+    private MaintenanceStatus status;
     private String remark;
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
@@ -31,12 +33,12 @@ public class EquipmentMaintenanceDomain {
     private Integer deleted;
 
     public void start() {
-        this.status = 1;
+        this.status = MaintenanceStatus.IN_PROGRESS;
         this.startTime = LocalDateTime.now();
     }
 
     public void complete() {
-        this.status = 2;
+        this.status = MaintenanceStatus.COMPLETED;
         this.endTime = LocalDateTime.now();
     }
 }

@@ -8,10 +8,12 @@ import com.lsy.propertymanagementsystem.common.exception.BusinessException;
 import com.lsy.propertymanagementsystem.common.utils.PasswordUtils;
 import com.lsy.propertymanagementsystem.module.system.dto.UserDTO;
 import com.lsy.propertymanagementsystem.module.system.dto.UserVO;
+import com.lsy.propertymanagementsystem.module.system.domain.SysRoleDomain;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserDomain;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserRoleDomain;
 import com.lsy.propertymanagementsystem.module.system.enums.UserStatus;
 import com.lsy.propertymanagementsystem.module.system.enums.UserType;
+import com.lsy.propertymanagementsystem.module.system.mapper.SysRoleMapper;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserMapper;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserRoleMapper;
 import com.lsy.propertymanagementsystem.module.system.service.SysUserService;
@@ -27,6 +29,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDomain
 
     @Autowired
     private SysUserRoleMapper userRoleMapper;
+
+    @Autowired
+    private SysRoleMapper roleMapper;
 
     @Override
     public IPage<UserVO> getUserPage(Integer pageNum, Integer pageSize, String username, UserStatus status) {
@@ -79,10 +84,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDomain
             throw new BusinessException("用户名已存在");
         }
 
+        user.setUsername(request.getUsername());
         user.setRealName(request.getRealName());
         user.setPhone(request.getPhone());
         user.setUserType(UserType.of(request.getUserType()));
-        user.setStatus(UserStatus.of(request.getStatus()));
+        user.setStatus(request.getStatus() != null ? UserStatus.of(request.getStatus()) : UserStatus.ENABLED);
         if (request.getPassword() != null && !request.getPassword().isEmpty()) {
             user.setPassword(PasswordUtils.encode(request.getPassword()));
         }
@@ -175,7 +181,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDomain
         LambdaQueryWrapper<SysUserRoleDomain> roleWrapper = new LambdaQueryWrapper<>();
         roleWrapper.eq(SysUserRoleDomain::getUserId, user.getId());
         List<SysUserRoleDomain> userRoles = userRoleMapper.selectList(roleWrapper);
-        response.setRoleIds(userRoles.stream().map(SysUserRoleDomain::getRoleId).collect(Collectors.toList()));
+        List<Long> roleIds = userRoles.stream().map(SysUserRoleDomain::getRoleId).collect(Collectors.toList());
+        response.setRoleIds(roleIds);
+
+        if (!roleIds.isEmpty()) {
+            LambdaQueryWrapper<SysRoleDomain> roleQueryWrapper = new LambdaQueryWrapper<>();
+            roleQueryWrapper.in(SysRoleDomain::getId, roleIds);
+            response.setRoles(roleMapper.selectList(roleQueryWrapper).stream()
+                    .map(SysRoleDomain::getRoleName)
+                    .collect(Collectors.toList()));
+        }
 
         return response;
     }

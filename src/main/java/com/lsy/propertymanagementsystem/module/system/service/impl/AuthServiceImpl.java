@@ -9,12 +9,14 @@ import com.lsy.propertymanagementsystem.module.system.dto.LoginDTO;
 import com.lsy.propertymanagementsystem.module.system.dto.LoginVO;
 import com.lsy.propertymanagementsystem.module.system.dto.UserVO;
 import com.lsy.propertymanagementsystem.module.system.domain.SysMenuDomain;
+import com.lsy.propertymanagementsystem.module.system.domain.SysRoleDomain;
 import com.lsy.propertymanagementsystem.module.system.domain.SysRoleMenuDomain;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserDomain;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserRoleDomain;
 import com.lsy.propertymanagementsystem.module.system.enums.UserStatus;
 import com.lsy.propertymanagementsystem.module.system.enums.UserType;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysMenuMapper;
+import com.lsy.propertymanagementsystem.module.system.mapper.SysRoleMapper;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysRoleMenuMapper;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserRoleMapper;
 import com.lsy.propertymanagementsystem.module.system.service.AuthService;
@@ -34,6 +36,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private SysUserRoleMapper userRoleMapper;
+
+    @Autowired
+    private SysRoleMapper roleMapper;
 
     @Autowired
     private SysRoleMenuMapper roleMenuMapper;
@@ -89,25 +94,20 @@ public class AuthServiceImpl implements AuthService {
         response.setAvatar(user.getAvatar());
         response.setRoleIds(roleIds);
         response.setPermissions(permissions);
-        response.setRoles(getRoleNames(user.getUserType()));
+        response.setRoles(getRoleNames(roleIds));
 
         return response;
     }
 
-    private List<String> getRoleNames(UserType userType) {
-        List<String> roleNames = new ArrayList<>();
-        if (userType == UserType.SUPER_ADMIN) {
-            roleNames.add("admin");
-        } else if (userType == UserType.PROPERTY_ADMIN) {
-            roleNames.add("property");
-        } else if (userType == UserType.OWNER) {
-            roleNames.add("owner");
-        } else if (userType == UserType.REPAIR_WORKER) {
-            roleNames.add("repair_worker");
-        } else if (userType == UserType.INSPECTOR) {
-            roleNames.add("inspector");
+    private List<String> getRoleNames(List<Long> roleIds) {
+        if (roleIds == null || roleIds.isEmpty()) {
+            return new ArrayList<>();
         }
-        return roleNames;
+        LambdaQueryWrapper<SysRoleDomain> wrapper = new LambdaQueryWrapper<>();
+        wrapper.in(SysRoleDomain::getId, roleIds);
+        return roleMapper.selectList(wrapper).stream()
+                .map(SysRoleDomain::getRoleName)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -142,9 +142,10 @@ public class AuthServiceImpl implements AuthService {
         LambdaQueryWrapper<SysUserRoleDomain> roleWrapper = new LambdaQueryWrapper<>();
         roleWrapper.eq(SysUserRoleDomain::getUserId, user.getId());
         List<SysUserRoleDomain> userRoles = userRoleMapper.selectList(roleWrapper);
-        response.setRoleIds(userRoles.stream().map(SysUserRoleDomain::getRoleId).collect(Collectors.toList()));
+        List<Long> roleIds = userRoles.stream().map(SysUserRoleDomain::getRoleId).collect(Collectors.toList());
+        response.setRoleIds(roleIds);
 
-        response.setRoles(getRoleNames(user.getUserType()));
+        response.setRoles(getRoleNames(roleIds));
 
         return response;
     }

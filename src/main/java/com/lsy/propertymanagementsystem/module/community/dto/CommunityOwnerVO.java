@@ -1,17 +1,16 @@
-package com.lsy.propertymanagementsystem.module.community.domain;
+package com.lsy.propertymanagementsystem.module.community.dto;
 
-import com.baomidou.mybatisplus.annotation.*;
 import com.lsy.propertymanagementsystem.module.community.enums.OwnerStatus;
 import com.lsy.propertymanagementsystem.module.community.enums.OwnerType;
 import lombok.Data;
+
 import java.time.LocalDateTime;
 
 @Data
-@TableName("community_owner")
-public class CommunityOwnerDomain {
-    @TableId(type = IdType.AUTO)
+public class CommunityOwnerVO {
     private Long id;
     private Long userId;
+    private String username;
     private String name;
     private String phone;
     private String idCard;
@@ -20,10 +19,5 @@ public class CommunityOwnerDomain {
     private OwnerType ownerType;
     private OwnerStatus status;
     private String remark;
-    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
-    @TableField(fill = FieldFill.INSERT_UPDATE)
-    private LocalDateTime updateTime;
-    @TableLogic
-    private Integer deleted;
 }

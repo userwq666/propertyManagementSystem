@@ -239,18 +239,20 @@ CREATE TABLE fee_notice (
 
 -- 收费通知-楼栋关联表
 CREATE TABLE fee_notice_building (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
     notice_id BIGINT NOT NULL COMMENT '通知ID',
     building_id BIGINT NOT NULL COMMENT '楼栋ID',
-    PRIMARY KEY (notice_id, building_id),
+    UNIQUE KEY uk_notice_building (notice_id, building_id),
     CONSTRAINT fk_fnb_notice FOREIGN KEY (notice_id) REFERENCES fee_notice(id) ON DELETE CASCADE,
     CONSTRAINT fk_fnb_building FOREIGN KEY (building_id) REFERENCES community_building(id) ON DELETE CASCADE
 ) COMMENT '收费通知-楼栋关联表';
 
 -- 收费通知-业主关联表
 CREATE TABLE fee_notice_owner (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
     notice_id BIGINT NOT NULL COMMENT '通知ID',
     owner_id BIGINT NOT NULL COMMENT '业主ID',
-    PRIMARY KEY (notice_id, owner_id),
+    UNIQUE KEY uk_notice_owner (notice_id, owner_id),
     CONSTRAINT fk_fno_notice FOREIGN KEY (notice_id) REFERENCES fee_notice(id) ON DELETE CASCADE,
     CONSTRAINT fk_fno_owner FOREIGN KEY (owner_id) REFERENCES community_owner(id) ON DELETE CASCADE
 ) COMMENT '收费通知-业主关联表';
@@ -318,7 +320,7 @@ CREATE TABLE complaint_suggest (
     category VARCHAR(50) COMMENT '分类：环境卫生、噪音扰民、车辆管理、服务态度、设施损坏、其他',
     content TEXT NOT NULL COMMENT '投诉建议内容',
     images VARCHAR(1000) COMMENT '图片，逗号分隔',
-    status TINYINT NOT NULL DEFAULT 0 COMMENT '状态：0待受理 1处理中 2已回复 3已关闭 4已撤销',
+    status TINYINT NOT NULL DEFAULT 0 COMMENT '状态：0待受理 1已受理 2处理中 3已回复 4已关闭 5已撤销',
     priority TINYINT NOT NULL DEFAULT 1 COMMENT '优先级：1普通 2重要 3紧急',
     handler_id BIGINT NULL COMMENT '处理人ID',
     handle_content TEXT COMMENT '处理回复内容',
@@ -434,18 +436,20 @@ CREATE TABLE inspection_plan (
 
 -- 巡检计划-设备关联表
 CREATE TABLE inspection_plan_equipment (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
     plan_id BIGINT NOT NULL COMMENT '计划ID',
     equipment_id BIGINT NOT NULL COMMENT '设备ID',
-    PRIMARY KEY (plan_id, equipment_id),
+    UNIQUE KEY uk_plan_equipment (plan_id, equipment_id),
     CONSTRAINT fk_ipe_plan FOREIGN KEY (plan_id) REFERENCES inspection_plan(id) ON DELETE CASCADE,
     CONSTRAINT fk_ipe_equip FOREIGN KEY (equipment_id) REFERENCES equipment(id) ON DELETE CASCADE
 ) COMMENT '巡检计划-设备关联表';
 
 -- 巡检计划-巡检人员关联表
 CREATE TABLE inspection_plan_inspector (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
     plan_id BIGINT NOT NULL COMMENT '计划ID',
     inspector_id BIGINT NOT NULL COMMENT '巡检人员ID',
-    PRIMARY KEY (plan_id, inspector_id),
+    UNIQUE KEY uk_plan_inspector (plan_id, inspector_id),
     CONSTRAINT fk_ipi_plan FOREIGN KEY (plan_id) REFERENCES inspection_plan(id) ON DELETE CASCADE,
     CONSTRAINT fk_ipi_inspector FOREIGN KEY (inspector_id) REFERENCES sys_user(id) ON DELETE CASCADE
 ) COMMENT '巡检计划-巡检人员关联表';
@@ -511,10 +515,11 @@ CREATE TABLE announcement (
 
 -- 公告阅读记录表
 CREATE TABLE announcement_read (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
     announcement_id BIGINT NOT NULL COMMENT '公告ID',
     user_id BIGINT NOT NULL COMMENT '用户ID',
     read_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '阅读时间',
-    PRIMARY KEY (announcement_id, user_id),
+    UNIQUE KEY uk_announcement_user (announcement_id, user_id),
     CONSTRAINT fk_ar_announcement FOREIGN KEY (announcement_id) REFERENCES announcement(id) ON DELETE CASCADE,
     CONSTRAINT fk_ar_user FOREIGN KEY (user_id) REFERENCES sys_user(id) ON DELETE CASCADE
 ) COMMENT '公告阅读记录表';

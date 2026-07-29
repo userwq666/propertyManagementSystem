@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lsy.propertymanagementsystem.common.exception.BusinessException;
 import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentMaintenanceDomain;
+import com.lsy.propertymanagementsystem.module.equipment.enums.MaintenanceStatus;
+import com.lsy.propertymanagementsystem.module.equipment.enums.MaintenanceType;
 import com.lsy.propertymanagementsystem.module.equipment.mapper.EquipmentMaintenanceMapper;
 import com.lsy.propertymanagementsystem.module.equipment.service.EquipmentMaintenanceService;
 import org.springframework.stereotype.Service;
@@ -17,7 +19,7 @@ public class EquipmentMaintenanceServiceImpl extends ServiceImpl<EquipmentMainte
     @Transactional
     public void add(EquipmentMaintenanceDomain domain) {
         if (domain.getStatus() == null) {
-            domain.setStatus(0);
+            domain.setStatus(MaintenanceStatus.PENDING);
         }
         this.save(domain);
     }
@@ -50,10 +52,10 @@ public class EquipmentMaintenanceServiceImpl extends ServiceImpl<EquipmentMainte
             wrapper.eq(EquipmentMaintenanceDomain::getEquipmentId, equipmentId);
         }
         if (maintenanceType != null) {
-            wrapper.eq(EquipmentMaintenanceDomain::getMaintenanceType, maintenanceType);
+            wrapper.eq(EquipmentMaintenanceDomain::getMaintenanceType, MaintenanceType.of(maintenanceType));
         }
         if (status != null) {
-            wrapper.eq(EquipmentMaintenanceDomain::getStatus, status);
+            wrapper.eq(EquipmentMaintenanceDomain::getStatus, MaintenanceStatus.of(status));
         }
         wrapper.orderByDesc(EquipmentMaintenanceDomain::getCreateTime);
         return this.page(new Page<>(pageNum, pageSize), wrapper);

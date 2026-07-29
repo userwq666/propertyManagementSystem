@@ -1,16 +1,15 @@
 package com.lsy.propertymanagementsystem.module.equipment.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
-public class EquipmentCategoryDTO {
+public class EquipmentCategoryVO {
     private Long id;
-
-    @NotBlank(message = "分类名称不能为空")
     private String categoryName;
-
     private Long parentId;
     private Integer sort;
     private Integer status;
+    private LocalDateTime createTime;
 }

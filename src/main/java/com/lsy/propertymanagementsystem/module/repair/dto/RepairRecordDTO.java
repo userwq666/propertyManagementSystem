@@ -4,7 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -21,21 +20,25 @@ public class RepairRecordDTO {
     private String repairType;
 
     @NotBlank(message = "报修描述不能为空")
-    private String description;
+    private String repairContent;
 
-    private String images;
+    private String repairImages;
 
     private Integer status;
 
+    private Integer priority;
+
     private Long handlerId;
+
+    private String handleContent;
+
+    private String handleImages;
 
     private LocalDateTime handleTime;
 
-    private BigDecimal cost;
+    private Integer evaluateScore;
 
-    private String handleResult;
+    private String evaluateContent;
 
-    private Integer rating;
-
-    private String ratingContent;
+    private LocalDateTime evaluateTime;
 }

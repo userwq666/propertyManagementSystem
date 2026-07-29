@@ -1,37 +1,33 @@
 package com.lsy.propertymanagementsystem.module.inspection.dto;
 
-import jakarta.validation.constraints.NotNull;
+import com.lsy.propertymanagementsystem.module.inspection.enums.HandleStatus;
+import com.lsy.propertymanagementsystem.module.inspection.enums.InspectResult;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
-public class InspectionRecordDTO {
+public class InspectionRecordVO {
     private Long id;
     private Long planId;
-
-    @NotNull(message = "设备ID不能为空")
+    private String planName;
     private Long equipmentId;
-
-    @NotNull(message = "巡检人员ID不能为空")
+    private String equipmentName;
     private Long inspectorUserId;
-
-    @NotNull(message = "巡检结果不能为空")
-    private Integer status;
-
+    private String inspectorName;
     private LocalDateTime inspectionTime;
-
+    private InspectResult status;
     private String abnormalDesc;
     private String abnormalImages;
-
-    private Integer handleStatus;
+    private HandleStatus handleStatus;
     private String handleContent;
     private LocalDateTime handleTime;
     private Long handlerId;
-
+    private String handlerName;
     private BigDecimal locationLat;
     private BigDecimal locationLng;
     private String locationAddress;
     private String remark;
+    private LocalDateTime createTime;
 }
