@@ -2,8 +2,8 @@ package com.lsy.propertymanagementsystem.module.community.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.common.result.Result;
-import com.lsy.propertymanagementsystem.module.community.domain.CommunityHouseDomain;
 import com.lsy.propertymanagementsystem.module.community.dto.CommunityHouseDTO;
+import com.lsy.propertymanagementsystem.module.community.dto.CommunityHouseVO;
 import com.lsy.propertymanagementsystem.module.community.service.CommunityHouseService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +50,7 @@ public class CommunityHouseController {
                        @RequestParam(defaultValue = "10") int pageSize,
                        @RequestParam(required = false) Long buildingId,
                        @RequestParam(required = false) Integer houseStatus) {
-        Page<CommunityHouseDomain> page = houseService.page(pageNum, pageSize, buildingId, houseStatus);
+        Page<CommunityHouseVO> page = houseService.page(pageNum, pageSize, buildingId, houseStatus);
         return Result.success(page);
     }
 }

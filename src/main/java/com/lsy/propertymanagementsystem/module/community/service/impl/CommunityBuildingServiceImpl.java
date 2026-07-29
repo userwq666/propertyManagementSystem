@@ -6,20 +6,30 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lsy.propertymanagementsystem.common.exception.BusinessException;
 import com.lsy.propertymanagementsystem.module.community.domain.CommunityBuildingDomain;
 import com.lsy.propertymanagementsystem.module.community.dto.CommunityBuildingDTO;
+import com.lsy.propertymanagementsystem.module.community.dto.CommunityBuildingVO;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityBuildingMapper;
 import com.lsy.propertymanagementsystem.module.community.service.CommunityBuildingService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class CommunityBuildingServiceImpl extends ServiceImpl<CommunityBuildingMapper, CommunityBuildingDomain> implements CommunityBuildingService {
 
     @Override
-    public Page<CommunityBuildingDomain> page(int pageNum, int pageSize) {
+    public Page<CommunityBuildingVO> page(int pageNum, int pageSize) {
         LambdaQueryWrapper<CommunityBuildingDomain> wrapper = new LambdaQueryWrapper<>();
         wrapper.orderByDesc(CommunityBuildingDomain::getCreateTime);
-        return this.page(new Page<>(pageNum, pageSize), wrapper);
+        Page<CommunityBuildingDomain> domainPage = this.page(new Page<>(pageNum, pageSize), wrapper);
+        List<CommunityBuildingVO> voList = domainPage.getRecords().stream()
+                .map(this::convertToVO)
+                .collect(Collectors.toList());
+        Page<CommunityBuildingVO> voPage = new Page<>(pageNum, pageSize, domainPage.getTotal());
+        voPage.setRecords(voList);
+        return voPage;
     }
 
     @Override
@@ -48,7 +58,17 @@ public class CommunityBuildingServiceImpl extends ServiceImpl<CommunityBuildingM
     }
 
     @Override
-    public CommunityBuildingDomain getBuildingById(Long id) {
-        return this.getById(id);
+    public CommunityBuildingVO getBuildingById(Long id) {
+        CommunityBuildingDomain domain = this.getById(id);
+        if (domain == null) {
+            return null;
+        }
+        return convertToVO(domain);
+    }
+
+    private CommunityBuildingVO convertToVO(CommunityBuildingDomain domain) {
+        CommunityBuildingVO vo = new CommunityBuildingVO();
+        BeanUtils.copyProperties(domain, vo);
+        return vo;
     }
 }

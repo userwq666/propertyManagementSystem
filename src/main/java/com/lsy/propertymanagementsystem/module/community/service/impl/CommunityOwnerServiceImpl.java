@@ -7,17 +7,30 @@ import com.lsy.propertymanagementsystem.common.exception.BusinessException;
 import com.lsy.propertymanagementsystem.common.utils.SecurityUtils;
 import com.lsy.propertymanagementsystem.module.community.domain.CommunityOwnerDomain;
 import com.lsy.propertymanagementsystem.module.community.dto.CommunityOwnerDTO;
+import com.lsy.propertymanagementsystem.module.community.dto.CommunityOwnerVO;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityOwnerMapper;
 import com.lsy.propertymanagementsystem.module.community.service.CommunityOwnerService;
+import com.lsy.propertymanagementsystem.module.system.domain.SysUserDomain;
+import com.lsy.propertymanagementsystem.module.system.mapper.SysUserMapper;
+import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 public class CommunityOwnerServiceImpl extends ServiceImpl<CommunityOwnerMapper, CommunityOwnerDomain> implements CommunityOwnerService {
 
+    @Resource
+    private SysUserMapper sysUserMapper;
+
     @Override
-    public Page<CommunityOwnerDomain> page(int pageNum, int pageSize, String name, String phone) {
+    public Page<CommunityOwnerVO> page(int pageNum, int pageSize, String name, String phone) {
         LambdaQueryWrapper<CommunityOwnerDomain> wrapper = new LambdaQueryWrapper<>();
         if (name != null && !name.isEmpty()) {
             wrapper.like(CommunityOwnerDomain::getName, name);
@@ -25,12 +38,31 @@ public class CommunityOwnerServiceImpl extends ServiceImpl<CommunityOwnerMapper,
         if (phone != null && !phone.isEmpty()) {
             wrapper.like(CommunityOwnerDomain::getPhone, phone);
         }
-        // 业主只能查看自己的信息
         if (SecurityUtils.isOwner()) {
             wrapper.eq(CommunityOwnerDomain::getUserId, SecurityUtils.getCurrentUserId());
         }
         wrapper.orderByDesc(CommunityOwnerDomain::getCreateTime);
-        return this.page(new Page<>(pageNum, pageSize), wrapper);
+
+        Page<CommunityOwnerDomain> domainPage = this.page(new Page<>(pageNum, pageSize), wrapper);
+
+        Set<Long> userIds = domainPage.getRecords().stream()
+                .map(CommunityOwnerDomain::getUserId).filter(id -> id != null).collect(Collectors.toSet());
+
+        final Map<Long, SysUserDomain> userMap;
+        if (userIds.isEmpty()) {
+            userMap = new HashMap<>();
+        } else {
+            List<SysUserDomain> users = sysUserMapper.selectBatchIds(userIds);
+            userMap = users.stream().collect(Collectors.toMap(SysUserDomain::getId, u -> u));
+        }
+
+        List<CommunityOwnerVO> voList = domainPage.getRecords().stream()
+                .map(d -> convertToVO(d, userMap))
+                .collect(Collectors.toList());
+
+        Page<CommunityOwnerVO> voPage = new Page<>(pageNum, pageSize, domainPage.getTotal());
+        voPage.setRecords(voList);
+        return voPage;
     }
 
     @Override
@@ -59,12 +91,35 @@ public class CommunityOwnerServiceImpl extends ServiceImpl<CommunityOwnerMapper,
     }
 
     @Override
-    public CommunityOwnerDomain getOwnerById(Long id) {
-        return this.getById(id);
+    public CommunityOwnerVO getOwnerById(Long id) {
+        CommunityOwnerDomain domain = this.getById(id);
+        if (domain == null) {
+            return null;
+        }
+        Map<Long, SysUserDomain> userMap = new HashMap<>();
+        if (domain.getUserId() != null) {
+            SysUserDomain user = sysUserMapper.selectById(domain.getUserId());
+            if (user != null) {
+                userMap.put(user.getId(), user);
+            }
+        }
+        return convertToVO(domain, userMap);
     }
 
     @Override
     public CommunityOwnerDomain getByUserId(Long userId) {
         return this.getOne(new LambdaQueryWrapper<CommunityOwnerDomain>().eq(CommunityOwnerDomain::getUserId, userId));
+    }
+
+    private CommunityOwnerVO convertToVO(CommunityOwnerDomain domain, Map<Long, SysUserDomain> userMap) {
+        CommunityOwnerVO vo = new CommunityOwnerVO();
+        BeanUtils.copyProperties(domain, vo);
+        if (domain.getUserId() != null) {
+            SysUserDomain user = userMap.get(domain.getUserId());
+            if (user != null) {
+                vo.setUsername(user.getUsername());
+            }
+        }
+        return vo;
     }
 }
