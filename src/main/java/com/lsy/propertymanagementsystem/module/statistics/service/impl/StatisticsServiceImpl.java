@@ -214,46 +214,299 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Override
     public List<Map<String, Object>> getFeeTrend(String timeRange) {
-        return Collections.emptyList();
+        LocalDate startDate = resolveStartDate(timeRange);
+        LocalDate endDate = LocalDate.now();
+
+        LambdaQueryWrapper<FeeRecordDomain> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(FeeRecordDomain::getStatus, FeeRecordStatus.PAID)
+                .ge(FeeRecordDomain::getPayTime, startDate.atStartOfDay());
+        List<FeeRecordDomain> records = feeRecordMapper.selectList(wrapper);
+
+        Map<String, BigDecimal> groupMap = new LinkedHashMap<>();
+        for (FeeRecordDomain r : records) {
+            if (r.getPayTime() != null) {
+                String key = formatDateKey(r.getPayTime().toLocalDate(), timeRange);
+                groupMap.merge(key, r.getAmount(), BigDecimal::add);
+            }
+        }
+
+        List<String> keys = generateAllKeys(startDate, endDate, timeRange);
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (String key : keys) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("date", key);
+            item.put("amount", groupMap.getOrDefault(key, BigDecimal.ZERO));
+            result.add(item);
+        }
+        return result;
     }
 
     @Override
     public List<Map<String, Object>> getRepairTrend(String timeRange) {
-        return Collections.emptyList();
+        LocalDate startDate = resolveStartDate(timeRange);
+        LocalDate endDate = LocalDate.now();
+
+        LambdaQueryWrapper<RepairRecordDomain> wrapper = new LambdaQueryWrapper<>();
+        wrapper.ge(RepairRecordDomain::getCreateTime, startDate.atStartOfDay());
+        List<RepairRecordDomain> records = repairRecordMapper.selectList(wrapper);
+
+        Map<String, Long> groupMap = new LinkedHashMap<>();
+        for (RepairRecordDomain r : records) {
+            if (r.getCreateTime() != null) {
+                String key = formatDateKey(r.getCreateTime().toLocalDate(), timeRange);
+                groupMap.merge(key, 1L, Long::sum);
+            }
+        }
+
+        List<String> keys = generateAllKeys(startDate, endDate, timeRange);
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (String key : keys) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("date", key);
+            item.put("count", groupMap.getOrDefault(key, 0L));
+            result.add(item);
+        }
+        return result;
     }
 
     @Override
     public List<Map<String, Object>> getRepairTypeRatio(String timeRange) {
-        return Collections.emptyList();
+        LocalDate startDate = resolveStartDate(timeRange);
+
+        LambdaQueryWrapper<RepairRecordDomain> wrapper = new LambdaQueryWrapper<>();
+        wrapper.ge(RepairRecordDomain::getCreateTime, startDate.atStartOfDay());
+        List<RepairRecordDomain> records = repairRecordMapper.selectList(wrapper);
+
+        Map<RepairType, Long> typeMap = records.stream()
+                .collect(Collectors.groupingBy(RepairRecordDomain::getRepairType, Collectors.counting()));
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Map.Entry<RepairType, Long> entry : typeMap.entrySet()) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("type", entry.getKey() != null ? entry.getKey().getValue() : null);
+            item.put("typeName", entry.getKey() != null ? entry.getKey().getDesc() : null);
+            item.put("count", entry.getValue());
+            result.add(item);
+        }
+        return result;
     }
 
     @Override
     public List<Map<String, Object>> getDeviceStatus(String timeRange) {
-        return Collections.emptyList();
+        List<EquipmentDomain> equipment = equipmentMapper.selectList(new LambdaQueryWrapper<>());
+
+        Map<EquipmentStatus, Long> statusMap = equipment.stream()
+                .collect(Collectors.groupingBy(EquipmentDomain::getStatus, Collectors.counting()));
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Map.Entry<EquipmentStatus, Long> entry : statusMap.entrySet()) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("status", entry.getKey() != null ? entry.getKey().getValue() : null);
+            item.put("statusName", entry.getKey() != null ? entry.getKey().getDesc() : null);
+            item.put("count", entry.getValue());
+            result.add(item);
+        }
+        return result;
     }
 
     @Override
     public List<Map<String, Object>> getMaintenanceWarning(String timeRange) {
-        return Collections.emptyList();
+        LocalDate today = LocalDate.now();
+        LocalDate deadline = today.plusDays(30);
+
+        LambdaQueryWrapper<EquipmentMaintenanceDomain> wrapper = new LambdaQueryWrapper<>();
+        wrapper.ge(EquipmentMaintenanceDomain::getNextMaintenanceDate, today)
+                .le(EquipmentMaintenanceDomain::getNextMaintenanceDate, deadline);
+        List<EquipmentMaintenanceDomain> maintenances = equipmentMaintenanceMapper.selectList(wrapper);
+
+        Set<Long> equipmentIds = maintenances.stream()
+                .map(EquipmentMaintenanceDomain::getEquipmentId)
+                .collect(Collectors.toSet());
+        Map<Long, String> equipmentNameMap = new HashMap<>();
+        if (!equipmentIds.isEmpty()) {
+            List<EquipmentDomain> equipmentList = equipmentMapper.selectBatchIds(equipmentIds);
+            equipmentNameMap = equipmentList.stream()
+                    .collect(Collectors.toMap(EquipmentDomain::getId, EquipmentDomain::getEquipmentName));
+        }
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (EquipmentMaintenanceDomain m : maintenances) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("id", m.getId());
+            item.put("equipmentId", m.getEquipmentId());
+            item.put("equipmentName", equipmentNameMap.getOrDefault(m.getEquipmentId(), "未知设备"));
+            item.put("nextMaintenanceDate", m.getNextMaintenanceDate());
+            result.add(item);
+        }
+        return result;
     }
 
     @Override
     public List<Map<String, Object>> getSatisfactionTrend(String timeRange) {
-        return Collections.emptyList();
+        LocalDate startDate = resolveStartDate(timeRange);
+        LocalDate endDate = LocalDate.now();
+
+        LambdaQueryWrapper<RepairRecordDomain> wrapper = new LambdaQueryWrapper<>();
+        wrapper.isNotNull(RepairRecordDomain::getEvaluateScore)
+                .ge(RepairRecordDomain::getEvaluateTime, startDate.atStartOfDay());
+        List<RepairRecordDomain> records = repairRecordMapper.selectList(wrapper);
+
+        Map<String, List<Integer>> groupMap = new LinkedHashMap<>();
+        for (RepairRecordDomain r : records) {
+            if (r.getEvaluateTime() != null) {
+                String key = formatDateKey(r.getEvaluateTime().toLocalDate(), timeRange);
+                groupMap.computeIfAbsent(key, k -> new ArrayList<>()).add(r.getEvaluateScore());
+            }
+        }
+
+        List<String> keys = generateAllKeys(startDate, endDate, timeRange);
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (String key : keys) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("date", key);
+            List<Integer> scores = groupMap.getOrDefault(key, Collections.emptyList());
+            double avgScore = scores.isEmpty() ? 0.0
+                    : scores.stream().mapToInt(Integer::intValue).average().orElse(0.0);
+            item.put("avgScore", Math.round(avgScore * 10.0) / 10.0);
+            result.add(item);
+        }
+        return result;
     }
 
     @Override
     public List<Map<String, Object>> getComplaintTypeRatio(String timeRange) {
-        return Collections.emptyList();
+        LocalDate startDate = resolveStartDate(timeRange);
+
+        LambdaQueryWrapper<ComplaintSuggestDomain> wrapper = new LambdaQueryWrapper<>();
+        wrapper.ge(ComplaintSuggestDomain::getCreateTime, startDate.atStartOfDay());
+        List<ComplaintSuggestDomain> records = complaintSuggestMapper.selectList(wrapper);
+
+        Map<ComplaintType, Long> typeMap = records.stream()
+                .collect(Collectors.groupingBy(ComplaintSuggestDomain::getType, Collectors.counting()));
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Map.Entry<ComplaintType, Long> entry : typeMap.entrySet()) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("type", entry.getKey() != null ? entry.getKey().getValue() : null);
+            item.put("typeName", entry.getKey() != null ? entry.getKey().getDesc() : null);
+            item.put("count", entry.getValue());
+            result.add(item);
+        }
+        return result;
     }
 
     @Override
     public List<Map<String, Object>> getInspectionCompletion(String timeRange) {
-        return Collections.emptyList();
+        LocalDate startDate = resolveStartDate(timeRange);
+        LocalDate endDate = LocalDate.now();
+
+        LambdaQueryWrapper<InspectionRecordDomain> wrapper = new LambdaQueryWrapper<>();
+        wrapper.ge(InspectionRecordDomain::getInspectionTime, startDate.atStartOfDay())
+                .le(InspectionRecordDomain::getInspectionTime, endDate.plusDays(1).atStartOfDay());
+        List<InspectionRecordDomain> records = inspectionRecordMapper.selectList(wrapper);
+
+        Map<String, long[]> groupMap = new LinkedHashMap<>();
+        for (InspectionRecordDomain r : records) {
+            if (r.getInspectionTime() != null) {
+                String key = formatDateKey(r.getInspectionTime().toLocalDate(), timeRange);
+                long[] counts = groupMap.computeIfAbsent(key, k -> new long[2]);
+                counts[0]++;
+                if (r.getStatus() == InspectResult.NORMAL || r.getStatus() == InspectResult.ABNORMAL) {
+                    counts[1]++;
+                }
+            }
+        }
+
+        List<String> keys = generateAllKeys(startDate, endDate, timeRange);
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (String key : keys) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("date", key);
+            long[] counts = groupMap.getOrDefault(key, new long[]{0, 0});
+            item.put("total", counts[0]);
+            item.put("completed", counts[1]);
+            double rate = counts[0] > 0 ? Math.round(counts[1] * 1000.0 / counts[0]) / 10.0 : 0.0;
+            item.put("rate", rate);
+            result.add(item);
+        }
+        return result;
     }
 
     @Override
     public List<Map<String, Object>> getInspectionAbnormal(String timeRange) {
-        return Collections.emptyList();
+        LocalDate startDate = resolveStartDate(timeRange);
+        LocalDate endDate = LocalDate.now();
+
+        LambdaQueryWrapper<InspectionRecordDomain> wrapper = new LambdaQueryWrapper<>();
+        wrapper.ge(InspectionRecordDomain::getInspectionTime, startDate.atStartOfDay())
+                .le(InspectionRecordDomain::getInspectionTime, endDate.plusDays(1).atStartOfDay());
+        List<InspectionRecordDomain> records = inspectionRecordMapper.selectList(wrapper);
+
+        Map<String, long[]> groupMap = new LinkedHashMap<>();
+        for (InspectionRecordDomain r : records) {
+            if (r.getInspectionTime() != null) {
+                String key = formatDateKey(r.getInspectionTime().toLocalDate(), timeRange);
+                long[] counts = groupMap.computeIfAbsent(key, k -> new long[2]);
+                counts[0]++;
+                if (r.getStatus() == InspectResult.ABNORMAL) {
+                    counts[1]++;
+                }
+            }
+        }
+
+        List<String> keys = generateAllKeys(startDate, endDate, timeRange);
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (String key : keys) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("date", key);
+            long[] counts = groupMap.getOrDefault(key, new long[]{0, 0});
+            item.put("total", counts[0]);
+            item.put("abnormal", counts[1]);
+            double rate = counts[0] > 0 ? Math.round(counts[1] * 1000.0 / counts[0]) / 10.0 : 0.0;
+            item.put("rate", rate);
+            result.add(item);
+        }
+        return result;
+    }
+
+    private LocalDate resolveStartDate(String timeRange) {
+        LocalDate today = LocalDate.now();
+        switch (timeRange) {
+            case "7d":
+                return today.minusDays(6);
+            case "30d":
+                return today.minusDays(29);
+            case "90d":
+                return today.minusDays(89);
+            case "1y":
+                return today.minusYears(1);
+            default:
+                return today.minusDays(29);
+        }
+    }
+
+    private String formatDateKey(LocalDate date, String timeRange) {
+        if ("90d".equals(timeRange)) {
+            int dow = date.getDayOfWeek().getValue();
+            return date.minusDays(dow - 1).toString();
+        }
+        if ("1y".equals(timeRange)) {
+            return date.getYear() + "-" + String.format("%02d", date.getMonthValue());
+        }
+        return date.toString();
+    }
+
+    private List<String> generateAllKeys(LocalDate startDate, LocalDate endDate, String timeRange) {
+        List<String> keys = new ArrayList<>();
+        Set<String> seen = new LinkedHashSet<>();
+        LocalDate current = startDate;
+        while (!current.isAfter(endDate)) {
+            String key = formatDateKey(current, timeRange);
+            if (seen.add(key)) {
+                keys.add(key);
+            }
+            current = current.plusDays(1);
+        }
+        return keys;
     }
 }
