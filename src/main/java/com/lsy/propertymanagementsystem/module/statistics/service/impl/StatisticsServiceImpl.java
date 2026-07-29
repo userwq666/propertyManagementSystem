@@ -1,4 +1,4 @@
-package com.lsy.propertymanagementsystem.module.statistics.service.impl;
+﻿package com.lsy.propertymanagementsystem.module.statistics.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityHouseMapper;
@@ -18,6 +18,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import com.lsy.propertymanagementsystem.module.complaint.domain.ComplaintSuggestDomain;
+import com.lsy.propertymanagementsystem.module.complaint.enums.ComplaintStatus;
+import com.lsy.propertymanagementsystem.module.complaint.enums.ComplaintType;
+import com.lsy.propertymanagementsystem.module.complaint.mapper.ComplaintSuggestMapper;
+import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentDomain;
+import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentMaintenanceDomain;
+import com.lsy.propertymanagementsystem.module.equipment.enums.EquipmentStatus;
+import com.lsy.propertymanagementsystem.module.equipment.mapper.EquipmentMaintenanceMapper;
+import com.lsy.propertymanagementsystem.module.equipment.mapper.EquipmentMapper;
+import com.lsy.propertymanagementsystem.module.inspection.domain.InspectionRecordDomain;
+import com.lsy.propertymanagementsystem.module.inspection.enums.InspectResult;
+import com.lsy.propertymanagementsystem.module.inspection.mapper.InspectionRecordMapper;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
