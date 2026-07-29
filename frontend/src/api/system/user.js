@@ -1,12 +1,4 @@
-﻿import request from '@/utils/request'
-
-export function getUserPage(params) {
-  return request({ url: '/system/user/page', method: 'get', params })
-}
-
-export function getUserById(id) {
-  return request({ url: `/system/user/${id}`, method: 'get' })
-}
+import request from '@/utils/request'
 
 export function addUser(data) {
   return request({ url: '/system/user', method: 'post', data })
@@ -17,13 +9,21 @@ export function updateUser(data) {
 }
 
 export function deleteUser(id) {
-  return request({ url: `/system/user/${id}`, method: 'delete' })
+  return request({ url: '/system/user/' + id, method: 'delete' })
 }
 
-export function resetPassword(id) {
-  return request({ url: `/system/user/${id}/resetPwd`, method: 'put' })
+export function getUserById(id) {
+  return request({ url: '/system/user/' + id, method: 'get' })
 }
 
-export function updateUserStatus(id, status) {
-  return request({ url: `/system/user/${id}/status`, method: 'put', params: { status } })
+export function getUserPage(params) {
+  return request({ url: '/system/user/page', method: 'get', params })
+}
+
+export function updateUserStatus(params) {
+  return request({ url: '/system/user/status', method: 'put', params })
+}
+
+export function resetPassword(params) {
+  return request({ url: '/system/user/password', method: 'put', params })
 }

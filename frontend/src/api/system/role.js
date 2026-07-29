@@ -1,12 +1,4 @@
-﻿import request from '@/utils/request'
-
-export function getRolePage(params) {
-  return request({ url: '/system/role/page', method: 'get', params })
-}
-
-export function getRoleById(id) {
-  return request({ url: `/system/role/${id}`, method: 'get' })
-}
+import request from '@/utils/request'
 
 export function addRole(data) {
   return request({ url: '/system/role', method: 'post', data })
@@ -17,17 +9,21 @@ export function updateRole(data) {
 }
 
 export function deleteRole(id) {
-  return request({ url: `/system/role/${id}`, method: 'delete' })
+  return request({ url: '/system/role/' + id, method: 'delete' })
+}
+
+export function getRoleById(id) {
+  return request({ url: '/system/role/' + id, method: 'get' })
+}
+
+export function getRoleList() {
+  return request({ url: '/system/role/list', method: 'get' })
+}
+
+export function assignMenus(data) {
+  return request({ url: '/system/role/assignMenus', method: 'post', data })
 }
 
 export function getRoleMenus(roleId) {
-  return request({ url: `/system/role/${roleId}/menus`, method: 'get' })
-}
-
-export function assignRoleMenus(roleId, menuIds) {
-  return request({ url: `/system/role/${roleId}/menus`, method: 'put', data: menuIds })
-}
-
-export function getAllRoles() {
-  return request({ url: '/system/role/all', method: 'get' })
+  return request({ url: '/system/role/' + roleId + '/menus', method: 'get' })
 }
