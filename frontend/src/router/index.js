@@ -1,209 +1,76 @@
 ﻿import { createRouter, createWebHistory } from 'vue-router'
 import { getToken } from '@/utils/auth'
+import { useUserStore } from '@/stores/user'
 
 const routes = [
+  { path: '/login', name: 'Login', component: () => import('@/views/login/index.vue'), meta: { title: '登录' } },
   {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/views/login/index.vue'),
-    meta: { title: '登录' }
-  },
-  {
-    path: '/',
-    component: () => import('@/layout/index.vue'),
-    redirect: '/dashboard',
+    path: '/', component: () => import('@/layout/index.vue'), redirect: '/dashboard',
     children: [
-      {
-        path: 'dashboard',
-        name: 'Dashboard',
-        component: () => import('@/views/statistics/index.vue'),
-        meta: { title: '首页', icon: 'HomeFilled' }
-      },
-      {
-        path: 'system',
-        name: 'System',
-        meta: { title: '系统管理', icon: 'Setting' },
+      { path: 'dashboard', name: 'Dashboard', component: () => import('@/views/statistics/index.vue'), meta: { title: '首页', icon: 'HomeFilled', permission: 'statistics:overview:list' } },
+      { path: 'system', name: 'System', meta: { title: '系统管理', icon: 'Setting' },
         children: [
-          {
-            path: 'users',
-            name: 'SystemUsers',
-            component: () => import('@/views/system/user/index.vue'),
-            meta: { title: '用户管理', icon: 'User' }
-          },
-          {
-            path: 'roles',
-            name: 'SystemRoles',
-            component: () => import('@/views/system/role/index.vue'),
-            meta: { title: '角色管理', icon: 'Avatar' }
-          },
-          {
-            path: 'menus',
-            name: 'SystemMenus',
-            component: () => import('@/views/system/menu/index.vue'),
-            meta: { title: '菜单管理', icon: 'Menu' }
-          },
-          {
-            path: 'operLogs',
-            name: 'SystemOperLogs',
-            component: () => import('@/views/system/operLog/index.vue'),
-            meta: { title: '操作日志', icon: 'Document' }
-          }
+          { path: 'users', name: 'SystemUsers', component: () => import('@/views/system/user/index.vue'), meta: { title: '用户管理', icon: 'User', permission: 'system:user:list' } },
+          { path: 'roles', name: 'SystemRoles', component: () => import('@/views/system/role/index.vue'), meta: { title: '角色管理', icon: 'Avatar', permission: 'system:role:list' } },
+          { path: 'menus', name: 'SystemMenus', component: () => import('@/views/system/menu/index.vue'), meta: { title: '菜单管理', icon: 'Menu', permission: 'system:menu:list' } },
+          { path: 'operLogs', name: 'SystemOperLogs', component: () => import('@/views/system/operLog/index.vue'), meta: { title: '操作日志', icon: 'Document', permission: 'system:operLog:list' } }
         ]
       },
-      {
-        path: 'community',
-        name: 'Community',
-        meta: { title: '小区基础', icon: 'OfficeBuilding' },
+      { path: 'community', name: 'Community', meta: { title: '小区基础', icon: 'OfficeBuilding' },
         children: [
-          {
-            path: 'buildings',
-            name: 'CommunityBuildings',
-            component: () => import('@/views/community/building/index.vue'),
-            meta: { title: '楼栋管理', icon: 'Building' }
-          },
-          {
-            path: 'houses',
-            name: 'CommunityHouses',
-            component: () => import('@/views/community/house/index.vue'),
-            meta: { title: '房屋管理', icon: 'House' }
-          },
-          {
-            path: 'owners',
-            name: 'CommunityOwners',
-            component: () => import('@/views/community/owner/index.vue'),
-            meta: { title: '业主管理', icon: 'UserFilled' }
-          },
-          {
-            path: 'parkings',
-            name: 'CommunityParkings',
-            component: () => import('@/views/community/parking/index.vue'),
-            meta: { title: '车位管理', icon: 'Van' }
-          }
+          { path: 'buildings', name: 'CommunityBuildings', component: () => import('@/views/community/building/index.vue'), meta: { title: '楼栋管理', icon: 'Building', permission: 'community:building:list' } },
+          { path: 'houses', name: 'CommunityHouses', component: () => import('@/views/community/house/index.vue'), meta: { title: '房屋管理', icon: 'House', permission: 'community:house:list' } },
+          { path: 'owners', name: 'CommunityOwners', component: () => import('@/views/community/owner/index.vue'), meta: { title: '业主管理', icon: 'UserFilled', permission: 'community:owner:list' } },
+          { path: 'parkings', name: 'CommunityParkings', component: () => import('@/views/community/parking/index.vue'), meta: { title: '车位管理', icon: 'Van', permission: 'community:parking:list' } }
         ]
       },
-      {
-        path: 'fee',
-        name: 'Fee',
-        meta: { title: '收费管理', icon: 'Money' },
+      { path: 'fee', name: 'Fee', meta: { title: '收费管理', icon: 'Money' },
         children: [
-          {
-            path: 'items',
-            name: 'FeeItems',
-            component: () => import('@/views/fee/item/index.vue'),
-            meta: { title: '收费项目', icon: 'List' }
-          },
-          {
-            path: 'notices',
-            name: 'FeeNotices',
-            component: () => import('@/views/fee/notice/index.vue'),
-            meta: { title: '收费通知', icon: 'Bell' }
-          },
-          {
-            path: 'records',
-            name: 'FeeRecords',
-            component: () => import('@/views/fee/record/index.vue'),
-            meta: { title: '收费记录', icon: 'Tickets' }
-          }
+          { path: 'items', name: 'FeeItems', component: () => import('@/views/fee/item/index.vue'), meta: { title: '收费项目', icon: 'List', permission: 'fee:item:list' } },
+          { path: 'notices', name: 'FeeNotices', component: () => import('@/views/fee/notice/index.vue'), meta: { title: '收费通知', icon: 'Bell', permission: 'fee:notice:list' } },
+          { path: 'records', name: 'FeeRecords', component: () => import('@/views/fee/record/index.vue'), meta: { title: '收费记录', icon: 'Tickets', permission: 'fee:record:list' } }
         ]
       },
-      {
-        path: 'equipment',
-        name: 'Equipment',
-        meta: { title: '设备管理', icon: 'Monitor' },
+      { path: 'equipment', name: 'Equipment', meta: { title: '设备管理', icon: 'Monitor' },
         children: [
-          {
-            path: 'categories',
-            name: 'EquipmentCategories',
-            component: () => import('@/views/equipment/category/index.vue'),
-            meta: { title: '设备分类', icon: 'Collection' }
-          },
-          {
-            path: 'equipments',
-            name: 'Equipments',
-            component: () => import('@/views/equipment/equipment/index.vue'),
-            meta: { title: '设备信息', icon: 'Cpu' }
-          },
-          {
-            path: 'maintenances',
-            name: 'EquipmentMaintenances',
-            component: () => import('@/views/equipment/maintenance/index.vue'),
-            meta: { title: '维保记录', icon: 'Tools' }
-          }
+          { path: 'categories', name: 'EquipmentCategories', component: () => import('@/views/equipment/category/index.vue'), meta: { title: '设备分类', icon: 'Collection', permission: 'equipment:category:list' } },
+          { path: 'equipments', name: 'Equipments', component: () => import('@/views/equipment/equipment/index.vue'), meta: { title: '设备信息', icon: 'Cpu', permission: 'equipment:list:list' } },
+          { path: 'maintenances', name: 'EquipmentMaintenances', component: () => import('@/views/equipment/maintenance/index.vue'), meta: { title: '维保记录', icon: 'Tools', permission: 'equipment:maintenance:list' } }
         ]
       },
-      {
-        path: 'repair',
-        name: 'Repair',
-        component: () => import('@/views/repair/index.vue'),
-        meta: { title: '报修管理', icon: 'Wrench' }
-      },
-      {
-        path: 'complaint',
-        name: 'Complaint',
-        component: () => import('@/views/complaint/index.vue'),
-        meta: { title: '投诉建议', icon: 'ChatLineSquare' }
-      },
-      {
-        path: 'announcement',
-        name: 'Announcement',
-        component: () => import('@/views/announcement/index.vue'),
-        meta: { title: '公告通知', icon: 'Notification' }
-      },
-      {
-        path: 'inspection',
-        name: 'Inspection',
-        meta: { title: '巡检管理', icon: 'Search' },
+      { path: 'repair', name: 'Repair', component: () => import('@/views/repair/index.vue'), meta: { title: '报修管理', icon: 'Wrench', permission: 'repair:record:list' } },
+      { path: 'complaint', name: 'Complaint', component: () => import('@/views/complaint/index.vue'), meta: { title: '投诉建议', icon: 'ChatLineSquare', permission: 'complaint:list:list' } },
+      { path: 'announcement', name: 'Announcement', component: () => import('@/views/announcement/index.vue'), meta: { title: '公告通知', icon: 'Notification', permission: 'announcement:list:list' } },
+      { path: 'inspection', name: 'Inspection', meta: { title: '巡检管理', icon: 'Search' },
         children: [
-          {
-            path: 'plans',
-            name: 'InspectionPlans',
-            component: () => import('@/views/inspection/plan/index.vue'),
-            meta: { title: '巡检计划', icon: 'Calendar' }
-          },
-          {
-            path: 'records',
-            name: 'InspectionRecords',
-            component: () => import('@/views/inspection/record/index.vue'),
-            meta: { title: '巡检记录', icon: 'Finished' }
-          }
+          { path: 'plans', name: 'InspectionPlans', component: () => import('@/views/inspection/plan/index.vue'), meta: { title: '巡检计划', icon: 'Calendar', permission: 'inspection:plan:list' } },
+          { path: 'records', name: 'InspectionRecords', component: () => import('@/views/inspection/record/index.vue'), meta: { title: '巡检记录', icon: 'Finished', permission: 'inspection:record:list' } }
         ]
       }
     ]
   },
-  {
-    path: '/403',
-    name: '403',
-    component: () => import('@/views/error/403.vue'),
-    meta: { title: '无权限' }
-  },
-  {
-    path: '/:pathMatch(.*)*',
-    name: '404',
-    component: () => import('@/views/error/404.vue'),
-    meta: { title: '页面不存在' }
-  }
+  { path: '/403', name: '403', component: () => import('@/views/error/403.vue'), meta: { title: '无权限' } },
+  { path: '/:pathMatch(.*)*', name: '404', component: () => import('@/views/error/404.vue'), meta: { title: '页面不存在' } }
 ]
 
-const router = createRouter({
-  history: createWebHistory(),
-  routes
-})
+const router = createRouter({ history: createWebHistory(), routes })
+
+const whiteList = ['/login', '/403', '/404']
 
 router.beforeEach((to, from, next) => {
   document.title = to.meta.title ? to.meta.title + ' - 物业管理系统' : '物业管理系统'
-  if (to.path === '/login') {
-    if (getToken()) {
-      next('/')
-    } else {
-      next()
-    }
-  } else {
-    if (!getToken()) {
-      next('/login')
-    } else {
-      next()
-    }
+  if (whiteList.includes(to.path)) {
+    if (to.path === '/login' && getToken()) { next('/'); return }
+    next(); return
   }
+  if (!getToken()) { next('/login?redirect=' + to.path); return }
+
+  const userStore = useUserStore()
+  const requiredPermission = to.meta.permission
+  if (requiredPermission && !userStore.hasPermission(requiredPermission)) {
+    next('/403'); return
+  }
+  next()
 })
 
 export default router

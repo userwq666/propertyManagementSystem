@@ -28,7 +28,7 @@
     <div class="table-container">
       <div class="toolbar">
         <div class="toolbar-left">
-          <el-button type="primary" @click="handleGenerate">批量生成账单</el-button>
+          <el-button type="primary" @click="handleGenerate" v-permission="'fee:record:add'">批量生成账单</el-button>
         </div>
         <div class="toolbar-right">
           <el-button @click="fetchData">刷新</el-button>
@@ -57,7 +57,7 @@
         <el-table-column prop="createTime" label="创建时间" width="160" />
         <el-table-column label="操作" width="150" fixed="right">
           <template #default="{ row }">
-            <el-button v-if="row.status===0" type="success" size="small" @click="handlePay(row)">缴费</el-button>
+            <el-button v-if="row.status===0" type="success" size="small" @click="handlePay(row)" v-permission="'fee:record:edit'">缴费</el-button>
             <el-button type="primary" size="small" @click="handleDetail(row)">详情</el-button>
           </template>
         </el-table-column>

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div>
     <!-- 搜索表单 -->
     <el-form :inline="true" :model="searchForm" class="search-form">
@@ -15,7 +15,7 @@
     <div class="table-container">
       <div class="toolbar">
         <div class="toolbar-left">
-          <el-button type="primary" @click="handleAdd">新增分类</el-button>
+          <el-button type="primary" @click="handleAdd" v-permission="'equipment:category:add'">新增分类</el-button>
         </div>
         <div class="toolbar-right">
           <el-button @click="fetchData">刷新</el-button>
@@ -29,8 +29,8 @@
         <el-table-column prop="createTime" label="创建时间" width="180" />
         <el-table-column label="操作" width="180" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
-            <el-button type="danger" size="small" @click="handleDelete(row)">删除</el-button>
+            <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'equipment:category:edit'">编辑</el-button>
+            <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'equipment:category:delete'">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

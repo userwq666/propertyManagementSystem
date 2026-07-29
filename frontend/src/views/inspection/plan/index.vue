@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div>
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="计划名称">
@@ -17,7 +17,7 @@
 
     <div class="table-container">
       <div class="toolbar">
-        <div class="toolbar-left"><el-button type="primary" @click="handleAdd">新增计划</el-button></div>
+        <div class="toolbar-left"><el-button type="primary" @click="handleAdd" v-permission="'inspection:plan:add'">新增计划</el-button></div>
         <div class="toolbar-right"><el-button @click="fetchData">刷新</el-button></div>
       </div>
       <el-table :data="tableData" border stripe v-loading="loading">
@@ -36,9 +36,9 @@
         <el-table-column prop="createTime" label="创建时间" width="160" />
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
-            <el-button type="danger" size="small" @click="handleDelete(row)">删除</el-button>
-            <el-button size="small" @click="handleStatus(row)">{{ row.status==='ENABLED'?'停用':'启用' }}</el-button>
+            <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'inspection:plan:edit'">编辑</el-button>
+            <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'inspection:plan:delete'">删除</el-button>
+            <el-button size="small" @click="handleStatus(row)" v-permission="'inspection:plan:edit'">{{ row.status==='ENABLED'?'停用':'启用' }}</el-button>
           </template>
         </el-table-column>
       </el-table>

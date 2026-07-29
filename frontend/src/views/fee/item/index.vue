@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div>
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="项目名称">
@@ -19,7 +19,7 @@
     <div class="table-container">
       <div class="toolbar">
         <div class="toolbar-left">
-          <el-button type="primary" @click="handleAdd">新增项目</el-button>
+          <el-button type="primary" @click="handleAdd" v-permission="'fee:item:add'">新增项目</el-button>
         </div>
         <div class="toolbar-right">
           <el-button @click="fetchData">刷新</el-button>
@@ -45,13 +45,13 @@
         <el-table-column prop="createTime" label="创建时间" width="180" />
         <el-table-column label="操作" width="280" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
-            <el-button type="danger" size="small" @click="handleDelete(row)">删除</el-button>
+            <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'fee:item:edit'">编辑</el-button>
+            <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'fee:item:delete'">删除</el-button>
             <el-button
               :type="row.status === 0 ? 'warning' : 'success'"
               size="small"
               @click="handleToggleStatus(row)"
-            >{{ row.status === 0 ? '停用' : '启用' }}</el-button>
+             v-permission="'fee:item:edit'">{{ row.status === 0 ? '停用' : '启用' }}</el-button>
           </template>
         </el-table-column>
       </el-table>

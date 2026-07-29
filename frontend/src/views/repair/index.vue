@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div>
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="业主">
@@ -19,7 +19,7 @@
 
     <div class="table-container">
       <div class="toolbar">
-        <div class="toolbar-left"><el-button type="primary" @click="handleAdd">新增报修</el-button></div>
+        <div class="toolbar-left"><el-button type="primary" @click="handleAdd" v-permission="'repair:record:add'">新增报修</el-button></div>
         <div class="toolbar-right"><el-button @click="fetchData">刷新</el-button></div>
       </div>
       <el-table :data="tableData" border stripe v-loading="loading">
@@ -40,10 +40,10 @@
         <el-table-column prop="createTime" label="报修时间" width="180" />
         <el-table-column label="操作" width="240" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
-            <el-button type="danger" size="small" @click="handleDelete(row)">删除</el-button>
-            <el-button v-if="row.status===0" type="warning" size="small" @click="handleStatus(row)">处理</el-button>
-            <el-button v-if="row.status===2 && !row.score" type="success" size="small" @click="handleRating(row)">评价</el-button>
+            <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'repair:record:edit'">编辑</el-button>
+            <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'repair:record:delete'">删除</el-button>
+            <el-button v-if="row.status===0" type="warning" size="small" @click="handleStatus(row)" v-permission="'repair:record:edit'">处理</el-button>
+            <el-button v-if="row.status===2 && !row.score" type="success" size="small" @click="handleRating(row)" v-permission="'repair:record:edit'">评价</el-button>
           </template>
         </el-table-column>
       </el-table>

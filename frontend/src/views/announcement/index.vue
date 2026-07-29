@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div>
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="标题">
@@ -17,7 +17,7 @@
 
     <div class="table-container">
       <div class="toolbar">
-        <div class="toolbar-left"><el-button type="primary" @click="handleAdd">新增公告</el-button></div>
+        <div class="toolbar-left"><el-button type="primary" @click="handleAdd" v-permission="'announcement:list:add'">新增公告</el-button></div>
         <div class="toolbar-right"><el-button @click="fetchData">刷新</el-button></div>
       </div>
       <el-table :data="tableData" border stripe v-loading="loading">
@@ -42,11 +42,11 @@
         <el-table-column prop="viewCount" label="浏览量" width="80" />
         <el-table-column label="操作" width="280" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
-            <el-button type="danger" size="small" @click="handleDelete(row)">删除</el-button>
-            <el-button type="success" size="small" @click="handlePublish(row)" v-if="row.publishStatus!=='PUBLISHED'">发布</el-button>
-            <el-button type="warning" size="small" @click="handleRevoke(row)" v-if="row.publishStatus==='PUBLISHED'">撤回</el-button>
-            <el-button size="small" @click="handleTop(row)">{{ row.isTop ? '取消置顶' : '置顶' }}</el-button>
+            <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'announcement:list:edit'">编辑</el-button>
+            <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'announcement:list:delete'">删除</el-button>
+            <el-button type="success" size="small" @click="handlePublish(row)" v-if="row.publishStatus!=='PUBLISHED'" v-permission="'announcement:list:edit'">发布</el-button>
+            <el-button type="warning" size="small" @click="handleRevoke(row)" v-if="row.publishStatus==='PUBLISHED'" v-permission="'announcement:list:edit'">撤回</el-button>
+            <el-button size="small" @click="handleTop(row)" v-permission="'announcement:list:edit'">{{ row.isTop ? '取消置顶' : '置顶' }}</el-button>
           </template>
         </el-table-column>
       </el-table>

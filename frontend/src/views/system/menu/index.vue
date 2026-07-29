@@ -3,7 +3,7 @@
     <div class="table-container">
       <div class="toolbar">
         <div class="toolbar-left">
-          <el-button type="primary" @click="handleAdd(null)">新增根菜单</el-button>
+          <el-button type="primary" @click="handleAdd(null)" v-permission="'system:menu:add'">新增根菜单</el-button>
         </div>
         <div class="toolbar-right">
           <el-button @click="fetchData">刷新</el-button>
@@ -27,11 +27,11 @@
             <el-tag :type="row.status === 'ENABLED' ? 'success' : 'danger'">{{ row.status === 'ENABLED' ? '启用' : '禁用' }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="240" fixed="right">
           <template #default="{ row }">
-            <el-button v-if="row.menuType !== 'BUTTON'" type="primary" size="small" @click="handleAdd(row)">新增子菜单</el-button>
-            <el-button size="small" @click="handleEdit(row)">编辑</el-button>
-            <el-button type="danger" size="small" @click="handleDelete(row)">删除</el-button>
+            <el-button v-if="row.menuType !== 'BUTTON'" type="primary" size="small" @click="handleAdd(row)" v-permission="'system:menu:add'">新增子菜单</el-button>
+            <el-button size="small" @click="handleEdit(row)" v-permission="'system:menu:edit'">编辑</el-button>
+            <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'system:menu:delete'">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

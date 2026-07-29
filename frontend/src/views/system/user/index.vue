@@ -19,7 +19,7 @@
     <div class="table-container">
       <div class="toolbar">
         <div class="toolbar-left">
-          <el-button type="primary" @click="handleAdd">新增用户</el-button>
+          <el-button type="primary" @click="handleAdd" v-permission="'system:user:add'">新增用户</el-button>
         </div>
         <div class="toolbar-right">
           <el-button @click="fetchData">刷新</el-button>
@@ -43,10 +43,10 @@
         <el-table-column prop="createTime" label="创建时间" width="180" />
         <el-table-column label="操作" width="260" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
-            <el-button type="danger" size="small" @click="handleDelete(row)">删除</el-button>
-            <el-button type="warning" size="small" @click="handleResetPassword(row)">重置密码</el-button>
-            <el-button size="small" @click="handleToggleStatus(row)">
+            <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'system:user:edit'">编辑</el-button>
+            <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'system:user:delete'">删除</el-button>
+            <el-button type="warning" size="small" @click="handleResetPassword(row)" v-permission="'system:user:edit'">重置密码</el-button>
+            <el-button size="small" @click="handleToggleStatus(row)" v-permission="'system:user:edit'">
               {{ row.status === 'ENABLED' ? '禁用' : '启用' }}
             </el-button>
           </template>

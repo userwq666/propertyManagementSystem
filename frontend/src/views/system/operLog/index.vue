@@ -16,7 +16,7 @@
     <div class="table-container">
       <div class="toolbar">
         <div class="toolbar-left">
-          <el-button type="danger" @click="handleClean">清理日志</el-button>
+          <el-button type="danger" @click="handleClean" v-permission="'system:operLog:delete'">清理日志</el-button>
         </div>
         <div class="toolbar-right">
           <el-button @click="fetchData">刷新</el-button>
@@ -34,7 +34,7 @@
         <el-table-column label="操作" width="150" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleDetail(row)">详情</el-button>
-            <el-button type="danger" size="small" @click="handleDelete(row)">删除</el-button>
+            <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'system:operLog:delete'">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
