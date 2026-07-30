@@ -63,8 +63,8 @@
           <el-col :span="12"><el-form-item label="开始日期"><el-date-picker v-model="form.startDate" type="date" value-format="YYYY-MM-DD" style="width:100%" /></el-form-item></el-col>
           <el-col :span="12"><el-form-item label="结束日期"><el-date-picker v-model="form.endDate" type="date" value-format="YYYY-MM-DD" style="width:100%" /></el-form-item></el-col>
         </el-row>
-        <el-form-item label="关联设备"><el-select v-model="form.equipmentIds" multiple filterable placeholder="请选择"><el-option v-for="e in equipments" :key="e.id" :label="e.equipmentName" :value="e.id" /></el-select></el-form-item>
-        <el-form-item label="巡检人员"><el-select v-model="form.inspectorIds" multiple filterable placeholder="请选择"><el-option v-for="u in users" :key="u.id" :label="u.realName" :value="u.id" /></el-select></el-form-item>
+        <el-form-item label="关联设备"><el-select v-model="form.equipmentIds" multiple filterable placeholder="请选择"><el-option v-for="e in equipments.filter(i => i.id != null)" :key="e.id" :label="e.equipmentName" :value="e.id" /></el-select></el-form-item>
+        <el-form-item label="巡检人员"><el-select v-model="form.inspectorIds" multiple filterable placeholder="请选择"><el-option v-for="u in users.filter(i => i.id != null)" :key="u.id" :label="u.realName" :value="u.id" /></el-select></el-form-item>
         <el-form-item label="备注"><el-input v-model="form.remark" type="textarea" :rows="2" /></el-form-item>
       </el-form>
       <template #footer><div class="dialog-footer"><el-button @click="dialogVisible=false">取消</el-button><el-button type="primary" @click="handleSubmit">确定</el-button></div></template>

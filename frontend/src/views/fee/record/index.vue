@@ -3,12 +3,12 @@
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="业主">
         <el-select v-model="searchForm.ownerId" placeholder="请选择业主" clearable style="width:180px">
-          <el-option v-for="o in ownerList" :key="o.id" :label="o.name" :value="o.id" />
+          <el-option v-for="o in ownerList.filter(i => i.id != null)" :key="o.id" :label="o.name" :value="o.id" />
         </el-select>
       </el-form-item>
       <el-form-item label="房屋">
         <el-select v-model="searchForm.houseId" placeholder="请选择房屋" clearable style="width:180px">
-          <el-option v-for="h in houseList" :key="h.id" :label="h.roomNo" :value="h.id" />
+          <el-option v-for="h in houseList.filter(i => i.id != null)" :key="h.id" :label="h.roomNo" :value="h.id" />
         </el-select>
       </el-form-item>
       <el-form-item label="状态">

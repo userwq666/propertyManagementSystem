@@ -3,7 +3,7 @@
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="业主">
         <el-select v-model="searchForm.ownerId" placeholder="请选择" clearable filterable>
-          <el-option v-for="o in owners" :key="o.id" :label="o.name" :value="o.id" />
+          <el-option v-for="o in owners.filter(i => i.id != null)" :key="o.id" :label="o.name" :value="o.id" />
         </el-select>
       </el-form-item>
       <el-form-item label="类型">
@@ -61,7 +61,7 @@
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <el-form-item label="业主" prop="ownerId">
           <el-select v-model="form.ownerId" placeholder="请选择" filterable>
-            <el-option v-for="o in owners" :key="o.id" :label="o.name" :value="o.id" />
+            <el-option v-for="o in owners.filter(i => i.id != null)" :key="o.id" :label="o.name" :value="o.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="类型" prop="type">

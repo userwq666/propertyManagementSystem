@@ -3,7 +3,7 @@
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="设备">
         <el-select v-model="searchForm.equipmentId" placeholder="请选择" clearable filterable>
-          <el-option v-for="e in equipments" :key="e.id" :label="e.equipmentName" :value="e.id" />
+          <el-option v-for="e in equipments.filter(i => i.id != null)" :key="e.id" :label="e.equipmentName" :value="e.id" />
         </el-select>
       </el-form-item>
       <el-form-item label="维保状态">
@@ -58,7 +58,7 @@
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <el-form-item label="设备" prop="equipmentId">
           <el-select v-model="form.equipmentId" placeholder="请选择" filterable>
-            <el-option v-for="e in equipments" :key="e.id" :label="e.equipmentName" :value="e.id" />
+            <el-option v-for="e in equipments.filter(i => i.id != null)" :key="e.id" :label="e.equipmentName" :value="e.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="维保类型" prop="maintenanceType">

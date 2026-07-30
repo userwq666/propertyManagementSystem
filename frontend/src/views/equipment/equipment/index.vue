@@ -3,7 +3,7 @@
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="设备分类">
         <el-select v-model="searchForm.categoryId" placeholder="请选择" clearable>
-          <el-option v-for="c in categories" :key="c.id" :label="c.categoryName" :value="c.id" />
+          <el-option v-for="c in categories.filter(i => i.id != null)" :key="c.id" :label="c.categoryName" :value="c.id" />
         </el-select>
       </el-form-item>
       <el-form-item label="设备状态">
@@ -63,7 +63,7 @@
         </el-form-item>
         <el-form-item label="设备分类" prop="categoryId">
           <el-select v-model="form.categoryId" placeholder="请选择">
-            <el-option v-for="c in categories" :key="c.id" :label="c.categoryName" :value="c.id" />
+            <el-option v-for="c in categories.filter(i => i.id != null)" :key="c.id" :label="c.categoryName" :value="c.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="型号" prop="model">
@@ -77,7 +77,7 @@
         </el-form-item>
         <el-form-item label="所属楼栋">
           <el-select v-model="form.buildingId" placeholder="请选择" clearable>
-            <el-option v-for="b in buildings" :key="b.id" :label="b.buildingNo" :value="b.id" />
+            <el-option v-for="b in buildings.filter(i => i.id != null)" :key="b.id" :label="b.buildingNo" :value="b.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="安装日期">

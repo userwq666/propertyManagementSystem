@@ -87,7 +87,7 @@
         </el-form-item>
         <el-form-item label="角色">
           <el-select v-model="form.roleIds" multiple placeholder="请选择角色">
-            <el-option v-for="r in roleList" :key="r.id" :label="r.roleName" :value="r.id" />
+            <el-option v-for="r in roleList.filter(i => i.id != null)" :key="r.id" :label="r.roleName" :value="r.id" />
           </el-select>
         </el-form-item>
       </el-form>

@@ -3,7 +3,7 @@
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="楼栋">
         <el-select v-model="searchForm.buildingId" placeholder="请选择楼栋" clearable style="width: 180px">
-          <el-option v-for="b in buildingList" :key="b.id" :label="b.buildingNo" :value="b.id" />
+          <el-option v-for="b in buildingList.filter(i => i.id != null)" :key="b.id" :label="b.buildingNo" :value="b.id" />
         </el-select>
       </el-form-item>
       <el-form-item label="房屋状态">
@@ -67,7 +67,7 @@
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <el-form-item label="所属楼栋" prop="buildingId">
           <el-select v-model="form.buildingId" placeholder="请选择楼栋" style="width: 100%">
-            <el-option v-for="b in buildingList" :key="b.id" :label="b.buildingNo" :value="b.id" />
+            <el-option v-for="b in buildingList.filter(i => i.id != null)" :key="b.id" :label="b.buildingNo" :value="b.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="房间号" prop="roomNo">
@@ -89,7 +89,7 @@
         </el-form-item>
         <el-form-item label="业主" prop="ownerId">
           <el-select v-model="form.ownerId" placeholder="请选择业主" clearable style="width: 100%">
-            <el-option v-for="o in ownerList" :key="o.id" :label="o.name" :value="o.id" />
+            <el-option v-for="o in ownerList.filter(i => i.id != null)" :key="o.id" :label="o.name" :value="o.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="备注" prop="remark">

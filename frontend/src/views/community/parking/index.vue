@@ -81,7 +81,7 @@
         </el-form-item>
         <el-form-item label="业主" prop="ownerId">
           <el-select v-model="form.ownerId" placeholder="请选择业主" clearable style="width: 100%">
-            <el-option v-for="o in ownerList" :key="o.id" :label="o.name" :value="o.id" />
+            <el-option v-for="o in ownerList.filter(i => i.id != null)" :key="o.id" :label="o.name" :value="o.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="租金" prop="rentPrice">
