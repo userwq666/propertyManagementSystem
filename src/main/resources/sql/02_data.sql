@@ -66,7 +66,7 @@ INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_typ
 (22, 19, '维保记录',   '/equipment/maintenance','equipment/maintenance/index','equipment:maintenance:list', 1, 3, 1),
 (23, 0,  '巡检管理',   '/inspection',         NULL,                          NULL,                      0, 7, 1),
 (24, 23, '巡检计划',   '/inspection/plan',    'inspection/plan/index',       'inspection:plan:list',    1, 1, 1),
-(25, 23, '巡检记录',   '/inspection/record',  'inspection/record/index',     'inspection:record:list',  1, 2, 1);
+(25, 23, '巡检记录',   '/inspection/record',  'inspection/record/index',     'inspection:record:list',  1, 2, 1),
 (26, 0,  '数据统计',   '/statistics',          NULL,                           NULL,                       0, 8, 1),
 (27, 26, '统计面板',   '/statistics/dashboard', 'statistics/index',             'statistics:overview:list',  1, 1, 1),
 (28, 0,  '公告通知',   '/announcement',         NULL,                           NULL,                       0, 9, 1),
