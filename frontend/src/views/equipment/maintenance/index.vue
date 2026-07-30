@@ -40,7 +40,7 @@
         <el-table-column prop="completeDate" label="完成日期" width="120" />
         <el-table-column prop="cost" label="费用" width="100" />
         <el-table-column prop="createTime" label="创建时间" width="180" />
-        <el-table-column label="操作" width="240" fixed="right">
+        <el-table-column label="操作" min-width="auto" style="white-space:nowrap" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'equipment:maintenance:edit'">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'equipment:maintenance:delete'">删除</el-button>

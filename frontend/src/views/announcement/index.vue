@@ -40,7 +40,7 @@
         <el-table-column prop="creatorName" label="发布人" width="100" />
         <el-table-column prop="publishTime" label="发布时间" width="180" />
         <el-table-column prop="viewCount" label="浏览量" width="80" />
-        <el-table-column label="操作" width="280" fixed="right">
+        <el-table-column label="操作" min-width="auto" style="white-space:nowrap" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'announcement:list:edit'">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'announcement:list:delete'">删除</el-button>

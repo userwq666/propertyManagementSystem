@@ -34,7 +34,7 @@
         <el-table-column prop="endDate" label="结束日期" width="110" />
         <el-table-column prop="creatorName" label="创建人" width="80" />
         <el-table-column prop="createTime" label="创建时间" width="160" />
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" min-width="auto" style="white-space:nowrap" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'inspection:plan:edit'">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'inspection:plan:delete'">删除</el-button>
