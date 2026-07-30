@@ -3,7 +3,7 @@
     <div class="table-container">
       <div class="toolbar">
         <div class="toolbar-left">
-          <el-button type="primary" @click="handleAdd(null)" v-permission="'system:menu:add'">新增根菜单</el-button>
+          <el-button type="primary" @click="handleAdd(null)" v-permission="'system:menu:add'">新增根菜�?/el-button>
         </div>
         <div class="toolbar-right">
           <el-button @click="fetchData">刷新</el-button>
@@ -22,14 +22,14 @@
           </template>
         </el-table-column>
         <el-table-column prop="sort" label="排序" width="80" />
-        <el-table-column label="状态" width="80">
+        <el-table-column label="状�? width="80">
           <template #default="{ row }">
             <el-tag :type="row.status === 1 ? 'success' : 'danger'">{{ row.status === 1 ? '启用' : '禁用' }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" min-width="auto" style="white-space:nowrap" fixed="right">
+        <el-table-column label="操作" class-name="action-column" fixed="right">
           <template #default="{ row }">
-            <el-button v-if="row.menuType !== 2" type="primary" size="small" @click="handleAdd(row)" v-permission="'system:menu:add'">新增子菜单</el-button>
+            <el-button v-if="row.menuType !== 2" type="primary" size="small" @click="handleAdd(row)" v-permission="'system:menu:add'">新增子菜�?/el-button>
             <el-button size="small" @click="handleEdit(row)" v-permission="'system:menu:edit'">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'system:menu:delete'">删除</el-button>
           </template>
@@ -51,7 +51,7 @@
           />
         </el-form-item>
         <el-form-item label="菜单名称" prop="menuName">
-          <el-input v-model="form.menuName" placeholder="请输入菜单名称" />
+          <el-input v-model="form.menuName" placeholder="请输入菜单名�? />
         </el-form-item>
         <el-form-item label="菜单类型" prop="menuType">
           <el-select v-model="form.menuType" style="width:100%">
@@ -61,18 +61,18 @@
           </el-select>
         </el-form-item>
         <el-form-item v-if="form.menuType !== 2" label="路径">
-          <el-input v-model="form.path" placeholder="请输入路径" />
+          <el-input v-model="form.path" placeholder="请输入路�? />
         </el-form-item>
         <el-form-item v-if="form.menuType === 1" label="组件">
-          <el-input v-model="form.component" placeholder="请输入组件路径" />
+          <el-input v-model="form.component" placeholder="请输入组件路�? />
         </el-form-item>
         <el-form-item label="权限标识">
-          <el-input v-model="form.perms" placeholder="如: system:user:list" />
+          <el-input v-model="form.perms" placeholder="�? system:user:list" />
         </el-form-item>
         <el-form-item label="排序">
           <el-input-number v-model="form.sort" :min="0" style="width:100%" />
         </el-form-item>
-        <el-form-item label="状态">
+        <el-form-item label="状�?>
           <el-select v-model="form.status" style="width:100%">
             <el-option label="启用" :value="1" /><el-option label="禁用" :value="0" />
           </el-select>
@@ -106,7 +106,7 @@ const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑菜单' : '新增菜单')
 const rules = {
-  menuName: [{ required: true, message: '请输入菜单名称', trigger: 'blur' }],
+  menuName: [{ required: true, message: '请输入菜单名�?, trigger: 'blur' }],
   menuType: [{ required: true, message: '请选择菜单类型', trigger: 'change' }]
 }
 
@@ -117,7 +117,7 @@ async function fetchData() {
   try {
     const res = await getMenuTree()
     tableData.value = res.data
-    treeData.value = [{ id: 0, menuName: '根节点', children: Array.isArray(res.data) ? res.data : [] }]
+    treeData.value = [{ id: 0, menuName: '根节�?, children: Array.isArray(res.data) ? res.data : [] }]
   } finally { loading.value = false }
 }
 
@@ -163,7 +163,7 @@ async function handleSubmit() {
   } catch (e) { /* handled by interceptor */ } finally { submitting.value = false }
 }
 async function handleDelete(row) {
-  await ElMessageBox.confirm('确定删除该菜单吗？子菜单也会一并删除。', '提示', { type: 'warning' })
+  await ElMessageBox.confirm('确定删除该菜单吗？子菜单也会一并删除�?, '提示', { type: 'warning' })
   try { await deleteMenu(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) {}
 }
 </script>

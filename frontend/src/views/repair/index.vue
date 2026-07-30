@@ -6,9 +6,9 @@
           <el-option v-for="o in owners.filter(i => i.id != null)" :key="o.id" :label="o.name" :value="o.id" />
         </el-select>
       </el-form-item>
-      <el-form-item label="报修状态">
+      <el-form-item label="报修状�?>
         <el-select v-model="searchForm.status" placeholder="请选择" clearable>
-          <el-option label="待处理" :value="0" /><el-option label="处理中" :value="1" /><el-option label="已完成" :value="2" /><el-option label="已取消" :value="3" />
+          <el-option label="待处�? :value="0" /><el-option label="处理�? :value="1" /><el-option label="已完�? :value="2" /><el-option label="已取�? :value="3" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -30,15 +30,15 @@
           <template #default="{ row }">{{ typeText(row.repairType) }}</template>
         </el-table-column>
         <el-table-column prop="repairContent" label="报修描述" show-overflow-tooltip />
-        <el-table-column label="状态" width="100">
+        <el-table-column label="状�? width="100">
           <template #default="{ row }">
             <el-tag :type="statusTag(row.status)">{{ statusText(row.status) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="handlerName" label="处理人" width="100" />
+        <el-table-column prop="handlerName" label="处理�? width="100" />
         <el-table-column prop="score" label="评分" width="80" />
         <el-table-column prop="createTime" label="报修时间" width="180" />
-        <el-table-column label="操作" min-width="auto" style="white-space:nowrap" fixed="right">
+        <el-table-column label="操作" class-name="action-column" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'repair:record:edit'">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'repair:record:delete'">删除</el-button>
@@ -89,9 +89,9 @@
     <!-- 处理报修 -->
     <el-dialog title="处理报修" v-model="statusDialogVisible" width="500px">
       <el-form :model="statusForm" label-width="100px">
-        <el-form-item label="处理状态">
+        <el-form-item label="处理状�?>
           <el-select v-model="statusForm.status">
-            <el-option label="处理中" :value="1" /><el-option label="已完成" :value="2" /><el-option label="已取消" :value="3" />
+            <el-option label="处理�? :value="1" /><el-option label="已完�? :value="2" /><el-option label="已取�? :value="3" />
           </el-select>
         </el-form-item>
         <el-form-item label="处理内容">
@@ -153,15 +153,15 @@ const ratingForm = reactive({ score: 5, content: '' })
 const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑报修' : '新增报修')
-const typeText = (t) => ({ 0: '水电维修', 1: '门窗维修', 2: '管道疏通', 3: '电器维修', 4: '其他' }[t] || '')
+const typeText = (t) => ({ 0: '水电维修', 1: '门窗维修', 2: '管道疏�?, 3: '电器维修', 4: '其他' }[t] || '')
 const statusTag = (s) => ({ 0: 'info', 1: 'warning', 2: 'success', 3: 'danger' }[s] || 'info')
-const statusText = (s) => ({ 0: '待处理', 1: '处理中', 2: '已完成', 3: '已取消' }[s] || '')
+const statusText = (s) => ({ 0: '待处�?, 1: '处理�?, 2: '已完�?, 3: '已取�? }[s] || '')
 
 const rules = {
   ownerId: [{ required: true, message: '请选择业主', trigger: 'change' }],
   houseId: [{ required: true, message: '请选择房屋', trigger: 'change' }],
   repairType: [{ required: true, message: '请选择报修类型', trigger: 'change' }],
-  repairContent: [{ required: true, message: '请输入报修描述', trigger: 'blur' }]
+  repairContent: [{ required: true, message: '请输入报修描�?, trigger: 'blur' }]
 }
 
 onMounted(async () => {
@@ -201,7 +201,7 @@ async function handleSubmit() {
 }
 
 async function handleDelete(row) {
-  await ElMessageBox.confirm('确定删除该报修记录吗？', '提示', { type: 'warning' })
+  await ElMessageBox.confirm('确定删除该报修记录吗�?, '提示', { type: 'warning' })
   try { await deleteRepair(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) { /* handled */ }
 }
 

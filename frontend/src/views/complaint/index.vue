@@ -11,9 +11,9 @@
           <el-option label="投诉" :value="1" /><el-option label="建议" :value="2" />
         </el-select>
       </el-form-item>
-      <el-form-item label="状态">
+      <el-form-item label="状�?>
         <el-select v-model="searchForm.status" placeholder="请选择" clearable>
-          <el-option label="待处理" :value="0" /><el-option label="处理中" :value="1" /><el-option label="已完成" :value="2" />
+          <el-option label="待处�? :value="0" /><el-option label="处理�? :value="1" /><el-option label="已完�? :value="2" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -36,15 +36,15 @@
           </template>
         </el-table-column>
         <el-table-column prop="content" label="内容" show-overflow-tooltip />
-        <el-table-column label="状态" width="100">
+        <el-table-column label="状�? width="100">
           <template #default="{ row }">
             <el-tag :type="st(row.status)">{{statusText(row.status)}}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="handlerName" label="处理人" width="100" />
+        <el-table-column prop="handlerName" label="处理�? width="100" />
         <el-table-column prop="handleContent" label="处理内容" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" width="180" />
-        <el-table-column label="操作" min-width="auto" style="white-space:nowrap" fixed="right">
+        <el-table-column label="操作" class-name="action-column" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'complaint:list:edit'">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'complaint:list:delete'">删除</el-button>
@@ -86,9 +86,9 @@
 
     <el-dialog title="处理" v-model="statusDialogVisible" width="500px">
       <el-form :model="statusForm" label-width="100px">
-        <el-form-item label="处理状态">
+        <el-form-item label="处理状�?>
           <el-select v-model="statusForm.status">
-            <el-option label="处理中" :value="1" /><el-option label="已完成" :value="2" />
+            <el-option label="处理�? :value="1" /><el-option label="已完�? :value="2" />
           </el-select>
         </el-form-item>
         <el-form-item label="处理内容">
@@ -124,12 +124,12 @@ const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑' : '新增')
 const st = (s) => ({ 0: 'info', 1: 'warning', 2: 'success' }[s] || 'info')
-const statusText = (s) => ({ 0: '待处理', 1: '处理中', 2: '已完成' }[s] || '')
+const statusText = (s) => ({ 0: '待处�?, 1: '处理�?, 2: '已完�? }[s] || '')
 
 const rules = {
   ownerId: [{ required: true, message: '请选择业主', trigger: 'change' }],
   type: [{ required: true, message: '请选择类型', trigger: 'change' }],
-  content: [{ required: true, message: '请输入内容', trigger: 'blur' }]
+  content: [{ required: true, message: '请输入内�?, trigger: 'blur' }]
 }
 
 onMounted(async () => {

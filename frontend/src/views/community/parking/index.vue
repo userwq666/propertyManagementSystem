@@ -2,10 +2,10 @@
   <div>
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="车位编号">
-        <el-input v-model="searchForm.parkingNo" placeholder="请输入车位编号" clearable />
+        <el-input v-model="searchForm.parkingNo" placeholder="请输入车位编�? clearable />
       </el-form-item>
-      <el-form-item label="状态">
-        <el-select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 150px">
+      <el-form-item label="状�?>
+        <el-select v-model="searchForm.status" placeholder="请选择状�? clearable style="width: 150px">
           <el-option label="空闲" :value="0" />
           <el-option label="已租" :value="1" />
           <el-option label="已售" :value="2" />
@@ -34,17 +34,17 @@
             <el-tag :type="row.parkingType === 1 ? '' : 'warning'">{{ row.parkingType === 1 ? '地面' : '地下' }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="状态" width="80">
+        <el-table-column label="状�? width="80">
           <template #default="{ row }">
             <el-tag :type="statusType(row.status)">{{ statusLabel(row.status) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="ownerName" label="业主名" width="100" />
-        <el-table-column prop="rentPrice" label="租金(元)" width="100" />
-        <el-table-column prop="sellPrice" label="售价(元)" width="100" />
+        <el-table-column prop="ownerName" label="业主�? width="100" />
+        <el-table-column prop="rentPrice" label="租金(�?" width="100" />
+        <el-table-column prop="sellPrice" label="售价(�?" width="100" />
         <el-table-column prop="remark" label="备注" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" width="180" />
-        <el-table-column label="操作" min-width="auto" style="white-space:nowrap" fixed="right">
+        <el-table-column label="操作" class-name="action-column" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'community:parking:edit'">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'community:parking:delete'">删除</el-button>
@@ -67,13 +67,13 @@
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="500px" @close="resetForm">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <el-form-item label="车位编号" prop="parkingNo">
-          <el-input v-model="form.parkingNo" placeholder="请输入车位编号" />
+          <el-input v-model="form.parkingNo" placeholder="请输入车位编�? />
         </el-form-item>
         <el-form-item label="类型" prop="parkingType">
           <el-radio-group v-model="form.parkingType"><el-radio :value="1">地面</el-radio><el-radio :value="2">地下</el-radio></el-radio-group>
         </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-select v-model="form.status" placeholder="请选择状态" style="width: 100%">
+        <el-form-item label="状�? prop="status">
+          <el-select v-model="form.status" placeholder="请选择状�? style="width: 100%">
             <el-option label="空闲" :value="0" />
             <el-option label="已租" :value="1" />
             <el-option label="已售" :value="2" />
@@ -85,13 +85,13 @@
           </el-select>
         </el-form-item>
         <el-form-item label="租金" prop="rentPrice">
-          <el-input-number v-model="form.rentPrice" :min="0" :precision="2" placeholder="请输入租金" style="width: 100%" />
+          <el-input-number v-model="form.rentPrice" :min="0" :precision="2" placeholder="请输入租�? style="width: 100%" />
         </el-form-item>
         <el-form-item label="售价" prop="sellPrice">
-          <el-input-number v-model="form.sellPrice" :min="0" :precision="2" placeholder="请输入售价" style="width: 100%" />
+          <el-input-number v-model="form.sellPrice" :min="0" :precision="2" placeholder="请输入售�? style="width: 100%" />
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备注" />
+          <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备�? />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -126,10 +126,10 @@ const submitting = ref(false)
 const dialogTitle = computed(() => isEdit.value ? '编辑车位' : '新增车位')
 
 const rules = {
-  parkingNo: [{ required: true, message: '请输入车位编号', trigger: 'blur' }]
+  parkingNo: [{ required: true, message: '请输入车位编�?, trigger: 'blur' }]
 }
 
-const statusMap = { 0: '空闲', 1: '已租', 2: '已售', 3: '维修中' }
+const statusMap = { 0: '空闲', 1: '已租', 2: '已售', 3: '维修�? }
 const statusTypeMap = { 0: 'success', 1: 'warning', 2: 'info', 3: 'danger' }
 function statusLabel(s) { return statusMap[s] || '未知' }
 function statusType(s) { return statusTypeMap[s] || 'info' }

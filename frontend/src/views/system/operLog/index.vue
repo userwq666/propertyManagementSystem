@@ -1,11 +1,11 @@
 <template>
   <div>
     <el-form :inline="true" :model="searchForm" class="search-form">
-      <el-form-item label="用户名">
+      <el-form-item label="用户�?>
         <el-input v-model="searchForm.userName" placeholder="请输入用户名" clearable />
       </el-form-item>
       <el-form-item label="模块名称">
-        <el-input v-model="searchForm.operModule" placeholder="请输入模块名称" clearable />
+        <el-input v-model="searchForm.operModule" placeholder="请输入模块名�? clearable />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="handleSearch">搜索</el-button>
@@ -24,14 +24,14 @@
       </div>
       <el-table :data="tableData" border stripe v-loading="loading">
         <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="operName" label="操作人" width="100" />
+        <el-table-column prop="operName" label="操作�? width="100" />
         <el-table-column prop="module" label="模块名称" width="120" />
         <el-table-column prop="operType" label="操作类型" width="100" />
         <el-table-column prop="requestMethod" label="请求方式" width="100" />
         <el-table-column prop="requestUrl" label="请求URL" show-overflow-tooltip />
         <el-table-column prop="operIp" label="操作IP" width="140" />
         <el-table-column prop="operTime" label="操作时间" width="180" />
-        <el-table-column label="操作" min-width="auto" style="white-space:nowrap" fixed="right">
+        <el-table-column label="操作" class-name="action-column" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleDetail(row)">详情</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'system:operLog:delete'">删除</el-button>
@@ -79,7 +79,7 @@ function resetSearch() { searchForm.userName = ''; searchForm.operModule = ''; h
 
 function handleDetail(row) {
   const content = [
-    '操作人: ' + (row.operName || ''),
+    '操作�? ' + (row.operName || ''),
     '模块: ' + (row.module || ''),
     '操作类型: ' + (row.operType || ''),
     '请求方式: ' + (row.requestMethod || ''),
@@ -93,16 +93,16 @@ function handleDetail(row) {
 }
 
 async function handleDelete(row) {
-  await ElMessageBox.confirm('确定删除该日志吗？', '提示', { type: 'warning' })
+  await ElMessageBox.confirm('确定删除该日志吗�?, '提示', { type: 'warning' })
   try { await deleteOperLog(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) {}
 }
 
 async function handleClean() {
-  const { value: days } = await ElMessageBox.prompt('请输入保留天数', '清理日志', {
+  const { value: days } = await ElMessageBox.prompt('请输入保留天�?, '清理日志', {
     type: 'warning',
     inputValue: '30',
     inputPattern: /^\d+$/,
-    inputErrorMessage: '请输入有效天数'
+    inputErrorMessage: '请输入有效天�?
   })
   try {
     await cleanOperLog({ days })

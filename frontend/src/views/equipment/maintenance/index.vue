@@ -6,9 +6,9 @@
           <el-option v-for="e in equipments.filter(i => i.id != null)" :key="e.id" :label="e.equipmentName" :value="e.id" />
         </el-select>
       </el-form-item>
-      <el-form-item label="维保状态">
+      <el-form-item label="维保状�?>
         <el-select v-model="searchForm.status" placeholder="请选择" clearable>
-          <el-option label="待维保" :value="0" /><el-option label="维保中" :value="1" /><el-option label="已完成" :value="2" />
+          <el-option label="待维�? :value="0" /><el-option label="维保�? :value="1" /><el-option label="已完�? :value="2" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -30,21 +30,21 @@
         <el-table-column label="维保类型" width="100">
           <template #default="{ row }">{{ typeText(row.maintenanceType) }}</template>
         </el-table-column>
-        <el-table-column label="状态" width="100">
+        <el-table-column label="状�? width="100">
           <template #default="{ row }">
             <el-tag :type="statusTag(row.status)">{{ statusText(row.status) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="maintenancePersonnelId" label="维保人员ID" width="100" />
-        <el-table-column prop="startTime" label="开始时间" width="120" />
+        <el-table-column prop="startTime" label="开始时�? width="120" />
         <el-table-column prop="completeDate" label="完成日期" width="120" />
         <el-table-column prop="cost" label="费用" width="100" />
         <el-table-column prop="createTime" label="创建时间" width="180" />
-        <el-table-column label="操作" min-width="auto" style="white-space:nowrap" fixed="right">
+        <el-table-column label="操作" class-name="action-column" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'equipment:maintenance:edit'">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'equipment:maintenance:delete'">删除</el-button>
-            <el-button v-if="row.status===0" type="success" size="small" @click="handleStart(row)" v-permission="'equipment:maintenance:edit'">开始</el-button>
+            <el-button v-if="row.status===0" type="success" size="small" @click="handleStart(row)" v-permission="'equipment:maintenance:edit'">开�?/el-button>
             <el-button v-if="row.status===1" type="warning" size="small" @click="handleComplete(row)" v-permission="'equipment:maintenance:edit'">完成</el-button>
           </template>
         </el-table-column>
@@ -69,7 +69,7 @@
         <el-form-item label="维保人员ID" prop="maintenancePersonnelId">
           <el-input v-model="form.maintenancePersonnelId" />
         </el-form-item>
-        <el-form-item label="开始时间">
+        <el-form-item label="开始时�?>
           <el-date-picker v-model="form.startTime" type="date" value-format="YYYY-MM-DD HH:mm:ss" />
         </el-form-item>
         <el-form-item label="维保内容">
@@ -117,7 +117,7 @@ const submitting = ref(false)
 const dialogTitle = computed(() => isEdit.value ? '编辑维保记录' : '新增维保记录')
 const typeText = (t) => ({ 1: '日常巡检', 2: '定期保养', 3: '故障维修', 4: '更换配件', 5: '其他' }[t] || '')
 const statusTag = (s) => ({ 0: 'info', 1: 'warning', 2: 'success' }[s] || 'info')
-const statusText = (s) => ({ 0: '待维保', 1: '维保中', 2: '已完成' }[s] || '')
+const statusText = (s) => ({ 0: '待维�?, 1: '维保�?, 2: '已完�? }[s] || '')
 
 const rules = {
   equipmentId: [{ required: true, message: '请选择设备', trigger: 'change' }],
@@ -160,15 +160,15 @@ async function handleSubmit() {
 }
 
 async function handleDelete(row) {
-  await ElMessageBox.confirm('确定删除该记录吗？', '提示', { type: 'warning' })
+  await ElMessageBox.confirm('确定删除该记录吗�?, '提示', { type: 'warning' })
   try { await deleteMaintenance(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) { /* handled */ }
 }
 
 async function handleStart(row) {
-  try { await startMaintenance(row.id); ElMessage.success('已开始维保'); fetchData() } catch (e) { /* handled */ }
+  try { await startMaintenance(row.id); ElMessage.success('已开始维�?); fetchData() } catch (e) { /* handled */ }
 }
 
 async function handleComplete(row) {
-  try { await completeMaintenance(row.id); ElMessage.success('维保已完成'); fetchData() } catch (e) { /* handled */ } finally { submitting.value = false }
+  try { await completeMaintenance(row.id); ElMessage.success('维保已完�?); fetchData() } catch (e) { /* handled */ } finally { submitting.value = false }
 }
 </script>

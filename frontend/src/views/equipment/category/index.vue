@@ -3,7 +3,7 @@
     <!-- 搜索表单 -->
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="分类名称">
-        <el-input v-model="searchForm.categoryName" placeholder="请输入分类名称" clearable />
+        <el-input v-model="searchForm.categoryName" placeholder="请输入分类名�? clearable />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="handleSearch">搜索</el-button>
@@ -27,7 +27,7 @@
         <el-table-column prop="categoryName" label="分类名称" />
         <el-table-column prop="description" label="描述" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" width="180" />
-        <el-table-column label="操作" min-width="auto" style="white-space:nowrap" fixed="right">
+        <el-table-column label="操作" class-name="action-column" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'equipment:category:edit'">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'equipment:category:delete'">删除</el-button>
@@ -47,14 +47,14 @@
       />
     </div>
 
-    <!-- 新增/编辑对话框 -->
+    <!-- 新增/编辑对话�?-->
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="500px" @close="resetForm">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <el-form-item label="分类名称" prop="categoryName">
-          <el-input v-model="form.categoryName" placeholder="请输入分类名称" />
+          <el-input v-model="form.categoryName" placeholder="请输入分类名�? />
         </el-form-item>
         <el-form-item label="描述" prop="description">
-          <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入描述" />
+          <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入描�? />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -87,7 +87,7 @@ const submitting = ref(false)
 const dialogTitle = computed(() => isEdit.value ? '编辑分类' : '新增分类')
 
 const rules = {
-  categoryName: [{ required: true, message: '请输入分类名称', trigger: 'blur' }]
+  categoryName: [{ required: true, message: '请输入分类名�?, trigger: 'blur' }]
 }
 
 onMounted(() => fetchData())

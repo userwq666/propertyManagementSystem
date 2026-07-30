@@ -2,10 +2,10 @@
   <div>
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="姓名">
-        <el-input v-model="searchForm.name" placeholder="请输入姓名" clearable />
+        <el-input v-model="searchForm.name" placeholder="请输入姓�? clearable />
       </el-form-item>
       <el-form-item label="电话">
-        <el-input v-model="searchForm.phone" placeholder="请输入电话" clearable />
+        <el-input v-model="searchForm.phone" placeholder="请输入电�? clearable />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="handleSearch">搜索</el-button>
@@ -32,14 +32,14 @@
             <el-tag :type="row.ownerType === 0 ? '' : 'warning'">{{ row.ownerType === 0 ? '个人' : '单位' }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="状态" width="80">
+        <el-table-column label="状�? width="80">
           <template #default="{ row }">
             <el-tag :type="row.status === 0 ? 'success' : 'danger'">{{ row.status === 0 ? '正常' : '禁用' }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="remark" label="备注" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" width="180" />
-        <el-table-column label="操作" min-width="auto" style="white-space:nowrap" fixed="right">
+        <el-table-column label="操作" class-name="action-column" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'community:owner:edit'">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'community:owner:delete'">删除</el-button>
@@ -65,18 +65,18 @@
           <el-input-number v-model="form.userId" :min="0" placeholder="请输入用户ID" style="width: 100%" />
         </el-form-item>
         <el-form-item label="姓名" prop="name">
-          <el-input v-model="form.name" placeholder="请输入姓名" />
+          <el-input v-model="form.name" placeholder="请输入姓�? />
         </el-form-item>
         <el-form-item label="电话" prop="phone">
-          <el-input v-model="form.phone" placeholder="请输入电话" />
+          <el-input v-model="form.phone" placeholder="请输入电�? />
         </el-form-item>
         <el-form-item label="身份证号" prop="idCard">
-          <el-input v-model="form.idCard" placeholder="请输入身份证号" />
+          <el-input v-model="form.idCard" placeholder="请输入身份证�? />
         </el-form-item>
-        <el-form-item label="身份证正面" prop="idCardFront">
+        <el-form-item label="身份证正�? prop="idCardFront">
           <el-input v-model="form.idCardFront" placeholder="请输入身份证正面图片URL" />
         </el-form-item>
-        <el-form-item label="身份证反面" prop="idCardBack">
+        <el-form-item label="身份证反�? prop="idCardBack">
           <el-input v-model="form.idCardBack" placeholder="请输入身份证反面图片URL" />
         </el-form-item>
         <el-form-item label="业主类型" prop="ownerType">
@@ -85,11 +85,11 @@
             <el-radio :value="1">单位</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="状态" prop="status">
+        <el-form-item label="状�? prop="status">
           <el-radio-group v-model="form.status"><el-radio :value="1">正常</el-radio><el-radio :value="0">禁用</el-radio></el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备注" />
+          <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备�? />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -122,9 +122,9 @@ const submitting = ref(false)
 const dialogTitle = computed(() => isEdit.value ? '编辑业主' : '新增业主')
 
 const rules = {
-  name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
-  phone: [{ required: true, message: '请输入电话', trigger: 'blur' }],
-  idCard: [{ required: true, message: '请输入身份证号', trigger: 'blur' }]
+  name: [{ required: true, message: '请输入姓�?, trigger: 'blur' }],
+  phone: [{ required: true, message: '请输入电�?, trigger: 'blur' }],
+  idCard: [{ required: true, message: '请输入身份证�?, trigger: 'blur' }]
 }
 
 onMounted(() => fetchData())

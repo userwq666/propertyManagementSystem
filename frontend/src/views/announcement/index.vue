@@ -2,11 +2,11 @@
   <div>
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="标题">
-        <el-input v-model="searchForm.title" placeholder="请输入标题" clearable />
+        <el-input v-model="searchForm.title" placeholder="请输入标�? clearable />
       </el-form-item>
-      <el-form-item label="状态">
+      <el-form-item label="状�?>
         <el-select v-model="searchForm.status" placeholder="请选择" clearable>
-          <el-option label="草稿" :value="0" /><el-option label="已发布" :value="1" /><el-option label="已撤回" :value="2" />
+          <el-option label="草稿" :value="0" /><el-option label="已发�? :value="1" /><el-option label="已撤�? :value="2" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -32,15 +32,15 @@
             <span v-else>-</span>
           </template>
         </el-table-column>
-        <el-table-column label="状态" width="100">
+        <el-table-column label="状�? width="100">
           <template #default="{ row }">
             <el-tag :type="st(row.publishStatus)">{{ stText(row.publishStatus) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="creatorName" label="发布人" width="100" />
+        <el-table-column prop="creatorName" label="发布�? width="100" />
         <el-table-column prop="publishTime" label="发布时间" width="180" />
-        <el-table-column prop="viewCount" label="浏览量" width="80" />
-        <el-table-column label="操作" min-width="auto" style="white-space:nowrap" fixed="right">
+        <el-table-column prop="viewCount" label="浏览�? width="80" />
+        <el-table-column label="操作" class-name="action-column" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'announcement:list:edit'">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'announcement:list:delete'">删除</el-button>
@@ -66,7 +66,7 @@
         <el-form-item label="内容" prop="content">
           <el-input v-model="form.content" type="textarea" :rows="6" />
         </el-form-item>
-        <el-form-item label="封面图">
+        <el-form-item label="封面�?>
           <el-input v-model="form.coverImage" placeholder="封面图URL" />
         </el-form-item>
         <el-form-item label="置顶">
@@ -101,12 +101,12 @@ const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑公告' : '新增公告')
 const st = (s) => ({ 0: 'info', 1: 'success', 2: 'warning' }[s] || 'info')
-const stText = (s) => ({ 0: '草稿', 1: '已发布', 2: '已撤回' }[s] || '')
+const stText = (s) => ({ 0: '草稿', 1: '已发�?, 2: '已撤�? }[s] || '')
 
 const rules = {
-  title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
+  title: [{ required: true, message: '请输入标�?, trigger: 'blur' }],
   type: [{ required: true, message: '请选择类型', trigger: 'change' }],
-  content: [{ required: true, message: '请输入内容', trigger: 'blur' }]
+  content: [{ required: true, message: '请输入内�?, trigger: 'blur' }]
 }
 
 onMounted(() => fetchData())
@@ -135,7 +135,7 @@ async function handleSubmit() {
 }
 
 async function handleDelete(row) {
-  await ElMessageBox.confirm('确定删除该公告吗？', '提示', { type: 'warning' })
+  await ElMessageBox.confirm('确定删除该公告吗�?, '提示', { type: 'warning' })
   try { await deleteAnnouncement(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) { /* handled */ }
 }
 
@@ -144,7 +144,7 @@ async function handlePublish(row) {
 }
 
 async function handleRevoke(row) {
-  try { await updateAnnouncementStatus({ id: row.id, status: 2 }); ElMessage.success('已撤回'); fetchData() } catch (e) { /* handled */ }
+  try { await updateAnnouncementStatus({ id: row.id, status: 2 }); ElMessage.success('已撤�?); fetchData() } catch (e) { /* handled */ }
 }
 
 async function handleTop(row) {

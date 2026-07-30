@@ -15,7 +15,7 @@
         <el-table-column prop="roleKey" label="权限标识" min-width="120" />
         <el-table-column prop="remark" label="备注" min-width="150" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" width="180" />
-        <el-table-column label="操作" min-width="auto" style="white-space:nowrap" fixed="right">
+        <el-table-column label="操作" class-name="action-column" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'system:role:edit'">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'system:role:delete'">删除</el-button>
@@ -28,13 +28,13 @@
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="500px" @close="resetForm">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <el-form-item label="角色名称" prop="roleName">
-          <el-input v-model="form.roleName" placeholder="请输入角色名称" />
+          <el-input v-model="form.roleName" placeholder="请输入角色名�? />
         </el-form-item>
         <el-form-item label="权限标识" prop="roleKey">
-          <el-input v-model="form.roleKey" placeholder="请输入权限标识" />
+          <el-input v-model="form.roleKey" placeholder="请输入权限标�? />
         </el-form-item>
         <el-form-item label="备注">
-          <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备注" />
+          <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备�? />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -87,8 +87,8 @@ const submitting = ref(false)
 const dialogTitle = computed(() => isEdit.value ? '编辑角色' : '新增角色')
 
 const rules = {
-  roleName: [{ required: true, message: '请输入角色名称', trigger: 'blur' }],
-  roleKey: [{ required: true, message: '请输入权限标识', trigger: 'blur' }]
+  roleName: [{ required: true, message: '请输入角色名�?, trigger: 'blur' }],
+  roleKey: [{ required: true, message: '请输入权限标�?, trigger: 'blur' }]
 }
 
 onMounted(() => fetchData())
@@ -119,7 +119,7 @@ async function handleSubmit() {
 }
 
 async function handleDelete(row) {
-  await ElMessageBox.confirm('确定删除该角色吗？', '提示', { type: 'warning' })
+  await ElMessageBox.confirm('确定删除该角色吗�?, '提示', { type: 'warning' })
   try { await deleteRole(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) { /* handled */ }
 }
 
