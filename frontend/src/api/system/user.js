@@ -24,6 +24,6 @@ export function updateUserStatus(params) {
   return request({ url: '/system/user/status', method: 'put', params })
 }
 
-export function resetPassword(params) {
-  return request({ url: '/system/user/password', method: 'put', params })
+export function resetPassword(data) {
+  return request({ url: '/system/user/password', method: 'put', data })
 }

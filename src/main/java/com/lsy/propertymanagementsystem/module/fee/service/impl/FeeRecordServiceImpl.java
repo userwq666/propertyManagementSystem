@@ -73,6 +73,7 @@ public class FeeRecordServiceImpl implements FeeRecordService {
     public Page<FeeRecordVO> page(int pageNum, int pageSize, Long ownerId, Long houseId, Integer status) {
         LambdaQueryWrapper<FeeRecordDomain> wrapper = new LambdaQueryWrapper<>();
         if (ownerId != null) {
+                        // 安全控制：业主角色只能查看自己的欠费，管理员可查看指定业主
             wrapper.eq(FeeRecordDomain::getOwnerId, SecurityUtils.isOwner() ? SecurityUtils.getCurrentUserId() : ownerId);
         }
         if (houseId != null) {
@@ -112,6 +113,7 @@ public class FeeRecordServiceImpl implements FeeRecordService {
         LambdaQueryWrapper<FeeRecordDomain> wrapper = new LambdaQueryWrapper<>();
         wrapper.in(FeeRecordDomain::getStatus, FeeRecordStatus.UNPAID, FeeRecordStatus.OVERDUE);
         if (ownerId != null) {
+                        // 安全控制：业主角色只能查看自己的欠费，管理员可查看指定业主
             wrapper.eq(FeeRecordDomain::getOwnerId, SecurityUtils.isOwner() ? SecurityUtils.getCurrentUserId() : ownerId);
         }
         if (houseId != null) {

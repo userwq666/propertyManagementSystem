@@ -1,6 +1,7 @@
 package com.lsy.propertymanagementsystem.interceptor;
 
 import com.lsy.propertymanagementsystem.common.utils.JwtUtils;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,7 +25,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
 
-        // 登录接口不需要认证
         if (path.equals("/api/auth/login")) {
             filterChain.doFilter(request, response);
             return;
@@ -36,20 +37,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         if (token != null && JwtUtils.isTokenValid(token)) {
-            Long userId = JwtUtils.getUserId(token);
-            String username = JwtUtils.getUsername(token);
+            Claims claims = JwtUtils.parseClaims(token);
+            if (claims != null) {
+                Long userId = JwtUtils.getUserIdFromClaims(claims);
+                String username = JwtUtils.getUsernameFromClaims(claims);
 
-            request.setAttribute("userId", userId);
-            request.setAttribute("username", username);
-            request.setAttribute("userType", JwtUtils.getUserType(token));
+                request.setAttribute("userId", userId);
+                request.setAttribute("username", username);
+                request.setAttribute("userType", JwtUtils.getUserTypeFromClaims(claims));
 
-            List<String> permissions = JwtUtils.getPermissions(token);
-            List<SimpleGrantedAuthority> authorities = permissions.stream()
-                    .map(SimpleGrantedAuthority::new)
-                    .collect(Collectors.toList());
-            UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(username, null, authorities);
-            SecurityContextHolder.getContext().setAuthentication(authToken);
+                List<String> permissions = JwtUtils.getPermissionsFromClaims(claims);
+                List<SimpleGrantedAuthority> authorities = permissions.stream()
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(username, null, authorities);
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            }
         }
 
         filterChain.doFilter(request, response);

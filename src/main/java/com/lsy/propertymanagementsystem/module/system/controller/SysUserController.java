@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/system/user")
@@ -66,7 +67,9 @@ public class SysUserController {
 
     @PreAuthorize("hasAuthority('system:user:edit')")
     @PutMapping("/password")
-    public Result<Void> resetPassword(@RequestParam Long id, @RequestParam String newPassword) {
+    public Result<Void> resetPassword(@RequestBody Map<String, Object> body) {
+        Long id = Long.valueOf(body.get("id").toString());
+        String newPassword = (String) body.get("newPassword");
         userService.resetPassword(id, newPassword);
         return Result.success();
     }

@@ -30,7 +30,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
@@ -50,19 +50,20 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/auth/login").permitAll()
-                .anyRequest().authenticated()
+                .requestMatchers("/api/**").authenticated()
+                .anyRequest().permitAll()
             )
             .addFilterBefore(jwtAuthenticationFilter, org.springframework.security.web.access.intercept.AuthorizationFilter.class)
             .exceptionHandling(ex -> ex
                 .accessDeniedHandler((request, response, accessDeniedException) -> {
                     response.setContentType("application/json;charset=UTF-8");
                     response.setStatus(403);
-                    response.getWriter().write("{\"code\":403,\"msg\":\"閺夊啴妾烘稉宥堝喕閿涘矁顕懕鏃傞兇缁狅紕鎮婇崨姒?}");
+                    response.getWriter().write("{\"code\":403,\"msg\":\"没有访问权限\"}");
                 })
                 .authenticationEntryPoint((request, response, authException) -> {
                     response.setContentType("application/json;charset=UTF-8");
                     response.setStatus(401);
-                    response.getWriter().write("{\"code\":401,\"msg\":\"閺堫亞娅ヨぐ鏇熷灗token瀹歌尪绻冮張鐒?}");
+                    response.getWriter().write("{\"code\":401,\"msg\":\"未登录或token已过期\"}");
                 })
             );
         return http.build();

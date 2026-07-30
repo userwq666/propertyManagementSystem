@@ -2,6 +2,8 @@ package com.lsy.propertymanagementsystem.common.exception;
 
 import com.lsy.propertymanagementsystem.common.result.Result;
 import com.lsy.propertymanagementsystem.common.result.ResultCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,6 +13,8 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(BusinessException.class)
     public Result<?> handleBusinessException(BusinessException e) {
@@ -27,11 +31,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public Result<?> handleRuntimeException(RuntimeException e) {
-        return Result.error(ResultCode.ERROR.getCode(), e.getMessage());
+        log.error("Unexpected runtime exception", e);
+        return Result.error(ResultCode.ERROR);
     }
 
     @ExceptionHandler(Exception.class)
     public Result<?> handleException(Exception e) {
+        log.error("Unexpected exception", e);
         return Result.error(ResultCode.ERROR);
     }
 }

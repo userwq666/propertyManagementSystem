@@ -8,24 +8,21 @@ import com.lsy.propertymanagementsystem.common.utils.PasswordUtils;
 import com.lsy.propertymanagementsystem.module.system.dto.LoginDTO;
 import com.lsy.propertymanagementsystem.module.system.dto.LoginVO;
 import com.lsy.propertymanagementsystem.module.system.dto.UserVO;
-import com.lsy.propertymanagementsystem.module.system.domain.SysMenuDomain;
 import com.lsy.propertymanagementsystem.module.system.domain.SysRoleDomain;
-import com.lsy.propertymanagementsystem.module.system.domain.SysRoleMenuDomain;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserDomain;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserRoleDomain;
 import com.lsy.propertymanagementsystem.module.system.enums.UserStatus;
 import com.lsy.propertymanagementsystem.module.system.enums.UserType;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysMenuMapper;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysRoleMapper;
-import com.lsy.propertymanagementsystem.module.system.mapper.SysRoleMenuMapper;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserRoleMapper;
 import com.lsy.propertymanagementsystem.module.system.service.AuthService;
 import com.lsy.propertymanagementsystem.module.system.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,9 +36,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private SysRoleMapper roleMapper;
-
-    @Autowired
-    private SysRoleMenuMapper roleMenuMapper;
 
     @Autowired
     private SysMenuMapper menuMapper;
@@ -67,21 +61,7 @@ public class AuthServiceImpl implements AuthService {
         List<SysUserRoleDomain> userRoles = userRoleMapper.selectList(roleWrapper);
         List<Long> roleIds = userRoles.stream().map(SysUserRoleDomain::getRoleId).collect(Collectors.toList());
 
-        List<String> permissions = new ArrayList<>();
-        if (!roleIds.isEmpty()) {
-            LambdaQueryWrapper<SysRoleMenuDomain> rmWrapper = new LambdaQueryWrapper<>();
-            rmWrapper.in(SysRoleMenuDomain::getRoleId, roleIds);
-            List<SysRoleMenuDomain> roleMenus = roleMenuMapper.selectList(rmWrapper);
-            List<Long> menuIds = roleMenus.stream().map(SysRoleMenuDomain::getMenuId).distinct().collect(Collectors.toList());
-
-            if (!menuIds.isEmpty()) {
-                LambdaQueryWrapper<SysMenuDomain> menuWrapper = new LambdaQueryWrapper<>();
-                menuWrapper.in(SysMenuDomain::getId, menuIds);
-                menuWrapper.isNotNull(SysMenuDomain::getPerms);
-                menuWrapper.ne(SysMenuDomain::getPerms, "");
-                menuMapper.selectList(menuWrapper).forEach(menu -> permissions.add(menu.getPerms()));
-            }
-        }
+        List<String> permissions = menuMapper.selectPermsByUserId(user.getId());
 
         String token = JwtUtils.generateToken(user.getId(), user.getUsername(), user.getUserType().getValue(), permissions);
 
@@ -146,6 +126,9 @@ public class AuthServiceImpl implements AuthService {
         response.setRoleIds(roleIds);
 
         response.setRoles(getRoleNames(roleIds));
+
+                List<String> permissions = menuMapper.selectPermsByUserId(userId);
+        response.setPermissions(permissions);
 
         return response;
     }

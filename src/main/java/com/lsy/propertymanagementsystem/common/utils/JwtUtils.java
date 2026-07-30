@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class JwtUtils {
-    private static String secret = "propertyManagementSystemSecretKeyForJwtTokenGeneration";
+    private static String secret;
     private static long expiration = 24 * 60 * 60 * 1000;
 
     private static final ConcurrentHashMap<String, Long> tokenBlacklist = new ConcurrentHashMap<>();
@@ -29,6 +29,9 @@ public class JwtUtils {
     }
 
     private static SecretKey getSigningKey() {
+        if (secret == null || secret.isEmpty()) {
+            throw new IllegalStateException("JWT secret not configured");
+        }
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
@@ -66,13 +69,32 @@ public class JwtUtils {
                 .getBody();
     }
 
+    public static Claims parseClaims(String token) {
+        try {
+            return parseToken(token);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public static Long getUserId(String token) {
         Claims claims = parseToken(token);
         return claims.get("userId", Long.class);
     }
 
+    public static Long getUserIdFromClaims(Claims claims) {
+        Object value = claims.get("userId");
+        if (value instanceof Integer) return ((Integer) value).longValue();
+        if (value instanceof Long) return (Long) value;
+        return null;
+    }
+
     public static String getUsername(String token) {
         Claims claims = parseToken(token);
+        return claims.get("username", String.class);
+    }
+
+    public static String getUsernameFromClaims(Claims claims) {
         return claims.get("username", String.class);
     }
 
@@ -83,9 +105,21 @@ public class JwtUtils {
         return perms != null ? perms : Collections.emptyList();
     }
 
+    @SuppressWarnings("unchecked")
+    public static List<String> getPermissionsFromClaims(Claims claims) {
+        List<String> perms = claims.get("permissions", List.class);
+        return perms != null ? perms : Collections.emptyList();
+    }
+
     public static Integer getUserType(String token) {
         Claims claims = parseToken(token);
         return claims.get("userType", Integer.class);
+    }
+
+    public static Integer getUserTypeFromClaims(Claims claims) {
+        Object value = claims.get("userType");
+        if (value instanceof Integer) return (Integer) value;
+        return null;
     }
 
     public static boolean isTokenValid(String token) {

@@ -1,24 +1,24 @@
 ﻿export function getToken() {
-  return localStorage.getItem('token')
+  return sessionStorage.getItem('token')
 }
 
 export function setToken(token) {
-  localStorage.setItem('token', token)
+  sessionStorage.setItem('token', token)
 }
 
 export function removeToken() {
-  localStorage.removeItem('token')
+  sessionStorage.removeItem('token')
 }
 
 export function getUserInfo() {
-  const info = localStorage.getItem('userInfo')
+  const info = sessionStorage.getItem('userInfo')
   return info ? JSON.parse(info) : null
 }
 
 export function setUserInfo(info) {
-  localStorage.setItem('userInfo', JSON.stringify(info))
+  sessionStorage.setItem('userInfo', JSON.stringify(info))
 }
 
 export function removeUserInfo() {
-  localStorage.removeItem('userInfo')
+  sessionStorage.removeItem('userInfo')
 }

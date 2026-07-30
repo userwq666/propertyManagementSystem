@@ -19,4 +19,5 @@ public class UserVO {
     private LocalDateTime createTime;
     private List<Long> roleIds;
     private List<String> roles;
+    private List<String> permissions;
 }

@@ -1,442 +1,294 @@
 -- =====================================================================
--- 物业管理系统 - 初始数据插入脚本
--- 执行顺序：第 2 步（需先执行 01_schema.sql）
+-- 物业管理系统 - 初始数据
+-- 小区：翠湖花园 | 密码统一：123456
 -- =====================================================================
-
 USE property_management_system;
-
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- =====================================================================
--- 1. 系统基础数据
+-- 1. 系统用户
 -- =====================================================================
+INSERT INTO sys_user (id, username, password, real_name, phone, user_type, status) VALUES
+(1,  'root',      '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '系统管理员', '13800000001', 1, 1),
+(2,  'admin',     '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '王经理',     '13800000002', 2, 1),
+(3,  'zhaomin',   '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '赵敏',       '13800000003', 2, 1),
+(4,  'zhouwei',   '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '周伟',       '13900001101', 3, 1),
+(5,  'chenli',    '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '陈丽',       '13900001102', 3, 1),
+(6,  'suntao',    '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '孙涛',       '13900001103', 3, 1),
+(7,  'huangfang', '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '黄芳',       '13900001104', 3, 1),
+(8,  'wulei',     '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '吴磊',       '13900001105', 3, 1),
+(9,  'xuyan',     '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '许燕',       '13900001106', 3, 1),
+(10, 'mayun',     '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '马芸',       '13900001107', 3, 1),
+(11, 'zhenghua',  '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '郑华',       '13900001108', 3, 1),
+(12, 'liugong',   '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '刘工',       '13900001201', 4, 1),
+(13, 'chenjie',   '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '陈姐',       '13900001202', 4, 1),
+(14, 'zhouan',    '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '周安',       '13900001301', 5, 1);
 
--- 超级管理员（密码：123456 -> BCrypt加密）
-INSERT INTO sys_user (username, password, real_name, phone, user_type, status) VALUES
-('root', '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '超级管理员', '13800000000', 1, 1),
-('admin', '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '物业管理员', '13800000001', 2, 1),
-('owner001', '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '张三', '13800000002', 3, 1),
-('owner002', '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '李四', '13800000003', 3, 1),
-('owner003', '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '王五', '13800000004', 3, 1),
-('owner004', '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '赵六', '13800000005', 3, 1),
-('worker001', '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '维修工王师傅', '13800000010', 4, 1),
-('worker002', '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '保洁员李阿姨', '13800000011', 4, 1),
-('inspector001', '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '巡检员张工', '13800000012', 5, 1);
+-- =====================================================================
+-- 2. 角色
+-- =====================================================================
+INSERT INTO sys_role (id, role_name, role_key, remark) VALUES
+(1, '超级管理员', 'admin',          '系统最高权限'),
+(2, '物业管理员', 'property_admin',  '小区日常业务管理'),
+(3, '业主',       'owner',           '个人线上服务'),
+(4, '维修工',     'repair_worker',   '处理报修工单'),
+(5, '巡检员',     'inspector',       '设备巡检与记录');
 
--- 角色
-INSERT INTO sys_role (role_name, role_key, remark) VALUES
-('超级管理员', 'admin', '系统最高权限'),
-('物业管理员', 'property_admin', '小区日常业务处理'),
-('业主', 'owner', '个人线上服务'),
-('维修工', 'repair_worker', '报修处理人员'),
-('巡检员', 'inspector', '设备巡检人员');
-
--- 用户角色关联
+-- 用户-角色
 INSERT INTO sys_user_role (user_id, role_id) VALUES
-(1, 1),  -- root -> admin
-(2, 2),  -- admin -> property_admin
-(3, 3),  -- owner001 -> owner
-(4, 3),  -- owner002 -> owner
-(5, 3),  -- owner003 -> owner
-(6, 3),  -- owner004 -> owner
-(7, 4),  -- worker001 -> repair_worker
-(8, 4),  -- worker002 -> repair_worker
-(9, 5);  -- inspector001 -> inspector
-
--- 菜单
-INSERT INTO sys_menu (parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(0, '系统管理', '/system', NULL, NULL, 0, 1, 1),
-(1, '用户管理', '/system/user', 'system/user/index', 'system:user:list', 1, 1, 1),
-(1, '角色管理', '/system/role', 'system/role/index', 'system:role:list', 1, 2, 1),
-(1, '菜单管理', '/system/menu', 'system/menu/index', 'system:menu:list', 1, 3, 1),
-(1, '操作日志', '/system/operlog', 'system/operlog/index', 'system:operLog:list', 1, 4, 1),
-(0, '小区管理', '/community', NULL, NULL, 0, 2, 1),
-(6, '楼栋管理', '/community/building', 'community/building/index', 'community:building:list', 1, 1, 1),
-(6, '房屋管理', '/community/house', 'community/house/index', 'community:house:list', 1, 2, 1),
-(6, '业主管理', '/community/owner', 'community/owner/index', 'community:owner:list', 1, 3, 1),
-(6, '车位管理', '/community/parking', 'community/parking/index', 'community:parking:list', 1, 4, 1),
-(0, '收费管理', '/fee', NULL, NULL, 0, 3, 1),
-(11, '收费项目', '/fee/item', 'fee/item/index', 'fee:item:list', 1, 1, 1),
-(11, '收费记录', '/fee/record', 'fee/record/index', 'fee:record:list', 1, 2, 1),
-(11, '收费通知', '/fee/notice', 'fee/notice/index', 'fee:notice:list', 1, 3, 1),
-(0, '报修管理', '/repair', NULL, NULL, 0, 4, 1),
-(15, '报修工单', '/repair/record', 'repair/record/index', 'repair:record:list', 1, 1, 1),
-(0, '投诉建议', '/complaint', NULL, NULL, 0, 5, 1),
-(17, '投诉列表', '/complaint/list', 'complaint/list/index', 'complaint:list:list', 1, 1, 1),
-(0, '设备管理', '/equipment', NULL, NULL, 0, 6, 1),
-(19, '设备分类', '/equipment/category', 'equipment/category/index', 'equipment:category:list', 1, 1, 1),
-(19, '设备台账', '/equipment/list', 'equipment/list/index', 'equipment:list:list', 1, 2, 1),
-(19, '维护记录', '/equipment/maintenance', 'equipment/maintenance/index', 'equipment:maintenance:list', 1, 3, 1),
-(0, '巡检管理', '/inspection', NULL, NULL, 0, 7, 1),
-(23, '巡检计划', '/inspection/plan', 'inspection/plan/index', 'inspection:plan:list', 1, 1, 1),
-(23, '巡检记录', '/inspection/record', 'inspection/record/index', 'inspection:record:list', 1, 2, 1),
-(0, '公告管理', '/announcement', NULL, NULL, 0, 8, 1),
-(26, '公告列表', '/announcement/list', 'announcement/list/index', 'announcement:list:list', 1, 1, 1),
-(0, '统计分析', '/statistics', NULL, NULL, 0, 9, 1),
-(28, '数据概览', '/statistics/overview', 'statistics/overview/index', 'statistics:overview:list', 1, 1, 1),
-(28, '费用统计', '/statistics/fee', 'statistics/fee/index', 'statistics:fee:list', 1, 2, 1),
-(28, '报修统计', '/statistics/repair', 'statistics/repair/index', 'statistics:repair:list', 1, 3, 1),
-(28, '设备统计', '/statistics/equipment', 'statistics/equipment/index', 'statistics:equipment:list', 1, 4, 1),
-(28, '投诉统计', '/statistics/complaint', 'statistics/complaint/index', 'statistics:complaint:list', 1, 5, 1),
-(28, '巡检统计', '/statistics/inspection', 'statistics/inspection/index', 'statistics:inspection:list', 1, 6, 1),
-(1, '新增用户', '', '', 'system:user:add', 2, 1, 1),
-(1, '编辑用户', '', '', 'system:user:edit', 2, 2, 1),
-(1, '删除用户', '', '', 'system:user:delete', 2, 3, 1),
-(1, '新增角色', '', '', 'system:role:add', 2, 4, 1),
-(1, '编辑角色', '', '', 'system:role:edit', 2, 5, 1),
-(1, '删除角色', '', '', 'system:role:delete', 2, 6, 1),
-(1, '新增菜单', '', '', 'system:menu:add', 2, 7, 1),
-(1, '编辑菜单', '', '', 'system:menu:edit', 2, 8, 1),
-(1, '删除菜单', '', '', 'system:menu:delete', 2, 9, 1),
-(1, '删除日志', '', '', 'system:operLog:delete', 2, 10, 1),
-(6, '新增楼栋', '', '', 'community:building:add', 2, 11, 1),
-(6, '编辑楼栋', '', '', 'community:building:edit', 2, 11, 1),
-(6, '删除楼栋', '', '', 'community:building:delete', 2, 12, 1),
-(8, '新增房屋', '', '', 'community:house:add', 2, 13, 1),
-(8, '编辑房屋', '', '', 'community:house:edit', 2, 14, 1),
-(8, '删除房屋', '', '', 'community:house:delete', 2, 15, 1),
-(9, '新增业主', '', '', 'community:owner:add', 2, 16, 1),
-(9, '编辑业主', '', '', 'community:owner:edit', 2, 17, 1),
-(9, '删除业主', '', '', 'community:owner:delete', 2, 18, 1),
-(10, '新增车位', '', '', 'community:parking:add', 2, 19, 1),
-(10, '编辑车位', '', '', 'community:parking:edit', 2, 20, 1),
-(10, '删除车位', '', '', 'community:parking:delete', 2, 21, 1),
-(11, '新增收费项目', '', '', 'fee:item:add', 2, 22, 1),
-(11, '编辑收费项目', '', '', 'fee:item:edit', 2, 23, 1),
-(11, '删除收费项目', '', '', 'fee:item:delete', 2, 24, 1),
-(12, '生成账单', '', '', 'fee:record:add', 2, 25, 1),
-(12, '确认缴费', '', '', 'fee:record:edit', 2, 26, 1),
-(13, '新增通知', '', '', 'fee:notice:add', 2, 27, 1),
-(13, '编辑通知', '', '', 'fee:notice:edit', 2, 28, 1),
-(13, '删除通知', '', '', 'fee:notice:delete', 2, 29, 1),
-(15, '提交报修', '', '', 'repair:record:add', 2, 30, 1),
-(15, '处理报修', '', '', 'repair:record:edit', 2, 31, 1),
-(15, '删除报修', '', '', 'repair:record:delete', 2, 32, 1),
-(17, '提交投诉', '', '', 'complaint:list:add', 2, 33, 1),
-(17, '处理投诉', '', '', 'complaint:list:edit', 2, 34, 1),
-(17, '删除投诉', '', '', 'complaint:list:delete', 2, 35, 1),
-(19, '新增分类', '', '', 'equipment:category:add', 2, 36, 1),
-(19, '编辑分类', '', '', 'equipment:category:edit', 2, 37, 1),
-(19, '删除分类', '', '', 'equipment:category:delete', 2, 38, 1),
-(20, '新增设备', '', '', 'equipment:list:add', 2, 39, 1),
-(20, '编辑设备', '', '', 'equipment:list:edit', 2, 40, 1),
-(20, '删除设备', '', '', 'equipment:list:delete', 2, 41, 1),
-(21, '新增维保', '', '', 'equipment:maintenance:add', 2, 42, 1),
-(21, '编辑维保', '', '', 'equipment:maintenance:edit', 2, 43, 1),
-(21, '删除维保', '', '', 'equipment:maintenance:delete', 2, 44, 1),
-(23, '新增计划', '', '', 'inspection:plan:add', 2, 45, 1),
-(23, '编辑计划', '', '', 'inspection:plan:edit', 2, 46, 1),
-(23, '删除计划', '', '', 'inspection:plan:delete', 2, 47, 1),
-(24, '新增记录', '', '', 'inspection:record:add', 2, 48, 1),
-(24, '编辑记录', '', '', 'inspection:record:edit', 2, 49, 1),
-(24, '删除记录', '', '', 'inspection:record:delete', 2, 50, 1),
-(26, '新增公告', '', '', 'announcement:list:add', 2, 50, 1),
-(26, '编辑公告', '', '', 'announcement:list:edit', 2, 51, 1),
-(26, '删除公告', '', '', 'announcement:list:delete', 2, 52, 1);
-
-
--- 角色菜单关联（超级管理员拥有所有权限）
-INSERT INTO sys_role_menu (role_id, menu_id)
-SELECT 1, id FROM sys_menu;
-
--- 物业管理员权限
-INSERT INTO sys_role_menu (role_id, menu_id) VALUES
-(2, 6), (2, 7), (2, 8), (2, 9), (2, 10),
-(2, 11), (2, 12), (2, 13),
-(2, 15), (2, 16),
-(2, 17), (2, 18),
-(2, 19), (2, 20), (2, 21), (2, 22),
-(2, 23), (2, 24), (2, 25),
-(2, 26), (2, 27),
-(2, 28), (2, 29), (2, 30), (2, 31),
-    (2, 41),
-    (2, 42),
-    (2, 43),
-    (2, 44),
-    (2, 45),
-    (2, 46),
-    (2, 47),
-    (2, 48),
-    (2, 49),
-    (2, 50),
-    (2, 51),
-    (2, 52),
-    (2, 53),
-    (2, 54),
-    (2, 55),
-    (2, 56),
-    (2, 57),
-    (2, 58),
-    (2, 59),
-    (2, 60),
-    (2, 61),
-    (2, 62),
-    (2, 63),
-    (2, 64),
-    (2, 65),
-    (2, 66),
-    (2, 67),
-    (2, 68),
-    (2, 69),
-    (2, 70),
-    (2, 71),
-    (2, 72),
-    (2, 73),
-    (2, 74),
-    (2, 75),
-    (2, 76),
-    (2, 77),
-    (2, 78),
-    (2, 79),
-    (2, 80),
-    (2, 81),
-    (2, 82),
-    (2, 83),
-    (2, 84),
-    (2, 85),
-    (2, 86),
-    (2, 87),
-    (2, 88);
-
-
--- 业主权限
-INSERT INTO sys_role_menu (role_id, menu_id) VALUES
-(3, 16), (3, 18),
-    (3, 12),
-    (3, 61),
-    (3, 62),
-    (3, 64),
-    (3, 65);
-
+(1,1),(2,2),(3,2),(4,3),(5,3),(6,3),(7,3),(8,3),(9,3),(10,3),(11,3),(12,4),(13,4),(14,5);
 
 -- =====================================================================
--- 2. 小区基础数据
+-- 3. 菜单
 -- =====================================================================
+INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
+(1,  0,  '系统管理',   '/system',             NULL,                          NULL,                      0, 1, 1),
+(2,  1,  '用户管理',   '/system/user',        'system/user/index',           'system:user:list',        1, 1, 1),
+(3,  1,  '角色管理',   '/system/role',        'system/role/index',           'system:role:list',        1, 2, 1),
+(4,  1,  '菜单管理',   '/system/menu',        'system/menu/index',           'system:menu:list',        1, 3, 1),
+(5,  1,  '操作日志',   '/system/operlog',     'system/operlog/index',        'system:operLog:list',     1, 4, 1),
+(6,  0,  '小区管理',   '/community',          NULL,                          NULL,                      0, 2, 1),
+(7,  6,  '楼栋管理',   '/community/building', 'community/building/index',    'community:building:list', 1, 1, 1),
+(8,  6,  '房屋管理',   '/community/house',    'community/house/index',       'community:house:list',    1, 2, 1),
+(9,  6,  '业主管理',   '/community/owner',    'community/owner/index',       'community:owner:list',    1, 3, 1),
+(10, 6,  '车位管理',   '/community/parking',  'community/parking/index',     'community:parking:list',  1, 4, 1),
+(11, 0,  '收费管理',   '/fee',                NULL,                          NULL,                      0, 3, 1),
+(12, 11, '收费项目',   '/fee/item',           'fee/item/index',              'fee:item:list',           1, 1, 1),
+(13, 11, '收费记录',   '/fee/record',         'fee/record/index',            'fee:record:list',         1, 2, 1),
+(14, 11, '收费通知',   '/fee/notice',         'fee/notice/index',            'fee:notice:list',         1, 3, 1),
+(15, 0,  '报修管理',   '/repair',             NULL,                          NULL,                      0, 4, 1),
+(16, 15, '报修工单',   '/repair/record',      'repair/record/index',         'repair:record:list',      1, 1, 1),
+(17, 0,  '投诉建议',   '/complaint',          NULL,                          NULL,                      0, 5, 1),
+(18, 17, '投诉列表',   '/complaint/list',     'complaint/list/index',        'complaint:list:list',     1, 1, 1),
+(19, 0,  '设备管理',   '/equipment',          NULL,                          NULL,                      0, 6, 1),
+(20, 19, '设备分类',   '/equipment/category', 'equipment/category/index',    'equipment:category:list', 1, 1, 1),
+(21, 19, '设备台账',   '/equipment/list',     'equipment/list/index',        'equipment:list:list',     1, 2, 1),
+(22, 19, '维保记录',   '/equipment/maintenance','equipment/maintenance/index','equipment:maintenance:list', 1, 3, 1),
+(23, 0,  '巡检管理',   '/inspection',         NULL,                          NULL,                      0, 7, 1),
+(24, 23, '巡检计划',   '/inspection/plan',    'inspection/plan/index',       'inspection:plan:list',    1, 1, 1),
+(25, 23, '巡检记录',   '/inspection/record',  'inspection/record/index',     'inspection:record:list',  1, 2, 1);
+(26, 0,  '数据统计',   '/statistics',          NULL,                           NULL,                       0, 8, 1),
+(27, 26, '统计面板',   '/statistics/dashboard', 'statistics/index',             'statistics:overview:list',  1, 1, 1),
+(28, 0,  '公告通知',   '/announcement',         NULL,                           NULL,                       0, 9, 1),
+(29, 28, '公告列表',   '/announcement',         'announcement/index',           'announcement:list:list',    1, 1, 1);
 
--- 楼栋
-INSERT INTO community_building (building_no, floor_count, total_house, build_year, remark) VALUES
-('1栋', 18, 72, 2020, '一期交付'),
-('2栋', 18, 72, 2020, '一期交付'),
-('3栋', 24, 96, 2021, '二期交付'),
-('4栋', 24, 96, 2021, '二期交付'),
-('5栋', 32, 128, 2022, '三期交付');
-
--- 房屋
-INSERT INTO community_house (building_id, room_no, area, house_type, house_status) VALUES
-(1, '1-101', 89.50, '两室一厅', 0),
-(1, '1-102', 89.50, '两室一厅', 1),
-(1, '2-101', 120.00, '三室两厅', 1),
-(1, '2-102', 120.00, '三室两厅', 0),
-(1, '3-101', 89.50, '两室一厅', 1),
-(2, '1-101', 89.50, '两室一厅', 2),
-(2, '1-102', 89.50, '两室一厅', 1),
-(2, '2-101', 120.00, '三室两厅', 0),
-(3, '1-101', 135.00, '三室两厅', 1),
-(3, '1-102', 135.00, '三室两厅', 1),
-(4, '1-101', 135.00, '三室两厅', 0),
-(5, '1-101', 160.00, '四室两厅', 1);
-
--- 业主信息（关联用户）
-INSERT INTO community_owner (user_id, name, phone, id_card, owner_type, status) VALUES
-(3, '张三', '13800000002', '110101199001011234', 1, 1),
-(4, '李四', '13800000003', '110101198502022345', 1, 1),
-(5, '王五', '13800000004', '110101199203033456', 1, 1),
-(6, '赵六', '13800000005', '110101198804044567', 1, 1),
--- 家属/租客
-(NULL, '张小妹', '13800000006', '110101201001015678', 2, 1),
-(NULL, '李小明', '13800000007', '110101201202026789', 3, 1);
-
--- 更新房屋业主关联
-UPDATE community_house SET owner_id = 1 WHERE id = 2;  -- 1-102 -> 张三
-UPDATE community_house SET owner_id = 2 WHERE id = 3;  -- 2-101 -> 李四
-UPDATE community_house SET owner_id = 3 WHERE id = 5;  -- 3-101 -> 王五
-UPDATE community_house SET owner_id = 4 WHERE id = 7;  -- 2栋1-102 -> 赵六
-UPDATE community_house SET owner_id = 5 WHERE id = 10; -- 3栋1-102 -> 张小妹(家属)
-UPDATE community_house SET owner_id = 6 WHERE id = 12; -- 5栋1-101 -> 李小明(租客)
-
--- 车位
-INSERT INTO community_parking (parking_no, parking_type, status, owner_id, rent_price, sell_price) VALUES
-('A-001', 1, 1, 1, 300.00, 120000.00),
-('A-002', 1, 1, 2, 300.00, 120000.00),
-('A-003', 1, 0, NULL, 300.00, 120000.00),
-('B-001', 2, 1, 3, 200.00, 80000.00),
-('B-002', 2, 0, NULL, 200.00, 80000.00),
-('B-003', 2, 2, 4, 200.00, 80000.00);
+-- 角色-菜单
+INSERT INTO sys_role_menu (role_id, menu_id) SELECT 1, id FROM sys_menu;
+INSERT INTO sys_role_menu (role_id, menu_id) SELECT 2, id FROM sys_menu;
+-- 角色3（业主）：首页 + 收费 + 报修 + 投诉 + 公告
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3,26),(3,27),(3,11),(3,12),(3,13),(3,14),(3,15),(3,16),(3,17),(3,18),(3,28),(3,29);
+-- 角色4（维修工）：首页 + 报修 + 设备台账
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (4,26),(4,27),(4,15),(4,16),(4,19),(4,20),(4,21);
+-- 角色5（巡检员）：首页 + 设备 + 巡检
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (5,26),(5,27),(5,19),(5,20),(5,21),(5,22),(5,23),(5,24),(5,25);
 
 -- =====================================================================
--- 3. 收费数据
+-- 4. 楼栋
 -- =====================================================================
-
--- 收费项目
-INSERT INTO fee_item (item_name, item_type, unit_price, unit, cycle_type, description, status) VALUES
-('物业管理费', 1, 2.50, '元/㎡/月', 1, '住宅物业服务费', 1),
-('地上车位费', 2, 300.00, '元/月', 1, '地上固定车位租赁费', 1),
-('地下车位费', 2, 200.00, '元/月', 1, '地下固定车位租赁费', 1),
-('水费', 3, 4.50, '元/吨', 1, '民用水费', 1),
-('电费', 4, 0.60, '元/度', 1, '民用电费', 1),
-('燃气费', 5, 3.00, '元/立方', 1, '民用燃气费', 1),
-('暖气费', 6, 30.00, '元/㎡/采暖季', 4, '集中供暖费', 1);
-
--- 收费记录（模拟2024年1-6月数据）
-INSERT INTO fee_record (fee_no, owner_id, house_id, item_id, amount, paid_amount, discount_amount, status, pay_type, pay_time, start_date, end_date) VALUES
--- 物业费
-('FEE202401001', 1, 2, 1, 223.75, 223.75, 0, 2, 2, '2024-01-05 10:30:00', '2024-01-01', '2024-01-31'),
-('FEE202401002', 2, 3, 1, 300.00, 300.00, 0, 2, 3, '2024-01-06 14:20:00', '2024-01-01', '2024-01-31'),
-('FEE202401003', 3, 5, 1, 223.75, 0, 0, 3, NULL, NULL, '2024-01-01', '2024-01-31'),
-('FEE202401004', 4, 7, 1, 223.75, 223.75, 0, 2, 2, '2024-01-08 09:15:00', '2024-01-01', '2024-01-31'),
-('FEE202402001', 1, 2, 1, 223.75, 223.75, 0, 2, 2, '2024-02-05 11:00:00', '2024-02-01', '2024-02-29'),
-('FEE202402002', 2, 3, 1, 300.00, 300.00, 0, 2, 2, '2024-02-06 15:30:00', '2024-02-01', '2024-02-29'),
-('FEE202402003', 3, 5, 1, 223.75, 223.75, 0, 2, 3, '2024-02-10 10:00:00', '2024-02-01', '2024-02-29'),
-('FEE202402004', 4, 7, 1, 223.75, 0, 0, 3, NULL, NULL, '2024-02-01', '2024-02-29'),
--- 车位费
-('FEE202401010', 1, 2, 2, 300.00, 300.00, 0, 2, 2, '2024-01-05 10:30:00', '2024-01-01', '2024-01-31'),
-('FEE202401011', 2, 3, 2, 300.00, 300.00, 0, 2, 3, '2024-01-06 14:20:00', '2024-01-01', '2024-01-31'),
-('FEE202401012', 3, 10, 3, 200.00, 200.00, 0, 2, 2, '2024-01-08 09:15:00', '2024-01-01', '2024-01-31'),
-('FEE202401013', 4, 12, 3, 200.00, 0, 0, 3, NULL, NULL, '2024-01-01', '2024-01-31'),
--- 水电费
-('FEE202401020', 1, 2, 4, 45.00, 45.00, 0, 2, 2, '2024-01-10 16:00:00', '2024-01-01', '2024-01-31'),
-('FEE202401021', 1, 2, 5, 120.00, 120.00, 0, 2, 2, '2024-01-10 16:05:00', '2024-01-01', '2024-01-31'),
-('FEE202401022', 2, 3, 4, 58.50, 58.50, 0, 2, 3, '2024-01-11 10:00:00', '2024-01-01', '2024-01-31'),
-('FEE202401023', 2, 3, 5, 180.00, 180.00, 0, 2, 3, '2024-01-11 10:05:00', '2024-01-01', '2024-01-31');
-
--- 收费通知
-INSERT INTO fee_notice (notice_title, notice_content, notice_type, send_scope, send_status, send_time, creator_id) VALUES
-('2024年1月物业费缴费通知', '尊敬的业主，2024年1月物业费已生成，请及时缴费。', 1, 1, 1, '2024-01-01 09:00:00', 2),
-('2024年1月车位费缴费通知', '您的车位费已生成，请在月末前缴纳。', 1, 1, 1, '2024-01-01 09:00:00', 2),
-('关于调整物业服务收费标准的通知', '经业委会协商，拟调整物业费标准，详见附件。', 3, 1, 1, '2024-02-15 10:00:00', 1);
+INSERT INTO community_building (id, building_no, floor_count, total_house, build_year, remark) VALUES
+(1, 'A栋', 18, 72, 2021, '高层住宅，2梯4户'),
+(2, 'B栋', 18, 72, 2021, '高层住宅，2梯4户'),
+(3, 'C栋', 12, 48, 2022, '小高层，1梯4户'),
+(4, 'D栋', 6,  24, 2022, '花园洋房，1梯2户');
 
 -- =====================================================================
--- 4. 报修数据
+-- 5. 业主（owner_type: 1本人 2家属 3租客）
 -- =====================================================================
-
-INSERT INTO repair_record (repair_no, owner_id, house_id, repair_type, repair_content, repair_images, status, priority, handler_id, handle_content, handle_time, evaluate_score, evaluate_content, evaluate_time) VALUES
-('REP202401001', 1, 2, '水电', '厨房水龙头漏水，请尽快安排维修', 'repair/20240115/1.jpg', 3, 2, 7, '已更换水龙头密封圈，测试无漏水', '2024-01-15 16:30:00', 5, '师傅服务态度好，维修速度快', '2024-01-15 17:00:00'),
-('REP202401002', 2, 3, '门窗', '卧室窗户关不严，有缝隙漏风', 'repair/20240116/1.jpg,repair/20240116/2.jpg', 3, 1, 7, '调整窗户合页，更换密封条', '2024-01-16 15:00:00', 4, '维修及时，效果不错', '2024-01-16 15:30:00'),
-('REP202401003', 3, 5, '公共设施', '电梯运行异响，乘坐不安全', NULL, 2, 3, 7, '正在联系电梯维保单位处理', NULL, NULL, NULL, NULL),
-('REP202401004', 4, 7, '家电', '热水器不出热水', 'repair/20240118/1.jpg', 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-('REP202401005', 1, 2, '水电', '客厅插座无电', NULL, 0, 2, NULL, NULL, NULL, NULL, NULL, NULL);
-
--- =====================================================================
--- 5. 投诉建议数据
--- =====================================================================
-
-INSERT INTO complaint_suggest (complaint_no, owner_id, house_id, type, category, content, images, status, priority, handler_id, handle_content, handle_time, is_anonymous) VALUES
-('COM202401001', 1, 2, 1, '噪音扰民', '楼上装修噪音太大，影响休息，希望物业协调', NULL, 2, 2, 2, '已联系楼上业主，约定装修时间为9:00-18:00', '2024-01-10 14:00:00', 0),
-('COM202401002', 2, 3, 2, '环境卫生', '建议增加小区垃圾分类桶，方便业主分类投放', NULL, 2, 1, 2, '已向环卫部门申请，预计下月增设', '2024-01-12 10:00:00', 0),
-('COM202401003', 3, 5, 1, '车辆管理', '地下车位经常被外来车辆占用', 'complaint/20240115/1.jpg', 1, 2, NULL, NULL, NULL, 0),
-('COM202401004', 4, 7, 3, '其他', '咨询小区宽带办理流程', NULL, 2, 1, 2, '可前往物业办公室咨询，联系电话：xxx', '2024-01-18 11:00:00', 0),
-('COM202401005', 1, 2, 4, '其他', '表扬保安李师傅工作负责，深夜查验细致', NULL, 2, 1, 2, '感谢表扬，已转达并奖励', '2024-01-20 09:00:00', 1);
+INSERT INTO community_owner (id, user_id, name, phone, id_card, owner_type, status, remark) VALUES
+(1, 4,  '周伟', '13900001101', '320102199005150011', 1, 1, 'A栋101'),
+(2, 5,  '陈丽', '13900001102', '320102198812120022', 1, 1, 'A栋201'),
+(3, 6,  '孙涛', '13900001103', '320102199208080033', 1, 1, 'B栋101'),
+(4, 7,  '黄芳', '13900001104', '320102199511200044', 1, 1, 'B栋202'),
+(5, 8,  '吴磊', '13900001105', '320102198703030055', 1, 1, 'C栋101'),
+(6, 9,  '许燕', '13900001106', '320102199309090066', 3, 1, 'C栋201租客'),
+(7, 10, '马芸', '13900001107', '320102199107070077', 1, 1, 'D栋101'),
+(8, 11, '郑华', '13900001108', '320102198505050088', 1, 1, 'D栋201');
 
 -- =====================================================================
--- 6. 设备数据
+-- 6. 房屋（house_status: 0空置 1已入住 2出租）
 -- =====================================================================
-
--- 设备分类
-INSERT INTO equipment_category (category_name, parent_id, sort, status) VALUES
-('电梯', 0, 1, 1),
-('消防设备', 0, 2, 1),
-('门禁系统', 0, 3, 1),
-('监控设备', 0, 4, 1),
-('水泵', 0, 5, 1),
-('配电设备', 0, 6, 1),
-('照明设备', 0, 7, 1),
-('给排水设备', 0, 8, 1);
-
--- 设备
-INSERT INTO equipment (equipment_no, equipment_name, category_id, brand, model, spec, location, building_id, floor, install_date, warranty_end_date, status) VALUES
-('ELEV-001', '1栋1号电梯', 1, '奥的斯', 'MACHINE ROOM-LESS', '额定载重1000kg，额定速度1.75m/s', '1栋单元楼', 1, '1-18层', '2020-06-15', '2025-06-15', 1),
-('ELEV-002', '1栋2号电梯', 1, '奥的斯', 'MACHINE ROOM-LESS', '额定载重1000kg，额定速度1.75m/s', '1栋单元楼', 1, '1-18层', '2020-06-15', '2025-06-15', 1),
-('ELEV-003', '2栋1号电梯', 1, '通力', 'MONOSPACE', '额定载重1000kg，额定速度1.75m/s', '2栋单元楼', 2, '1-18层', '2020-06-20', '2025-06-20', 1),
-('FIRE-001', '1栋消火栓系统', 2, '海天', 'SN65', '室内消火栓，公称压力1.6MPa', '各楼层消火栓箱', 1, '1-18层', '2020-06-15', '2030-06-15', 1),
-('FIRE-002', '1栋喷淋系统', 2, '天管', 'ZSTZ80', '自动喷水灭火系统', '各楼层走廊', 1, '1-18层', '2020-06-15', '2030-06-15', 1),
-('ACCESS-001', '1栋门禁主机', 3, '海康威视', 'DS-K2600', 'TCP/IP联网门禁控制器', '1栋单元门', 1, '1层', '2020-06-15', '2023-06-15', 1),
-('CAM-001', '1栋大堂监控', 4, '大华', 'IPC-HFW2431', '400万像素红外枪机', '1栋大堂', 1, '1层', '2020-06-15', '2023-06-15', 1),
-('PUMP-001', '1栋变频供水泵', 5, '南方泵业', 'CDLF32-20', '流量32m³/h，扬程200m', '1栋地下室泵房', 1, 'B1', '2020-06-15', '2023-06-15', 1),
-('POWER-001', '1栋配电箱', 6, '正泰', 'DZ47-63', '三相四线，额定电流63A', '1栋各楼层电井', 1, '1-18层', '2020-06-15', '2030-06-15', 1),
-('ELEV-004', '3栋1号电梯', 1, '三菱', 'NEXIEZ-MRL', '额定载重1350kg，额定速度2.5m/s', '3栋单元楼', 3, '1-24层', '2021-08-01', '2026-08-01', 1);
-
--- 设备维护记录
-INSERT INTO equipment_maintenance (equipment_id, maintenance_type, maintenance_content, maintenance_personnel_id, start_time, end_time, cost, parts_replaced, next_maintenance_date, status) VALUES
-(1, 2, '季度保养：检查曳引机、控制柜、层门装置', 9, '2024-01-10 08:00:00', '2024-01-10 12:00:00', 500.00, '润滑油', '2024-04-10', 2),
-(2, 2, '季度保养：检查曳引机、控制柜、层门装置', 9, '2024-01-10 13:00:00', '2024-01-10 17:00:00', 500.00, '润滑油', '2024-04-10', 2),
-(4, 1, '月度巡检：检查消火栓箱门、水带、接口完好性', 9, '2024-01-15 09:00:00', '2024-01-15 11:00:00', 0.00, NULL, '2024-02-15', 2),
-(6, 1, '月度巡检：门禁刷卡、开锁功能测试', 7, '2024-01-15 14:00:00', '2024-01-15 15:30:00', 0.00, NULL, '2024-02-15', 2),
-(1, 3, '故障维修：电梯层站显示异常', 9, '2024-01-20 10:00:00', '2024-01-20 14:00:00', 1200.00, '显示板', '2024-04-20', 2);
+INSERT INTO community_house (id, building_id, room_no, area, house_type, house_status, owner_id, remark) VALUES
+(1,  1, '101',  89.50, '两室一厅', 1, 1,  '朝南'),
+(2,  1, '102',  89.50, '两室一厅', 0, NULL,'空置'),
+(3,  1, '201',  89.50, '两室一厅', 1, 2,  '朝南'),
+(4,  1, '301', 120.00, '三室两厅', 1, NULL,'东边套'),
+(5,  1, '501',  89.50, '两室一厅', 0, NULL,'待售'),
+(6,  2, '101',  89.50, '两室一厅', 1, 3,  '朝南'),
+(7,  2, '102',  89.50, '两室一厅', 0, NULL,'待租'),
+(8,  2, '202',  89.50, '两室一厅', 1, 4,  '朝南'),
+(9,  2, '303', 120.00, '三室两厅', 1, NULL,'西边套'),
+(10, 3, '101',  95.00, '两室一厅', 1, 5,  '朝南'),
+(11, 3, '201',  95.00, '两室一厅', 2, 6,  '出租给许燕'),
+(12, 3, '301', 130.00, '三室两厅', 1, NULL,'顶楼复式'),
+(13, 4, '101', 145.00, '三室两厅', 1, 7,  '带花园'),
+(14, 4, '201', 145.00, '三室两厅', 1, 8,  ''),
+(15, 4, '301', 145.00, '三室两厅', 0, NULL,'待售');
 
 -- =====================================================================
--- 7. 巡检数据
+-- 7. 车位（parking_type: 1地上 2地下; status: 0空闲 1已租 2已售 3维修中）
 -- =====================================================================
+INSERT INTO community_parking (id, parking_no, parking_type, rent_price, sell_price, status, owner_id, remark) VALUES
+(1, 'B1-A01', 2, 300.00, 150000.00, 2, 1,  'A栋地库已售'),
+(2, 'B1-A02', 2, 300.00, 150000.00, 1, 2,  'A栋地库已租'),
+(3, 'B1-B01', 2, 300.00, 150000.00, 2, 3,  'B栋地库已售'),
+(4, 'B1-B02', 2, 300.00, 150000.00, 2, 4,  'B栋地库已售'),
+(5, 'B1-C01', 2, 300.00, 140000.00, 2, 5,  'C栋地库已售'),
+(6, 'B1-C02', 2, 300.00, 140000.00, 0, NULL,'C栋地库空闲'),
+(7, 'G-D01',  1, 200.00, 120000.00, 2, 7,  'D栋地面已售'),
+(8, 'G-D02',  1, 200.00, 120000.00, 2, 8,  'D栋地面已售');
 
--- 巡检计划
-INSERT INTO inspection_plan (plan_name, plan_type, frequency_type, frequency_value, start_date, end_date, start_time, end_time, status, remark, creator_id) VALUES
-('电梯日常巡检', 1, 1, NULL, '2024-01-01', '2024-12-31', '08:00:00', '10:00:00', 1, '每日早高峰前巡检电梯运行状态', 9),
-('消防设施月度巡检', 1, 3, NULL, '2024-01-01', '2024-12-31', '09:00:00', '12:00:00', 1, '每月15日巡检消火栓、喷淋系统', 9),
-('门禁系统周巡检', 1, 2, '1', '2024-01-01', '2024-12-31', '14:00:00', '16:00:00', 1, '每周一下午巡检门禁刷卡、开锁功能', 7),
-('水泵房季度巡检', 1, 4, NULL, '2024-01-01', '2024-12-31', '09:00:00', '11:00:00', 1, '每季度首月10日巡检供水设备', 9),
-('监控设备半年度巡检', 1, 5, NULL, '2024-01-01', '2024-12-31', '09:00:00', '12:00:00', 1, '每半年巡检摄像头画面、存储', 7);
+-- =====================================================================
+-- 8. 收费项目（item_type: 1物业费 2车位费 3水费 4电费 5燃气 6暖气 9其他; cycle_type: 1月 2季 3半年 4年 5一次性）
+-- =====================================================================
+INSERT INTO fee_item (id, item_name, item_type, unit_price, unit, cycle_type, description, status) VALUES
+(1, '物业费',       1,   2.50, '元/㎡',    1, '按建筑面积每月收取',  1),
+(2, '水费',         3,   3.80, '元/吨',    1, '代收代缴',            1),
+(3, '电费',         4,   0.60, '元/度',    1, '代收代缴',            1),
+(4, '地下车位费',   2, 300.00, '元/月',    1, '地下车位月租',        1),
+(5, '垃圾处理费',   9,  10.00, '元/户',    1, '市政统一标准',        1),
+(6, '公共维修基金', 1,   1.00, '元/㎡',    2, '按季度按面积收取',    1);
 
--- 巡检计划-设备关联
+-- =====================================================================
+-- 9. 收费记录（status: 0未缴费 1部分缴费 2已缴费 3逾期 4作废; pay_type: 1现金 2微信 3支付宝 4银行卡 5转账）
+-- =====================================================================
+INSERT INTO fee_record (id, fee_no, owner_id, house_id, item_id, amount, paid_amount, discount_amount, status, pay_type, pay_time, start_date, end_date, remark) VALUES
+(1,  'FR202607001', 1, 1,  1, 223.75, 223.75, 0, 2, 2, '2026-07-05 10:30:00', '2026-07-01', '2026-07-31', '微信'),
+(2,  'FR202607002', 2, 3,  1, 223.75, 223.75, 0, 2, 3, '2026-07-03 14:20:00', '2026-07-01', '2026-07-31', '支付宝'),
+(3,  'FR202607003', 2, 3,  2,  45.60,  45.60, 0, 2, 3, '2026-07-03 14:20:00', '2026-07-01', '2026-07-31', '用水12吨'),
+(4,  'FR202607004', 5, 10, 1, 237.50, 237.50, 0, 2, 1, '2026-07-08 09:15:00', '2026-07-01', '2026-07-31', '现金'),
+(5,  'FR202607005', 5, 10, 4, 300.00, 300.00, 0, 2, 1, '2026-07-08 09:15:00', '2026-07-01', '2026-07-31', 'C栋车位'),
+(6,  'FR202607006', 7, 13, 1, 362.50, 362.50, 0, 2, 3, '2026-07-06 16:00:00', '2026-07-01', '2026-07-31', '支付宝'),
+(7,  'FR202607007', 8, 14, 1, 362.50, 200.00, 0, 1, 2, '2026-07-10 11:00:00', '2026-07-01', '2026-07-31', '余款待补缴'),
+(8,  'FR202607008', 3, 6,  1, 223.75,   0.00, 0, 0, NULL, NULL,                '2026-07-01', '2026-07-31', ''),
+(9,  'FR202607009', 4, 8,  1, 223.75,   0.00, 0, 3, NULL, NULL,                '2026-07-01', '2026-07-31', '已逾期'),
+(10, 'FR202607010', 1, 1,  5,  10.00,   0.00, 0, 0, NULL, NULL, '2026-07-01', '2026-07-31', ''),
+(11, 'FR202607011', 2, 3,  5,  10.00,   0.00, 0, 0, NULL, NULL, '2026-07-01', '2026-07-31', ''),
+(12, 'FR202607012', 3, 6,  5,  10.00,   0.00, 0, 0, NULL, NULL, '2026-07-01', '2026-07-31', ''),
+(13, 'FR202607013', 4, 8,  5,  10.00,   0.00, 0, 0, NULL, NULL, '2026-07-01', '2026-07-31', ''),
+(14, 'FR202607014', 5, 10, 5,  10.00,   0.00, 0, 0, NULL, NULL, '2026-07-01', '2026-07-31', ''),
+(15, 'FR202607015', 7, 13, 5,  10.00,   0.00, 0, 0, NULL, NULL, '2026-07-01', '2026-07-31', ''),
+(16, 'FR202607016', 8, 14, 5,  10.00,   0.00, 0, 0, NULL, NULL, '2026-07-01', '2026-07-31', '');
+
+-- =====================================================================
+-- 10. 收费通知（notice_type: 1缴费通知 2欠费催缴 3费率调整 4其他; send_scope: 1全体 2指定楼栋 3指定业主; send_status: 0草稿 1已发送 2发送失败）
+-- =====================================================================
+INSERT INTO fee_notice (id, notice_title, notice_content, notice_type, send_scope, send_status, send_time, creator_id) VALUES
+(1, '2026年7月物业费缴纳通知', '尊敬的业主：7月物业费已生成，请在7月15日前完成缴纳。可通过物业前台或线上缴费。', 1, 1, 1, '2026-07-01 08:00:00', 2),
+(2, '水费单价调整通知',       '根据市自来水公司通知，自2026年8月1日起，居民用水价格调整为4.05元/吨。',        3, 1, 1, '2026-07-20 10:00:00', 2);
+
+-- =====================================================================
+-- 11. 设备分类（仅 category_name, parent_id, sort, status）
+-- =====================================================================
+INSERT INTO equipment_category (id, category_name, parent_id, sort, status) VALUES
+(1, '电梯系统', 0, 1, 1),
+(2, '消防系统', 0, 2, 1),
+(3, '安防监控', 0, 3, 1),
+(4, '给排水',   0, 4, 1),
+(5, '供配电',   0, 5, 1);
+
+-- =====================================================================
+-- 12. 设备（status: 1正常 2故障 3维修中 4停用 5报废）
+-- =====================================================================
+INSERT INTO equipment (id, equipment_no, equipment_name, category_id, brand, model, spec, location, building_id, floor, install_date, warranty_end_date, status, remark) VALUES
+(1,  'EQ-E001', 'A栋1号客梯',  1, '奥的斯', 'Gen3',     '1000kg/13人', 'A栋1单元电梯井', 1, 'B1-18F', '2021-06-01', '2026-06-01', 1, ''),
+(2,  'EQ-E002', 'A栋2号客梯',  1, '奥的斯', 'Gen3',     '1000kg/13人', 'A栋1单元电梯井', 1, 'B1-18F', '2021-06-01', '2026-06-01', 1, ''),
+(3,  'EQ-E003', 'B栋1号客梯',  1, '奥的斯', 'Gen3',     '1000kg/13人', 'B栋1单元电梯井', 2, 'B1-18F', '2021-06-01', '2026-06-01', 1, ''),
+(4,  'EQ-E004', 'C栋客梯',     1, '通力',   'MonoSpace','800kg/10人',  'C栋1单元电梯井', 3, 'B1-12F', '2022-03-01', '2027-03-01', 1, ''),
+(5,  'EQ-F001', '消防泵组',     2, '东方',   'XBD8/30',  '30L/s 80m',   '地下车库消防泵房',NULL, 'B1',   '2021-05-01', '2026-05-01', 1, ''),
+(6,  'EQ-F002', '消火栓系统',   2, '天广',   'SN65',     'DN65减压稳压','各楼层走廊',      NULL, 'ALL',  '2021-05-01', '2026-05-01', 1, '共32套'),
+(7,  'EQ-S001', '门禁系统',     3, '海康',   'DS-K1T342','人脸识别',    '各单元出入口',    NULL, '1F',   '2021-07-01', '2026-07-01', 2, 'B栋读卡器故障'),
+(8,  'EQ-S002', '监控系统',     3, '海康',   'DS-2CD2T47','400万像素',  '全小区公共区域',  NULL, 'ALL',  '2021-07-01', '2026-07-01', 1, '共48个点位'),
+(9,  'EQ-W001', '生活水泵组',   4, '南方',   'CDL32-50',  '32m³/h 50m', '地下车库水泵房',  NULL, 'B1',   '2021-04-01', '2026-04-01', 1, ''),
+(10, 'EQ-P001', '低压配电柜',   5, '正泰',   'GCK',       '2000A',       '配电间',          NULL, 'B1',   '2021-04-01', '2031-04-01', 1, '');
+
+-- =====================================================================
+-- 13. 维保记录（maintenance_type: 1日常巡检 2定期保养 3故障维修 4更换配件 5其他; status: 0待维护 1进行中 2已完成 3取消）
+-- =====================================================================
+INSERT INTO equipment_maintenance (id, equipment_id, maintenance_type, maintenance_content, maintenance_personnel_id, start_time, end_time, cost, parts_replaced, next_maintenance_date, status, remark) VALUES
+(1, 1, 2, '半年例行保养：检查曳引机、钢丝绳、门机系统，更换导靴衬板',     NULL, '2026-06-15 09:00:00', '2026-06-15 16:00:00', 3500.00, '导靴衬板×4',       '2026-12-15', 2, ''),
+(2, 5, 2, '年度检测：消防泵启动测试、压力校验、管路密封检查',             NULL, '2026-05-20 10:00:00', '2026-05-20 14:00:00', 1200.00, NULL,                '2026-11-20', 2, ''),
+(3, 7, 3, 'B栋门禁读卡器故障维修：更换主板',                              NULL, '2026-07-10 14:00:00', NULL,                    800.00, '门禁主板×1',       NULL,         1, '待验收');
+
+-- =====================================================================
+-- 14. 巡检计划（plan_type: 1日常 2专项 3季节性 4临时; frequency_type: 1日 2周 3月 4季 5半年 6年 7一次性）
+-- =====================================================================
+INSERT INTO inspection_plan (id, plan_name, plan_type, frequency_type, frequency_value, start_date, status, creator_id) VALUES
+(1, '电梯日检',     1, 1, '1',      '2026-01-01', 1, 2),
+(2, '消防月检',     1, 3, '1',      '2026-01-01', 1, 2),
+(3, '门禁周检',     1, 2, '1',      '2026-01-01', 1, 2),
+(4, '水泵季度检',   1, 4, '1',      '2026-01-01', 1, 2),
+(5, '配电柜月检',   1, 3, '1',      '2026-01-01', 1, 2);
+
 INSERT INTO inspection_plan_equipment (plan_id, equipment_id) VALUES
-(1, 1), (1, 2), (1, 3), (1, 10),  -- 电梯日常巡检
-(2, 4), (2, 5),                    -- 消防月度巡检
-(3, 6),                            -- 门禁周巡检
-(4, 8),                            -- 水泵季度巡检
-(5, 7);                            -- 监控半年度巡检
+(1,1),(1,2),(1,3),(1,4),(2,5),(2,6),(3,7),(3,8),(4,9),(5,10);
 
--- 巡检计划-人员关联
 INSERT INTO inspection_plan_inspector (plan_id, inspector_id) VALUES
-(1, 9),  -- 电梯巡检：张工
-(2, 9),  -- 消防巡检：张工
-(3, 7),  -- 门禁巡检：王师傅
-(4, 9),  -- 水泵巡检：张工
-(5, 7);  -- 监控巡检：王师傅
-
--- 巡检记录（模拟2024年1月执行情况）
-INSERT INTO inspection_record (plan_id, equipment_id, inspector_user_id, inspection_time, status, abnormal_desc, abnormal_images, handle_status, handle_content, handle_time, handler_id, location_lat, location_lng, location_address) VALUES
-(1, 1, 9, '2024-01-15 08:30:00', 1, NULL, NULL, 0, NULL, NULL, NULL, 39.9042, 116.4074, '1栋单元楼电梯间'),
-(1, 2, 9, '2024-01-15 08:45:00', 1, NULL, NULL, 0, NULL, NULL, NULL, 39.9042, 116.4074, '1栋单元楼电梯间'),
-(1, 3, 9, '2024-01-15 09:00:00', 2, '电梯运行有轻微异响', 'inspect/20240115/elev3_1.jpg', 2, '已联系维保单位排查，曳引机轴承磨损，计划更换', '2024-01-15 14:00:00', 9, 39.9043, 116.4075, '2栋单元楼电梯间'),
-(1, 10, 9, '2024-01-15 09:15:00', 1, NULL, NULL, 0, NULL, NULL, NULL, 39.9045, 116.4076, '3栋单元楼电梯间'),
-(2, 4, 9, '2024-01-15 10:00:00', 1, NULL, NULL, 0, NULL, NULL, NULL, 39.9042, 116.4074, '1栋各楼层消火栓箱'),
-(2, 5, 9, '2024-01-15 11:00:00', 1, NULL, NULL, 0, NULL, NULL, NULL, 39.9042, 116.4074, '1栋各楼层走廊'),
-(3, 6, 7, '2024-01-15 14:30:00', 1, NULL, NULL, 0, NULL, NULL, NULL, 39.9042, 116.4074, '1栋单元门');
+(1,14),(2,14),(3,14),(4,14),(5,14);
 
 -- =====================================================================
--- 8. 公告数据
+-- 15. 巡检记录（status: 1正常 2异常 3未巡检; handle_status: 0待处理 1处理中 2已处理 3忽略）
 -- =====================================================================
+INSERT INTO inspection_record (id, plan_id, equipment_id, inspector_user_id, inspection_time, status, abnormal_desc, handle_status, handle_content, handle_time, handler_id, location_lat, location_lng, location_address) VALUES
+(1, 1, 1, 14, '2026-07-15 08:30:00', 1, NULL,   0, NULL,   NULL, NULL, 31.2304, 121.4737, 'A栋1单元电梯机房'),
+(2, 1, 2, 14, '2026-07-15 08:50:00', 1, NULL,   0, NULL,   NULL, NULL, 31.2304, 121.4737, 'A栋1单元电梯机房'),
+(3, 1, 3, 14, '2026-07-15 09:10:00', 2, '曳引轮有异响，疑似磨损', 2, '已联系维保单位，计划更换曳引轮', '2026-07-15 14:00:00', 14, 31.2308, 121.4740, 'B栋1单元电梯机房'),
+(4, 1, 4, 14, '2026-07-15 09:30:00', 1, NULL,   0, NULL,   NULL, NULL, 31.2312, 121.4743, 'C栋1单元电梯机房'),
+(5, 2, 5, 14, '2026-07-10 10:00:00', 1, NULL,   0, NULL,   NULL, NULL, 31.2304, 121.4737, '地下车库消防泵房'),
+(6, 2, 6, 14, '2026-07-10 11:00:00', 1, NULL,   0, NULL,   NULL, NULL, 31.2304, 121.4737, 'A栋各楼层走廊'),
+(7, 3, 7, 14, '2026-07-12 14:00:00', 1, NULL,   0, NULL,   NULL, NULL, 31.2304, 121.4737, '各单元门禁'),
+(8, 3, 8, 14, '2026-07-12 15:00:00', 3, NULL,   0, NULL,   NULL, NULL, NULL,    NULL,     NULL);
 
-INSERT INTO announcement (title, content, type, cover_image, is_top, publish_status, publish_time, creator_id, view_count) VALUES
-('欢迎入住绿城小区', '尊敬的业主，欢迎您入住绿城小区！物业服务热线：400-888-8888。', 1, NULL, 1, 1, '2024-01-01 09:00:00', 2, 156),
-('2024年春节放假通知', '根据国务院办公厅通知，2024年春节放假安排：2月10日-2月17日放假调休，共8天。', 1, NULL, 1, 1, '2024-02-01 09:00:00', 2, 234),
-('小区环境整治活动', '为改善小区环境，将于3月1日-3月7日开展环境整治周活动，请业主配合。', 4, 'announcement/20240220/1.jpg', 0, 1, '2024-02-20 10:00:00', 2, 89),
-('关于规范电动车停放充电的通知', '严禁电动车上楼充电，违者将清理处理，请业主自觉遵守。', 5, NULL, 1, 1, '2024-03-01 09:00:00', 1, 445),
-('小区健身器材更新完成', '小区健身广场器材已更新完毕，欢迎业主使用，注意安全。', 3, 'announcement/20240310/1.jpg', 0, 1, '2024-03-10 09:00:00', 2, 67),
-('2024年物业费缴费优惠活动', '2024年3月31日前缴纳全年物业费，享95折优惠。', 2, NULL, 0, 1, '2024-03-01 09:00:00', 2, 178);
+-- =====================================================================
+-- 16. 报修记录（repair_type: String枚举"水电"/"门窗"/"家电"/"公共设施"/"其他"; status: 0待派单 1处理中 2待评价 3已完成 4已取消; priority: 1普通 2加急 3紧急）
+-- =====================================================================
+INSERT INTO repair_record (id, repair_no, owner_id, house_id, repair_type, repair_content, status, priority, handler_id, handle_content, handle_time, evaluate_score, evaluate_content, evaluate_time) VALUES
+(1, 'RR202607001', 1, 1,  '水电',     '厨房水龙头漏水，需更换密封圈',          3, 1, 12, '已更换密封圈，测试正常',         '2026-07-06 15:30:00', 5, '刘师傅很专业，态度好',       '2026-07-07 09:00:00'),
+(2, 'RR202607002', 3, 6,  '家电',     '客厅灯具不亮，可能线路问题',            3, 1, 12, '灯管烧坏，已更换新灯管',         '2026-07-08 11:00:00', 4, '效率高',                     '2026-07-08 18:00:00'),
+(3, 'RR202607003', 4, 8,  '门窗',     '卧室窗户关不严，有缝隙漏风',            1, 1, 12, NULL,                            NULL,                 NULL, NULL,                         NULL),
+(4, 'RR202607004', 5, 10, '公共设施', '楼道声控灯不灵敏，需要检修',            0, 2, NULL, NULL,                           NULL,                 NULL, NULL,                         NULL),
+(5, 'RR202607005', 2, 3,  '家电',     '空调制冷效果差，需加氟',                0, 1, NULL, NULL,                           NULL,                 NULL, NULL,                         NULL),
+(6, 'RR202607006', 7, 13, '水电',     '卫生间马桶堵塞',                        4, 1, 13, NULL,                            NULL,                 NULL, NULL,                         NULL);
 
+-- =====================================================================
+-- 17. 投诉建议（type: 1投诉 2建议 3咨询 4表扬; status: 0待受理 1已受理 2处理中 3已回复 4已关闭 5已撤销; priority: 1普通 2重要 3紧急）
+-- =====================================================================
+INSERT INTO complaint_suggest (id, complaint_no, owner_id, house_id, type, category, content, status, priority, handler_id, handle_content, handle_time, is_anonymous) VALUES
+(1, 'CP202607001', 3, 6,  1, '噪音扰民', 'A栋602业主深夜经常聚会噪音，严重影响休息。',            1, 1, 3,  '已联系602业主沟通，对方承诺注意。',      '2026-07-08 10:00:00', 0),
+(2, 'CP202607002', 5, 10, 2, '设施建议', '小区快递越来越多，建议在门口增设丰巢快递柜。',           3, 2, 2,  '已向物业经理反馈，正在与丰巢洽谈合作。',  '2026-07-10 14:00:00', 0),
+(3, 'CP202607003', 1, 1,  4, '服务态度', '保洁李阿姨工作认真负责，楼道总是干干净净，特此表扬！',    2, 1, 2,  '感谢您的肯定，已转达给保洁团队。',        '2026-07-05 16:00:00', 0),
+(4, 'CP202607004', 8, 14, 1, '车辆管理', '我的D-002车位被外来车辆占用，请尽快处理。',              0, 2, NULL, NULL,                                     NULL,                 0);
+
+-- =====================================================================
+-- 18. 公告通知（type: 1通知 2政策 3便民 4活动 5紧急; publish_status: 0草稿 1发布 2下架）
+-- =====================================================================
+INSERT INTO announcement (id, title, content, type, is_top, top_expire_time, publish_status, publish_time, creator_id, view_count) VALUES
+(1, '欢迎入住翠湖花园',          '尊敬的业主，欢迎入住翠湖花园！物业服务中心位于A栋1楼，服务热线：021-68888888。',                1, 1, '2026-12-31 23:59:59', 1, '2026-01-01 09:00:00', 2, 256),
+(2, '关于规范电动车停放充电的通知','严禁电动车上楼充电，请统一停放至地下车库充电区。违者将依据《消防法》相关规定处理。',          5, 1, '2026-12-31 23:59:59', 1, '2026-03-01 09:00:00', 1, 445),
+(3, '2026年度物业费优惠活动',     '即日起至8月31日，一次性缴纳全年物业费可享95折优惠，欢迎广大业主积极参与。',                      2, 0, NULL,                 1, '2026-07-01 09:00:00', 2, 178),
+(4, '小区夏季灭蚊虫通知',        '为改善小区环境，将于7月20日至22日进行全区域灭蚊虫喷洒作业，届时请关好门窗，注意安全。',           1, 0, NULL,                 1, '2026-07-18 10:00:00', 3,  89),
+(5, '小区健身器材更新完成',      '小区健身广场器材已全部更新完毕，欢迎广大业主前往使用，请注意安全、爱护公共设施。',                 3, 0, NULL,                 1, '2026-06-15 09:00:00', 2, 134),
+(6, '社区夏日亲子运动会通知',    '拟于8月10日上午9时在小区中心广场举办夏日亲子运动会，欢迎各位业主携家人踊跃报名参加！',            4, 0, NULL,                 1, '2026-07-25 09:00:00', 3,  47);
+
+-- =====================================================================
 SET FOREIGN_KEY_CHECKS = 1;
 
--- =====================================================================
--- 验证数据
--- =====================================================================
-SELECT 'sys_user' AS table_name, COUNT(*) AS count FROM sys_user
-UNION ALL SELECT 'sys_role', COUNT(*) FROM sys_role
-UNION ALL SELECT 'sys_user_role', COUNT(*) FROM sys_user_role
-UNION ALL SELECT 'sys_menu', COUNT(*) FROM sys_menu
-UNION ALL SELECT 'sys_role_menu', COUNT(*) FROM sys_role_menu
-UNION ALL SELECT 'community_building', COUNT(*) FROM community_building
-UNION ALL SELECT 'community_house', COUNT(*) FROM community_house
-UNION ALL SELECT 'community_owner', COUNT(*) FROM community_owner
-UNION ALL SELECT 'community_parking', COUNT(*) FROM community_parking
-UNION ALL SELECT 'fee_item', COUNT(*) FROM fee_item
-UNION ALL SELECT 'fee_record', COUNT(*) FROM fee_record
-UNION ALL SELECT 'fee_notice', COUNT(*) FROM fee_notice
-UNION ALL SELECT 'repair_record', COUNT(*) FROM repair_record
-UNION ALL SELECT 'complaint_suggest', COUNT(*) FROM complaint_suggest
-UNION ALL SELECT 'equipment_category', COUNT(*) FROM equipment_category
-UNION ALL SELECT 'equipment', COUNT(*) FROM equipment
-UNION ALL SELECT 'equipment_maintenance', COUNT(*) FROM equipment_maintenance
-UNION ALL SELECT 'inspection_plan', COUNT(*) FROM inspection_plan
-UNION ALL SELECT 'inspection_plan_equipment', COUNT(*) FROM inspection_plan_equipment
-UNION ALL SELECT 'inspection_plan_inspector', COUNT(*) FROM inspection_plan_inspector
-UNION ALL SELECT 'inspection_record', COUNT(*) FROM inspection_record
-UNION ALL SELECT 'announcement', COUNT(*) FROM announcement
+SELECT 'sys_user'               AS tbl, COUNT(*) AS cnt FROM sys_user               UNION ALL
+SELECT 'sys_role',              COUNT(*) FROM sys_role                              UNION ALL
+SELECT 'sys_user_role',         COUNT(*) FROM sys_user_role                         UNION ALL
+SELECT 'sys_menu',              COUNT(*) FROM sys_menu                              UNION ALL
+SELECT 'sys_role_menu',         COUNT(*) FROM sys_role_menu                         UNION ALL
+SELECT 'community_building',    COUNT(*) FROM community_building                    UNION ALL
+SELECT 'community_house',       COUNT(*) FROM community_house                       UNION ALL
+SELECT 'community_owner',       COUNT(*) FROM community_owner                       UNION ALL
+SELECT 'community_parking',     COUNT(*) FROM community_parking                     UNION ALL
+SELECT 'fee_item',              COUNT(*) FROM fee_item                              UNION ALL
+SELECT 'fee_record',            COUNT(*) FROM fee_record                            UNION ALL
+SELECT 'fee_notice',            COUNT(*) FROM fee_notice                            UNION ALL
+SELECT 'equipment_category',    COUNT(*) FROM equipment_category                    UNION ALL
+SELECT 'equipment',             COUNT(*) FROM equipment                             UNION ALL
+SELECT 'equipment_maintenance', COUNT(*) FROM equipment_maintenance                 UNION ALL
+SELECT 'inspection_plan',       COUNT(*) FROM inspection_plan                       UNION ALL
+SELECT 'inspection_record',     COUNT(*) FROM inspection_record                     UNION ALL
+SELECT 'repair_record',         COUNT(*) FROM repair_record                         UNION ALL
+SELECT 'complaint_suggest',     COUNT(*) FROM complaint_suggest                     UNION ALL
+SELECT 'announcement',          COUNT(*) FROM announcement;

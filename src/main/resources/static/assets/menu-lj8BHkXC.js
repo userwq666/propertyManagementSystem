@@ -1,0 +1,1 @@
+import{a2 as t}from"./index-CDjMJTnn.js";function n(){return t({url:"/system/menu/tree",method:"get"})}function r(e){return t({url:"/system/menu",method:"post",data:e})}function s(e){return t({url:"/system/menu",method:"put",data:e})}function m(e){return t({url:`/system/menu/${e}`,method:"delete"})}export{r as a,m as d,n as g,s as u};

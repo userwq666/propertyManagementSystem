@@ -75,26 +75,9 @@ public class StatisticsServiceImpl implements StatisticsService {
         long houseCount = houseMapper.selectCount(new LambdaQueryWrapper<>());
         long parkingCount = parkingMapper.selectCount(new LambdaQueryWrapper<>());
 
-        LambdaQueryWrapper<FeeRecordDomain> paidWrapper = new LambdaQueryWrapper<>();
-        paidWrapper.eq(FeeRecordDomain::getStatus, FeeRecordStatus.PAID);
-        List<FeeRecordDomain> paidRecords = feeRecordMapper.selectList(paidWrapper);
-        BigDecimal totalPaid = paidRecords.stream()
-                .map(FeeRecordDomain::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        LambdaQueryWrapper<FeeRecordDomain> overdueWrapper = new LambdaQueryWrapper<>();
-        overdueWrapper.eq(FeeRecordDomain::getStatus, FeeRecordStatus.OVERDUE);
-        List<FeeRecordDomain> overdueRecords = feeRecordMapper.selectList(overdueWrapper);
-        BigDecimal totalOverdue = overdueRecords.stream()
-                .map(FeeRecordDomain::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        LambdaQueryWrapper<FeeRecordDomain> unpaidWrapper = new LambdaQueryWrapper<>();
-        unpaidWrapper.eq(FeeRecordDomain::getStatus, FeeRecordStatus.UNPAID);
-        List<FeeRecordDomain> unpaidRecords = feeRecordMapper.selectList(unpaidWrapper);
-        BigDecimal totalUnpaid = unpaidRecords.stream()
-                .map(FeeRecordDomain::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalPaid = feeRecordMapper.sumAmountByStatus(FeeRecordStatus.PAID.getValue());
+        BigDecimal totalOverdue = feeRecordMapper.sumAmountByStatus(FeeRecordStatus.OVERDUE.getValue());
+        BigDecimal totalUnpaid = feeRecordMapper.sumAmountByStatus(FeeRecordStatus.UNPAID.getValue());
 
         long repairPending = repairRecordMapper.selectCount(
                 new LambdaQueryWrapper<RepairRecordDomain>().eq(RepairRecordDomain::getStatus, RepairStatus.PENDING));
