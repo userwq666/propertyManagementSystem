@@ -6,8 +6,8 @@
       </el-form-item>
       <el-form-item label="状态">
         <el-select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 150px">
-          <el-option label="启用" :value="0" />
-          <el-option label="停用" :value="1" />
+          <el-option label="停用" :value="0" />
+          <el-option label="启用" :value="1" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -75,11 +75,11 @@
         </el-form-item>
         <el-form-item label="类型" prop="itemType">
           <el-select v-model="form.itemType" placeholder="请选择类型" style="width: 100%">
-            <el-option label="物业费" :value="0" />
-            <el-option label="水费" :value="1" />
-            <el-option label="电费" :value="2" />
-            <el-option label="燃气费" :value="3" />
-            <el-option label="停车费" :value="4" />
+            <el-option label="物业费" :value="1" />
+            <el-option label="水费" :value="3" />
+            <el-option label="电费" :value="4" />
+            <el-option label="燃气费" :value="5" />
+            <el-option label="停车费" :value="2" />
             <el-option label="其他" :value="5" />
           </el-select>
         </el-form-item>
@@ -91,10 +91,10 @@
         </el-form-item>
         <el-form-item label="周期" prop="cycleType">
           <el-select v-model="form.cycleType" placeholder="请选择周期" style="width: 100%">
-            <el-option label="月" :value="0" />
-            <el-option label="季" :value="1" />
-            <el-option label="年" :value="2" />
-            <el-option label="一次性" :value="3" />
+            <el-option label="月" :value="1" />
+            <el-option label="季" :value="2" />
+            <el-option label="年" :value="4" />
+            <el-option label="一次性" :value="5" />
           </el-select>
         </el-form-item>
         <el-form-item label="描述" prop="description">
@@ -130,7 +130,7 @@ const formRef = ref(null)
 const isEdit = ref(false)
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, itemName: '', status: null })
-const form = reactive({ id: null, itemName: '', itemType: 0, unitPrice: null, unit: '', cycleType: 0, description: '', status: 0 })
+const form = reactive({ id: null, itemName: '', itemType: 0, unitPrice: null, unit: '', cycleType: 1, description: '', status: 0 })
 
 const submitting = ref(false)
 

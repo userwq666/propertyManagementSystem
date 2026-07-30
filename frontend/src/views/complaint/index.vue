@@ -8,7 +8,7 @@
       </el-form-item>
       <el-form-item label="类型">
         <el-select v-model="searchForm.type" placeholder="请选择" clearable>
-          <el-option label="投诉" value="complaint" /><el-option label="建议" value="suggestion" />
+          <el-option label="投诉" :value="1" /><el-option label="建议" :value="2" />
         </el-select>
       </el-form-item>
       <el-form-item label="状态">
@@ -66,7 +66,7 @@
         </el-form-item>
         <el-form-item label="类型" prop="type">
           <el-select v-model="form.type">
-            <el-option label="投诉" value="complaint" /><el-option label="建议" value="suggestion" />
+            <el-option label="投诉" :value="1" /><el-option label="建议" :value="2" />
           </el-select>
         </el-form-item>
         <el-form-item label="内容" prop="content">

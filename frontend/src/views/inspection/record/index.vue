@@ -60,9 +60,9 @@
         <el-form-item label="设备" prop="equipmentId"><el-select v-model="form.equipmentId" filterable placeholder="请选择"><el-option v-for="e in equipments" :key="e.id" :label="e.equipmentName" :value="e.id" /></el-select></el-form-item>
         <el-form-item label="巡检人员" prop="inspectorUserId"><el-select v-model="form.inspectorUserId" filterable placeholder="请选择"><el-option v-for="u in users" :key="u.id" :label="u.realName" :value="u.id" /></el-select></el-form-item>
         <el-form-item label="巡检时间"><el-date-picker v-model="form.inspectionTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" style="width:100%" /></el-form-item>
-        <el-form-item label="巡检结果" prop="status"><el-select v-model="form.status"><el-option label="正常" value="NORMAL" /><el-option label="异常" value="ABNORMAL" /></el-select></el-form-item>
+        <el-form-item label="巡检结果" prop="status"><el-select v-model="form.status"><el-option label="正常" :value="1" /><el-option label="异常" :value="2" /></el-select></el-form-item>
         <el-form-item v-if="form.status==='ABNORMAL'" label="异常描述"><el-input v-model="form.abnormalDesc" type="textarea" :rows="3" /></el-form-item>
-        <el-form-item label="处理状态"><el-select v-model="form.handleStatus"><el-option label="未处理" value="UNHANDLED" /><el-option label="已处理" value="HANDLED" /></el-select></el-form-item>
+        <el-form-item label="处理状态"><el-select v-model="form.handleStatus"><el-option label="未处理" :value="0" /><el-option label="已处理" :value="2" /></el-select></el-form-item>
         <el-form-item label="处理内容"><el-input v-model="form.handleContent" type="textarea" :rows="2" /></el-form-item>
         <el-form-item label="备注"><el-input v-model="form.remark" type="textarea" :rows="2" /></el-form-item>
       </el-form>

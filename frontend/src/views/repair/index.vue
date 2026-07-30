@@ -66,7 +66,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="报修类型" prop="repairType">
-          <el-select v-model="form.repairType"><el-option label="水电维修" value="WATER_ELECTRICITY" /><el-option label="门窗维修" value="DOOR_WINDOW" /><el-option label="管道疏通" value="PIPE_DREDGE" /><el-option label="电器维修" value="ELECTRICAL" /><el-option label="其他" value="OTHER" /></el-select>
+          <el-select v-model="form.repairType"><el-option label="水电维修" value="水电" /><el-option label="门窗维修" value="门窗" /><el-option label="公共设施" value="公共设施" /><el-option label="电器维修" value="家电" /><el-option label="其他" value="OTHER" /></el-select>
         </el-form-item>
         <el-form-item label="报修描述" prop="repairContent">
           <el-input v-model="form.repairContent" type="textarea" :rows="3" />
@@ -146,7 +146,7 @@ const houses = ref([])
 const currentRow = ref(null)
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, ownerId: '', status: '' })
-const form = reactive({ id: null, ownerId: null, houseId: null, repairType: 'WATER_ELECTRICITY', repairContent: '', repairImages: '', remark: '' })
+const form = reactive({ id: null, ownerId: null, houseId: null, repairType: '水电', repairContent: '', repairImages: '', remark: '' })
 const statusForm = reactive({ status: 1, handleContent: '' })
 const ratingForm = reactive({ score: 5, content: '' })
 

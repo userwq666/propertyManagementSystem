@@ -44,8 +44,8 @@
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'announcement:list:edit'">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'announcement:list:delete'">删除</el-button>
-            <el-button type="success" size="small" @click="handlePublish(row)" v-if="row.publishStatus!=='PUBLISHED'" v-permission="'announcement:list:edit'">发布</el-button>
-            <el-button type="warning" size="small" @click="handleRevoke(row)" v-if="row.publishStatus==='PUBLISHED'" v-permission="'announcement:list:edit'">撤回</el-button>
+            <el-button type="success" size="small" @click="handlePublish(row)" v-if="row.publishStatus!==1" v-permission="'announcement:list:edit'">发布</el-button>
+            <el-button type="warning" size="small" @click="handleRevoke(row)" v-if="row.publishStatus===1" v-permission="'announcement:list:edit'">撤回</el-button>
             <el-button size="small" @click="handleTop(row)" v-permission="'announcement:list:edit'">{{ row.isTop ? '取消置顶' : '置顶' }}</el-button>
           </template>
         </el-table-column>
@@ -100,8 +100,8 @@ const form = reactive({ id: null, title: '', type: 1, content: '', coverImage: '
 const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑公告' : '新增公告')
-const st = (s) => ({ 'DRAFT': 'info', 'PUBLISHED': 'success', 'REVOKED': 'warning' }[s] || 'info')
-const stText = (s) => ({ 'DRAFT': '草稿', 'PUBLISHED': '已发布', 'REVOKED': '已撤回' }[s] || '')
+const st = (s) => ({ 0: 'info', 1: 'success', 2: 'warning' }[s] || 'info')
+const stText = (s) => ({ 0: '草稿', 1: '已发布', 2: '已撤回' }[s] || '')
 
 const rules = {
   title: [{ required: true, message: '请输入标题', trigger: 'blur' }],

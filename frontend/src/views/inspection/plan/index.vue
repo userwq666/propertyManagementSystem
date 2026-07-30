@@ -6,7 +6,7 @@
       </el-form-item>
       <el-form-item label="状态">
         <el-select v-model="searchForm.status" placeholder="请选择" clearable>
-          <el-option label="启用" :value="0" /><el-option label="停用" :value="1" />
+          <el-option label="停用" :value="0" /><el-option label="启用" :value="1" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -28,7 +28,7 @@
           <template #default="{ row }">{{ freqText(row.frequencyType) }} {{ row.frequencyValue||'' }}</template>
         </el-table-column>
         <el-table-column label="状态" width="80">
-          <template #default="{ row }"><el-tag :type="row.status==='ENABLED'?'success':'info'">{{ row.status==='ENABLED'?'启用':'停用' }}</el-tag></template>
+          <template #default="{ row }"><el-tag :type="row.status===1?'success':'info'">{{ row.status===1?'启用':'停用' }}</el-tag></template>
         </el-table-column>
         <el-table-column prop="startDate" label="开始日期" width="110" />
         <el-table-column prop="endDate" label="结束日期" width="110" />
@@ -38,7 +38,7 @@
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'inspection:plan:edit'">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'inspection:plan:delete'">删除</el-button>
-            <el-button size="small" @click="handleStatus(row)" v-permission="'inspection:plan:edit'">{{ row.status==='ENABLED'?'停用':'启用' }}</el-button>
+            <el-button size="small" @click="handleStatus(row)" v-permission="'inspection:plan:edit'">{{ row.status===1?'停用':'启用' }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -103,5 +103,5 @@ function handleEdit(row){isEdit.value=true;Object.assign(form,{...row,equipmentI
 function resetForm(){formRef.value?.resetFields();Object.assign(form,{id:null,planName:'',planType:1,frequencyType:1,frequencyValue:'',startDate:'',endDate:'',remark:'',equipmentIds:[],inspectorIds:[]})}
 async function handleSubmit(){const v=await formRef.value.validate().catch(()=>false);if(!v)return;try{if(isEdit.value)await updatePlan(form);else await addPlan(form);ElMessage.success(isEdit.value?'编辑成功':'新增成功');dialogVisible.value=false;fetchData()}catch(e){}}
 async function handleDelete(row){await ElMessageBox.confirm('确定删除？','提示',{type:'warning'});try{await deletePlan(row.id);ElMessage.success('删除成功');fetchData()}catch(e){}}
-async function handleStatus(row){const s=row.status==='ENABLED'?1:0;try{await updatePlanStatus({id:row.id,status:s});ElMessage.success('操作成功');fetchData()}catch(e){}}
+async function handleStatus(row){const s=row.status===1?1:0;try{await updatePlanStatus({id:row.id,status:s});ElMessage.success('操作成功');fetchData()}catch(e){}}
 </script>

@@ -63,7 +63,7 @@
         </el-form-item>
         <el-form-item label="维保类型" prop="maintenanceType">
           <el-select v-model="form.maintenanceType">
-            <el-option label="日常保养" :value="0" /><el-option label="定期检修" :value="1" /><el-option label="故障维修" :value="2" /><el-option label="大修" :value="3" />
+            <el-option label="日常巡检" :value="1" /><el-option label="定期保养" :value="2" /><el-option label="故障维修" :value="3" /><el-option label="更换配件" :value="4" />
           </el-select>
         </el-form-item>
         <el-form-item label="维保人员ID" prop="maintenancePersonnelId">
@@ -108,14 +108,14 @@ const equipments = ref([])
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, equipmentId: '', status: '' })
 const form = reactive({
-    id: null, equipmentId: null, maintenanceType: 0, maintenancePersonnelId: null,
+    id: null, equipmentId: null, maintenanceType: 1, maintenancePersonnelId: null,
     startTime: '', maintenanceContent: '', cost: 0, remark: ''
   })
 
 const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑维保记录' : '新增维保记录')
-const typeText = (t) => ({ 0: '日常保养', 1: '定期检修', 2: '故障维修', 3: '大修' }[t] || '')
+const typeText = (t) => ({ 1: '日常巡检', 2: '定期保养', 3: '故障维修', 4: '更换配件', 5: '其他' }[t] || '')
 const statusTag = (s) => ({ 0: 'info', 1: 'warning', 2: 'success' }[s] || 'info')
 const statusText = (s) => ({ 0: '待维保', 1: '维保中', 2: '已完成' }[s] || '')
 
