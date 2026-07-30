@@ -32,7 +32,7 @@ export const useUserStore = defineStore('user', {
       try { await logoutApi() } catch (e) { /* ignore */ }
       this.resetState()
     },
-    async refreshUserInfo() {
+    async getUserInfo() {
       try {
         const res = await getCurrentUser()
         this.userInfo = res.data
