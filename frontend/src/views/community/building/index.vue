@@ -2,7 +2,7 @@
   <div>
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="楼栋编号">
-        <el-input v-model="searchForm.buildingNo" placeholder="请输入楼栋编�? clearable />
+        <el-input v-model="searchForm.buildingNo" placeholder="请输入楼栋编号" clearable />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="handleSearch">搜索</el-button>
@@ -22,8 +22,8 @@
 
       <el-table :data="tableData" border stripe v-loading="loading">
         <el-table-column prop="buildingNo" label="楼栋编号" width="120" />
-        <el-table-column prop="floorCount" label="楼层�? width="100" />
-        <el-table-column prop="totalHouse" label="总户�? width="100" />
+        <el-table-column prop="floorCount" label="楼层数" width="100" />
+        <el-table-column prop="totalHouse" label="总户数" width="100" />
         <el-table-column prop="buildYear" label="建成年份" width="100" />
         <el-table-column prop="remark" label="备注" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" width="180" />
@@ -50,19 +50,19 @@
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="500px" @close="resetForm">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <el-form-item label="楼栋编号" prop="buildingNo">
-          <el-input v-model="form.buildingNo" placeholder="请输入楼栋编�? />
+          <el-input v-model="form.buildingNo" placeholder="请输入楼栋编号" />
         </el-form-item>
-        <el-form-item label="楼层�? prop="floorCount">
+        <el-form-item label="楼层数" prop="floorCount">
           <el-input-number v-model="form.floorCount" :min="1" placeholder="请输入楼层数" style="width: 100%" />
         </el-form-item>
-        <el-form-item label="总户�? prop="totalHouse">
-          <el-input-number v-model="form.totalHouse" :min="0" placeholder="请输入总户�? style="width: 100%" />
+        <el-form-item label="总户数" prop="totalHouse">
+          <el-input-number v-model="form.totalHouse" :min="0" placeholder="请输入总户数" style="width: 100%" />
         </el-form-item>
         <el-form-item label="建成年份" prop="buildYear">
-          <el-input-number v-model="form.buildYear" :min="1990" :max="2099" placeholder="请输入建成年�? style="width: 100%" />
+          <el-input-number v-model="form.buildYear" :min="1990" :max="2099" placeholder="请输入建成年份" style="width: 100%" />
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备�? />
+          <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备注" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -95,9 +95,9 @@ const submitting = ref(false)
 const dialogTitle = computed(() => isEdit.value ? '编辑楼栋' : '新增楼栋')
 
 const rules = {
-  buildingNo: [{ required: true, message: '请输入楼栋编�?, trigger: 'blur' }],
+  buildingNo: [{ required: true, message: '请输入楼栋编号', trigger: 'blur' }],
   floorCount: [{ required: true, message: '请输入楼层数', trigger: 'blur' }],
-  totalHouse: [{ required: true, message: '请输入总户�?, trigger: 'blur' }]
+  totalHouse: [{ required: true, message: '请输入总户数', trigger: 'blur' }]
 }
 
 onMounted(() => fetchData())

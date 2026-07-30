@@ -26,19 +26,19 @@
         <el-table-column prop="id" label="ID" width="70" />
         <el-table-column prop="planName" label="计划名称" width="140" />
         <el-table-column prop="equipmentName" label="设备名称" width="120" />
-        <el-table-column prop="inspectorName" label="巡检�? width="100" />
+        <el-table-column prop="inspectorName" label="巡检人" width="100" />
         <el-table-column prop="inspectionTime" label="巡检时间" width="180" />
         <el-table-column label="巡检结果" width="100">
           <template #default="{ row }">
             <el-tag :type="row.status==='NORMAL'?'success':row.status==='ABNORMAL'?'danger':'warning'">
-              {{ row.status==='NORMAL'?'正常':row.status==='ABNORMAL'?'异常':'待处�? }}
+              {{ row.status==='NORMAL'?'正常':row.status==='ABNORMAL'?'异常':'待处理' }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="abnormalDesc" label="异常描述" show-overflow-tooltip />
-        <el-table-column label="处理状�? width="100">
+        <el-table-column label="处理状态" width="100">
           <template #default="{ row }">
-            <el-tag :type="row.handleStatus==='HANDLED'?'success':'info'">{{ row.handleStatus==='HANDLED'?'已处�?:'未处�? }}</el-tag>
+            <el-tag :type="row.handleStatus==='HANDLED'?'success':'info'">{{ row.handleStatus==='HANDLED'?'已处理':'未处理' }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" width="180" />
@@ -62,7 +62,7 @@
         <el-form-item label="巡检时间"><el-date-picker v-model="form.inspectionTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" style="width:100%" /></el-form-item>
         <el-form-item label="巡检结果" prop="status"><el-select v-model="form.status"><el-option label="正常" :value="1" /><el-option label="异常" :value="2" /></el-select></el-form-item>
         <el-form-item v-if="form.status==='ABNORMAL'" label="异常描述"><el-input v-model="form.abnormalDesc" type="textarea" :rows="3" /></el-form-item>
-        <el-form-item label="处理状�?><el-select v-model="form.handleStatus"><el-option label="未处�? :value="0" /><el-option label="已处�? :value="2" /></el-select></el-form-item>
+        <el-form-item label="处理状态"><el-select v-model="form.handleStatus"><el-option label="未处理" :value="0" /><el-option label="已处理" :value="2" /></el-select></el-form-item>
         <el-form-item label="处理内容"><el-input v-model="form.handleContent" type="textarea" :rows="2" /></el-form-item>
         <el-form-item label="备注"><el-input v-model="form.remark" type="textarea" :rows="2" /></el-form-item>
       </el-form>
@@ -102,5 +102,5 @@ function handleAdd(){isEdit.value=false;resetForm();dialogVisible.value=true}
 function handleEdit(row){isEdit.value=true;Object.assign(form,row);dialogVisible.value=true}
 function resetForm(){formRef.value?.resetFields();Object.assign(form,{id:null,planId:null,equipmentId:null,inspectorUserId:null,inspectionTime:'',status:'NORMAL',abnormalDesc:'',handleStatus:'UNHANDLED',handleContent:'',remark:''})}
 async function handleSubmit(){const v=await formRef.value.validate().catch(()=>false);if(!v)return;try{if(isEdit.value)await updateRecord(form);else await addRecord(form);ElMessage.success(isEdit.value?'编辑成功':'新增成功');dialogVisible.value=false;fetchData()}catch(e){}}
-async function handleDelete(row){await ElMessageBox.confirm('确定删除�?,'提示',{type:'warning'});try{await deleteRecord(row.id);ElMessage.success('删除成功');fetchData()}catch(e){}}
+async function handleDelete(row){await ElMessageBox.confirm('确定删除？','提示',{type:'warning'});try{await deleteRecord(row.id);ElMessage.success('删除成功');fetchData()}catch(e){}}
 </script>

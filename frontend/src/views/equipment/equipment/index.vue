@@ -6,13 +6,13 @@
           <el-option v-for="c in categories.filter(i => i.id != null)" :key="c.id" :label="c.categoryName" :value="c.id" />
         </el-select>
       </el-form-item>
-      <el-form-item label="设备状�?>
+      <el-form-item label="设备状态">
         <el-select v-model="searchForm.status" placeholder="请选择" clearable>
-          <el-option label="正常" :value="1" /><el-option label="故障" :value="2" /><el-option label="维修�? :value="3" /><el-option label="停用" :value="4" /><el-option label="报废" :value="5" />
+          <el-option label="正常" :value="1" /><el-option label="故障" :value="2" /><el-option label="维修中" :value="3" /><el-option label="停用" :value="4" /><el-option label="报废" :value="5" />
         </el-select>
       </el-form-item>
       <el-form-item label="设备名称">
-        <el-input v-model="searchForm.equipmentName" placeholder="请输�? clearable />
+        <el-input v-model="searchForm.equipmentName" placeholder="请输入" clearable />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="handleSearch">搜索</el-button>
@@ -34,7 +34,7 @@
         <el-table-column prop="equipmentNo" label="编号" />
         <el-table-column prop="model" label="型号" />
         <el-table-column prop="location" label="位置" />
-        <el-table-column label="状�? width="100">
+        <el-table-column label="状态" width="100">
           <template #default="{ row }">
             <el-tag :type="statusType(row.status)">{{ statusText(row.status) }}</el-tag>
           </template>
@@ -44,7 +44,7 @@
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'equipment:list:edit'">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'equipment:list:delete'">删除</el-button>
-            <el-button size="small" @click="handleStatus(row)" v-permission="'equipment:list:edit'">状�?/el-button>
+            <el-button size="small" @click="handleStatus(row)" v-permission="'equipment:list:edit'">状态</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -75,7 +75,7 @@
         <el-form-item label="位置" prop="location">
           <el-input v-model="form.location" />
         </el-form-item>
-        <el-form-item label="所属楼�?>
+        <el-form-item label="所属楼栋">
           <el-select v-model="form.buildingId" placeholder="请选择" clearable>
             <el-option v-for="b in buildings.filter(i => i.id != null)" :key="b.id" :label="b.buildingNo" :value="b.id" />
           </el-select>
@@ -83,12 +83,12 @@
         <el-form-item label="安装日期">
           <el-date-picker v-model="form.installDate" type="date" placeholder="选择日期" value-format="YYYY-MM-DD" />
         </el-form-item>
-        <el-form-item label="维保到期�?>
+        <el-form-item label="维保到期日">
           <el-date-picker v-model="form.warrantyEndDate" type="date" placeholder="选择日期" value-format="YYYY-MM-DD" />
         </el-form-item>
-        <el-form-item label="设备状�? prop="status">
+        <el-form-item label="设备状态" prop="status">
           <el-select v-model="form.status">
-            <el-option label="正常" :value="1" /><el-option label="故障" :value="2" /><el-option label="维修�? :value="3" /><el-option label="停用" :value="4" /><el-option label="报废" :value="5" />
+            <el-option label="正常" :value="1" /><el-option label="故障" :value="2" /><el-option label="维修中" :value="3" /><el-option label="停用" :value="4" /><el-option label="报废" :value="5" />
           </el-select>
         </el-form-item>
         <el-form-item label="备注">
@@ -131,14 +131,14 @@ const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑设备' : '新增设备')
 const rules = {
-  equipmentName: [{ required: true, message: '请输入设备名�?, trigger: 'blur' }],
-  equipmentNo: [{ required: true, message: '请输入设备编�?, trigger: 'blur' }],
+  equipmentName: [{ required: true, message: '请输入设备名称', trigger: 'blur' }],
+  equipmentNo: [{ required: true, message: '请输入设备编号', trigger: 'blur' }],
   categoryId: [{ required: true, message: '请选择分类', trigger: 'change' }],
-  status: [{ required: true, message: '请选择状�?, trigger: 'change' }]
+  status: [{ required: true, message: '请选择状态', trigger: 'change' }]
 }
 
 const statusType = (s) => ({ 0: 'success', 1: 'danger', 2: 'warning', 3: 'info' }[s] || 'info')
-const statusText = (s) => ({ 0: '正常', 1: '故障', 2: '维修�?, 3: '报废' }[s] || '未知')
+const statusText = (s) => ({ 0: '正常', 1: '故障', 2: '维修中', 3: '报废' }[s] || '未知')
 
 onMounted(async () => {
   fetchData()
@@ -177,13 +177,13 @@ async function handleSubmit() {
 }
 
 async function handleDelete(row) {
-  await ElMessageBox.confirm('确定删除该设备吗�?, '提示', { type: 'warning' })
+  await ElMessageBox.confirm('确定删除该设备吗？', '提示', { type: 'warning' })
   try { await deleteEquipment(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) { /* handled */ } finally { submitting.value = false }
 }
 
 async function handleStatus(row) {
   const newStatus = row.status === 0 ? 1 : 0
-  await ElMessageBox.confirm('确定修改设备状态吗�?, '提示', { type: 'warning' })
-  try { await updateEquipmentStatus({ id: row.id, status: newStatus }); ElMessage.success('状态修改成�?); fetchData() } catch (e) { /* handled */ } finally { submitting.value = false }
+  await ElMessageBox.confirm('确定修改设备状态吗？', '提示', { type: 'warning' })
+  try { await updateEquipmentStatus({ id: row.id, status: newStatus }); ElMessage.success('状态修改成功'); fetchData() } catch (e) { /* handled */ } finally { submitting.value = false }
 }
 </script>

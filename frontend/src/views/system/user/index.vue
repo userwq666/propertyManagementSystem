@@ -1,10 +1,10 @@
 <template>
   <div>
     <el-form :inline="true" :model="searchForm" class="search-form">
-      <el-form-item label="用户�?>
+      <el-form-item label="用户名">
         <el-input v-model="searchForm.username" placeholder="请输入用户名" clearable />
       </el-form-item>
-      <el-form-item label="状�?>
+      <el-form-item label="状态">
         <el-select v-model="searchForm.status" placeholder="请选择" clearable>
           <el-option label="启用" :value="1" /><el-option label="禁用" :value="0" />
         </el-select>
@@ -26,15 +26,15 @@
       </div>
       <el-table :data="tableData" border stripe v-loading="loading">
         <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="username" label="用户�? width="120" />
+        <el-table-column prop="username" label="用户名" width="120" />
         <el-table-column prop="realName" label="真实姓名" width="120" />
-        <el-table-column prop="phone" label="手机�? width="130" />
+        <el-table-column prop="phone" label="手机号" width="130" />
         <el-table-column label="用户类型" width="100">
           <template #default="{ row }">
             <el-tag :type="userTypeTag(row.userType)">{{ userTypeText(row.userType) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="状�? width="80">
+        <el-table-column label="状态" width="80">
           <template #default="{ row }">
             <el-tag :type="row.status === 1 ? 'success' : 'danger'">{{ row.status === 1 ? '启用' : '禁用' }}</el-tag>
           </template>
@@ -65,22 +65,22 @@
 
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="550px" @close="resetForm">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
-        <el-form-item label="用户�? prop="username">
+        <el-form-item label="用户名" prop="username">
           <el-input v-model="form.username" placeholder="请输入用户名" />
         </el-form-item>
         <el-form-item label="真实姓名" prop="realName">
-          <el-input v-model="form.realName" placeholder="请输入真实姓�? />
+          <el-input v-model="form.realName" placeholder="请输入真实姓名" />
         </el-form-item>
         <el-form-item label="密码" :prop="isEdit ? '' : 'password'">
-          <el-input v-model="form.password" placeholder="新增时必�? show-password />
+          <el-input v-model="form.password" placeholder="新增时必填" show-password />
         </el-form-item>
-        <el-form-item label="手机�?>
+        <el-form-item label="手机号">
           <el-input v-model="form.phone" placeholder="请输入手机号" />
         </el-form-item>
         <el-form-item label="用户类型">
-          <el-select v-model="form.userType"><el-option label="超级管理�? :value="1" /><el-option label="物业管理�? :value="2" /><el-option label="业主" :value="3" /><el-option label="维修�? :value="4" /><el-option label="巡检�? :value="5" /></el-select>
+          <el-select v-model="form.userType"><el-option label="超级管理员" :value="1" /><el-option label="物业管理员" :value="2" /><el-option label="业主" :value="3" /><el-option label="维修工" :value="4" /><el-option label="巡检员" :value="5" /></el-select>
         </el-form-item>
-        <el-form-item label="状�?>
+        <el-form-item label="状态">
           <el-select v-model="form.status">
             <el-option label="启用" :value="1" /><el-option label="禁用" :value="0" />
           </el-select>
@@ -122,12 +122,12 @@ const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑用户' : '新增用户')
 const userTypeTag = (t) => ({ 1: 'danger', 2: 'warning', 3: 'info', 4: '', 5: 'success' }[t] || 'info')
-const userTypeText = (t) => ({ 1: '超级管理�?, 2: '物业管理�?, 3: '业主', 4: '维修�?, 5: '巡检�? }[t] || '未知')
+const userTypeText = (t) => ({ 1: '超级管理员', 2: '物业管理员', 3: '业主', 4: '维修工', 5: '巡检员' }[t] || '未知')
 
 const rules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-  realName: [{ required: true, message: '请输入真实姓�?, trigger: 'blur' }],
-  password: [{ required: true, message: '请输入密�?, trigger: 'blur', min: 6, message: '密码至少6�? }]
+  realName: [{ required: true, message: '请输入真实姓名', trigger: 'blur' }],
+  password: [{ required: true, message: '请输入密码', trigger: 'blur', min: 6, message: '密码至少6位' }]
 }
 
 onMounted(async () => {
@@ -180,7 +180,7 @@ async function handleSubmit() {
 }
 
 async function handleDelete(row) {
-  await ElMessageBox.confirm('确定删除该用户吗�?, '提示', { type: 'warning' })
+  await ElMessageBox.confirm('确定删除该用户吗？', '提示', { type: 'warning' })
   try { await deleteUser(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) { /* handled */ }
 }
 

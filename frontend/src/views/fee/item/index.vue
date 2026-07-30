@@ -2,10 +2,10 @@
   <div>
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="项目名称">
-        <el-input v-model="searchForm.itemName" placeholder="请输入项目名�? clearable />
+        <el-input v-model="searchForm.itemName" placeholder="请输入项目名称" clearable />
       </el-form-item>
-      <el-form-item label="状�?>
-        <el-select v-model="searchForm.status" placeholder="请选择状�? clearable style="width: 150px">
+      <el-form-item label="状态">
+        <el-select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 150px">
           <el-option label="停用" :value="0" />
           <el-option label="启用" :value="1" />
         </el-select>
@@ -36,7 +36,7 @@
         <el-table-column label="周期" width="80">
           <template #default="{ row }">{{ cycleTypeLabel(row.cycleType) }}</template>
         </el-table-column>
-        <el-table-column label="状�? width="80">
+        <el-table-column label="状态" width="80">
           <template #default="{ row }">
             <el-tag :type="row.status === 0 ? 'success' : 'danger'">{{ row.status === 0 ? '启用' : '停用' }}</el-tag>
           </template>
@@ -71,36 +71,36 @@
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="550px" @close="resetForm">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <el-form-item label="项目名称" prop="itemName">
-          <el-input v-model="form.itemName" placeholder="请输入项目名�? />
+          <el-input v-model="form.itemName" placeholder="请输入项目名称" />
         </el-form-item>
         <el-form-item label="类型" prop="itemType">
           <el-select v-model="form.itemType" placeholder="请选择类型" style="width: 100%">
-            <el-option label="物业�? :value="1" />
+            <el-option label="物业费" :value="1" />
             <el-option label="水费" :value="3" />
             <el-option label="电费" :value="4" />
-            <el-option label="燃气�? :value="5" />
-            <el-option label="停车�? :value="2" />
+            <el-option label="燃气费" :value="5" />
+            <el-option label="停车费" :value="2" />
             <el-option label="其他" :value="5" />
           </el-select>
         </el-form-item>
         <el-form-item label="单价" prop="unitPrice">
-          <el-input-number v-model="form.unitPrice" :min="0" :precision="2" placeholder="请输入单�? style="width: 100%" />
+          <el-input-number v-model="form.unitPrice" :min="0" :precision="2" placeholder="请输入单价" style="width: 100%" />
         </el-form-item>
         <el-form-item label="单位" prop="unit">
-          <el-input v-model="form.unit" placeholder="请输入单位（如：�?㎡、元/吨）" />
+          <el-input v-model="form.unit" placeholder="请输入单位（如：元/㎡、元/吨）" />
         </el-form-item>
         <el-form-item label="周期" prop="cycleType">
           <el-select v-model="form.cycleType" placeholder="请选择周期" style="width: 100%">
-            <el-option label="�? :value="1" />
-            <el-option label="�? :value="2" />
-            <el-option label="�? :value="4" />
-            <el-option label="一次�? :value="5" />
+            <el-option label="月" :value="1" />
+            <el-option label="季" :value="2" />
+            <el-option label="年" :value="4" />
+            <el-option label="一次性" :value="5" />
           </el-select>
         </el-form-item>
         <el-form-item label="描述" prop="description">
-          <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入描�? />
+          <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入描述" />
         </el-form-item>
-        <el-form-item label="状�? prop="status">
+        <el-form-item label="状态" prop="status">
           <el-radio-group v-model="form.status">
             <el-radio :value="0">启用</el-radio>
             <el-radio :value="1">停用</el-radio>
@@ -137,15 +137,15 @@ const submitting = ref(false)
 const dialogTitle = computed(() => isEdit.value ? '编辑收费项目' : '新增收费项目')
 
 const rules = {
-  itemName: [{ required: true, message: '请输入项目名�?, trigger: 'blur' }],
+  itemName: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
   itemType: [{ required: true, message: '请选择类型', trigger: 'change' }],
-  unitPrice: [{ required: true, message: '请输入单�?, trigger: 'blur' }],
-  unit: [{ required: true, message: '请输入单�?, trigger: 'blur' }],
+  unitPrice: [{ required: true, message: '请输入单价', trigger: 'blur' }],
+  unit: [{ required: true, message: '请输入单位', trigger: 'blur' }],
   cycleType: [{ required: true, message: '请选择周期', trigger: 'change' }]
 }
 
-const itemTypeMap = { 0: '物业�?, 1: '水费', 2: '电费', 3: '燃气�?, 4: '停车�?, 5: '其他' }
-const cycleTypeMap = { 0: '�?, 1: '�?, 2: '�?, 3: '一次�? }
+const itemTypeMap = { 0: '物业费', 1: '水费', 2: '电费', 3: '燃气费', 4: '停车费', 5: '其他' }
+const cycleTypeMap = { 0: '月', 1: '季', 2: '年', 3: '一次性' }
 function itemTypeLabel(t) { return itemTypeMap[t] || '未知' }
 function cycleTypeLabel(t) { return cycleTypeMap[t] || '未知' }
 
@@ -194,7 +194,7 @@ async function handleDelete(row) {
 async function handleToggleStatus(row) {
   const newStatus = row.status === 0 ? 1 : 0
   const action = newStatus === 1 ? '停用' : '启用'
-  await ElMessageBox.confirm(`确定�?{action}该收费项目吗？`, '提示', { type: 'warning' })
+  await ElMessageBox.confirm(`确定要${action}该收费项目吗？`, '提示', { type: 'warning' })
   try {
     await updateFeeItemStatus(row.id, newStatus)
     ElMessage.success(`${action}成功`)

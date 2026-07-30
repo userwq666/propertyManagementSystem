@@ -6,12 +6,12 @@
           <el-option v-for="b in buildingList.filter(i => i.id != null)" :key="b.id" :label="b.buildingNo" :value="b.id" />
         </el-select>
       </el-form-item>
-      <el-form-item label="房屋状�?>
-        <el-select v-model="searchForm.houseStatus" placeholder="请选择状�? clearable style="width: 150px">
+      <el-form-item label="房屋状态">
+        <el-select v-model="searchForm.houseStatus" placeholder="请选择状态" clearable style="width: 150px">
           <el-option label="空置" :value="0" />
-          <el-option label="已入�? :value="1" />
+          <el-option label="已入住" :value="1" />
           <el-option label="出租" :value="2" />
-          <el-option label="装修�? :value="3" />
+          <el-option label="装修中" :value="3" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -31,16 +31,16 @@
       </div>
 
       <el-table :data="tableData" border stripe v-loading="loading">
-        <el-table-column prop="buildingNo" label="楼栋�? width="100" />
-        <el-table-column prop="roomNo" label="房间�? width="100" />
-        <el-table-column prop="area" label="面积(�?" width="100" />
+        <el-table-column prop="buildingNo" label="楼栋号" width="100" />
+        <el-table-column prop="roomNo" label="房间号" width="100" />
+        <el-table-column prop="area" label="面积(㎡)" width="100" />
         <el-table-column prop="houseType" label="户型" width="100" />
-        <el-table-column label="状�? width="100">
+        <el-table-column label="状态" width="100">
           <template #default="{ row }">
             <el-tag :type="statusType(row.houseStatus)">{{ statusLabel(row.houseStatus) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="ownerName" label="业主�? width="100" />
+        <el-table-column prop="ownerName" label="业主名" width="100" />
         <el-table-column prop="remark" label="备注" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" width="180" />
         <el-table-column label="操作" min-width="160" class-name="action-column" fixed="right">
@@ -65,26 +65,26 @@
 
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="550px" @close="resetForm">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
-        <el-form-item label="所属楼�? prop="buildingId">
+        <el-form-item label="所属楼栋" prop="buildingId">
           <el-select v-model="form.buildingId" placeholder="请选择楼栋" style="width: 100%">
             <el-option v-for="b in buildingList.filter(i => i.id != null)" :key="b.id" :label="b.buildingNo" :value="b.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="房间�? prop="roomNo">
+        <el-form-item label="房间号" prop="roomNo">
           <el-input v-model="form.roomNo" placeholder="请输入房间号" />
         </el-form-item>
-        <el-form-item label="面积(�?" prop="area">
-          <el-input-number v-model="form.area" :min="0" :precision="2" placeholder="请输入面�? style="width: 100%" />
+        <el-form-item label="面积(㎡)" prop="area">
+          <el-input-number v-model="form.area" :min="0" :precision="2" placeholder="请输入面积" style="width: 100%" />
         </el-form-item>
         <el-form-item label="户型" prop="houseType">
           <el-input v-model="form.houseType" placeholder="请输入户型（如：三室一厅）" />
         </el-form-item>
-        <el-form-item label="房屋状�? prop="houseStatus">
-          <el-select v-model="form.houseStatus" placeholder="请选择状�? style="width: 100%">
+        <el-form-item label="房屋状态" prop="houseStatus">
+          <el-select v-model="form.houseStatus" placeholder="请选择状态" style="width: 100%">
             <el-option label="空置" :value="0" />
-            <el-option label="已入�? :value="1" />
+            <el-option label="已入住" :value="1" />
             <el-option label="出租" :value="2" />
-            <el-option label="装修�? :value="3" />
+            <el-option label="装修中" :value="3" />
           </el-select>
         </el-form-item>
         <el-form-item label="业主" prop="ownerId">
@@ -93,7 +93,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备�? />
+          <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备注" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -132,10 +132,10 @@ const dialogTitle = computed(() => isEdit.value ? '编辑房屋' : '新增房屋
 const rules = {
   buildingId: [{ required: true, message: '请选择楼栋', trigger: 'change' }],
   roomNo: [{ required: true, message: '请输入房间号', trigger: 'blur' }],
-  area: [{ required: true, message: '请输入面�?, trigger: 'blur' }]
+  area: [{ required: true, message: '请输入面积', trigger: 'blur' }]
 }
 
-const statusMap = { 0: '空置', 1: '已入�?, 2: '出租', 3: '装修�? }
+const statusMap = { 0: '空置', 1: '已入住', 2: '出租', 3: '装修中' }
 const statusTypeMap = { 0: 'info', 1: 'success', 2: 'warning', 3: 'danger' }
 function statusLabel(s) { return statusMap[s] || '未知' }
 function statusType(s) { return statusTypeMap[s] || 'info' }

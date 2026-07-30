@@ -2,9 +2,9 @@
   <div>
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="计划名称">
-        <el-input v-model="searchForm.planName" placeholder="请输�? clearable />
+        <el-input v-model="searchForm.planName" placeholder="请输入" clearable />
       </el-form-item>
-      <el-form-item label="状�?>
+      <el-form-item label="状态">
         <el-select v-model="searchForm.status" placeholder="请选择" clearable>
           <el-option label="停用" :value="0" /><el-option label="启用" :value="1" />
         </el-select>
@@ -27,12 +27,12 @@
         <el-table-column label="巡检频率" width="130">
           <template #default="{ row }">{{ freqText(row.frequencyType) }} {{ row.frequencyValue||'' }}</template>
         </el-table-column>
-        <el-table-column label="状�? width="80">
+        <el-table-column label="状态" width="80">
           <template #default="{ row }"><el-tag :type="row.status===1?'success':'info'">{{ row.status===1?'启用':'停用' }}</el-tag></template>
         </el-table-column>
-        <el-table-column prop="startDate" label="开始日�? width="110" />
+        <el-table-column prop="startDate" label="开始日期" width="110" />
         <el-table-column prop="endDate" label="结束日期" width="110" />
-        <el-table-column prop="creatorName" label="创建�? width="80" />
+        <el-table-column prop="creatorName" label="创建人" width="80" />
         <el-table-column prop="createTime" label="创建时间" width="160" />
         <el-table-column label="操作" min-width="240" class-name="action-column" fixed="right">
           <template #default="{ row }">
@@ -54,13 +54,13 @@
           <el-col :span="12"><el-form-item label="计划类型" prop="planType"><el-select v-model="form.planType" style="width:100%"><el-option label="日常巡检" :value="1" /><el-option label="专项巡检" :value="2" /><el-option label="季节性巡检" :value="3" /><el-option label="临时巡检" :value="4" /></el-select></el-form-item></el-col>
         </el-row>
         <el-row :gutter="20">
-          <el-col :span="12"><el-form-item label="巡检频率"><el-select v-model="form.frequencyType" style="width:100%"><el-option label="每日" :value="1" /><el-option label="每周" :value="2" /><el-option label="每月" :value="3" /><el-option label="每季�? :value="4" /><el-option label="每半�? :value="5" /><el-option label="每年" :value="6" /></el-select></el-form-item></el-col>
-          <el-col :span="12"><el-form-item v-if="form.frequencyType===2" label="星期"><el-select v-model="form.frequencyValue" multiple style="width:100%"><el-option v-for="(d,i) in 7" :key="i" :label="'�?+(i+1)" :value="i+1" /></el-select></el-form-item>
-          <el-form-item v-if="form.frequencyType===3" label="日期"><el-select v-model="form.frequencyValue" style="width:100%"><el-option v-for="d in 28" :key="d" :label="d+'�?" :value="d" /></el-select></el-form-item>
+          <el-col :span="12"><el-form-item label="巡检频率"><el-select v-model="form.frequencyType" style="width:100%"><el-option label="每日" :value="1" /><el-option label="每周" :value="2" /><el-option label="每月" :value="3" /><el-option label="每季度" :value="4" /><el-option label="每半年" :value="5" /><el-option label="每年" :value="6" /></el-select></el-form-item></el-col>
+          <el-col :span="12"><el-form-item v-if="form.frequencyType===2" label="星期"><el-select v-model="form.frequencyValue" multiple style="width:100%"><el-option v-for="(d,i) in 7" :key="i" :label="'周'+(i+1)" :value="i+1" /></el-select></el-form-item>
+          <el-form-item v-if="form.frequencyType===3" label="日期"><el-select v-model="form.frequencyValue" style="width:100%"><el-option v-for="d in 28" :key="d" :label="d+'号'" :value="d" /></el-select></el-form-item>
           <el-form-item v-if="form.frequencyType==='custom'" label="间隔天数"><el-input-number v-model="form.frequencyValue" :min="1" :max="365" style="width:100%" /></el-form-item></el-col>
         </el-row>
         <el-row :gutter="20">
-          <el-col :span="12"><el-form-item label="开始日�?><el-date-picker v-model="form.startDate" type="date" value-format="YYYY-MM-DD" style="width:100%" /></el-form-item></el-col>
+          <el-col :span="12"><el-form-item label="开始日期"><el-date-picker v-model="form.startDate" type="date" value-format="YYYY-MM-DD" style="width:100%" /></el-form-item></el-col>
           <el-col :span="12"><el-form-item label="结束日期"><el-date-picker v-model="form.endDate" type="date" value-format="YYYY-MM-DD" style="width:100%" /></el-form-item></el-col>
         </el-row>
         <el-form-item label="关联设备"><el-select v-model="form.equipmentIds" multiple filterable placeholder="请选择"><el-option v-for="e in equipments.filter(i => i.id != null)" :key="e.id" :label="e.equipmentName" :value="e.id" /></el-select></el-form-item>
@@ -87,8 +87,8 @@ const form = reactive({ id: null, planName: '', planType: 1, frequencyType: 1, f
 const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑计划' : '新增计划')
-const freqText = (f) => ({ daily:'每天', weekly:'每周', monthly:'每月', custom:'�? }[f]||'')
-const rules = { planName: [{ required: true, message: '请输�?, trigger: 'blur' }] }
+const freqText = (f) => ({ daily:'每天', weekly:'每周', monthly:'每月', custom:'每' }[f]||'')
+const rules = { planName: [{ required: true, message: '请输入', trigger: 'blur' }] }
 
 onMounted(async () => {
   fetchData()
@@ -102,6 +102,6 @@ function handleAdd(){isEdit.value=false;resetForm();dialogVisible.value=true}
 function handleEdit(row){isEdit.value=true;Object.assign(form,{...row,equipmentIds:row.equipmentIds||[],inspectorIds:row.inspectorIds||[]});dialogVisible.value=true}
 function resetForm(){formRef.value?.resetFields();Object.assign(form,{id:null,planName:'',planType:1,frequencyType:1,frequencyValue:'',startDate:'',endDate:'',remark:'',equipmentIds:[],inspectorIds:[]})}
 async function handleSubmit(){const v=await formRef.value.validate().catch(()=>false);if(!v)return;try{if(isEdit.value)await updatePlan(form);else await addPlan(form);ElMessage.success(isEdit.value?'编辑成功':'新增成功');dialogVisible.value=false;fetchData()}catch(e){}}
-async function handleDelete(row){await ElMessageBox.confirm('确定删除�?,'提示',{type:'warning'});try{await deletePlan(row.id);ElMessage.success('删除成功');fetchData()}catch(e){}}
+async function handleDelete(row){await ElMessageBox.confirm('确定删除？','提示',{type:'warning'});try{await deletePlan(row.id);ElMessage.success('删除成功');fetchData()}catch(e){}}
 async function handleStatus(row){const s=row.status===1?1:0;try{await updatePlanStatus({id:row.id,status:s});ElMessage.success('操作成功');fetchData()}catch(e){}}
 </script>

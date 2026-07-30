@@ -28,13 +28,13 @@
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="500px" @close="resetForm">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <el-form-item label="角色名称" prop="roleName">
-          <el-input v-model="form.roleName" placeholder="请输入角色名�? />
+          <el-input v-model="form.roleName" placeholder="请输入角色名称" />
         </el-form-item>
         <el-form-item label="权限标识" prop="roleKey">
-          <el-input v-model="form.roleKey" placeholder="请输入权限标�? />
+          <el-input v-model="form.roleKey" placeholder="请输入权限标识" />
         </el-form-item>
         <el-form-item label="备注">
-          <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备�? />
+          <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备注" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -87,8 +87,8 @@ const submitting = ref(false)
 const dialogTitle = computed(() => isEdit.value ? '编辑角色' : '新增角色')
 
 const rules = {
-  roleName: [{ required: true, message: '请输入角色名�?, trigger: 'blur' }],
-  roleKey: [{ required: true, message: '请输入权限标�?, trigger: 'blur' }]
+  roleName: [{ required: true, message: '请输入角色名称', trigger: 'blur' }],
+  roleKey: [{ required: true, message: '请输入权限标识', trigger: 'blur' }]
 }
 
 onMounted(() => fetchData())
@@ -119,7 +119,7 @@ async function handleSubmit() {
 }
 
 async function handleDelete(row) {
-  await ElMessageBox.confirm('确定删除该角色吗�?, '提示', { type: 'warning' })
+  await ElMessageBox.confirm('确定删除该角色吗？', '提示', { type: 'warning' })
   try { await deleteRole(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) { /* handled */ }
 }
 

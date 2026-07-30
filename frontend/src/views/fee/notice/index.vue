@@ -8,10 +8,10 @@
           <el-option label="欠费通知" :value="2" />
         </el-select>
       </el-form-item>
-      <el-form-item label="发送状�?>
-        <el-select v-model="searchForm.sendStatus" placeholder="请选择状�? clearable style="width: 150px">
-          <el-option label="未发�? :value="0" />
-          <el-option label="已发�? :value="1" />
+      <el-form-item label="发送状态">
+        <el-select v-model="searchForm.sendStatus" placeholder="请选择状态" clearable style="width: 150px">
+          <el-option label="未发送" :value="0" />
+          <el-option label="已发送" :value="1" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -38,13 +38,13 @@
         <el-table-column label="内容预览" show-overflow-tooltip>
           <template #default="{ row }">{{ row.noticeContent ? row.noticeContent.substring(0, 50) + '...' : '' }}</template>
         </el-table-column>
-        <el-table-column label="发送状�? width="100">
+        <el-table-column label="发送状态" width="100">
           <template #default="{ row }">
-            <el-tag :type="row.sendStatus === 0 ? 'info' : 'success'">{{ row.sendStatus === 0 ? '未发�? : '已发�? }}</el-tag>
+            <el-tag :type="row.sendStatus === 0 ? 'info' : 'success'">{{ row.sendStatus === 0 ? '未发送' : '已发送' }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="sendTime" label="发送时�? width="180" />
-        <el-table-column prop="creatorName" label="创建�? width="100" />
+        <el-table-column prop="sendTime" label="发送时间" width="180" />
+        <el-table-column prop="creatorName" label="创建人" width="100" />
         <el-table-column prop="createTime" label="创建时间" width="180" />
         <el-table-column label="操作" min-width="240" class-name="action-column" fixed="right">
           <template #default="{ row }">
@@ -87,8 +87,8 @@
         <el-form-item label="通知内容" prop="noticeContent">
           <el-input v-model="form.noticeContent" type="textarea" :rows="5" placeholder="请输入通知内容" />
         </el-form-item>
-        <el-form-item label="发送范�? prop="sendScope">
-          <el-select v-model="form.sendScope" placeholder="请选择发送范�? style="width: 100%">
+        <el-form-item label="发送范围" prop="sendScope">
+          <el-select v-model="form.sendScope" placeholder="请选择发送范围" style="width: 100%">
             <el-option label="全部" :value="0" />
             <el-option label="指定楼栋" :value="1" />
           </el-select>
@@ -175,7 +175,7 @@ async function handleDelete(row) {
 }
 
 async function handlePublish(row) {
-  await ElMessageBox.confirm('确定要发布该通知吗？发布后将无法撤回�?, '提示', { type: 'warning' })
+  await ElMessageBox.confirm('确定要发布该通知吗？发布后将无法撤回。', '提示', { type: 'warning' })
   try {
     await publishFeeNotice(row.id)
     ElMessage.success('发布成功')
