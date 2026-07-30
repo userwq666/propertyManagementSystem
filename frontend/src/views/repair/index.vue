@@ -38,7 +38,7 @@
         <el-table-column prop="handlerName" label="处理�? width="100" />
         <el-table-column prop="score" label="评分" width="80" />
         <el-table-column prop="createTime" label="报修时间" width="180" />
-        <el-table-column label="操作" class-name="action-column" fixed="right">
+        <el-table-column label="操作" min-width="320" class-name="action-column" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'repair:record:edit'">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'repair:record:delete'">删除</el-button>

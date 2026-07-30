@@ -31,7 +31,7 @@
         <el-table-column prop="requestUrl" label="请求URL" show-overflow-tooltip />
         <el-table-column prop="operIp" label="操作IP" width="140" />
         <el-table-column prop="operTime" label="操作时间" width="180" />
-        <el-table-column label="操作" class-name="action-column" fixed="right">
+        <el-table-column label="操作" min-width="160" class-name="action-column" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleDetail(row)">详情</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'system:operLog:delete'">删除</el-button>

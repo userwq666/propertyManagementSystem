@@ -27,7 +27,7 @@
             <el-tag :type="row.status === 1 ? 'success' : 'danger'">{{ row.status === 1 ? '启用' : '禁用' }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" class-name="action-column" fixed="right">
+        <el-table-column label="操作" min-width="240" class-name="action-column" fixed="right">
           <template #default="{ row }">
             <el-button v-if="row.menuType !== 2" type="primary" size="small" @click="handleAdd(row)" v-permission="'system:menu:add'">新增子菜�?/el-button>
             <el-button size="small" @click="handleEdit(row)" v-permission="'system:menu:edit'">编辑</el-button>
