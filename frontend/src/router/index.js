@@ -1,4 +1,4 @@
-﻿import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import { getToken } from '@/utils/auth'
 import { useUserStore } from '@/stores/user'
 
@@ -57,15 +57,44 @@ const router = createRouter({ history: createWebHistory(), routes })
 
 const whiteList = ['/login', '/403', '/404']
 
-router.beforeEach((to, from, next) => {
+// 标记是否已经尝试刷新过用户信息
+let userInfoReady = false
+let userInfoPromise = null
+
+router.beforeEach(async (to, from, next) => {
   document.title = to.meta.title ? to.meta.title + ' - 物业管理系统' : '物业管理系统'
+
+  // 白名单直接放行
   if (whiteList.includes(to.path)) {
     if (to.path === '/login' && getToken()) { next('/'); return }
     next(); return
   }
-  if (!getToken()) { next('/login?redirect=' + to.path); return }
+
+  // 未登录跳转登录页
+  if (!getToken()) {
+    next('/login?redirect=' + to.path); return
+  }
 
   const userStore = useUserStore()
+
+  // 有 token 但权限为空时，调用 /api/auth/me 刷新用户信息
+  if (!userInfoReady && userStore.permissions.length === 0) {
+    if (!userInfoPromise) {
+      userInfoPromise = userStore.refreshUserInfo().then(() => {
+        userInfoReady = true
+      }).catch(() => {
+        userInfoPromise = null
+        next('/login?redirect=' + to.path)
+        return
+      })
+    }
+    try {
+      await userInfoPromise
+    } catch (e) {
+      return
+    }
+  }
+
   const requiredPermission = to.meta.permission
   if (requiredPermission && !userStore.hasPermission(requiredPermission)) {
     next('/403'); return

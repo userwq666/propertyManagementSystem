@@ -13,6 +13,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // 静态资源直接处理
+        registry.addResourceHandler("/assets/**", "/favicon.svg")
+                .addResourceLocations("classpath:/static/");
+
+        // SPA fallback: 非API、非静态资源请求返回 index.html
         registry.addResourceHandler("/**")
                 .addResourceLocations("classpath:/static/")
                 .resourceChain(true)
@@ -23,7 +28,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         if (resource.exists() && resource.isReadable()) {
                             return resource;
                         }
-                        // SPA fallback: 非静态资源请求返回 index.html，由 Vue Router 处理
+                        // API 路径不返回 index.html，交由 Spring MVC 处理（返回 404 或由控制器处理）
+                        if (resourcePath.startsWith("api/")) {
+                            return null;
+                        }
+                        // SPA fallback: 其他路径返回 index.html，由 Vue Router 处理
                         Resource indexHtml = location.createRelative("index.html");
                         if (indexHtml.exists() && indexHtml.isReadable()) {
                             return indexHtml;

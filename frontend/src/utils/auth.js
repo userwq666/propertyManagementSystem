@@ -1,4 +1,4 @@
-﻿export function getToken() {
+export function getToken() {
   return sessionStorage.getItem('token')
 }
 
@@ -21,4 +21,17 @@ export function setUserInfo(info) {
 
 export function removeUserInfo() {
   sessionStorage.removeItem('userInfo')
+}
+
+export function getPermissions() {
+  const perms = sessionStorage.getItem('permissions')
+  return perms ? JSON.parse(perms) : []
+}
+
+export function setPermissions(permissions) {
+  sessionStorage.setItem('permissions', JSON.stringify(permissions))
+}
+
+export function removePermissions() {
+  sessionStorage.removeItem('permissions')
 }
