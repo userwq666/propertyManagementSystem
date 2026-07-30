@@ -133,7 +133,7 @@ INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_typ
 (89, 29, '公告删除', '', '', 'announcement:list:delete', 2, 3, 1),
 (90, 29, '发布公告', '', '', 'announcement:list:publish', 2, 4, 1),
 (91, 29, '撤回公告', '', '', 'announcement:list:revoke', 2, 5, 1),
-(92, 29, '置顶公告', '', '', 'announcement:list:top', 2, 6, 1));
+(92, 29, '置顶公告', '', '', 'announcement:list:top', 2, 6, 1);
 
 -- 角色-菜单
 INSERT INTO sys_role_menu (role_id, menu_id) SELECT 1, id FROM sys_menu;
