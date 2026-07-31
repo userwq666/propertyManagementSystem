@@ -9,8 +9,8 @@
 CREATE TABLE repair_record (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     repair_no VARCHAR(50) NOT NULL UNIQUE COMMENT '报修单号',
-    owner_id BIGINT NOT NULL COMMENT '报修业主id',
-    house_id BIGINT NOT NULL COMMENT '报修房屋id',
+    owner_id BIGINT NULL COMMENT '报修业主id，系统代报可为空',
+    house_id BIGINT NULL COMMENT '报修房屋id，公共区域可为空',
     repair_type VARCHAR(50) COMMENT '报修类型：水电、门窗、家电、公共设施、其他',
     repair_content TEXT NOT NULL COMMENT '报修内容',
     repair_images VARCHAR(1000) COMMENT '报修图片，逗号分隔',

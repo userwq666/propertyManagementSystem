@@ -1,7 +1,6 @@
 package com.lsy.propertymanagementsystem.module.repair.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -12,7 +11,6 @@ public class RepairRecordDTO {
 
     private Long ownerId;
 
-    @NotNull(message = "房屋ID不能为空")
     private Long houseId;
 
     @NotBlank(message = "报修类型不能为空")

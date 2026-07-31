@@ -105,12 +105,13 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
                 throw new BusinessException("未找到业主档案，无法报修");
             }
             domain.setOwnerId(currentOwnerId);
+            if (dto.getHouseId() == null) {
+                throw new BusinessException("请选择报修房屋");
+            }
             CommunityHouseDomain house = communityHouseMapper.selectById(dto.getHouseId());
             if (house == null || !Objects.equals(house.getOwnerId(), currentOwnerId)) {
                 throw new BusinessException("只能选择自己名下房屋报修");
             }
-        } else if (dto.getOwnerId() == null) {
-            throw new BusinessException("请选择业主");
         }
         domain.setRepairNo("BX" + UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase());
         domain.prepareAdd();
@@ -133,6 +134,8 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         if (dto.getRepairType() != null) {
             existing.setRepairType(RepairType.of(dto.getRepairType()));
         }
+        existing.setOwnerId(dto.getOwnerId());
+        existing.setHouseId(dto.getHouseId());
         existing.setRepairContent(domain.getRepairContent());
         existing.setRepairImages(domain.getRepairImages());
         this.updateById(existing);

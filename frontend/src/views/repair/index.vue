@@ -24,8 +24,12 @@
       </div>
       <el-table :data="tableData" border stripe v-loading="loading">
         <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="ownerName" label="业主" width="100" />
-        <el-table-column prop="roomNo" label="房号" width="100" />
+        <el-table-column label="业主" width="100">
+          <template #default="{ row }">{{ row.ownerName || '系统代报' }}</template>
+        </el-table-column>
+        <el-table-column label="房号" width="100">
+          <template #default="{ row }">{{ row.roomNo || '公共区域' }}</template>
+        </el-table-column>
         <el-table-column label="报修类型" width="100">
           <template #default="{ row }">{{ typeText(row.repairType) }}</template>
         </el-table-column>
@@ -58,12 +62,14 @@
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="600px" @close="resetForm">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <el-form-item label="业主" prop="ownerId" v-if="isAdmin">
-          <el-select v-model="form.ownerId" placeholder="请选择" filterable>
+          <el-select v-model="form.ownerId" placeholder="请选择" filterable clearable>
+            <el-option label="系统代报" :value="0" />
             <el-option v-for="o in owners.filter(i => i.id != null)" :key="o.id" :label="o.name" :value="o.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="房屋" prop="houseId">
-          <el-select v-model="form.houseId" placeholder="请选择" filterable>
+          <el-select v-model="form.houseId" placeholder="请选择" filterable clearable>
+            <el-option v-if="isAdmin" label="公共区域" :value="0" />
             <el-option v-for="h in houses.filter(i => i.id != null)" :key="h.id" :label="h.roomNo" :value="h.id" />
           </el-select>
         </el-form-item>
@@ -190,7 +196,7 @@ const rules = {
 watch(() => form.ownerId, async (val) => {
   if (!isAdmin.value) return
   try {
-    const res = await getRepairHouses(val ? { ownerId: val } : {})
+    const res = await getRepairHouses(val && val !== 0 ? { ownerId: val } : {})
     houses.value = res.data
   } catch (e) { /* handled */ }
 })
@@ -226,8 +232,19 @@ async function fetchData() {
 
 function handleSearch() { searchForm.pageNum = 1; fetchData() }
 function resetSearch() { searchForm.ownerId = ''; searchForm.status = ''; handleSearch() }
-function handleAdd() { isEdit.value = false; resetForm(); if (!isAdmin.value) form.ownerId = null; dialogVisible.value = true }
-function handleEdit(row) { isEdit.value = true; Object.assign(form, { ...row, repairType: row.repairType || 'WATER_ELECTRICITY', repairContent: row.repairContent || row.description || '', repairImages: row.repairImages || row.images || '' }); dialogVisible.value = true }
+function handleAdd() { isEdit.value = false; resetForm(); if (isAdmin.value) { form.ownerId = null; form.houseId = null } else { form.ownerId = null } dialogVisible.value = true }
+function handleEdit(row) {
+  isEdit.value = true
+  Object.assign(form, {
+    ...row,
+    ownerId: isAdmin.value ? (row.ownerId || 0) : row.ownerId,
+    houseId: isAdmin.value ? (row.houseId || 0) : row.houseId,
+    repairType: row.repairType || 'WATER_ELECTRICITY',
+    repairContent: row.repairContent || row.description || '',
+    repairImages: row.repairImages || row.images || ''
+  })
+  dialogVisible.value = true
+}
 function resetForm() { formRef.value?.resetFields(); form.id = null }
 
 async function handleSubmit() {
@@ -235,8 +252,11 @@ async function handleSubmit() {
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
   try {
-    if (isEdit.value) await updateRepair(form)
-    else await addRepair(form)
+    const payload = { ...form }
+    if (payload.ownerId === 0) payload.ownerId = null
+    if (payload.houseId === 0) payload.houseId = null
+    if (isEdit.value) await updateRepair(payload)
+    else await addRepair(payload)
     ElMessage.success(isEdit.value ? '编辑成功' : '新增成功')
     dialogVisible.value = false
     fetchData()

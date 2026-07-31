@@ -7,8 +7,12 @@
       </div>
       <el-table :data="tableData" border stripe v-loading="loading">
         <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="ownerName" label="业主" width="100" />
-        <el-table-column prop="roomNo" label="房号" width="100" />
+        <el-table-column label="业主" width="100">
+          <template #default="{ row }">{{ row.ownerName || '系统代报' }}</template>
+        </el-table-column>
+        <el-table-column label="房号" width="100">
+          <template #default="{ row }">{{ row.roomNo || '公共区域' }}</template>
+        </el-table-column>
         <el-table-column label="报修类型" width="100">
           <template #default="{ row }">{{ typeText(row.repairType) }}</template>
         </el-table-column>
