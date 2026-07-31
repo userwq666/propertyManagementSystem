@@ -11,32 +11,33 @@
       </el-form-item>
     </el-form>
 
-    <el-card v-if="currentPlan" shadow="never" class="plan-info">
-      <div class="plan-info-row">
-        <span><b>{{ currentPlan.planName }}</b></span>
-        <el-tag size="small" :type="isFinished ? 'success' : 'primary'">{{ isFinished ? '已完成' : '进行中' }}</el-tag>
-      </div>
-      <div class="plan-info-row">
-        <span>开始：{{ currentPlan.startDate || '-' }}</span>
-        <span>结束：{{ currentPlan.endDate || '-' }}</span>
-        <span>频率：{{ freqText(currentPlan.frequencyType) }}</span>
-        <span>巡检员：{{ (currentPlan.inspectorNames || []).join('、') || '-' }}</span>
-        <span>完成度：{{ finishedCount }}/{{ totalCells }}</span>
-      </div>
-    </el-card>
-
     <div class="table-container" v-if="currentPlan">
       <el-table :data="matrixRows" border stripe v-loading="loading" row-key="equipmentId">
-        <el-table-column prop="equipmentName" label="设备" min-width="150" fixed />
-        <el-table-column v-for="d in dates" :key="d" :label="d.slice(5)" min-width="96">
+        <el-table-column min-width="200" fixed>
+          <template #header>
+            <div class="plan-header">
+              <div class="plan-header-name">{{ currentPlan.planName }}</div>
+              <div class="plan-header-meta">
+                <span>{{ currentPlan.startDate || '-' }} ~ {{ currentPlan.endDate || '-' }}</span>
+                <span>{{ freqText(currentPlan.frequencyType) }}</span>
+                <span>巡检员：{{ (currentPlan.inspectorNames || []).join('、') || '-' }}</span>
+                <span>完成度：{{ finishedCount }}/{{ totalCells }}</span>
+                <el-tag size="small" :type="isFinished ? 'success' : 'primary'">{{ isFinished ? '已完成' : '进行中' }}</el-tag>
+              </div>
+            </div>
+          </template>
           <template #default="{ row }">
-            <div class="matrix-cell" :class="cellClass(row, d)" @click="openCell(row, d)">
-              {{ cellText(row, d) }}
+            <b>{{ row.equipmentName }}</b>
+          </template>
+        </el-table-column>
+        <el-table-column v-for="p in periods" :key="p.key" :label="p.label" min-width="96" align="center">
+          <template #default="{ row }">
+            <div class="matrix-cell" :class="cellClass(row, p)" @click="openCell(row, p)">
+              {{ cellText(row, p) }}
             </div>
           </template>
         </el-table-column>
       </el-table>
-      <el-empty v-if="dates.length === 0" description="该计划暂无巡检日期" />
     </div>
     <el-empty v-else description="请选择巡检计划" />
 
@@ -45,7 +46,7 @@
       <template v-if="currentCell">
         <el-descriptions :column="2" border>
           <el-descriptions-item label="设备">{{ currentCell.equipmentName }}</el-descriptions-item>
-          <el-descriptions-item label="巡检日期">{{ currentCell.date }}</el-descriptions-item>
+          <el-descriptions-item label="巡检周期">{{ currentCell.period.label }}</el-descriptions-item>
           <el-descriptions-item v-if="currentCell.record" label="巡检人">{{ currentCell.record.inspectorName || '-' }}</el-descriptions-item>
           <el-descriptions-item v-if="currentCell.record" label="填写人">{{ currentCell.record.fillerName || '-' }}</el-descriptions-item>
         </el-descriptions>
@@ -92,26 +93,25 @@ const userStore = useUserStore()
 
 const freqText = (f) => ({ 1:'每天', 2:'每周', 3:'每月', 4:'每季度', 5:'每半年', 6:'每年', 7:'一次性' }[f] || '')
 
-const dates = computed(() => currentPlan.value ? buildPlanDates(currentPlan.value) : [])
+const periods = computed(() => currentPlan.value ? buildPeriods(currentPlan.value) : [])
 const matrixRows = computed(() => {
   if (!currentPlan.value) return []
-  return (currentPlan.value.equipmentIds || []).map(id => ({
-    equipmentId: id,
-    equipmentName: (currentPlan.value.equipmentNames || [])[currentPlan.value.equipmentIds.indexOf(id)] || '设备' + id
-  }))
+  const ids = currentPlan.value.equipmentIds || []
+  const names = currentPlan.value.equipmentNames || []
+  return ids.map((id, i) => ({ equipmentId: id, equipmentName: names[i] || '设备' + id }))
 })
-const cellOf = (row, date) => records.value.find(r => r.planId === currentPlan.value.id && r.equipmentId === row.equipmentId && (r.inspectionTime || '').startsWith(date))
-const totalCells = computed(() => matrixRows.value.length * dates.value.length)
-const finishedCount = computed(() => matrixRows.value.reduce((sum, row) => sum + dates.value.filter(d => cellOf(row, d)).length, 0))
+const totalCells = computed(() => matrixRows.value.length * periods.value.length)
+const finishedCount = computed(() => matrixRows.value.reduce((sum, row) => sum + periods.value.filter(p => cellOf(row, p)).length, 0))
 const isFinished = computed(() => totalCells.value > 0 && finishedCount.value >= totalCells.value)
 
-const cellText = (row, date) => {
-  const r = cellOf(row, date)
+const cellOf = (row, period) => records.value.find(r => r.planId === currentPlan.value.id && r.equipmentId === row.equipmentId && periodKeyOf(r) === period.key)
+const cellText = (row, period) => {
+  const r = cellOf(row, period)
   if (!r) return '待巡检'
   return { 1: '正常', 2: '异常', 3: '未巡检' }[r.status] || ''
 }
-const cellClass = (row, date) => {
-  const r = cellOf(row, date)
+const cellClass = (row, period) => {
+  const r = cellOf(row, period)
   if (!r) return 'cell-empty'
   return r.status === 2 ? 'cell-abnormal' : r.status === 1 ? 'cell-normal' : 'cell-missed'
 }
@@ -133,7 +133,7 @@ async function loadPlanDetail(id) {
   if (!currentPlan.value) return
   loading.value = true
   try {
-    const res = await getRecordPage({ pageNum: 1, pageSize: 500, planId: id })
+    const res = await getRecordPage({ pageNum: 1, pageSize: 1000, planId: id })
     records.value = res.data.records
   } finally { loading.value = false }
 }
@@ -142,35 +142,112 @@ async function fetchData() {
   if (searchForm.planId) loadPlanDetail(searchForm.planId)
 }
 
-function buildPlanDates(plan) {
-  const start = plan.startDate ? new Date(plan.startDate + 'T00:00:00') : new Date()
-  const end = plan.endDate ? new Date(plan.endDate + 'T00:00:00') : new Date()
-  if (end < start) return []
+function buildPeriods(plan) {
   const freq = plan.frequencyType || 1
-  const value = (plan.frequencyValue || '').toString()
-  const dates = []
-  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-    if (dates.length >= 90) break
-    const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), day = String(d.getDate()).padStart(2, '0')
-    const fmt = `${y}-${m}-${day}`
-    if (freq === 1) { dates.push(fmt); continue }
-    if (freq === 2) {
-      const week = d.getDay() === 0 ? 7 : d.getDay()
-      if (value.split(',').map(Number).includes(week)) dates.push(fmt)
-      continue
-    }
-    if (freq === 3) {
-      if (Number(value) === d.getDate()) dates.push(fmt)
-      continue
-    }
-    dates.push(fmt)
-  }
-  return dates
+  if (freq === 3) return monthPeriods(12)
+  if (freq === 4) return quarterPeriods(12)
+  if (freq === 5) return halfYearPeriods(10)
+  if (freq === 6) return yearPeriods(10)
+  if (freq === 2) return weekPeriods(plan.startDate, plan.endDate, 52)
+  return dayPeriods(plan.startDate, plan.endDate, 90)
 }
 
-function openCell(row, date) {
-  const record = cellOf(row, date)
-  currentCell.value = { equipmentId: row.equipmentId, equipmentName: row.equipmentName, date, record }
+function dayPeriods(start, end, max) {
+  const list = []
+  const s = start ? new Date(start + 'T00:00:00') : new Date()
+  const e = end ? new Date(end + 'T00:00:00') : new Date()
+  for (let d = new Date(s); d <= e && list.length < max; d.setDate(d.getDate() + 1)) {
+    const key = fmtDate(d)
+    list.push({ key, label: key.slice(5), representative: key })
+  }
+  return list
+}
+
+function weekPeriods(start, end, max) {
+  const list = []
+  const s = start ? new Date(start + 'T00:00:00') : new Date()
+  const e = end ? new Date(end + 'T00:00:00') : new Date()
+  for (let d = new Date(s); d <= e && list.length < max; d.setDate(d.getDate() + 7)) {
+    const key = fmtDate(d)
+    const monday = new Date(d)
+    list.push({ key, label: key.slice(5) + '起', representative: key })
+  }
+  return list
+}
+
+function monthPeriods(count) {
+  const list = []
+  const now = new Date()
+  for (let i = count - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+    list.push({ key, label: key, representative: key + '-01' })
+  }
+  return list
+}
+
+function quarterPeriods(count) {
+  const list = []
+  const now = new Date()
+  const curQuarter = Math.floor(now.getMonth() / 3)
+  const curYear = now.getFullYear()
+  for (let i = count - 1; i >= 0; i--) {
+    const total = curYear * 4 + curQuarter - i
+    const year = Math.floor(total / 4)
+    const quarter = total % 4
+    const month = quarter * 3 + 1
+    const key = `${year}-Q${quarter + 1}`
+    list.push({ key, label: key, representative: `${year}-${String(month).padStart(2, '0')}-01` })
+  }
+  return list
+}
+
+function halfYearPeriods(count) {
+  const list = []
+  const now = new Date()
+  const curHalf = now.getMonth() < 6 ? 0 : 1
+  for (let i = count - 1; i >= 0; i--) {
+    const total = now.getFullYear() * 2 + curHalf - i
+    const year = Math.floor(total / 2)
+    const half = total % 2
+    const month = half === 0 ? 1 : 7
+    const key = `${year}-H${half + 1}`
+    list.push({ key, label: key, representative: `${year}-${String(month).padStart(2, '0')}-01` })
+  }
+  return list
+}
+
+function yearPeriods(count) {
+  const list = []
+  const year = new Date().getFullYear()
+  for (let i = count - 1; i >= 0; i--) {
+    const y = year - i
+    list.push({ key: String(y), label: String(y), representative: `${y}-01-01` })
+  }
+  return list
+}
+
+function periodKeyOf(record) {
+  const t = record.inspectionTime || ''
+  const freq = currentPlan.value.frequencyType
+  if (freq === 3) return t.slice(0, 7)
+  if (freq === 4) {
+    const m = Number(t.slice(5, 7))
+    return t.slice(0, 4) + '-Q' + (Math.floor((m - 1) / 3) + 1)
+  }
+  if (freq === 5) return t.slice(0, 4) + '-H' + (Number(t.slice(5, 7)) <= 6 ? 1 : 2)
+  if (freq === 6) return t.slice(0, 4)
+  if (freq === 2) return t.slice(0, 10)
+  return t.slice(0, 10)
+}
+
+function fmtDate(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+function openCell(row, period) {
+  const record = cellOf(row, period)
+  currentCell.value = { equipmentId: row.equipmentId, equipmentName: row.equipmentName, period, record }
   fillForm.status = record ? (record.status === 2 ? 2 : 1) : 1
   fillForm.abnormalDesc = record?.abnormalDesc || ''
   fillForm.remark = record?.remark || ''
@@ -188,7 +265,7 @@ async function submitCell() {
     planId: plan.id,
     equipmentId: currentCell.value.equipmentId,
     inspectorUserId: inspectorId,
-    inspectionTime: currentCell.value.date + 'T00:00:00',
+    inspectionTime: currentCell.value.period.representative + 'T00:00:00',
     status: fillForm.status,
     abnormalDesc: fillForm.abnormalDesc,
     remark: fillForm.remark
@@ -216,8 +293,8 @@ async function handleRepair() {
 </script>
 
 <style scoped>
-.plan-info { margin-bottom: 16px; border-radius: 8px; }
-.plan-info-row { display: flex; align-items: center; gap: 20px; margin: 6px 0; font-size: 14px; color: #606266; }
+.plan-header-name { font-weight: 600; font-size: 15px; color: #303133; margin-bottom: 8px; }
+.plan-header-meta { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #909399; }
 .matrix-cell { min-height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 4px; font-size: 13px; }
 .cell-empty { color: #909399; background: #f5f7fa; }
 .cell-normal { color: #67c23a; background: #f0f9eb; }
