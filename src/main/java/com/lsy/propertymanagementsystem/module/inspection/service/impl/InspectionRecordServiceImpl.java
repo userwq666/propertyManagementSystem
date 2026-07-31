@@ -5,7 +5,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.common.exception.BusinessException;
 import com.lsy.propertymanagementsystem.common.utils.SecurityUtils;
 import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentDomain;
+import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentMaintenanceDomain;
+import com.lsy.propertymanagementsystem.module.equipment.enums.MaintenanceStatus;
+import com.lsy.propertymanagementsystem.module.equipment.enums.MaintenanceType;
 import com.lsy.propertymanagementsystem.module.equipment.mapper.EquipmentMapper;
+import com.lsy.propertymanagementsystem.module.equipment.mapper.EquipmentMaintenanceMapper;
 import com.lsy.propertymanagementsystem.module.inspection.domain.InspectionPlanDomain;
 import com.lsy.propertymanagementsystem.module.inspection.domain.InspectionRecordLogDomain;
 import com.lsy.propertymanagementsystem.module.inspection.domain.InspectionRecordDomain;
@@ -43,6 +47,9 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
 
     @Autowired
     private EquipmentMapper equipmentMapper;
+
+    @Autowired
+    private EquipmentMaintenanceMapper equipmentMaintenanceMapper;
 
     @Autowired
     private SysUserMapper sysUserMapper;
@@ -134,6 +141,9 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
         }
         domain.setFillerUserId(SecurityUtils.getCurrentUserId());
         inspectionRecordMapper.insert(domain);
+        if (domain.getStatus() == InspectResult.ABNORMAL) {
+            createMaintenanceForAbnormal(domain);
+        }
     }
 
     @Override
@@ -201,6 +211,9 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
         }
         existing.setRemark(dto.getRemark());
         inspectionRecordMapper.updateById(existing);
+        if (existing.getStatus() == InspectResult.ABNORMAL) {
+            createMaintenanceForAbnormal(existing);
+        }
     }
 
     @Override
@@ -289,6 +302,22 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
             item.put("createTime", log.getCreateTime());
             return item;
         }).collect(Collectors.toList());
+    }
+
+    private void createMaintenanceForAbnormal(InspectionRecordDomain record) {
+        if (record.getEquipmentId() == null) return;
+        String remark = "巡检异常-记录ID:" + record.getId();
+        Long exists = equipmentMaintenanceMapper.selectCount(
+                new LambdaQueryWrapper<EquipmentMaintenanceDomain>().eq(EquipmentMaintenanceDomain::getRemark, remark));
+        if (exists > 0) return;
+        EquipmentMaintenanceDomain maintenance = new EquipmentMaintenanceDomain();
+        maintenance.setEquipmentId(record.getEquipmentId());
+        maintenance.setMaintenanceType(MaintenanceType.FAULT_REPAIR);
+        maintenance.setMaintenanceContent(record.getAbnormalDesc() != null ? record.getAbnormalDesc() : "巡检异常");
+        maintenance.setMaintenancePersonnelId(record.getInspectorUserId());
+        maintenance.setStatus(MaintenanceStatus.PENDING);
+        maintenance.setRemark(remark);
+        equipmentMaintenanceMapper.insert(maintenance);
     }
 
     private InspectionRecordVO convertToVO(InspectionRecordDomain record) {
