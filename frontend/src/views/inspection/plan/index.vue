@@ -93,7 +93,7 @@ const rules = { planName: [{ required: true, message: '请输入', trigger: 'blu
 onMounted(async () => {
   fetchData()
   try { const e = await getEquipmentPage({ pageNum: 1, pageSize: 200 }); equipments.value = e.data.records } catch (e) { /* 无权限忽略 */ }
-  try { const u = await getUserPage({ pageNum: 1, pageSize: 200 }); users.value = u.data.records } catch (e) { /* 无权限忽略 */ }
+  try { const u = await getUserPage({ pageNum: 1, pageSize: 200 }); users.value = (u.data.records || []).filter(x => x.roleName === '巡检员') } catch (e) { /* 无权限忽略 */ }
 })
 async function fetchData() { loading.value=true; try{const r=await getPlanPage({...searchForm});tableData.value=r.data.records;total.value=r.data.total}finally{loading.value=false} }
 function handleSearch(){searchForm.pageNum=1;fetchData()}
