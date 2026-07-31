@@ -23,7 +23,7 @@
     <div class="table-container">
       <div class="toolbar">
         <div class="toolbar-left">
-          <el-button type="primary" @click="handleAdd" v-permission="'equipment:list:add'">新增设备</el-button>
+          <el-button v-if="isAdmin" type="primary" @click="handleAdd" v-permission="'equipment:list:add'">新增设备</el-button>
         </div>
         <div class="toolbar-right"><el-button @click="fetchData">刷新</el-button></div>
       </div>
@@ -42,9 +42,12 @@
         <el-table-column prop="createTime" label="创建时间" width="180" />
         <el-table-column label="操作" min-width="240" class-name="action-column" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'equipment:list:edit'">编辑</el-button>
-            <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'equipment:list:delete'">删除</el-button>
-            <el-button size="small" @click="handleStatus(row)" v-permission="'equipment:list:edit'">状态</el-button>
+            <el-button size="small" @click="handleDetail(row)" v-permission="'equipment:list:list'">详情</el-button>
+            <template v-if="isAdmin">
+              <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'equipment:list:edit'">编辑</el-button>
+              <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'equipment:list:delete'">删除</el-button>
+              <el-button size="small" @click="handleStatus(row)" v-permission="'equipment:list:edit'">状态</el-button>
+            </template>
           </template>
         </el-table-column>
       </el-table>
@@ -52,6 +55,29 @@
         :total="total" :page-sizes="[10, 20, 50]" layout="total, sizes, prev, pager, next"
         @size-change="fetchData" @current-change="fetchData" style="margin-top:16px;justify-content:flex-end" />
     </div>
+
+    <!-- 详情 -->
+    <el-dialog title="设备详情" v-model="detailDialogVisible" width="640px">
+      <el-descriptions :column="2" border v-if="detailRow">
+        <el-descriptions-item label="设备名称" :span="2">{{ detailRow.equipmentName }}</el-descriptions-item>
+        <el-descriptions-item label="设备编号">{{ detailRow.equipmentNo }}</el-descriptions-item>
+        <el-descriptions-item label="分类">{{ detailRow.categoryName || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="品牌">{{ detailRow.brand || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="型号">{{ detailRow.model || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="规格" :span="2">{{ detailRow.spec || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="位置">{{ detailRow.location || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="楼栋">{{ detailRow.buildingNo || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="楼层">{{ detailRow.floor || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="安装日期">{{ detailRow.installDate || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="维保到期">{{ detailRow.warrantyEndDate || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="状态">
+          <el-tag :type="statusType(detailRow.status)">{{ statusText(detailRow.status) }}</el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="创建时间">{{ detailRow.createTime }}</el-descriptions-item>
+        <el-descriptions-item label="二维码">{{ detailRow.qrCode || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="备注" :span="2">{{ detailRow.remark || '-' }}</el-descriptions-item>
+      </el-descriptions>
+    </el-dialog>
 
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="600px" @close="resetForm">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
@@ -128,15 +154,19 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { addEquipment, updateEquipment, deleteEquipment, getEquipmentPage, updateEquipmentStatus } from '@/api/equipment/equipment'
 import { getCategoryPage } from '@/api/equipment/category'
 import { getBuildingPage } from '@/api/community/building'
+import { useUserStore } from '@/stores/user'
 
 const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)
 const dialogVisible = ref(false)
+const detailDialogVisible = ref(false)
 const formRef = ref(null)
 const isEdit = ref(false)
+const detailRow = ref(null)
 const categories = ref([])
 const buildings = ref([])
+const userStore = useUserStore()
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, categoryId: '', status: '', equipmentName: '' })
 const form = reactive({
@@ -149,6 +179,7 @@ const statusDialogVisible = ref(false)
 const statusForm = reactive({ id: null, status: 1 })
 
 const dialogTitle = computed(() => isEdit.value ? '编辑设备' : '新增设备')
+const isAdmin = computed(() => userStore.roles.includes('超级管理员') || userStore.roles.includes('物业管理员') || userStore.userInfo.roleName === '超级管理员' || userStore.userInfo.roleName === '物业管理员')
 const rules = {
   equipmentName: [{ required: true, message: '请输入设备名称', trigger: 'blur' }],
   equipmentNo: [{ required: true, message: '请输入设备编号', trigger: 'blur' }],
@@ -184,6 +215,7 @@ function handleSearch() { searchForm.pageNum = 1; fetchData() }
 function resetSearch() { Object.assign(searchForm, { pageNum: 1, pageSize: 10, categoryId: '', status: '', equipmentName: '' }); fetchData() }
 function handleAdd() { isEdit.value = false; resetForm(); dialogVisible.value = true }
 function handleEdit(row) { isEdit.value = true; Object.assign(form, { ...row, installDate: row.installDate || row.purchaseDate || '', warrantyEndDate: row.warrantyEndDate || row.warrantyExpire || '' }); dialogVisible.value = true }
+function handleDetail(row) { detailRow.value = row; detailDialogVisible.value = true }
 function resetForm() { formRef.value?.resetFields(); form.id = null }
 
 async function handleSubmit() {
