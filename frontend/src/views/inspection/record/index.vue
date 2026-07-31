@@ -150,7 +150,7 @@ onMounted(async () => {
   fetchData()
   try { const p = await getPlanPage({ pageNum: 1, pageSize: 200 }); plans.value = p.data.records } catch (e) { /* 无权限忽略 */ }
   try { const e = await getEquipmentPage({ pageNum: 1, pageSize: 200 }); equipments.value = e.data.records } catch (e) { /* 无权限忽略 */ }
-  try { const u = await getUserPage({ pageNum: 1, pageSize: 200 }); users.value = u.data.records } catch (e) { /* 无权限忽略 */ }
+  try { const u = await getUserPage({ pageNum: 1, pageSize: 200 }); users.value = (u.data.records || []).filter(x => x.roleName === '巡检员') } catch (e) { /* 无权限忽略 */ }
 })
 
 async function fetchData() {
