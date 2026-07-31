@@ -69,7 +69,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getRoleList, getRoleById, addRole, updateRole, deleteRole, getRoleMenus, assignMenus } from '@/api/system/role'
+import { getRoleList, addRole, updateRole, deleteRole, getRoleMenus, assignMenus } from '@/api/system/role'
 import { getMenuTree } from '@/api/system/menu'
 
 const loading = ref(false)

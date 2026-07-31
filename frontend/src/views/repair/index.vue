@@ -184,7 +184,7 @@
 <script setup>
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { addRepair, updateRepair, deleteRepair, getRepairById, getRepairPage, updateRepairStatus, updateRepairRating, getRepairHouses, getRepairEquipments } from '@/api/repair/record'
+import { addRepair, updateRepair, deleteRepair, getRepairPage, updateRepairStatus, updateRepairRating, getRepairHouses, getRepairEquipments } from '@/api/repair/record'
 import { getOwnerPage } from '@/api/community/owner'
 import { getUserPage } from '@/api/system/user'
 import { useUserStore } from '@/stores/user'

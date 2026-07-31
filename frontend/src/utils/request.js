@@ -1,7 +1,6 @@
 ﻿import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import { getToken, removeToken } from '@/utils/auth'
-import { useUserStore } from '@/stores/user'
 import router from '@/router'
 
 const request = axios.create({

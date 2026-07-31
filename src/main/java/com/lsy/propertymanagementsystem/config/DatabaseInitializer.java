@@ -57,7 +57,7 @@ public class DatabaseInitializer {
                 "sql/06_equipment.sql",
                 "sql/07_inspection.sql",
                 "sql/08_announcement.sql",
-                "sql/99_stats.sql"
+                    "sql/09_stats.sql"
             };
             for (String file : sqlFiles) {
                 executeSqlFile(connection, file, file);
