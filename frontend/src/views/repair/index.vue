@@ -218,7 +218,7 @@ const dialogTitle = computed(() => isEdit.value ? '编辑报修' : '新增报修
 const isAdmin = computed(() => userStore.roles.includes('超级管理员') || userStore.roles.includes('物业管理员') || userStore.userInfo.roleName === '超级管理员' || userStore.userInfo.roleName === '物业管理员')
 const isWorker = computed(() => userStore.roles.includes('维修工') || userStore.userInfo.roleName === '维修工')
 const isOwner = computed(() => userStore.roles.includes('业主') || userStore.userInfo.roleName === '业主')
-const userId = computed(() => userStore.userInfo.id)
+const userId = computed(() => userStore.userInfo.id || userStore.userInfo.userId)
 const typeText = (t) => ({ 水电: '水电维修', 门窗: '门窗维修', 家电: '电器维修', 公共设施: '公共设施', 其他: '其他' }[t] || t || '')
 const statusTag = (s) => ({ 0: 'info', 1: 'warning', 2: 'primary', 3: 'success', 4: 'danger' }[s] || 'info')
 const statusText = (s) => ({ 0: '待派单', 1: '处理中', 2: '待确认', 3: '已完成', 4: '已取消' }[s] || '')
