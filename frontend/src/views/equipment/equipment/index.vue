@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div>
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="设备分类">
