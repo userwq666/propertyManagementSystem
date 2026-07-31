@@ -50,6 +50,7 @@
         ref="menuTreeRef"
         :data="menuTree"
         show-checkbox
+        check-strictly
         node-key="id"
         default-expand-all
         :props="{ label: 'menuName', children: 'children' }"
@@ -137,12 +138,26 @@ async function handleAssignMenus(row) {
 
 async function submitMenuAssign() {
   const checkedKeys = menuTreeRef.value.getCheckedKeys()
-  const halfKeys = menuTreeRef.value.getHalfCheckedKeys()
-  const menuIds = [...checkedKeys, ...halfKeys]
+  const menuIds = collectAncestors(checkedKeys)
   try {
     await assignMenus(currentRoleId.value, menuIds)
     ElMessage.success('菜单分配成功')
     menuDialogVisible.value = false
   } catch (e) { /* handled */ } finally { submitting.value = false }
+}
+
+function collectAncestors(ids) {
+  const idSet = new Set(ids)
+  const walk = (nodes, chain) => {
+    for (const node of nodes || []) {
+      const newChain = [...chain, node.id]
+      if (idSet.has(node.id)) {
+        newChain.forEach(id => idSet.add(id))
+      }
+      if (node.children) walk(node.children, newChain)
+    }
+  }
+  walk(menuTree.value, [])
+  return [...idSet]
 }
 </script>
