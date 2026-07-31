@@ -7,6 +7,7 @@ import com.lsy.propertymanagementsystem.common.utils.SecurityUtils;
 import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentDomain;
 import com.lsy.propertymanagementsystem.module.equipment.mapper.EquipmentMapper;
 import com.lsy.propertymanagementsystem.module.inspection.domain.InspectionPlanDomain;
+import com.lsy.propertymanagementsystem.module.inspection.domain.InspectionRecordLogDomain;
 import com.lsy.propertymanagementsystem.module.inspection.domain.InspectionRecordDomain;
 import com.lsy.propertymanagementsystem.module.inspection.dto.InspectionRecordDTO;
 import com.lsy.propertymanagementsystem.module.inspection.dto.InspectionRecordVO;
@@ -14,6 +15,7 @@ import com.lsy.propertymanagementsystem.module.inspection.enums.HandleStatus;
 import com.lsy.propertymanagementsystem.module.inspection.enums.InspectResult;
 import com.lsy.propertymanagementsystem.module.inspection.enums.TaskStatus;
 import com.lsy.propertymanagementsystem.module.inspection.mapper.InspectionPlanMapper;
+import com.lsy.propertymanagementsystem.module.inspection.mapper.InspectionRecordLogMapper;
 import com.lsy.propertymanagementsystem.module.inspection.mapper.InspectionRecordMapper;
 import com.lsy.propertymanagementsystem.module.inspection.service.InspectionRecordService;
 import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordDTO;
@@ -47,6 +49,9 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
 
     @Autowired
     private RepairRecordService repairRecordService;
+
+    @Autowired
+    private InspectionRecordLogMapper recordLogMapper;
 
     @Override
     public Page<InspectionRecordVO> page(int pageNum, int pageSize, Long planId, Long equipmentId) {
@@ -159,11 +164,18 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
         if (!isManager && !currentUserId.equals(existing.getInspectorUserId())) {
             throw new BusinessException("只能填写自己负责的巡检记录");
         }
-        if (existing.getStatus() != null && existing.getStatus() != InspectResult.NOT_INSPECTED) {
-            throw new BusinessException("该周期已打卡，不能重复修改");
+        boolean alreadyChecked = existing.getStatus() != null && existing.getStatus() != InspectResult.NOT_INSPECTED;
+        if (alreadyChecked) {
+            if (!isManager) {
+                throw new BusinessException("该周期已打卡，不能重复修改");
+            }
+            if (dto.getReason() == null || dto.getReason().isBlank()) {
+                throw new BusinessException("管理员修改必须填写修改原因");
+            }
         }
         if (dto.getStatus() != null) {
             InspectResult result = InspectResult.of(dto.getStatus());
+            InspectResult before = existing.getStatus();
             existing.setStatus(result);
             existing.setAbnormalDesc(dto.getAbnormalDesc());
             existing.setAbnormalImages(dto.getAbnormalImages());
@@ -176,6 +188,15 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
             existing.setTaskStatus(TaskStatus.DONE);
             if (existing.getFillerUserId() == null) {
                 existing.setFillerUserId(currentUserId);
+            }
+            if (alreadyChecked) {
+                InspectionRecordLogDomain log = new InspectionRecordLogDomain();
+                log.setRecordId(existing.getId());
+                log.setOperatorId(currentUserId);
+                log.setBeforeStatus(before);
+                log.setAfterStatus(result);
+                log.setReason(dto.getReason());
+                recordLogMapper.insert(log);
             }
         }
         existing.setRemark(dto.getRemark());
@@ -242,6 +263,32 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
         record.setRepairRecordId(repairId);
         inspectionRecordMapper.updateById(record);
         return repairId;
+    }
+
+    @Override
+    public List<Map<String, Object>> listRecordLogs(Long recordId) {
+        List<InspectionRecordLogDomain> logs = recordLogMapper.selectList(
+                new LambdaQueryWrapper<InspectionRecordLogDomain>()
+                        .eq(InspectionRecordLogDomain::getRecordId, recordId)
+                        .orderByDesc(InspectionRecordLogDomain::getCreateTime));
+        Set<Long> operatorIds = logs.stream()
+                .map(InspectionRecordLogDomain::getOperatorId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        Map<Long, String> nameMap = new HashMap<>();
+        if (!operatorIds.isEmpty()) {
+            sysUserMapper.selectBatchIds(operatorIds).forEach(u -> nameMap.put(u.getId(), u.getRealName()));
+        }
+        return logs.stream().map(log -> {
+            Map<String, Object> item = new HashMap<>();
+            item.put("id", log.getId());
+            item.put("operatorName", nameMap.get(log.getOperatorId()));
+            item.put("beforeStatus", log.getBeforeStatus() == null ? null : log.getBeforeStatus().getValue());
+            item.put("afterStatus", log.getAfterStatus() == null ? null : log.getAfterStatus().getValue());
+            item.put("reason", log.getReason());
+            item.put("createTime", log.getCreateTime());
+            return item;
+        }).collect(Collectors.toList());
     }
 
     private InspectionRecordVO convertToVO(InspectionRecordDomain record) {

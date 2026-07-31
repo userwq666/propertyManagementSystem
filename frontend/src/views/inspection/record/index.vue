@@ -28,6 +28,7 @@
           </template>
           <template #default="{ row }">
             <b>{{ row.equipmentName }}</b>
+            <div><el-button link type="primary" size="small" @click="showPlanDetail">巡检计划详情</el-button></div>
           </template>
         </el-table-column>
         <el-table-column v-for="p in periods" :key="p.key" :label="p.label" min-width="96" align="center">
@@ -53,13 +54,17 @@
           <el-descriptions-item v-if="currentCell.record" label="巡检人">{{ currentCell.record.inspectorName || '-' }}</el-descriptions-item>
           <el-descriptions-item v-if="currentCell.record" label="填写人">{{ currentCell.record.fillerName || '-' }}</el-descriptions-item>
         </el-descriptions>
-        <el-alert v-if="currentCell.record" type="info" :closable="false" show-icon title="该周期已打卡，不能重复修改" style="margin-top:16px" />
-        <el-form v-if="!currentCell.record" :model="fillForm" label-width="90px" style="margin-top:16px">
+        <el-alert v-if="currentCell.record && !isManager" type="info" :closable="false" show-icon title="该周期已打卡，不能重复修改" style="margin-top:16px" />
+        <el-alert v-if="currentCell.record && isManager" type="warning" :closable="false" show-icon title="高危操作：修改已打卡记录必须填写修改原因并留痕" style="margin-top:16px" />
+        <el-form v-if="!currentCell.record || isManager" :model="fillForm" label-width="90px" style="margin-top:16px">
           <el-form-item label="巡检结果">
             <el-radio-group v-model="fillForm.status">
               <el-radio :value="1">正常</el-radio>
               <el-radio :value="2">异常</el-radio>
             </el-radio-group>
+          </el-form-item>
+          <el-form-item v-if="currentCell.record && isManager" label="修改原因" required>
+            <el-input v-model="fillForm.reason" type="textarea" :rows="2" placeholder="管理员修改必须填写修改原因" />
           </el-form-item>
           <el-form-item v-if="fillForm.status === 2" label="异常描述">
             <el-input v-model="fillForm.abnormalDesc" type="textarea" :rows="3" />
@@ -68,12 +73,36 @@
             <el-input v-model="fillForm.remark" type="textarea" :rows="2" />
           </el-form-item>
         </el-form>
+        <div v-if="currentCell.record && logs.length" style="margin-top:16px">
+          <div class="log-title">修改记录</div>
+          <el-table :data="logs" size="small" border>
+            <el-table-column prop="createTime" label="时间" width="160" />
+            <el-table-column prop="operatorName" label="操作人" width="90" />
+            <el-table-column label="变更" width="110">
+              <template #default="{ row }">{{ resultText(row.beforeStatus) }} → {{ resultText(row.afterStatus) }}</template>
+            </el-table-column>
+            <el-table-column prop="reason" label="原因" show-overflow-tooltip />
+          </el-table>
+        </div>
       </template>
       <template #footer>
         <el-button @click="taskDialogVisible = false">取消</el-button>
-        <el-button v-if="!currentCell.record" type="primary" @click="submitCell">保存打卡</el-button>
+        <el-button v-if="!currentCell.record || isManager" type="primary" @click="submitCell">{{ currentCell.record ? '保存修改' : '保存打卡' }}</el-button>
         <el-button v-if="currentCell && currentCell.record && currentCell.record.status === 2 && !currentCell.record.repairRecordId" type="danger" @click="handleRepair">生成报修单</el-button>
       </template>
+    </el-dialog>
+
+    <!-- 计划详情 -->
+    <el-dialog title="巡检计划详情" v-model="planDetailVisible" width="600px">
+      <el-descriptions :column="2" border v-if="currentPlan">
+        <el-descriptions-item label="计划名称" :span="2">{{ currentPlan.planName }}</el-descriptions-item>
+        <el-descriptions-item label="开始日期">{{ currentPlan.startDate || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="结束日期">{{ currentPlan.endDate || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="频率">{{ freqText(currentPlan.frequencyType) }}</el-descriptions-item>
+        <el-descriptions-item label="巡检员">{{ (currentPlan.inspectorNames || []).join('、') || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="设备" :span="2">{{ (currentPlan.equipmentNames || []).join('、') || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="备注" :span="2">{{ currentPlan.remark || '-' }}</el-descriptions-item>
+      </el-descriptions>
     </el-dialog>
   </div>
 </template>
@@ -81,7 +110,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { addRecord, updateRecord, getRecordPage, createRecordRepair } from '@/api/inspection/record'
+import { addRecord, updateRecord, getRecordPage, createRecordRepair, getRecordLogs } from '@/api/inspection/record'
 import { getPlanPage } from '@/api/inspection/plan'
 import { useUserStore } from '@/stores/user'
 
@@ -92,10 +121,14 @@ const searchForm = reactive({ planId: '' })
 const currentPlan = ref(null)
 const currentCell = ref(null)
 const taskDialogVisible = ref(false)
-const fillForm = reactive({ status: 1, abnormalDesc: '', remark: '' })
+const planDetailVisible = ref(false)
+const logs = ref([])
+const fillForm = reactive({ status: 1, abnormalDesc: '', remark: '', reason: '' })
 const userStore = useUserStore()
 
 const freqText = (f) => ({ 1:'每天', 2:'每周', 3:'每月', 4:'每季度', 5:'每半年', 6:'每年', 7:'一次性' }[f] || '')
+const isManager = computed(() => userStore.roles.includes('超级管理员') || userStore.roles.includes('物业管理员') || userStore.userInfo.roleName === '超级管理员' || userStore.userInfo.roleName === '物业管理员')
+const resultText = (s) => ({ 1: '正常', 2: '异常', 3: '未巡检' }[s] || '-')
 
 const periods = computed(() => currentPlan.value ? buildPeriods(currentPlan.value) : [])
 const matrixRows = computed(() => {
@@ -269,10 +302,23 @@ function openCell(row, period) {
   fillForm.status = record ? (record.status === 2 ? 2 : 1) : 1
   fillForm.abnormalDesc = record?.abnormalDesc || ''
   fillForm.remark = record?.remark || ''
+  fillForm.reason = ''
+  logs.value = []
+  if (record) {
+    getRecordLogs(record.id).then(res => { logs.value = res.data || [] }).catch(() => {})
+  }
   taskDialogVisible.value = true
 }
 
+function showPlanDetail() {
+  planDetailVisible.value = true
+}
+
 async function submitCell() {
+  if (currentCell.value.record && isManager.value && !fillForm.reason.trim()) {
+    ElMessage.warning('管理员修改必须填写修改原因')
+    return
+  }
   if (fillForm.status === 2 && !fillForm.abnormalDesc) {
     ElMessage.warning('异常必须填写异常描述')
     return
@@ -286,7 +332,8 @@ async function submitCell() {
     inspectionTime: currentCell.value.period.representative + 'T00:00:00',
     status: fillForm.status,
     abnormalDesc: fillForm.abnormalDesc,
-    remark: fillForm.remark
+    remark: fillForm.remark,
+    reason: fillForm.reason
   }
   try {
     if (currentCell.value.record) {
@@ -319,4 +366,5 @@ async function handleRepair() {
 .cell-normal { color: #67c23a; background: #f0f9eb; }
 .cell-abnormal { color: #f56c6c; background: #fef0f0; }
 .cell-missed { color: #e6a23c; background: #fdf6ec; }
+.log-title { font-weight: 600; font-size: 14px; color: #303133; margin-bottom: 8px; }
 </style>

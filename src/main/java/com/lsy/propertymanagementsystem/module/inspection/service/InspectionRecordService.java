@@ -6,6 +6,8 @@ import com.lsy.propertymanagementsystem.module.inspection.dto.InspectionRecordDT
 import com.lsy.propertymanagementsystem.module.inspection.dto.InspectionRecordVO;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 public interface InspectionRecordService {
     Page<InspectionRecordVO> page(int pageNum, int pageSize, Long planId, Long equipmentId);
@@ -18,4 +20,5 @@ public interface InspectionRecordService {
     long countByPlanAndDate(Long planId, LocalDate date);
     void acceptRecord(Long id);
     Long createRepairForAbnormal(Long id);
+    List<Map<String, Object>> listRecordLogs(Long recordId);
 }

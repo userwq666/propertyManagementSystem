@@ -68,4 +68,10 @@ public class InspectionRecordController {
         Long repairId = inspectionRecordService.createRepairForAbnormal(id);
         return Result.success(repairId);
     }
+
+    @PreAuthorize("hasAuthority('inspection:record:list')")
+    @GetMapping("/{id}/logs")
+    public Result logs(@PathVariable Long id) {
+        return Result.success(inspectionRecordService.listRecordLogs(id));
+    }
 }

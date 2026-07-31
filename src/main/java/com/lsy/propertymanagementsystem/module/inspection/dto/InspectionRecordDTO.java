@@ -34,4 +34,5 @@ public class InspectionRecordDTO {
     private BigDecimal locationLng;
     private String locationAddress;
     private String remark;
+    private String reason;
 }

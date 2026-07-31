@@ -27,3 +27,7 @@ export function acceptRecord(id) {
 export function createRecordRepair(id) {
   return request({ url: `/inspection/record/${id}/repair`, method: 'post' })
 }
+
+export function getRecordLogs(id) {
+  return request({ url: `/inspection/record/${id}/logs`, method: 'get' })
+}
