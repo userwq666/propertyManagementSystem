@@ -214,16 +214,4 @@ async function confirmStatusChange() {
     fetchData()
   } catch (e) { /* handled */ }
 }
-    inputValue: row.status,
-    inputOptions: [
-      { label: '正常', value: 1 },
-      { label: '故障', value: 2 },
-      { label: '维修中', value: 3 },
-      { label: '停用', value: 4 },
-      { label: '报废', value: 5 }
-    ]
-  }).catch(() => null)
-  if (newStatus == null) return
-  try { await updateEquipmentStatus({ id: row.id, status: newStatus }); ElMessage.success('状态修改成功'); fetchData() } catch (e) { /* handled */ }
-}
 </script>
