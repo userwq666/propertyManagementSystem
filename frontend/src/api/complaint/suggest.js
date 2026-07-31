@@ -16,6 +16,10 @@ export function getComplaintPage(params) {
   return request({ url: '/complaint/suggest/page', method: 'get', params })
 }
 
+export function getComplaintById(id) {
+  return request({ url: `/complaint/suggest/${id}`, method: 'get' })
+}
+
 export function updateComplaintStatus(params) {
   return request({ url: '/complaint/suggest/status', method: 'put', params })
 }

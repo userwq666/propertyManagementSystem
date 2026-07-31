@@ -452,6 +452,16 @@ INSERT INTO sys_role_menu (role_id, menu_id) VALUES
 (6,11),(6,12),(6,13),  -- 收费管理目录、收费项目、收费记录
 (6,57),(6,58);  -- 收费记录：生成账单、缴纳费用
 
+-- 统计面板子权限（admin/property_admin）
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(95, 27, '费用统计', NULL, '', '', 'statistics:fee:list', 2, 1, 1),
+(96, 27, '报修统计', NULL, '', '', 'statistics:repair:list', 2, 2, 1),
+(97, 27, '设备统计', NULL, '', '', 'statistics:equipment:list', 2, 3, 1),
+(98, 27, '投诉统计', NULL, '', '', 'statistics:complaint:list', 2, 4, 1),
+(99, 27, '巡检统计', NULL, '', '', 'statistics:inspection:list', 2, 5, 1);
+INSERT INTO sys_role_menu (role_id, menu_id) SELECT 1, id FROM sys_menu WHERE id BETWEEN 95 AND 99;
+INSERT INTO sys_role_menu (role_id, menu_id) SELECT 2, id FROM sys_menu WHERE id BETWEEN 95 AND 99;
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 

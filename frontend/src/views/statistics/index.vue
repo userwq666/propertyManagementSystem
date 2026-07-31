@@ -2,28 +2,40 @@
   <div class="statistics-container">
     <!-- 统计卡片 -->
     <el-row :gutter="16" class="stat-cards">
-      <el-col :span="6">
+      <el-col :span="4">
         <el-card shadow="hover" class="stat-card">
           <div class="stat-value">{{ overview.totalOwner || 0 }}</div>
           <div class="stat-label">总业主数</div>
         </el-card>
       </el-col>
-      <el-col :span="6">
+      <el-col :span="4">
         <el-card shadow="hover" class="stat-card">
           <div class="stat-value">{{ overview.totalHouse || 0 }}</div>
           <div class="stat-label">总房屋数</div>
         </el-card>
       </el-col>
-      <el-col :span="6">
+      <el-col :span="4">
         <el-card shadow="hover" class="stat-card">
           <div class="stat-value">{{ overview.monthlyFee || 0 }}</div>
           <div class="stat-label">本月收费(元)</div>
         </el-card>
       </el-col>
-      <el-col :span="6">
+      <el-col :span="4">
         <el-card shadow="hover" class="stat-card">
           <div class="stat-value">{{ overview.pendingRepair || 0 }}</div>
           <div class="stat-label">待处理报修</div>
+        </el-card>
+      </el-col>
+      <el-col :span="4">
+        <el-card shadow="hover" class="stat-card">
+          <div class="stat-value">{{ overview.pendingComplaint || 0 }}</div>
+          <div class="stat-label">待处理投诉</div>
+        </el-card>
+      </el-col>
+      <el-col :span="4">
+        <el-card shadow="hover" class="stat-card">
+          <div class="stat-value">{{ overview.equipmentFault || 0 }}</div>
+          <div class="stat-label">故障设备</div>
         </el-card>
       </el-col>
     </el-row>

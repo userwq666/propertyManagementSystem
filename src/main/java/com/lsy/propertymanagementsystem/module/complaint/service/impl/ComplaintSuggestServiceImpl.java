@@ -45,8 +45,11 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
     @Override
     public Page<ComplaintSuggestVO> page(int pageNum, int pageSize, Long ownerId, String type, Integer status) {
         LambdaQueryWrapper<ComplaintSuggestDomain> wrapper = new LambdaQueryWrapper<>();
-        if (ownerId != null) {
-            wrapper.eq(ComplaintSuggestDomain::getOwnerId, SecurityUtils.isOwner() ? SecurityUtils.getCurrentUserId() : ownerId);
+        if (SecurityUtils.isOwner()) {
+            // 业主只能查看自己提交的投诉
+            wrapper.eq(ComplaintSuggestDomain::getOwnerId, getCurrentOwnerId());
+        } else if (ownerId != null) {
+            wrapper.eq(ComplaintSuggestDomain::getOwnerId, ownerId);
         }
         if (type != null && !type.isEmpty()) {
             wrapper.eq(ComplaintSuggestDomain::getType, ComplaintType.of(Integer.parseInt(type)));
@@ -97,6 +100,16 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
     @Override
     @Transactional
     public void add(ComplaintSuggestDTO dto) {
+        if (SecurityUtils.isOwner()) {
+            // 业主提交投诉强制归属自己
+            dto.setOwnerId(getCurrentOwnerId());
+        }
+        if (dto.getOwnerId() == null) {
+            throw new BusinessException("请选择业主");
+        }
+        if (dto.getHouseId() == null) {
+            throw new BusinessException("请选择房屋");
+        }
         ComplaintSuggestDomain domain = new ComplaintSuggestDomain();
         BeanUtils.copyProperties(dto, domain);
         domain.prepareAdd();
@@ -107,16 +120,33 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
     @Override
     @Transactional
     public void update(ComplaintSuggestDTO dto) {
-        ComplaintSuggestDomain domain = new ComplaintSuggestDomain();
-        BeanUtils.copyProperties(dto, domain);
-        ComplaintSuggestDomain existing = this.getById(domain.getId());
+        ComplaintSuggestDomain existing = this.getById(dto.getId());
         if (existing == null) {
             throw new BusinessException("投诉建议不存在");
         }
+        if (existing.getStatus() != ComplaintStatus.PENDING) {
+            throw new BusinessException("仅待受理状态可编辑");
+        }
+        if (SecurityUtils.isOwner() && !Objects.equals(existing.getOwnerId(), getCurrentOwnerId())) {
+            throw new BusinessException("只能编辑自己的投诉");
+        }
+        ComplaintSuggestDomain domain = new ComplaintSuggestDomain();
+        BeanUtils.copyProperties(dto, domain);
         existing.setType(domain.getType());
         existing.setCategory(domain.getCategory());
         existing.setContent(domain.getContent());
+        existing.setImages(domain.getImages());
+        existing.setIsAnonymous(domain.getIsAnonymous());
         this.updateById(existing);
+    }
+
+    @Override
+    public ComplaintSuggestVO getDetail(Long id) {
+        ComplaintSuggestDomain domain = this.getById(id);
+        if (domain == null) {
+            return null;
+        }
+        return convertToVO(Collections.singletonList(domain)).get(0);
     }
 
     // 删除投诉建议
@@ -135,15 +165,55 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
             throw new BusinessException("投诉建议不存在");
         }
         ComplaintStatus newStatus = ComplaintStatus.of(status);
-        if (newStatus == ComplaintStatus.ACCEPTED) {
+        boolean isManager = !SecurityUtils.isOwner();
+        if (newStatus != ComplaintStatus.CANCELLED && !isManager) {
+            throw new BusinessException("无权执行该操作");
+        }
+        if (newStatus == ComplaintStatus.CANCELLED) {
+            // 业主撤销或管理员撤销：仅待受理/已受理状态
+            if (domain.getStatus() != ComplaintStatus.PENDING && domain.getStatus() != ComplaintStatus.ACCEPTED) {
+                throw new BusinessException("当前状态不可撤销");
+            }
+            if (SecurityUtils.isOwner() && !Objects.equals(domain.getOwnerId(), getCurrentOwnerId())) {
+                throw new BusinessException("只能撤销自己的投诉");
+            }
+            domain.setStatus(ComplaintStatus.CANCELLED);
+        } else if (newStatus == ComplaintStatus.ACCEPTED) {
+            if (domain.getStatus() != ComplaintStatus.PENDING) {
+                throw new BusinessException("仅待受理状态可受理");
+            }
+            if (handlerId == null) {
+                throw new BusinessException("受理必须指定处理人");
+            }
             domain.assignHandler(handlerId);
+        } else if (newStatus == ComplaintStatus.PROCESSING) {
+            if (domain.getStatus() != ComplaintStatus.ACCEPTED) {
+                throw new BusinessException("仅已受理状态可开始处理");
+            }
+            domain.setStatus(ComplaintStatus.PROCESSING);
         } else if (newStatus == ComplaintStatus.REPLIED) {
+            if (domain.getStatus() != ComplaintStatus.PROCESSING && domain.getStatus() != ComplaintStatus.ACCEPTED) {
+                throw new BusinessException("当前状态不可回复");
+            }
+            if (handleContent == null || handleContent.isBlank()) {
+                throw new BusinessException("回复必须填写处理内容");
+            }
             domain.reply(handleContent);
         } else if (newStatus == ComplaintStatus.CLOSED) {
+            if (domain.getStatus() != ComplaintStatus.REPLIED) {
+                throw new BusinessException("仅已回复状态可关闭");
+            }
             domain.close();
         } else {
-            domain.setStatus(newStatus);
+            throw new BusinessException("不支持的状态流转");
         }
         this.updateById(domain);
+    }
+
+    private Long getCurrentOwnerId() {
+        CommunityOwnerDomain owner = communityOwnerMapper.selectOne(
+                new LambdaQueryWrapper<CommunityOwnerDomain>()
+                        .eq(CommunityOwnerDomain::getUserId, SecurityUtils.getCurrentUserId()));
+        return owner != null ? owner.getId() : -1L;
     }
 }

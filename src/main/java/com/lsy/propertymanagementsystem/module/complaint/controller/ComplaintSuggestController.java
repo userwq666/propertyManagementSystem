@@ -49,7 +49,13 @@ public class ComplaintSuggestController {
         return Result.success(page);
     }
 
-    @PreAuthorize("hasAuthority('complaint:list:edit')")
+    @PreAuthorize("hasAuthority('complaint:list:list')")
+    @GetMapping("/{id}")
+    public Result getById(@PathVariable Long id) {
+        return Result.success(complaintSuggestService.getDetail(id));
+    }
+
+    @PreAuthorize("hasAuthority('complaint:list:edit') or hasAuthority('complaint:list:add')")
     @PutMapping("/status")
     public Result updateStatus(@RequestParam Long id,
                                @RequestParam Integer status,

@@ -11,6 +11,8 @@ public interface ComplaintSuggestService {
     void update(ComplaintSuggestDTO domain);
     // 删除投诉建议
     void delete(Long id);
+    // 详情
+    ComplaintSuggestVO getDetail(Long id);
     // 分页查询投诉建议
     Page<ComplaintSuggestVO> page(int pageNum, int pageSize, Long ownerId, String type, Integer status);
     // 更新投诉建议状态

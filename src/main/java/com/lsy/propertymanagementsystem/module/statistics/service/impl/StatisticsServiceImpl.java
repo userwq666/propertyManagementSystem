@@ -79,6 +79,23 @@ public class StatisticsServiceImpl implements StatisticsService {
         long repairProcessing = repairRecordMapper.selectCount(
                 new LambdaQueryWrapper<RepairRecordDomain>().eq(RepairRecordDomain::getStatus, RepairStatus.PROCESSING));
 
+        // 本月实收
+        LocalDate now = LocalDate.now();
+        BigDecimal monthlyFee = feeRecordMapper.selectList(new LambdaQueryWrapper<FeeRecordDomain>()
+                        .eq(FeeRecordDomain::getStatus, FeeRecordStatus.PAID))
+                .stream()
+                .filter(r -> r.getPayTime() != null
+                        && r.getPayTime().getYear() == now.getYear()
+                        && r.getPayTime().getMonthValue() == now.getMonthValue())
+                .map(FeeRecordDomain::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        long pendingComplaint = complaintSuggestMapper.selectCount(new LambdaQueryWrapper<ComplaintSuggestDomain>()
+                .in(ComplaintSuggestDomain::getStatus, ComplaintStatus.PENDING, ComplaintStatus.PROCESSING));
+        long equipmentTotal = equipmentMapper.selectCount(new LambdaQueryWrapper<>());
+        long equipmentFault = equipmentMapper.selectCount(new LambdaQueryWrapper<EquipmentDomain>()
+                .eq(EquipmentDomain::getStatus, EquipmentStatus.FAULT));
+
         result.put("ownerCount", ownerCount);
         result.put("houseCount", houseCount);
         result.put("parkingCount", parkingCount);
@@ -87,6 +104,13 @@ public class StatisticsServiceImpl implements StatisticsService {
         result.put("totalUnpaid", totalUnpaid);
         result.put("repairPending", repairPending);
         result.put("repairProcessing", repairProcessing);
+        result.put("totalOwner", ownerCount);
+        result.put("totalHouse", houseCount);
+        result.put("monthlyFee", monthlyFee);
+        result.put("pendingRepair", repairPending);
+        result.put("pendingComplaint", pendingComplaint);
+        result.put("equipmentTotal", equipmentTotal);
+        result.put("equipmentFault", equipmentFault);
 
         return result;
     }
