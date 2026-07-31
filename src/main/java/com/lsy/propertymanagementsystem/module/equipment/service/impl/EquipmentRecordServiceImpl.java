@@ -54,7 +54,7 @@ public class EquipmentRecordServiceImpl implements EquipmentRecordService {
         Map<String, Object> summary = new HashMap<>();
         EquipmentDomain equipment = equipmentMapper.selectById(equipmentId);
         summary.put("equipment", equipment);
-        summary.put("plans", inspectionPlanService.page(1, 100, null, null, equipmentId).getRecords());
+        summary.put("plans", inspectionPlanService.listByEquipmentIncludeDeleted(equipmentId));
         summary.put("records", inspectionRecordService.page(1, 200, null, equipmentId).getRecords());
         summary.put("repairs", repairRecordService.page(1, 200, null, null, equipmentId, null).getRecords());
         summary.put("maintenances", equipmentMaintenanceService.page(1, 200, equipmentId, null, null).getRecords());

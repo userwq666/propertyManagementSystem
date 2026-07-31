@@ -232,9 +232,24 @@ public class InspectionPlanServiceImpl extends ServiceImpl<InspectionPlanMapper,
         if (plan.getStatus() != PlanStatus.DISABLED) {
             throw new com.lsy.propertymanagementsystem.common.exception.BusinessException("只有停用状态的巡检计划才能删除");
         }
-        planEquipmentMapper.delete(new LambdaQueryWrapper<InspectionPlanEquipmentDomain>().eq(InspectionPlanEquipmentDomain::getPlanId, id));
-        planInspectorMapper.delete(new LambdaQueryWrapper<InspectionPlanInspectorDomain>().eq(InspectionPlanInspectorDomain::getPlanId, id));
         this.removeById(id);
+    }
+
+    @Override
+    public List<InspectionPlanVO> listByEquipmentIncludeDeleted(Long equipmentId) {
+        List<Long> planIds = planEquipmentMapper.selectList(
+                        new LambdaQueryWrapper<InspectionPlanEquipmentDomain>()
+                                .eq(InspectionPlanEquipmentDomain::getEquipmentId, equipmentId))
+                .stream()
+                .map(InspectionPlanEquipmentDomain::getPlanId)
+                .collect(Collectors.toList());
+        if (planIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return baseMapper.selectByIdsIgnoreDeleted(planIds)
+                .stream()
+                .map(this::convertToVO)
+                .collect(Collectors.toList());
     }
 
     @Override

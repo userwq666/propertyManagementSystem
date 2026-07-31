@@ -10,6 +10,7 @@ import java.util.Map;
 public interface InspectionPlanService {
     List<Map<String, Object>> listInspectors();
     Page<InspectionPlanVO> page(int pageNum, int pageSize, String planName, Integer status, Long equipmentId);
+    List<InspectionPlanVO> listByEquipmentIncludeDeleted(Long equipmentId);
     void addPlan(InspectionPlanDTO plan);
     void updatePlan(InspectionPlanDTO plan);
     void deletePlan(Long id);
