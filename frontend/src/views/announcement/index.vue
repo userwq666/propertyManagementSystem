@@ -29,7 +29,6 @@
         <el-table-column label="类型" width="100">
           <template #default="{ row }">{{ row.type===1?'通知':row.type===2?'公告':'活动' }}</template>
         </el-table-column>
-        <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="title" label="标题" show-overflow-tooltip />
         <el-table-column label="置顶" width="80">
           <template #default="{ row }">
@@ -39,6 +38,7 @@
         </el-table-column>
         <el-table-column prop="creatorName" label="发布人" width="100" />
         <el-table-column prop="publishTime" label="发布时间" width="180" />
+        <el-table-column prop="id" label="ID" width="80" />
         <el-table-column label="操作" min-width="400" class-name="action-column" fixed="right">
           <template #default="{ row }">
             <el-button size="small" @click="handleDetail(row)" v-permission="'announcement:list:list'">详情</el-button>
