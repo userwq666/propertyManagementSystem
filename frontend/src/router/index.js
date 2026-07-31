@@ -10,15 +10,15 @@ const routes = [
       { path: 'dashboard', name: 'Dashboard', component: () => import('@/views/statistics/index.vue'), meta: { title: '首页', icon: 'HomeFilled', permission: 'statistics:overview:list' } },
       { path: 'system', name: 'System', meta: { title: '系统管理', icon: 'Setting' },
         children: [
-          { path: 'users', name: 'SystemUsers', component: () => import('@/views/system/user/index.vue'), meta: { title: '用户管理', icon: 'User', permission: 'system:user:list' } },
           { path: 'roles', name: 'SystemRoles', component: () => import('@/views/system/role/index.vue'), meta: { title: '角色管理', icon: 'Avatar', permission: 'system:role:list' } },
+          { path: 'users', name: 'SystemUsers', component: () => import('@/views/system/user/index.vue'), meta: { title: '用户管理', icon: 'User', permission: 'system:user:list' } },
           { path: 'menus', name: 'SystemMenus', component: () => import('@/views/system/menu/index.vue'), meta: { title: '菜单管理', icon: 'Menu', permission: 'system:menu:list' } },
           { path: 'operLogs', name: 'SystemOperLogs', component: () => import('@/views/system/operLog/index.vue'), meta: { title: '操作日志', icon: 'Document', permission: 'system:operLog:list' } }
         ]
       },
-      { path: 'community', name: 'Community', meta: { title: '小区基础', icon: 'OfficeBuilding' },
+      { path: 'community', name: 'Community', meta: { title: '社区基础', icon: 'OfficeBuilding' },
         children: [
-          { path: 'buildings', name: 'CommunityBuildings', component: () => import('@/views/community/building/index.vue'), meta: { title: '楼栋管理', icon: 'Building', permission: 'community:building:list' } },
+          { path: 'buildings', name: 'CommunityBuildings', component: () => import('@/views/community/building/index.vue'), meta: { title: '楼栋管理', icon: 'HomeFilled', permission: 'community:building:list' } },
           { path: 'houses', name: 'CommunityHouses', component: () => import('@/views/community/house/index.vue'), meta: { title: '房屋管理', icon: 'House', permission: 'community:house:list' } },
           { path: 'owners', name: 'CommunityOwners', component: () => import('@/views/community/owner/index.vue'), meta: { title: '业主管理', icon: 'UserFilled', permission: 'community:owner:list' } },
           { path: 'parkings', name: 'CommunityParkings', component: () => import('@/views/community/parking/index.vue'), meta: { title: '车位管理', icon: 'Van', permission: 'community:parking:list' } }

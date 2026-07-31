@@ -1,6 +1,5 @@
 package com.lsy.propertymanagementsystem.common.utils;
 
-import com.lsy.propertymanagementsystem.module.system.enums.UserType;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -22,25 +21,14 @@ public class SecurityUtils {
         return (Long) request.getAttribute("userId");
     }
 
-    public static Integer getUserTypeValue() {
+    public static String getRoleKey() {
         HttpServletRequest request = getCurrentRequest();
         if (request == null) return null;
-        Object attr = request.getAttribute("userType");
-        return attr instanceof Integer ? (Integer) attr : null;
+        Object attr = request.getAttribute("roleKey");
+        return attr instanceof String ? (String) attr : null;
     }
 
     public static boolean isOwner() {
-        Integer type = getUserTypeValue();
-        return type != null && type == UserType.OWNER.getValue();
-    }
-
-    public static boolean isSuperAdmin() {
-        Integer type = getUserTypeValue();
-        return type != null && type == UserType.SUPER_ADMIN.getValue();
-    }
-
-    public static boolean isPropertyAdmin() {
-        Integer type = getUserTypeValue();
-        return type != null && type == UserType.PROPERTY_ADMIN.getValue();
+        return "owner".equals(getRoleKey());
     }
 }

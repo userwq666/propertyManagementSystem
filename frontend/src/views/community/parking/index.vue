@@ -73,7 +73,7 @@
           <el-radio-group v-model="form.parkingType"><el-radio :value="1">地面</el-radio><el-radio :value="2">地下</el-radio></el-radio-group>
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <el-select v-model="form.status" placeholder="请选择状态" style="width: 100%">
+          <el-select v-model="form.status" placeholder="请选择状态" style="width: 100%" @change="onStatusChange">
             <el-option label="空闲" :value="0" />
             <el-option label="已租" :value="1" />
             <el-option label="已售" :value="2" />
@@ -119,7 +119,7 @@ const isEdit = ref(false)
 const ownerList = ref([])
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, parkingNo: '', status: null })
-const form = reactive({ id: null, parkingNo: '', parkingType: 1, status: 0, ownerId: null, rentPrice: null, sellPrice: null, remark: '' })
+const form = reactive({ id: null, parkingNo: '', parkingType: 1, status: null, ownerId: null, rentPrice: null, sellPrice: null, remark: '' })
 
 const submitting = ref(false)
 
@@ -150,8 +150,12 @@ async function fetchData() {
 async function loadOwnerList() {
   try {
     const res = await getOwnerPage()
-    ownerList.value = res.data || []
+    ownerList.value = res.data.records || []
   } catch (e) { /* ignore */ }
+}
+
+function onStatusChange(status) {
+  formRef.value?.validateField('ownerId')
 }
 
 function handleSearch() { searchForm.pageNum = 1; fetchData() }
@@ -159,12 +163,17 @@ function resetSearch() { searchForm.parkingNo = ''; searchForm.status = null; ha
 
 function handleAdd() { isEdit.value = false; resetForm(); dialogVisible.value = true }
 function handleEdit(row) { isEdit.value = true; Object.assign(form, row); dialogVisible.value = true }
-function resetForm() { formRef.value?.resetFields(); form.id = null; form.parkingType = 1; form.status = 0 }
+function resetForm() { formRef.value?.resetFields(); form.id = null; form.parkingType = 1; form.status = null }
 
 async function handleSubmit() {
   if (submitting.value) return
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
+  // 非空闲状态必须指定业主
+  if (form.status != null && form.status !== 0 && !form.ownerId) {
+    ElMessage.warning('非空闲状态的车位必须指定业主')
+    return
+  }
   try {
     if (isEdit.value) { await updateParking(form) }
     else { await addParking(form) }

@@ -82,6 +82,17 @@ public class CommunityHouseServiceImpl extends ServiceImpl<CommunityHouseMapper,
     @Override
     @Transactional
     public void addHouse(CommunityHouseDTO house) {
+        // 同楼栋下房间号唯一性校验
+        LambdaQueryWrapper<CommunityHouseDomain> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(CommunityHouseDomain::getBuildingId, house.getBuildingId());
+        wrapper.eq(CommunityHouseDomain::getRoomNo, house.getRoomNo());
+        if (this.count(wrapper) > 0) {
+            throw new BusinessException("同一楼栋下房间号已存在");
+        }
+        // 房屋状态非空置时必须指定业主
+        if (house.getHouseStatus() != null && house.getHouseStatus().getValue() != 0 && house.getOwnerId() == null) {
+            throw new BusinessException("非空置状态的房屋必须指定业主");
+        }
         CommunityHouseDomain domain = new CommunityHouseDomain();
         BeanUtils.copyProperties(house, domain);
         this.save(domain);

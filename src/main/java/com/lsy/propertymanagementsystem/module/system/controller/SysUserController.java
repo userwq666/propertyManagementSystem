@@ -10,6 +10,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -72,5 +74,10 @@ public class SysUserController {
         String newPassword = (String) body.get("newPassword");
         userService.resetPassword(id, newPassword);
         return Result.success();
+    }
+    @PreAuthorize("hasAuthority('community:owner:list') or hasAuthority('community:owner:add') or hasAuthority('community:owner:edit')")
+    @GetMapping("/owners")
+    public Result<List<com.lsy.propertymanagementsystem.module.system.dto.UserVO>> listOwners() {
+        return Result.success(userService.listOwnerUsers());
     }
 }

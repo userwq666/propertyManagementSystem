@@ -20,15 +20,17 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+//角色服务实现类
 @Service
 public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDomain> implements SysRoleService {
-
+    //注入角色菜单映射器
     @Autowired
     private SysRoleMenuMapper roleMenuMapper;
-
+    //注入用户角色映射器
     @Autowired
     private SysUserRoleMapper userRoleMapper;
 
+    //转换角色为VO
     @Override
     public List<RoleVO> getRoleList() {
         LambdaQueryWrapper<SysRoleDomain> wrapper = new LambdaQueryWrapper<>();
@@ -36,6 +38,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDomain
         return this.list(wrapper).stream().map(this::convertToVO).collect(Collectors.toList());
     }
 
+    //添加角色
     @Override
     @Transactional
     public void addRole(RoleDTO request) {
@@ -52,6 +55,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDomain
         this.save(role);
     }
 
+    //更新角色
     @Override
     @Transactional
     public void updateRole(RoleDTO request) {
@@ -73,6 +77,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDomain
         this.updateById(role);
     }
 
+    //删除角色
     @Override
     @Transactional
     public void deleteRole(Long id) {
@@ -89,12 +94,14 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDomain
         this.removeById(id);
     }
 
+    //根据ID获取角色
     @Override
     public RoleVO getRoleById(Long id) {
         SysRoleDomain domain = this.getById(id);
         return domain != null ? convertToVO(domain) : null;
     }
 
+    //为角色分配菜单
     @Override
     @Transactional
     public void assignMenus(Long roleId, List<Long> menuIds) {
@@ -110,6 +117,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDomain
         }
     }
 
+    //根据角色ID获取菜单ID列表
     @Override
     public List<Long> getRoleMenuIds(Long roleId) {
         LambdaQueryWrapper<SysRoleMenuDomain> wrapper = new LambdaQueryWrapper<>();
@@ -118,6 +126,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDomain
         return roleMenus.stream().map(SysRoleMenuDomain::getMenuId).collect(Collectors.toList());
     }
 
+    //转换角色为VO
     private RoleVO convertToVO(SysRoleDomain domain) {
         RoleVO vo = new RoleVO();
         BeanUtils.copyProperties(domain, vo);

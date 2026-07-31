@@ -80,7 +80,7 @@
           <el-input v-model="form.houseType" placeholder="请输入户型（如：三室一厅）" />
         </el-form-item>
         <el-form-item label="房屋状态" prop="houseStatus">
-          <el-select v-model="form.houseStatus" placeholder="请选择状态" style="width: 100%">
+          <el-select v-model="form.houseStatus" placeholder="请选择状态" style="width: 100%" @change="onStatusChange">
             <el-option label="空置" :value="0" />
             <el-option label="已入住" :value="1" />
             <el-option label="出租" :value="2" />
@@ -156,15 +156,20 @@ async function fetchData() {
 async function loadBuildingList() {
   try {
     const res = await getBuildingPage()
-    buildingList.value = res.data || []
+    buildingList.value = res.data.records || []
   } catch (e) { /* ignore */ }
 }
 
 async function loadOwnerList() {
   try {
     const res = await getOwnerPage()
-    ownerList.value = res.data || []
+    ownerList.value = res.data.records || []
   } catch (e) { /* ignore */ }
+}
+
+function onStatusChange(status) {
+  // 状态变更时触发表单验证，使业主必填规则生效/失效
+  formRef.value?.validateField('ownerId')
 }
 
 function handleSearch() { searchForm.pageNum = 1; fetchData() }
@@ -178,6 +183,11 @@ async function handleSubmit() {
   if (submitting.value) return
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
+  // 前端二次校验：非空置状态必须有业主
+  if (form.houseStatus != null && form.houseStatus !== 0 && !form.ownerId) {
+    ElMessage.warning('非空置状态的房屋必须指定业主')
+    return
+  }
   try {
     if (isEdit.value) { await updateHouse(form) }
     else { await addHouse(form) }

@@ -8,9 +8,11 @@ import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
+// 菜单Mapper
+// 用于操作菜单表
 @Mapper
 public interface SysMenuMapper extends BaseMapper<SysMenuDomain> {
-
+    // 根据用户ID查询用户权限
     @Select("SELECT DISTINCT m.perms FROM sys_menu m " +
             "JOIN sys_role_menu rm ON m.id = rm.menu_id " +
             "JOIN sys_user_role ur ON rm.role_id = ur.role_id " +

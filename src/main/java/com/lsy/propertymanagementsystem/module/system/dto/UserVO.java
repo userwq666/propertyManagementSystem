@@ -1,7 +1,6 @@
 package com.lsy.propertymanagementsystem.module.system.dto;
 
 import com.lsy.propertymanagementsystem.module.system.enums.UserStatus;
-import com.lsy.propertymanagementsystem.module.system.enums.UserType;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -9,15 +8,24 @@ import java.util.List;
 
 @Data
 public class UserVO {
+    // 用户ID
     private Long id;
+    // 用户名
     private String username;
+    // 真实姓名
     private String realName;
+    // 手机号
     private String phone;
+    // 头像
     private String avatar;
-    private UserType userType;
+    // 状态
     private UserStatus status;
+    // 创建时间
     private LocalDateTime createTime;
-    private List<Long> roleIds;
-    private List<String> roles;
-    private List<String> permissions;
+    // 角色ID
+    private Long roleId;
+    // 角色名称
+    private String roleName;
+    // 权限列表
+    private List<String> permissions;       //permission是权限的字符串表示
 }

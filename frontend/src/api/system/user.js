@@ -27,3 +27,7 @@ export function updateUserStatus(params) {
 export function resetPassword(data) {
   return request({ url: '/system/user/password', method: 'put', data })
 }
+
+export function getOwnerUsers() {
+  return request({ url: '/system/user/owners', method: 'get' })
+}

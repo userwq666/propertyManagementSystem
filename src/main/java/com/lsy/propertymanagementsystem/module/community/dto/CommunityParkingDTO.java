@@ -1,5 +1,6 @@
 package com.lsy.propertymanagementsystem.module.community.dto;
 
+import com.lsy.propertymanagementsystem.module.community.enums.ParkingStatus;
 import lombok.Data;
 
 import jakarta.validation.constraints.NotBlank;
@@ -14,7 +15,7 @@ public class CommunityParkingDTO {
 
     private Integer parkingType;
 
-    private Integer status;
+    private ParkingStatus status;
 
     private Long ownerId;
 

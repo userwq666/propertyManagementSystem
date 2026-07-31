@@ -68,6 +68,16 @@ public class CommunityParkingServiceImpl extends ServiceImpl<CommunityParkingMap
     @Override
     @Transactional
     public void addParking(CommunityParkingDTO parking) {
+        // 车位编号唯一性校验
+        LambdaQueryWrapper<CommunityParkingDomain> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(CommunityParkingDomain::getParkingNo, parking.getParkingNo());
+        if (this.count(wrapper) > 0) {
+            throw new BusinessException("车位编号已存在");
+        }
+        // 状态非空闲时必须指定业主
+        if (parking.getStatus() != null && parking.getStatus().getValue() != 0 && parking.getOwnerId() == null) {
+            throw new BusinessException("非空闲状态的车位必须指定业主");
+        }
         CommunityParkingDomain domain = new CommunityParkingDomain();
         BeanUtils.copyProperties(parking, domain);
         this.save(domain);

@@ -29,11 +29,7 @@
         <el-table-column prop="username" label="用户名" width="120" />
         <el-table-column prop="realName" label="真实姓名" width="120" />
         <el-table-column prop="phone" label="手机号" width="130" />
-        <el-table-column label="用户类型" width="100">
-          <template #default="{ row }">
-            <el-tag :type="userTypeTag(row.userType)">{{ userTypeText(row.userType) }}</el-tag>
-          </template>
-        </el-table-column>
+        <el-table-column prop="roleName" label="角色" width="120" />
         <el-table-column label="状态" width="80">
           <template #default="{ row }">
             <el-tag :type="row.status === 1 ? 'success' : 'danger'">{{ row.status === 1 ? '启用' : '禁用' }}</el-tag>
@@ -77,17 +73,14 @@
         <el-form-item label="手机号">
           <el-input v-model="form.phone" placeholder="请输入手机号" />
         </el-form-item>
-        <el-form-item label="用户类型">
-          <el-select v-model="form.userType"><el-option label="超级管理员" :value="1" /><el-option label="物业管理员" :value="2" /><el-option label="业主" :value="3" /><el-option label="维修工" :value="4" /><el-option label="巡检员" :value="5" /></el-select>
+        <el-form-item label="角色" prop="roleId">
+          <el-select v-model="form.roleId" placeholder="请选择角色">
+            <el-option v-for="r in roleList.filter(i => i.id != null)" :key="r.id" :label="r.roleName" :value="r.id" />
+          </el-select>
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="form.status">
             <el-option label="启用" :value="1" /><el-option label="禁用" :value="0" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="角色">
-          <el-select v-model="form.roleIds" multiple placeholder="请选择角色">
-            <el-option v-for="r in roleList.filter(i => i.id != null)" :key="r.id" :label="r.roleName" :value="r.id" />
           </el-select>
         </el-form-item>
       </el-form>
@@ -116,18 +109,17 @@ const isEdit = ref(false)
 const roleList = ref([])
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, username: '', status: '' })
-const form = reactive({ id: null, username: '', realName: '', password: '', phone: '', userType: 3, status: 1, roleIds: [] })
+const form = reactive({ id: null, username: '', realName: '', password: '', phone: '', roleId: null, status: 1 })
 
 const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑用户' : '新增用户')
-const userTypeTag = (t) => ({ 1: 'danger', 2: 'warning', 3: 'info', 4: '', 5: 'success' }[t] || 'info')
-const userTypeText = (t) => ({ 1: '超级管理员', 2: '物业管理员', 3: '业主', 4: '维修工', 5: '巡检员' }[t] || '未知')
 
 const rules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   realName: [{ required: true, message: '请输入真实姓名', trigger: 'blur' }],
-  password: [{ required: true, message: '请输入密码', trigger: 'blur', min: 6, message: '密码至少6位' }]
+  password: [{ required: true, message: '请输入密码', trigger: 'blur', min: 6, message: '密码至少6位' }],
+  roleId: [{ required: true, message: '请选择角色', trigger: 'change' }]
 }
 
 onMounted(async () => {
@@ -156,15 +148,15 @@ async function handleEdit(row) {
     const detail = res.data
     Object.assign(form, {
       id: detail.id, username: detail.username || '', realName: detail.realName || '',
-      password: '', phone: detail.phone || '', userType: detail.userType ?? 3,
-      status: detail.status ?? 1, roleIds: detail.roleIds || []
+      password: '', phone: detail.phone || '',
+      roleId: detail.roleId || null, status: detail.status ?? 1
     })
   } catch (e) {
-    Object.assign(form, { ...row, password: '', roleIds: row.roleIds || [] })
+    Object.assign(form, { ...row, password: '', roleId: row.roleId || null })
   } finally { loading.value = false }
   dialogVisible.value = true
 }
-function resetForm() { formRef.value?.resetFields(); Object.assign(form, { id: null, username: '', realName: '', password: '', phone: '', userType: 3, status: 1, roleIds: [] }) }
+function resetForm() { formRef.value?.resetFields(); Object.assign(form, { id: null, username: '', realName: '', password: '', phone: '', roleId: null, status: 1 }) }
 
 async function handleSubmit() {
   if (submitting.value) return

@@ -19,6 +19,7 @@ import java.util.List;
 @Service
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDomain> implements SysMenuService {
 
+    // 构建菜单树
     @Override
     public List<MenuVO> getMenuTree() {
         LambdaQueryWrapper<SysMenuDomain> wrapper = new LambdaQueryWrapper<>();
@@ -28,6 +29,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDomain
         return buildMenuTree(menus, 0L);
     }
 
+    // 获取菜单列表
     @Override
     public List<MenuVO> getMenuList() {
         LambdaQueryWrapper<SysMenuDomain> wrapper = new LambdaQueryWrapper<>();
@@ -36,6 +38,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDomain
         return buildMenuTree(menus, 0L);
     }
 
+    // 添加菜单
     @Override
     @Transactional
     public void addMenu(MenuDTO request) {
@@ -51,6 +54,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDomain
         this.save(menu);
     }
 
+    // 更新菜单
     @Override
     @Transactional
     public void updateMenu(MenuDTO request) {
@@ -70,6 +74,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDomain
         this.updateById(menu);
     }
 
+    // 删除菜单
     @Override
     @Transactional
     public void deleteMenu(Long id) {
@@ -81,6 +86,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDomain
         this.removeById(id);
     }
 
+    // 根据ID获取菜单
     @Override
     public MenuVO getMenuById(Long id) {
         SysMenuDomain menu = this.getById(id);
@@ -100,6 +106,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDomain
         return vo;
     }
 
+    // 构建菜单树
     private List<MenuVO> buildMenuTree(List<SysMenuDomain> menus, Long parentId) {
         List<MenuVO> tree = new ArrayList<>();
         for (SysMenuDomain menu : menus) {

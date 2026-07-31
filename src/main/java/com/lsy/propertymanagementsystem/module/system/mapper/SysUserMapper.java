@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserDomain;
 import org.apache.ibatis.annotations.Mapper;
 
+// 用户Mapper
 @Mapper
 public interface SysUserMapper extends BaseMapper<SysUserDomain> {
 }

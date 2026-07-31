@@ -29,12 +29,12 @@
         <el-table-column prop="idCard" label="身份证号" width="200" />
         <el-table-column label="业主类型" width="100">
           <template #default="{ row }">
-            <el-tag :type="row.ownerType === 0 ? '' : 'warning'">{{ row.ownerType === 0 ? '个人' : '单位' }}</el-tag>
+            <el-tag :type="ownerTypeTag(row.ownerType)">{{ ownerTypeLabel(row.ownerType) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="状态" width="80">
           <template #default="{ row }">
-            <el-tag :type="row.status === 0 ? 'success' : 'danger'">{{ row.status === 0 ? '正常' : '禁用' }}</el-tag>
+            <el-tag :type="row.status === 1 ? 'success' : 'danger'">{{ row.status === 1 ? '正常' : '禁用' }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="remark" label="备注" show-overflow-tooltip />
@@ -62,7 +62,9 @@
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="600px" @close="resetForm">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <el-form-item label="关联用户" prop="userId">
-          <el-input-number v-model="form.userId" :min="0" placeholder="请输入用户ID" style="width: 100%" />
+          <el-select v-model="form.userId" placeholder="请选择关联用户（可选）" clearable filterable style="width: 100%" @change="onUserSelect">
+            <el-option v-for="u in ownerUserList" :key="u.id" :label="u.username + '（' + (u.realName || '未设置') + '）'" :value="u.id" />
+          </el-select>
         </el-form-item>
         <el-form-item label="姓名" prop="name">
           <el-input v-model="form.name" placeholder="请输入姓名" />
@@ -73,17 +75,18 @@
         <el-form-item label="身份证号" prop="idCard">
           <el-input v-model="form.idCard" placeholder="请输入身份证号" />
         </el-form-item>
-        <el-form-item label="身份证正面" prop="idCardFront">
+        <!-- <el-form-item label="身份证正面" prop="idCardFront">
           <el-input v-model="form.idCardFront" placeholder="请输入身份证正面图片URL" />
-        </el-form-item>
-        <el-form-item label="身份证反面" prop="idCardBack">
+        </el-form-item> -->
+        <!-- <el-form-item label="身份证反面" prop="idCardBack">
           <el-input v-model="form.idCardBack" placeholder="请输入身份证反面图片URL" />
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="业主类型" prop="ownerType">
-          <el-radio-group v-model="form.ownerType">
-            <el-radio :value="0">个人</el-radio>
-            <el-radio :value="1">单位</el-radio>
-          </el-radio-group>
+          <el-select v-model="form.ownerType" placeholder="请选择业主类型" style="width: 100%">
+            <el-option label="本人" :value="1" />
+            <el-option label="家属" :value="2" />
+            <el-option label="租客" :value="3" />
+          </el-select>
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="form.status"><el-radio :value="1">正常</el-radio><el-radio :value="0">禁用</el-radio></el-radio-group>
@@ -106,6 +109,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { addOwner, updateOwner, deleteOwner, getOwnerPage } from '@/api/community/owner'
+import { getOwnerUsers } from '@/api/system/user'
 
 const loading = ref(false)
 const tableData = ref([])
@@ -113,6 +117,7 @@ const total = ref(0)
 const dialogVisible = ref(false)
 const formRef = ref(null)
 const isEdit = ref(false)
+const ownerUserList = ref([])
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, name: '', phone: '' })
 const form = reactive({ id: null, userId: null, name: '', phone: '', idCard: '', idCardFront: '', idCardBack: '', ownerType: 1, status: 1, remark: '' })
@@ -121,13 +126,18 @@ const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑业主' : '新增业主')
 
+const ownerTypeMap = { 1: '本人', 2: '家属', 3: '租客' }
+const ownerTypeTagMap = { 1: '', 2: 'warning', 3: 'info' }
+function ownerTypeLabel(v) { return ownerTypeMap[v] || '未知' }
+function ownerTypeTag(v) { return ownerTypeTagMap[v] || '' }
+
 const rules = {
   name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
   phone: [{ required: true, message: '请输入电话', trigger: 'blur' }],
   idCard: [{ required: true, message: '请输入身份证号', trigger: 'blur' }]
 }
 
-onMounted(() => fetchData())
+onMounted(() => { fetchData(); loadOwnerUsers() })
 
 async function fetchData() {
   loading.value = true
@@ -140,12 +150,27 @@ async function fetchData() {
   }
 }
 
+async function loadOwnerUsers() {
+  try {
+    const res = await getOwnerUsers()
+    ownerUserList.value = res.data || []
+  } catch (e) { /* ignore */ }
+}
+
+function onUserSelect(userId) {
+  if (!userId) return
+  const user = ownerUserList.value.find(u => u.id === userId)
+  if (user && user.realName) {
+    form.name = user.realName
+  }
+}
+
 function handleSearch() { searchForm.pageNum = 1; fetchData() }
 function resetSearch() { searchForm.name = ''; searchForm.phone = ''; handleSearch() }
 
 function handleAdd() { isEdit.value = false; resetForm(); dialogVisible.value = true }
 function handleEdit(row) { isEdit.value = true; Object.assign(form, row); dialogVisible.value = true }
-function resetForm() { formRef.value?.resetFields(); form.id = null; form.ownerType = 0; form.status = 0 }
+function resetForm() { formRef.value?.resetFields(); form.id = null; form.ownerType = 1; form.status = 1 }
 
 async function handleSubmit() {
   if (submitting.value) return

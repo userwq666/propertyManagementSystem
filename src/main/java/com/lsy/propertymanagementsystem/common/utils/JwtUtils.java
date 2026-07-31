@@ -47,11 +47,11 @@ public class JwtUtils {
                 .compact();
     }
 
-    public static String generateToken(Long userId, String username, Integer userType, List<String> permissions) {
+    public static String generateToken(Long userId, String username, String roleKey, List<String> permissions) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
         claims.put("username", username);
-        claims.put("userType", userType);
+        claims.put("roleKey", roleKey);
         claims.put("permissions", permissions);
         return Jwts.builder()
                 .setClaims(claims)
@@ -111,15 +111,13 @@ public class JwtUtils {
         return perms != null ? perms : Collections.emptyList();
     }
 
-    public static Integer getUserType(String token) {
+    public static String getRoleKey(String token) {
         Claims claims = parseToken(token);
-        return claims.get("userType", Integer.class);
+        return claims.get("roleKey", String.class);
     }
 
-    public static Integer getUserTypeFromClaims(Claims claims) {
-        Object value = claims.get("userType");
-        if (value instanceof Integer) return (Integer) value;
-        return null;
+    public static String getRoleKeyFromClaims(Claims claims) {
+        return claims.get("roleKey", String.class);
     }
 
     public static boolean isTokenValid(String token) {

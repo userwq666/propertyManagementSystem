@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 request.setAttribute("userId", userId);
                 request.setAttribute("username", username);
-                request.setAttribute("userType", JwtUtils.getUserTypeFromClaims(claims));
+                request.setAttribute("roleKey", JwtUtils.getRoleKeyFromClaims(claims));
 
                 List<String> permissions = JwtUtils.getPermissionsFromClaims(claims);
                 List<SimpleGrantedAuthority> authorities = permissions.stream()

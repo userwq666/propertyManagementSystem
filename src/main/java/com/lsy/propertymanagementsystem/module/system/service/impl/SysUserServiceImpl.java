@@ -12,7 +12,6 @@ import com.lsy.propertymanagementsystem.module.system.domain.SysRoleDomain;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserDomain;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserRoleDomain;
 import com.lsy.propertymanagementsystem.module.system.enums.UserStatus;
-import com.lsy.propertymanagementsystem.module.system.enums.UserType;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysRoleMapper;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserMapper;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserRoleMapper;
@@ -27,12 +26,15 @@ import java.util.stream.Collectors;
 @Service
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDomain> implements SysUserService {
 
+    //角色关联表
     @Autowired
     private SysUserRoleMapper userRoleMapper;
 
+    //角色表
     @Autowired
     private SysRoleMapper roleMapper;
 
+    //获取用户分页列表
     @Override
     public IPage<UserVO> getUserPage(Integer pageNum, Integer pageSize, String username, UserStatus status) {
         LambdaQueryWrapper<SysUserDomain> wrapper = new LambdaQueryWrapper<>();
@@ -48,6 +50,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDomain
         return page.convert(this::convertToResponse);
     }
 
+    //添加用户
     @Override
     @Transactional
     public void addUser(UserDTO request) {
@@ -62,13 +65,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDomain
         user.setPassword(PasswordUtils.encode(request.getPassword()));
         user.setRealName(request.getRealName());
         user.setPhone(request.getPhone());
-        user.setUserType(UserType.of(request.getUserType()));
         user.setStatus(request.getStatus() != null ? UserStatus.of(request.getStatus()) : UserStatus.ENABLED);
         this.save(user);
 
-        saveUserRoles(user.getId(), request.getRoleIds());
+        saveUserRole(user.getId(), request.getRoleId());
     }
 
+    //更新用户
     @Override
     @Transactional
     public void updateUser(UserDTO request) {
@@ -87,18 +90,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDomain
         user.setUsername(request.getUsername());
         user.setRealName(request.getRealName());
         user.setPhone(request.getPhone());
-        user.setUserType(UserType.of(request.getUserType()));
         user.setStatus(request.getStatus() != null ? UserStatus.of(request.getStatus()) : UserStatus.ENABLED);
         if (request.getPassword() != null && !request.getPassword().isEmpty()) {
             user.setPassword(PasswordUtils.encode(request.getPassword()));
         }
         this.updateById(user);
 
-        if (request.getRoleIds() != null) {
-            saveUserRoles(user.getId(), request.getRoleIds());
+        if (request.getRoleId() != null) {
+            saveUserRole(user.getId(), request.getRoleId());
         }
     }
 
+    //删除用户
     @Override
     @Transactional
     public void deleteUser(Long id) {
@@ -108,6 +111,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDomain
         this.removeById(id);
     }
 
+    //更新用户状态
     @Override
     @Transactional
     public void updateUserStatus(Long id, UserStatus status) {
@@ -119,6 +123,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDomain
         this.updateById(user);
     }
 
+    //重置密码
     @Override
     @Transactional
     public void resetPassword(Long id, String newPassword) {
@@ -130,6 +135,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDomain
         this.updateById(user);
     }
 
+    //根据ID获取用户
     @Override
     public UserVO getUserById(Long id) {
         SysUserDomain user = this.getById(id);
@@ -139,6 +145,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDomain
         return convertToResponse(user);
     }
 
+    //根据用户名获取用户
     @Override
     public SysUserDomain getByUsername(String username) {
         LambdaQueryWrapper<SysUserDomain> wrapper = new LambdaQueryWrapper<>();
@@ -146,27 +153,43 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDomain
         return this.getOne(wrapper);
     }
 
+    // 获取业主身份的用户列表
     @Override
-    public SysUserDomain getById(Long id) {
-        return super.getById(id);
+    public List<UserVO> listOwnerUsers() {
+        LambdaQueryWrapper<SysRoleDomain> roleWrapper = new LambdaQueryWrapper<>();
+        roleWrapper.eq(SysRoleDomain::getRoleKey, "owner");
+        SysRoleDomain ownerRole = roleMapper.selectOne(roleWrapper);
+        if (ownerRole == null) {
+            return java.util.Collections.emptyList();
+        }
+        LambdaQueryWrapper<SysUserRoleDomain> urWrapper = new LambdaQueryWrapper<>();
+        urWrapper.eq(SysUserRoleDomain::getRoleId, ownerRole.getId());
+        List<SysUserRoleDomain> userRoles = userRoleMapper.selectList(urWrapper);
+        if (userRoles.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+        List<Long> userIds = userRoles.stream().map(SysUserRoleDomain::getUserId).collect(Collectors.toList());
+        List<SysUserDomain> users = this.listByIds(userIds);
+        return users.stream().map(this::convertToResponse).collect(Collectors.toList());
     }
 
-    private void saveUserRoles(Long userId, List<Long> roleIds) {
-        if (roleIds == null || roleIds.isEmpty()) {
+
+    //保存用户角色
+    private void saveUserRole(Long userId, Long roleId) {
+        if (roleId == null) {
             return;
         }
         LambdaQueryWrapper<SysUserRoleDomain> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(SysUserRoleDomain::getUserId, userId);
         userRoleMapper.delete(wrapper);
 
-        for (Long roleId : roleIds) {
-            SysUserRoleDomain userRole = new SysUserRoleDomain();
-            userRole.setUserId(userId);
-            userRole.setRoleId(roleId);
-            userRoleMapper.insert(userRole);
-        }
+        SysUserRoleDomain userRole = new SysUserRoleDomain();
+        userRole.setUserId(userId);
+        userRole.setRoleId(roleId);
+        userRoleMapper.insert(userRole);
     }
 
+    //转换用户为VO
     private UserVO convertToResponse(SysUserDomain user) {
         UserVO response = new UserVO();
         response.setId(user.getId());
@@ -174,24 +197,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDomain
         response.setRealName(user.getRealName());
         response.setPhone(user.getPhone());
         response.setAvatar(user.getAvatar());
-        response.setUserType(user.getUserType());
         response.setStatus(user.getStatus());
         response.setCreateTime(user.getCreateTime());
 
         LambdaQueryWrapper<SysUserRoleDomain> roleWrapper = new LambdaQueryWrapper<>();
         roleWrapper.eq(SysUserRoleDomain::getUserId, user.getId());
         List<SysUserRoleDomain> userRoles = userRoleMapper.selectList(roleWrapper);
-        List<Long> roleIds = userRoles.stream().map(SysUserRoleDomain::getRoleId).collect(Collectors.toList());
-        response.setRoleIds(roleIds);
-
-        if (!roleIds.isEmpty()) {
-            LambdaQueryWrapper<SysRoleDomain> roleQueryWrapper = new LambdaQueryWrapper<>();
-            roleQueryWrapper.in(SysRoleDomain::getId, roleIds);
-            response.setRoles(roleMapper.selectList(roleQueryWrapper).stream()
-                    .map(SysRoleDomain::getRoleName)
-                    .collect(Collectors.toList()));
+        if (!userRoles.isEmpty()) {
+            Long roleId = userRoles.get(0).getRoleId();
+            response.setRoleId(roleId);
+            SysRoleDomain role = roleMapper.selectById(roleId);
+            if (role != null) response.setRoleName(role.getRoleName());
         }
-
         return response;
     }
 }

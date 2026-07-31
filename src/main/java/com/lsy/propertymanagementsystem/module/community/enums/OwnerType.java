@@ -1,6 +1,7 @@
 package com.lsy.propertymanagementsystem.module.community.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ public enum OwnerType {
     private final Integer value;
     private final String desc;
 
+    @JsonCreator
     public static OwnerType of(Integer value) {
         if (value == null) return null;
         for (OwnerType e : values()) {

@@ -20,8 +20,12 @@ public class MenuVO {
     private String component;
     // 权限
     private String perms;
+    // 菜单类型
     private MenuType menuType;
+    // 排序
     private Integer sort;
+    // 状态
     private EnableStatus status;
+    // 子菜单
     private List<MenuVO> children;
 }
