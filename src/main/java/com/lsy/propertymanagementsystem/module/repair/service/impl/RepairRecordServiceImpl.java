@@ -288,7 +288,8 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
                 || "property_admin".equals(SecurityUtils.getRoleKey());
         boolean ownerOk = SecurityUtils.isOwner()
                 && Objects.equals(domain.getOwnerId(), getOwnerIdByUserId(userId));
-        if (!isAdmin && !ownerOk) {
+        boolean creatorOk = Objects.equals(domain.getCreatorId(), userId);
+        if (!isAdmin && !ownerOk && !creatorOk) {
             throw new BusinessException("无权评价该报修");
         }
         domain.evaluate(score, content);
