@@ -148,9 +148,9 @@ const canRepair = computed(() => currentRecord.value && currentRecord.value.stat
 
 onMounted(async () => {
   fetchData()
-  const p = await getPlanPage({ pageNum: 1, pageSize: 200 }); plans.value = p.data.records
-  const e = await getEquipmentPage({ pageNum: 1, pageSize: 200 }); equipments.value = e.data.records
-  const u = await getUserPage({ pageNum: 1, pageSize: 200 }); users.value = u.data.records
+  try { const p = await getPlanPage({ pageNum: 1, pageSize: 200 }); plans.value = p.data.records } catch (e) { /* 无权限忽略 */ }
+  try { const e = await getEquipmentPage({ pageNum: 1, pageSize: 200 }); equipments.value = e.data.records } catch (e) { /* 无权限忽略 */ }
+  try { const u = await getUserPage({ pageNum: 1, pageSize: 200 }); users.value = u.data.records } catch (e) { /* 无权限忽略 */ }
 })
 
 async function fetchData() {

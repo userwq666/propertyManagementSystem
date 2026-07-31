@@ -1,0 +1,1 @@
+import{a9 as t}from"./index-BOUp-_-S.js";function r(e){return t({url:"/community/owner",method:"post",data:e})}function o(e){return t({url:"/community/owner",method:"put",data:e})}function u(e){return t({url:`/community/owner/${e}`,method:"delete"})}function m(e){return t({url:"/community/owner/page",method:"get",params:e})}export{r as a,u as d,m as g,o as u};
