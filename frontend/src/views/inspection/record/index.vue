@@ -6,12 +6,15 @@
           <el-option v-for="p in plans.filter(i => i.id != null)" :key="p.id" :label="p.planName" :value="p.id" />
         </el-select>
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="fetchData">刷新</el-button>
-      </el-form-item>
     </el-form>
 
     <div class="table-container" v-if="currentPlan">
+      <div class="toolbar">
+        <div class="toolbar-left"></div>
+        <div class="toolbar-right">
+          <el-button @click="fetchData">刷新</el-button>
+        </div>
+      </div>
       <el-table :data="matrixRows" border stripe v-loading="loading" row-key="equipmentId">
         <el-table-column min-width="200" fixed>
           <template #header>
