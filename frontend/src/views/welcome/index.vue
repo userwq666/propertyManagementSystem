@@ -11,17 +11,17 @@
     <el-row :gutter="16">
       <el-col :span="12" class="panel-col">
         <el-card shadow="never" class="panel-card">
-          <template #header>今日天气</template>
-          <div v-if="weather" class="weather-body">
-            <div class="weather-temp">{{ weather.temperature }}°C</div>
-            <div class="weather-desc">{{ weather.desc }}</div>
-            <div class="weather-meta">
-              <span>{{ weather.city }}</span>
-              <span>风速 {{ weather.windspeed }} km/h</span>
+          <template #header>工作待办</template>
+          <div class="todo-body">
+            <div v-if="todos.length" class="todo-list">
+              <div v-for="item in todos" :key="item.key" class="todo-item" @click="router.push(item.path)">
+                <el-icon :size="18" color="#409eff"><component :is="item.icon" /></el-icon>
+                <span class="todo-name">{{ item.name }}</span>
+                <el-badge :value="item.count" :hidden="!item.count" />
+              </div>
             </div>
-            <div class="weather-meta">{{ weather.time }}</div>
+            <el-empty v-else description="暂无待办事项" :image-size="60" />
           </div>
-          <el-empty v-else description="天气加载失败" :image-size="60" />
         </el-card>
       </el-col>
       <el-col :span="12" class="panel-col">
@@ -51,8 +51,15 @@ import { getAnnouncementLatest } from '@/api/announcement'
 const router = useRouter()
 const userStore = useUserStore()
 const now = ref(new Date())
-const weather = ref(null)
 const latest = ref(null)
+
+// TODO: 待办数量后续接入后端接口（按角色返回真实数据）
+const todos = ref([
+  { key: 'repairAssign', name: '待派单报修', icon: 'Tickets', path: '/repair/record', count: 0 },
+  { key: 'repairConfirm', name: '待确认工单', icon: 'Finished', path: '/repair/record', count: 0 },
+  { key: 'complaint', name: '待处理投诉', icon: 'ChatDotSquare', path: '/complaint', count: 0 },
+  { key: 'inspection', name: '待执行巡检', icon: 'Calendar', path: '/inspection/records', count: 0 }
+])
 
 const greeting = computed(() => {
   const hour = now.value.getHours()
@@ -65,40 +72,16 @@ const greeting = computed(() => {
 const nowText = computed(() => now.value.toLocaleString('zh-CN', { hour12: false }))
 
 const typeText = (t) => ({ 1: '通知', 2: '公告', 3: '活动' }[t] || '')
-const weatherCodeText = (code) => ({
-  0: '晴', 1: '大部晴朗', 2: '多云', 3: '阴',
-  45: '雾', 48: '冻雾', 51: '小毛毛雨', 53: '毛毛雨', 55: '大毛毛雨',
-  61: '小雨', 63: '中雨', 65: '大雨', 71: '小雪', 73: '中雪', 75: '大雪',
-  80: '阵雨', 81: '强阵雨', 82: '暴雨', 95: '雷阵雨'
-}[code] || '未知')
 
 const timer = setInterval(() => { now.value = new Date() }, 30000)
 onUnmounted(() => clearInterval(timer))
 
 onMounted(async () => {
-  loadWeather()
   try {
     const res = await getAnnouncementLatest()
     latest.value = res.data || null
   } catch (e) { latest.value = null }
 })
-
-async function loadWeather() {
-  try {
-    const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=31.2304&longitude=121.4737&current_weather=true&timezone=Asia%2FShanghai')
-    const data = await res.json()
-    const cw = data.current_weather
-    if (cw) {
-      weather.value = {
-        city: '上海',
-        temperature: Math.round(cw.temperature),
-        desc: weatherCodeText(cw.weathercode),
-        windspeed: Math.round(cw.windspeed),
-        time: (cw.time || '').replace('T', ' ')
-      }
-    }
-  } catch (e) { weather.value = null }
-}
 </script>
 
 <style scoped>
@@ -124,10 +107,20 @@ async function loadWeather() {
   height: calc(100% - 53px);
   padding: 16px 24px;
 }
-.weather-body { text-align: center; padding: 12px 0; }
-.weather-temp { font-size: 60px; font-weight: 600; color: #409eff; }
-.weather-desc { margin: 12px 0; font-size: 18px; color: #606266; }
-.weather-meta { display: flex; justify-content: center; gap: 20px; margin-top: 10px; font-size: 14px; color: #909399; }
+.todo-body { width: 100%; }
+.todo-list { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid #ebeef5;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.todo-item:hover { background: #f5f7fa; }
+.todo-name { flex: 1; font-size: 14px; color: #303133; }
 .notice-body { cursor: pointer; width: 100%; }
 .notice-title { font-size: 20px; font-weight: 600; color: #303133; }
 .notice-meta { display: flex; align-items: center; gap: 12px; margin: 12px 0; font-size: 14px; color: #909399; }
