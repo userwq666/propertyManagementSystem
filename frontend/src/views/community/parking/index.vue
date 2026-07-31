@@ -149,7 +149,7 @@ async function fetchData() {
 
 async function loadOwnerList() {
   try {
-    const res = await getOwnerPage()
+    const res = await getOwnerPage({}, { silent: true })
     ownerList.value = res.data.records || []
   } catch (e) { /* ignore */ }
 }

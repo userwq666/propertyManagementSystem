@@ -155,14 +155,14 @@ async function fetchData() {
 
 async function loadBuildingList() {
   try {
-    const res = await getBuildingPage()
+    const res = await getBuildingPage({}, { silent: true })
     buildingList.value = res.data.records || []
   } catch (e) { /* ignore */ }
 }
 
 async function loadOwnerList() {
   try {
-    const res = await getOwnerPage()
+    const res = await getOwnerPage({}, { silent: true })
     ownerList.value = res.data.records || []
   } catch (e) { /* ignore */ }
 }
