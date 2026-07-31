@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lsy.propertymanagementsystem.common.exception.BusinessException;
+import com.lsy.propertymanagementsystem.common.utils.SecurityUtils;
 import com.lsy.propertymanagementsystem.module.announcement.domain.AnnouncementDomain;
 import com.lsy.propertymanagementsystem.module.announcement.dto.AnnouncementDTO;
 import com.lsy.propertymanagementsystem.module.announcement.dto.AnnouncementVO;
@@ -35,6 +36,9 @@ public class AnnouncementServiceImpl extends ServiceImpl<AnnouncementMapper, Ann
         if (domain == null) {
             return null;
         }
+        if (!isManager() && domain.getPublishStatus() != PublishStatus.PUBLISHED) {
+            throw new BusinessException("公告不存在或未发布");
+        }
         return convertToVO(domain);
     }
 
@@ -44,7 +48,9 @@ public class AnnouncementServiceImpl extends ServiceImpl<AnnouncementMapper, Ann
         if (title != null && !title.isEmpty()) {
             wrapper.like(AnnouncementDomain::getTitle, title);
         }
-        if (status != null) {
+        if (!isManager()) {
+            wrapper.eq(AnnouncementDomain::getPublishStatus, PublishStatus.PUBLISHED);
+        } else if (status != null) {
             wrapper.eq(AnnouncementDomain::getPublishStatus, PublishStatus.of(status));
         }
         wrapper.orderByDesc(AnnouncementDomain::getCreateTime);
@@ -118,6 +124,11 @@ public class AnnouncementServiceImpl extends ServiceImpl<AnnouncementMapper, Ann
             announcement.cancelTop();
         }
         this.updateById(announcement);
+    }
+
+    private boolean isManager() {
+        String roleKey = SecurityUtils.getRoleKey();
+        return "admin".equals(roleKey) || "property_admin".equals(roleKey);
     }
 
     private AnnouncementVO convertToVO(AnnouncementDomain domain) {

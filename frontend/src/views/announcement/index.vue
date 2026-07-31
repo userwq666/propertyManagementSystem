@@ -4,7 +4,7 @@
       <el-form-item label="标题">
         <el-input v-model="searchForm.title" placeholder="请输入标题" clearable />
       </el-form-item>
-      <el-form-item label="状态">
+      <el-form-item label="状态" v-if="isAdmin">
         <el-select v-model="searchForm.status" placeholder="请选择" clearable>
           <el-option label="草稿" :value="0" /><el-option label="已发布" :value="1" /><el-option label="已撤回" :value="2" />
         </el-select>
@@ -17,7 +17,7 @@
 
     <div class="table-container">
       <div class="toolbar">
-        <div class="toolbar-left"><el-button type="primary" @click="handleAdd" v-permission="'announcement:list:add'">新增公告</el-button></div>
+        <div class="toolbar-left"><el-button v-if="isAdmin" type="primary" @click="handleAdd" v-permission="'announcement:list:add'">新增公告</el-button></div>
         <div class="toolbar-right"><el-button @click="fetchData">刷新</el-button></div>
       </div>
       <el-table :data="tableData" border stripe v-loading="loading">
@@ -42,11 +42,14 @@
         <el-table-column prop="viewCount" label="浏览量" width="80" />
         <el-table-column label="操作" min-width="400" class-name="action-column" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'announcement:list:edit'">编辑</el-button>
-            <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'announcement:list:delete'">删除</el-button>
-            <el-button type="success" size="small" @click="handlePublish(row)" v-if="row.publishStatus!==1" v-permission="'announcement:list:edit'">发布</el-button>
-            <el-button type="warning" size="small" @click="handleRevoke(row)" v-if="row.publishStatus===1" v-permission="'announcement:list:edit'">撤回</el-button>
-            <el-button size="small" @click="handleTop(row)" v-permission="'announcement:list:edit'">{{ row.isTop ? '取消置顶' : '置顶' }}</el-button>
+            <el-button size="small" @click="handleDetail(row)" v-permission="'announcement:list:list'">详情</el-button>
+            <template v-if="isAdmin">
+              <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'announcement:list:edit'">编辑</el-button>
+              <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'announcement:list:delete'">删除</el-button>
+              <el-button type="success" size="small" @click="handlePublish(row)" v-if="row.publishStatus!==1" v-permission="'announcement:list:edit'">发布</el-button>
+              <el-button type="warning" size="small" @click="handleRevoke(row)" v-if="row.publishStatus===1" v-permission="'announcement:list:edit'">撤回</el-button>
+              <el-button size="small" @click="handleTop(row)" v-permission="'announcement:list:edit'">{{ row.isTop ? '取消置顶' : '置顶' }}</el-button>
+            </template>
           </template>
         </el-table-column>
       </el-table>
@@ -54,6 +57,24 @@
         :total="total" :page-sizes="[10, 20, 50]" layout="total, sizes, prev, pager, next"
         @size-change="fetchData" @current-change="fetchData" style="margin-top:16px;justify-content:flex-end" />
     </div>
+
+    <!-- 详情 -->
+    <el-dialog title="公告详情" v-model="detailDialogVisible" width="640px">
+      <el-descriptions :column="2" border v-if="detailRow">
+        <el-descriptions-item label="标题" :span="2">{{ detailRow.title }}</el-descriptions-item>
+        <el-descriptions-item label="类型">{{ typeText(detailRow.type) }}</el-descriptions-item>
+        <el-descriptions-item label="状态">{{ stText(detailRow.publishStatus) }}</el-descriptions-item>
+        <el-descriptions-item label="发布人">{{ detailRow.creatorName || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="发布时间">{{ detailRow.publishTime || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="浏览量">{{ detailRow.viewCount ?? 0 }}</el-descriptions-item>
+        <el-descriptions-item label="置顶">{{ detailRow.isTop ? '是' : '否' }}</el-descriptions-item>
+        <el-descriptions-item label="封面" :span="2">
+          <el-image v-if="detailRow.coverImage" :src="detailRow.coverImage" fit="cover" style="max-width:100%;max-height:120px" />
+          <span v-else>-</span>
+        </el-descriptions-item>
+        <el-descriptions-item label="内容" :span="2" style="white-space:pre-wrap">{{ detailRow.content }}</el-descriptions-item>
+      </el-descriptions>
+    </el-dialog>
 
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="700px" @close="resetForm">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
@@ -90,9 +111,13 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { addAnnouncement, updateAnnouncement, deleteAnnouncement, getAnnouncementPage, updateAnnouncementStatus, updateAnnouncementTop } from '@/api/announcement/index'
+import { useUserStore } from '@/stores/user'
 
 const loading = ref(false); const tableData = ref([]); const total = ref(0)
 const dialogVisible = ref(false); const formRef = ref(null); const isEdit = ref(false)
+const detailDialogVisible = ref(false)
+const detailRow = ref(null)
+const userStore = useUserStore()
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, title: '', status: '' })
 const form = reactive({ id: null, title: '', type: 1, content: '', coverImage: '', isTop: 0, topExpireTime: '' })
@@ -100,8 +125,10 @@ const form = reactive({ id: null, title: '', type: 1, content: '', coverImage: '
 const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑公告' : '新增公告')
+const isAdmin = computed(() => userStore.roles.includes('超级管理员') || userStore.roles.includes('物业管理员') || userStore.userInfo.roleName === '超级管理员' || userStore.userInfo.roleName === '物业管理员')
 const st = (s) => ({ 0: 'info', 1: 'success', 2: 'warning' }[s] || 'info')
 const stText = (s) => ({ 0: '草稿', 1: '已发布', 2: '已撤回' }[s] || '')
+const typeText = (t) => ({ 1: '通知', 2: '公告', 3: '活动' }[t] || '')
 
 const rules = {
   title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
@@ -119,6 +146,7 @@ function handleSearch() { searchForm.pageNum = 1; fetchData() }
 function resetSearch() { searchForm.title = ''; searchForm.status = ''; handleSearch() }
 function handleAdd() { isEdit.value = false; resetForm(); dialogVisible.value = true }
 function handleEdit(row) { isEdit.value = true; Object.assign(form, row); dialogVisible.value = true }
+function handleDetail(row) { detailRow.value = row; detailDialogVisible.value = true }
 function resetForm() { formRef.value?.resetFields(); Object.assign(form, { id: null, title: '', type: 1, content: '', coverImage: '', isTop: 0, topExpireTime: '' }) }
 
 async function handleSubmit() {
