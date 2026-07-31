@@ -6,6 +6,7 @@
 -- =====================================================================
 
 -- 设备分类表
+SET FOREIGN_KEY_CHECKS = 0;
 CREATE TABLE equipment_category (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     category_name VARCHAR(50) NOT NULL COMMENT '分类名称',
@@ -54,3 +55,6 @@ INSERT IGNORE INTO equipment_category (id, category_name, parent_id, sort, statu
 INSERT IGNORE INTO equipment_category (id, category_name, parent_id, sort, status) VALUES (3, '电梯', 0, 3, 1);
 INSERT IGNORE INTO equipment_category (id, category_name, parent_id, sort, status) VALUES (4, '绿化', 0, 4, 1);
 INSERT IGNORE INTO equipment_category (id, category_name, parent_id, sort, status) VALUES (5, '基础物品', 0, 5, 1);
+
+
+SET FOREIGN_KEY_CHECKS = 1;

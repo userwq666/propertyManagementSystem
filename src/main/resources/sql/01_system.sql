@@ -6,6 +6,7 @@
 -- =====================================================================
 
 -- 系统用户表
+SET FOREIGN_KEY_CHECKS = 0;
 CREATE TABLE sys_user (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(50) NOT NULL UNIQUE COMMENT '登录账号',
@@ -444,5 +445,8 @@ INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (3506,5,67);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (3501,5,84);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (3502,5,85);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (3503,5,86);
+
+SET FOREIGN_KEY_CHECKS = 1;
+
 
 SET FOREIGN_KEY_CHECKS = 1;

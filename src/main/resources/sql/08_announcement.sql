@@ -6,6 +6,7 @@
 -- =====================================================================
 
 -- 公告表
+SET FOREIGN_KEY_CHECKS = 0;
 CREATE TABLE announcement (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(200) NOT NULL COMMENT '公告标题',
@@ -44,3 +45,6 @@ CREATE INDEX idx_announcement_create_time ON announcement(create_time);
 CREATE INDEX idx_ar_user ON announcement_read(user_id);
 
 -- =====================================================================
+
+
+SET FOREIGN_KEY_CHECKS = 1;

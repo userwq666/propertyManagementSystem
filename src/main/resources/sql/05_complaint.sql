@@ -6,6 +6,7 @@
 -- =====================================================================
 
 -- 投诉建议表
+SET FOREIGN_KEY_CHECKS = 0;
 CREATE TABLE complaint_suggest (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     complaint_no VARCHAR(50) NOT NULL UNIQUE COMMENT '投诉单号',
@@ -38,3 +39,6 @@ CREATE INDEX idx_complaint_no ON complaint_suggest(complaint_no);
 CREATE INDEX idx_complaint_create_time ON complaint_suggest(create_time);
 
 -- =====================================================================
+
+
+SET FOREIGN_KEY_CHECKS = 1;

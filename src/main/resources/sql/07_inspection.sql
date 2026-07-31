@@ -6,6 +6,7 @@
 -- =====================================================================
 
 -- 巡检计划表
+SET FOREIGN_KEY_CHECKS = 0;
 CREATE TABLE inspection_plan (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     plan_name VARCHAR(100) NOT NULL COMMENT '计划名称',
@@ -100,3 +101,6 @@ CREATE TABLE inspection_record_log (
 CREATE INDEX idx_irlog_record ON inspection_record_log(record_id);
 
 -- =====================================================================
+
+
+SET FOREIGN_KEY_CHECKS = 1;

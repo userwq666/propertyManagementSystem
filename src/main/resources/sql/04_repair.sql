@@ -6,6 +6,7 @@
 -- =====================================================================
 
 -- 报修记录表
+SET FOREIGN_KEY_CHECKS = 0;
 CREATE TABLE repair_record (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     repair_no VARCHAR(50) NOT NULL UNIQUE COMMENT '报修单号',
@@ -44,3 +45,6 @@ CREATE INDEX idx_repair_no ON repair_record(repair_no);
 CREATE INDEX idx_repair_create_time ON repair_record(create_time);
 
 -- =====================================================================
+
+
+SET FOREIGN_KEY_CHECKS = 1;

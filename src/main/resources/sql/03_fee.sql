@@ -6,6 +6,7 @@
 -- =====================================================================
 
 -- 收费项目表
+SET FOREIGN_KEY_CHECKS = 0;
 CREATE TABLE fee_item (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     item_name VARCHAR(100) NOT NULL COMMENT '收费项目名称',
@@ -92,3 +93,6 @@ CREATE INDEX idx_fnb_building ON fee_notice_building(building_id);
 CREATE INDEX idx_fno_owner ON fee_notice_owner(owner_id);
 
 -- =====================================================================
+
+
+SET FOREIGN_KEY_CHECKS = 1;
