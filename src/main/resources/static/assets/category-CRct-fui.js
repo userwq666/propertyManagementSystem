@@ -1,0 +1,1 @@
+import{a9 as t}from"./index-DkR6VCaY.js";function u(e){return t({url:"/equipment/category",method:"post",data:e})}function a(e){return t({url:"/equipment/category",method:"put",data:e})}function n(e){return t({url:`/equipment/category/${e}`,method:"delete"})}function g(e,r={}){return t({url:"/equipment/category/page",method:"get",params:e,...r})}export{u as a,n as d,g,a as u};

@@ -149,10 +149,10 @@ async function fetchData() {
 
 function buildPeriods(plan) {
   const freq = plan.frequencyType || 1
-  if (freq === 3) return monthPeriods(12)
-  if (freq === 4) return quarterPeriods(12)
-  if (freq === 5) return halfYearPeriods(10)
-  if (freq === 6) return yearPeriods(10)
+  if (freq === 3) return monthPeriods(plan.startDate, plan.endDate)
+  if (freq === 4) return quarterPeriods(plan.startDate, plan.endDate)
+  if (freq === 5) return halfYearPeriods(plan.startDate, plan.endDate)
+  if (freq === 6) return yearPeriods(plan.startDate, plan.endDate)
   if (freq === 2) return weekPeriods(plan.startDate, plan.endDate, 52)
   return dayPeriods(plan.startDate, plan.endDate, 90)
 }
@@ -180,24 +180,24 @@ function weekPeriods(start, end, max) {
   return list
 }
 
-function monthPeriods(count) {
+function monthPeriods(start, end) {
   const list = []
-  const now = new Date()
-  for (let i = count - 1; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+  const s = start ? new Date(start.slice(0, 7) + '-01T00:00:00') : new Date()
+  const e = end ? new Date(end.slice(0, 7) + '-01T00:00:00') : new Date()
+  for (let d = new Date(s); d <= e && list.length < 60; d.setMonth(d.getMonth() + 1)) {
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
     list.push({ key, label: key, representative: key + '-01' })
   }
   return list
 }
 
-function quarterPeriods(count) {
+function quarterPeriods(start, end) {
   const list = []
-  const now = new Date()
-  const curQuarter = Math.floor(now.getMonth() / 3)
-  const curYear = now.getFullYear()
-  for (let i = count - 1; i >= 0; i--) {
-    const total = curYear * 4 + curQuarter - i
+  const s = start ? new Date(start.slice(0, 7) + '-01T00:00:00') : new Date()
+  const e = end ? new Date(end.slice(0, 7) + '-01T00:00:00') : new Date()
+  const sTotal = s.getFullYear() * 4 + Math.floor(s.getMonth() / 3)
+  const eTotal = e.getFullYear() * 4 + Math.floor(e.getMonth() / 3)
+  for (let total = sTotal; total <= eTotal && list.length < 40; total++) {
     const year = Math.floor(total / 4)
     const quarter = total % 4
     const month = quarter * 3 + 1
@@ -207,12 +207,13 @@ function quarterPeriods(count) {
   return list
 }
 
-function halfYearPeriods(count) {
+function halfYearPeriods(start, end) {
   const list = []
-  const now = new Date()
-  const curHalf = now.getMonth() < 6 ? 0 : 1
-  for (let i = count - 1; i >= 0; i--) {
-    const total = now.getFullYear() * 2 + curHalf - i
+  const s = start ? new Date(start.slice(0, 7) + '-01T00:00:00') : new Date()
+  const e = end ? new Date(end.slice(0, 7) + '-01T00:00:00') : new Date()
+  const sTotal = s.getFullYear() * 2 + (s.getMonth() < 6 ? 0 : 1)
+  const eTotal = e.getFullYear() * 2 + (e.getMonth() < 6 ? 0 : 1)
+  for (let total = sTotal; total <= eTotal && list.length < 30; total++) {
     const year = Math.floor(total / 2)
     const half = total % 2
     const month = half === 0 ? 1 : 7
@@ -222,11 +223,11 @@ function halfYearPeriods(count) {
   return list
 }
 
-function yearPeriods(count) {
+function yearPeriods(start, end) {
   const list = []
-  const year = new Date().getFullYear()
-  for (let i = count - 1; i >= 0; i--) {
-    const y = year - i
+  const s = start ? Number(start.slice(0, 4)) : new Date().getFullYear()
+  const e = end ? Number(end.slice(0, 4)) : new Date().getFullYear()
+  for (let y = s; y <= e && list.length < 30; y++) {
     list.push({ key: String(y), label: String(y), representative: `${y}-01-01` })
   }
   return list
