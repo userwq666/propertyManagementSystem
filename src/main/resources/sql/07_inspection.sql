@@ -51,6 +51,7 @@ CREATE TABLE inspection_record (
     plan_id BIGINT COMMENT '计划id',
     equipment_id BIGINT NOT NULL COMMENT '设备id',
     inspector_user_id BIGINT COMMENT '巡检人员ID',
+    filler_user_id BIGINT COMMENT '填写人ID',
     inspection_time DATETIME NOT NULL COMMENT '巡检时间',
     task_status TINYINT NOT NULL DEFAULT 0 COMMENT '任务状态：0待接单 1已接单 2已填写',
     status TINYINT NOT NULL DEFAULT 1 COMMENT '巡检结果：1正常 2异常 3未巡检',

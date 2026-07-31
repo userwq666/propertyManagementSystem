@@ -88,6 +88,7 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
         for (InspectionRecordDomain r : records) {
             if (r.getInspectorUserId() != null) userIds.add(r.getInspectorUserId());
             if (r.getHandlerId() != null) userIds.add(r.getHandlerId());
+            if (r.getFillerUserId() != null) userIds.add(r.getFillerUserId());
         }
         Map<Long, String> userNameMap = new HashMap<>();
         if (!userIds.isEmpty()) {
@@ -103,6 +104,7 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
             vo.setPlanName(planNameMap.get(record.getPlanId()));
             vo.setEquipmentName(eqNameMap.get(record.getEquipmentId()));
             vo.setInspectorName(userNameMap.get(record.getInspectorUserId()));
+            vo.setFillerName(userNameMap.get(record.getFillerUserId()));
             vo.setHandlerName(userNameMap.get(record.getHandlerId()));
             return vo;
         }).collect(Collectors.toList());
@@ -125,6 +127,7 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
         if (domain.getInspectionTime() == null) {
             domain.setInspectionTime(LocalDateTime.now());
         }
+        domain.setFillerUserId(SecurityUtils.getCurrentUserId());
         inspectionRecordMapper.insert(domain);
     }
 
@@ -150,6 +153,12 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
         if (existing == null) {
             throw new com.lsy.propertymanagementsystem.common.exception.BusinessException("巡检记录不存在");
         }
+        Long currentUserId = SecurityUtils.getCurrentUserId();
+        String roleKey = SecurityUtils.getRoleKey();
+        boolean isManager = "admin".equals(roleKey) || "property_admin".equals(roleKey);
+        if (!isManager && !currentUserId.equals(existing.getInspectorUserId())) {
+            throw new BusinessException("只能填写自己负责的巡检记录");
+        }
         if (dto.getStatus() != null) {
             InspectResult result = InspectResult.of(dto.getStatus());
             existing.setStatus(result);
@@ -162,6 +171,9 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
                 existing.setHandleStatus(HandleStatus.PENDING);
             }
             existing.setTaskStatus(TaskStatus.DONE);
+            if (existing.getFillerUserId() == null) {
+                existing.setFillerUserId(currentUserId);
+            }
         }
         existing.setRemark(dto.getRemark());
         inspectionRecordMapper.updateById(existing);
@@ -251,6 +263,13 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
             SysUserDomain user = sysUserMapper.selectById(record.getInspectorUserId());
             if (user != null) {
                 vo.setInspectorName(user.getRealName());
+            }
+        }
+
+        if (record.getFillerUserId() != null) {
+            SysUserDomain user = sysUserMapper.selectById(record.getFillerUserId());
+            if (user != null) {
+                vo.setFillerName(user.getRealName());
             }
         }
 

@@ -43,6 +43,7 @@
           <el-descriptions-item label="计划">{{ currentRecord.planName }}</el-descriptions-item>
           <el-descriptions-item label="设备">{{ currentRecord.equipmentName }}</el-descriptions-item>
           <el-descriptions-item label="巡检人">{{ currentRecord.inspectorName || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="填写人">{{ currentRecord.fillerName || '-' }}</el-descriptions-item>
           <el-descriptions-item label="巡检时间">{{ currentRecord.inspectionTime }}</el-descriptions-item>
           <el-descriptions-item label="任务状态">{{ taskText(currentRecord) }}</el-descriptions-item>
           <el-descriptions-item label="结果">{{ resultText(currentRecord.status) }}</el-descriptions-item>

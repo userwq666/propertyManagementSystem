@@ -17,6 +17,8 @@ public class InspectionRecordVO {
     private String equipmentName;
     private Long inspectorUserId;
     private String inspectorName;
+    private Long fillerUserId;
+    private String fillerName;
     private LocalDateTime inspectionTime;
     private TaskStatus taskStatus;
     private InspectResult status;

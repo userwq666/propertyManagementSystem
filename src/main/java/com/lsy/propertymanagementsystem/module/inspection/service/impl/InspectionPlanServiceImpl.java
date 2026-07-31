@@ -167,6 +167,9 @@ public class InspectionPlanServiceImpl extends ServiceImpl<InspectionPlanMapper,
     @Override
     @Transactional
     public void addPlan(InspectionPlanDTO dto) {
+        if (dto.getInspectorIds() == null || dto.getInspectorIds().isEmpty()) {
+            throw new com.lsy.propertymanagementsystem.common.exception.BusinessException("请指定巡检员");
+        }
         InspectionPlanDomain domain = new InspectionPlanDomain();
         BeanUtils.copyProperties(dto, domain);
         if (dto.getPlanType() != null) {
@@ -184,6 +187,9 @@ public class InspectionPlanServiceImpl extends ServiceImpl<InspectionPlanMapper,
     @Override
     @Transactional
     public void updatePlan(InspectionPlanDTO dto) {
+        if (dto.getInspectorIds() == null || dto.getInspectorIds().isEmpty()) {
+            throw new com.lsy.propertymanagementsystem.common.exception.BusinessException("请指定巡检员");
+        }
         InspectionPlanDomain domain = new InspectionPlanDomain();
         BeanUtils.copyProperties(dto, domain);
         InspectionPlanDomain existing = this.getById(domain.getId());

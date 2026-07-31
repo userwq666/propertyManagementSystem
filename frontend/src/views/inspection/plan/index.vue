@@ -32,6 +32,9 @@
         </el-table-column>
         <el-table-column prop="startDate" label="开始日期" width="110" />
         <el-table-column prop="endDate" label="结束日期" width="110" />
+        <el-table-column label="巡检人员" min-width="120">
+          <template #default="{ row }">{{ (row.inspectorNames || []).join('、') || '-' }}</template>
+        </el-table-column>
         <el-table-column prop="creatorName" label="创建人" width="80" />
         <el-table-column prop="createTime" label="创建时间" width="160" />
         <el-table-column label="操作" min-width="240" class-name="action-column" fixed="right">
@@ -108,6 +111,7 @@ function resetForm(){formRef.value?.resetFields();Object.assign(form,{id:null,pl
 async function handleSubmit(){
   const v=await formRef.value.validate().catch(()=>false)
   if(!v)return
+  if(!form.inspectorIds || form.inspectorIds.length===0){ElMessage.warning('请指定巡检员');return}
   const payload={...form,frequencyValue:Array.isArray(form.frequencyValue)?form.frequencyValue.join(','):form.frequencyValue}
   try{if(isEdit.value)await updatePlan(payload);else await addPlan(payload);ElMessage.success(isEdit.value?'编辑成功':'新增成功');dialogVisible.value=false;fetchData()}catch(e){}
 }

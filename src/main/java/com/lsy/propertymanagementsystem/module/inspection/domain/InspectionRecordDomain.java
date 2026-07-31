@@ -16,6 +16,7 @@ public class InspectionRecordDomain {
     private Long planId;
     private Long equipmentId;
     private Long inspectorUserId;
+    private Long fillerUserId;
     private LocalDateTime inspectionTime;
     private TaskStatus taskStatus;
     private InspectResult status;
