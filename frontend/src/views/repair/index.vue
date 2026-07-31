@@ -76,6 +76,11 @@
             <el-option v-for="h in houses.filter(i => i.id != null)" :key="h.id" :label="h.roomNo" :value="h.id" />
           </el-select>
         </el-form-item>
+        <el-form-item label="关联设备" v-if="isAdmin || isWorker">
+          <el-select v-model="form.equipmentId" placeholder="请选择（可空）" filterable clearable>
+            <el-option v-for="e in equipments" :key="e.id" :label="e.equipmentName" :value="e.id" />
+          </el-select>
+        </el-form-item>
         <el-form-item label="报修类型" prop="repairType">
           <el-select v-model="form.repairType"><el-option label="水电维修" value="水电" /><el-option label="门窗维修" value="门窗" /><el-option label="公共设施" value="公共设施" /><el-option label="电器维修" value="家电" /><el-option label="其他" value="其他" /></el-select>
         </el-form-item>
@@ -179,7 +184,7 @@ const currentRow = ref(null)
 const userStore = useUserStore()
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, ownerId: '', status: '' })
-const form = reactive({ id: null, ownerId: null, houseId: null, repairType: '水电', repairContent: '', repairImages: '', remark: '' })
+const form = reactive({ id: null, ownerId: null, houseId: null, equipmentId: null, repairType: '水电', repairContent: '', repairImages: '', remark: '' })
 const assignForm = reactive({ handlerId: null })
 const completeForm = reactive({ equipmentId: null, handleContent: '' })
 const ratingForm = reactive({ score: 5, content: '' })
@@ -187,9 +192,9 @@ const ratingForm = reactive({ score: 5, content: '' })
 const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑报修' : '新增报修')
-const isAdmin = computed(() => userStore.roles.includes('超级管理员') || userStore.roles.includes('物业管理员'))
-const isWorker = computed(() => userStore.roles.includes('维修工'))
-const isOwner = computed(() => userStore.roles.includes('业主'))
+const isAdmin = computed(() => userStore.roles.includes('超级管理员') || userStore.roles.includes('物业管理员') || userStore.userInfo.roleName === '超级管理员' || userStore.userInfo.roleName === '物业管理员')
+const isWorker = computed(() => userStore.roles.includes('维修工') || userStore.userInfo.roleName === '维修工')
+const isOwner = computed(() => userStore.roles.includes('业主') || userStore.userInfo.roleName === '业主')
 const userId = computed(() => userStore.userInfo.id)
 const typeText = (t) => ({ 水电: '水电维修', 门窗: '门窗维修', 家电: '电器维修', 公共设施: '公共设施', 其他: '其他' }[t] || t || '')
 const statusTag = (s) => ({ 0: 'info', 1: 'warning', 2: 'primary', 3: 'success', 4: 'danger' }[s] || 'info')
@@ -247,13 +252,14 @@ async function fetchData() {
 
 function handleSearch() { searchForm.pageNum = 1; fetchData() }
 function resetSearch() { searchForm.ownerId = ''; searchForm.status = ''; handleSearch() }
-function handleAdd() { isEdit.value = false; resetForm(); if (isAdmin.value) { form.ownerId = null; form.houseId = null } else { form.ownerId = null } dialogVisible.value = true }
+function handleAdd() { isEdit.value = false; resetForm(); if (isAdmin.value) { form.ownerId = null; form.houseId = null } else { form.ownerId = null } form.equipmentId = null; dialogVisible.value = true }
 function handleEdit(row) {
   isEdit.value = true
   Object.assign(form, {
     ...row,
     ownerId: isAdmin.value ? (row.ownerId || 0) : row.ownerId,
     houseId: isAdmin.value ? (row.houseId || 0) : row.houseId,
+    equipmentId: row.equipmentId || null,
     repairType: row.repairType || 'WATER_ELECTRICITY',
     repairContent: row.repairContent || row.description || '',
     repairImages: row.repairImages || row.images || ''

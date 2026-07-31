@@ -26,6 +26,8 @@ public class UserVO {
     private Long roleId;
     // 角色名称
     private String roleName;
+    // 角色列表
+    private List<String> roles;
     // 权限列表
     private List<String> permissions;       //permission是权限的字符串表示
 }

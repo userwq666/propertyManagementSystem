@@ -132,6 +132,7 @@ public class AuthServiceImpl implements AuthService {
             SysRoleDomain role = roleMapper.selectById(roleIds.get(0));
             if (role != null) response.setRoleName(role.getRoleName());
         }
+        response.setRoles(getRoleNames(roleIds));
         // 获取用户权限
         List<String> permissions = menuMapper.selectPermsByUserId(userId);
         response.setPermissions(permissions);
