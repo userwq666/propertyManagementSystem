@@ -21,8 +21,6 @@ public interface StatisticsService {
     // 设备状态分布
     List<Map<String, Object>> getDeviceStatus(String timeRange);
 
-    // 维保到期预警
-    List<Map<String, Object>> getMaintenanceWarning(String timeRange);
 
     // 满意度评分趋势
     List<Map<String, Object>> getSatisfactionTrend(String timeRange);

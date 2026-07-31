@@ -36,10 +36,6 @@ export function getEquipmentStatus(params) {
   return request({ url: '/statistics/equipment/status', method: 'get', params })
 }
 
-export function getMaintenanceWarning(params) {
-  return request({ url: '/statistics/equipment/maintenanceWarning', method: 'get', params })
-}
-
 export function getSatisfactionTrend(params) {
   return request({ url: '/statistics/complaint/satisfactionTrend', method: 'get', params })
 }

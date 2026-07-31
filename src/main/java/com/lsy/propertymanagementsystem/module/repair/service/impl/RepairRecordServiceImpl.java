@@ -11,11 +11,7 @@ import com.lsy.propertymanagementsystem.module.community.domain.CommunityOwnerDo
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityHouseMapper;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityOwnerMapper;
 import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentDomain;
-import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentMaintenanceDomain;
 import com.lsy.propertymanagementsystem.module.equipment.enums.EquipmentStatus;
-import com.lsy.propertymanagementsystem.module.equipment.enums.MaintenanceStatus;
-import com.lsy.propertymanagementsystem.module.equipment.enums.MaintenanceType;
-import com.lsy.propertymanagementsystem.module.equipment.mapper.EquipmentMaintenanceMapper;
 import com.lsy.propertymanagementsystem.module.equipment.mapper.EquipmentMapper;
 import com.lsy.propertymanagementsystem.module.repair.domain.RepairRecordDomain;
 import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordDTO;
@@ -56,9 +52,6 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
 
     @Autowired
     private EquipmentMapper equipmentMapper;
-
-    @Autowired
-    private EquipmentMaintenanceMapper equipmentMaintenanceMapper;
 
     @Override
     public RepairRecordVO getById(Long id) {
@@ -334,17 +327,6 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         if (equipment == null) {
             return;
         }
-        EquipmentMaintenanceDomain maintenance = new EquipmentMaintenanceDomain();
-        maintenance.setEquipmentId(equipmentId);
-        maintenance.setMaintenanceType(MaintenanceType.FAULT_REPAIR);
-        maintenance.setMaintenanceContent(domain.getRepairContent());
-        maintenance.setMaintenancePersonnelId(userId);
-        maintenance.setStartTime(domain.getHandleTime());
-        maintenance.setEndTime(domain.getHandleTime());
-        maintenance.setStatus(MaintenanceStatus.COMPLETED);
-        maintenance.setRemark("报修单号：" + domain.getRepairNo());
-        equipmentMaintenanceMapper.insert(maintenance);
-
         if (equipment.getStatus() == EquipmentStatus.FAULT
                 || equipment.getStatus() == EquipmentStatus.UNDER_REPAIR
                 || equipment.getStatus() == EquipmentStatus.DISABLED) {

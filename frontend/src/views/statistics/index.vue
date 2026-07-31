@@ -88,25 +88,13 @@
 
     <!-- 设备 & 巡检 -->
     <el-row :gutter="16" style="margin-top: 16px;">
-      <el-col :span="8">
+      <el-col :span="12">
         <el-card shadow="hover" class="chart-card">
           <template #header>设备状态分布</template>
           <v-chart :option="equipmentStatusOption" style="height: 300px" autoresize />
         </el-card>
       </el-col>
-      <el-col :span="8">
-        <el-card shadow="hover" class="chart-card">
-          <template #header>维保到期预警（未来30天）</template>
-          <div class="warning-list" v-if="maintenanceWarnings.length">
-            <div v-for="w in maintenanceWarnings" :key="w.id" class="warning-item">
-              <el-tag type="warning" size="small">{{ w.equipmentName }}</el-tag>
-              <span>到期: {{ w.nextMaintenanceDate }}</span>
-            </div>
-          </div>
-          <el-empty v-else description="无即将到期维保" :image-size="60" />
-        </el-card>
-      </el-col>
-      <el-col :span="8">
+      <el-col :span="12">
         <el-card shadow="hover" class="chart-card">
           <template #header>巡检概览</template>
           <v-chart :option="inspectionOption" style="height: 300px" autoresize />
@@ -139,7 +127,7 @@ import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
 import { BarChart, PieChart, LineChart } from 'echarts/charts'
 import { GridComponent, TooltipComponent, LegendComponent, TitleComponent } from 'echarts/components'
-import { getOverview, getMonthlyFee, getFeeByItem, getRepairByType, getRepairOverview, getEquipmentStatus, getMaintenanceWarning, getSatisfactionTrend, getComplaintTypeRatio, getInspectionCompletion, getInspectionAbnormal } from '@/api/statistics/index'
+import { getOverview, getMonthlyFee, getFeeByItem, getRepairByType, getRepairOverview, getEquipmentStatus, getSatisfactionTrend, getComplaintTypeRatio, getInspectionCompletion, getInspectionAbnormal } from '@/api/statistics/index'
 
 use([CanvasRenderer, BarChart, PieChart, LineChart, GridComponent, TooltipComponent, LegendComponent, TitleComponent])
 
@@ -151,7 +139,6 @@ const monthlyFeeOption = ref({})
 const feeByItemOption = ref({})
 const repairByTypeOption = ref({})
 const equipmentStatusOption = ref({})
-const maintenanceWarnings = ref([])
 const inspectionOption = ref({})
 const complaintTypeOption = ref({})
 const satisfactionOption = ref({})
@@ -163,7 +150,6 @@ onMounted(() => {
   loadRepairByType()
   loadRepairOverview()
   loadEquipmentStatus()
-  loadMaintenanceWarning()
   loadInspection()
   loadComplaintType()
   loadSatisfaction()
@@ -244,13 +230,6 @@ async function loadEquipmentStatus() {
         emphasis: { itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' } }
       }]
     }
-  } catch (e) { /* ignore */ }
-}
-
-async function loadMaintenanceWarning() {
-  try {
-    const res = await getMaintenanceWarning()
-    maintenanceWarnings.value = res.data || []
   } catch (e) { /* ignore */ }
 }
 
@@ -361,10 +340,6 @@ async function loadSatisfaction() {
   line-height: 1.2;
 }
 
-.warning-list { padding: 10px 0; max-height: 260px; overflow-y: auto; }
-.warning-item { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #ebeef5; }
-.warning-item:last-child { border-bottom: none; }
-.warning-item span { font-size: 13px; color: #606266; }
 
 .ro-label {
   font-size: 14px;

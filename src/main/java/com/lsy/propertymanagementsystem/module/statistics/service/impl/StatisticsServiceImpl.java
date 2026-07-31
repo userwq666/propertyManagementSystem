@@ -9,9 +9,7 @@ import com.lsy.propertymanagementsystem.module.complaint.enums.ComplaintStatus;
 import com.lsy.propertymanagementsystem.module.complaint.enums.ComplaintType;
 import com.lsy.propertymanagementsystem.module.complaint.mapper.ComplaintSuggestMapper;
 import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentDomain;
-import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentMaintenanceDomain;
 import com.lsy.propertymanagementsystem.module.equipment.enums.EquipmentStatus;
-import com.lsy.propertymanagementsystem.module.equipment.mapper.EquipmentMaintenanceMapper;
 import com.lsy.propertymanagementsystem.module.equipment.mapper.EquipmentMapper;
 import com.lsy.propertymanagementsystem.module.fee.domain.FeeItemDomain;
 import com.lsy.propertymanagementsystem.module.fee.domain.FeeRecordDomain;
@@ -60,9 +58,6 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Autowired
     private EquipmentMapper equipmentMapper;
-
-    @Autowired
-    private EquipmentMaintenanceMapper equipmentMaintenanceMapper;
 
     @Autowired
     private InspectionRecordMapper inspectionRecordMapper;
@@ -287,38 +282,6 @@ public class StatisticsServiceImpl implements StatisticsService {
             item.put("status", entry.getKey() != null ? entry.getKey().getValue() : null);
             item.put("statusName", entry.getKey() != null ? entry.getKey().getDesc() : null);
             item.put("count", entry.getValue());
-            result.add(item);
-        }
-        return result;
-    }
-
-    @Override
-    public List<Map<String, Object>> getMaintenanceWarning(String timeRange) {
-        LocalDate today = LocalDate.now();
-        LocalDate deadline = today.plusDays(30);
-
-        LambdaQueryWrapper<EquipmentMaintenanceDomain> wrapper = new LambdaQueryWrapper<>();
-        wrapper.ge(EquipmentMaintenanceDomain::getNextMaintenanceDate, today)
-                .le(EquipmentMaintenanceDomain::getNextMaintenanceDate, deadline);
-        List<EquipmentMaintenanceDomain> maintenances = equipmentMaintenanceMapper.selectList(wrapper);
-
-        Set<Long> equipmentIds = maintenances.stream()
-                .map(EquipmentMaintenanceDomain::getEquipmentId)
-                .collect(Collectors.toSet());
-        Map<Long, String> equipmentNameMap = new HashMap<>();
-        if (!equipmentIds.isEmpty()) {
-            List<EquipmentDomain> equipmentList = equipmentMapper.selectBatchIds(equipmentIds);
-            equipmentNameMap = equipmentList.stream()
-                    .collect(Collectors.toMap(EquipmentDomain::getId, EquipmentDomain::getEquipmentName));
-        }
-
-        List<Map<String, Object>> result = new ArrayList<>();
-        for (EquipmentMaintenanceDomain m : maintenances) {
-            Map<String, Object> item = new HashMap<>();
-            item.put("id", m.getId());
-            item.put("equipmentId", m.getEquipmentId());
-            item.put("equipmentName", equipmentNameMap.getOrDefault(m.getEquipmentId(), "未知设备"));
-            item.put("nextMaintenanceDate", m.getNextMaintenanceDate());
             result.add(item);
         }
         return result;

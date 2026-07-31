@@ -81,3 +81,10 @@ CREATE INDEX idx_parking_no ON community_parking(parking_no);
 CREATE INDEX idx_parking_owner ON community_parking(owner_id);
 
 -- =====================================================================
+
+-- 初始数据：楼栋房屋
+INSERT INTO community_building (id, building_no, floor_count, total_house, build_year, remark, create_time, update_time, deleted) VALUES (1,'A',5,5,2002,'','2026-07-31 01:34:25','2026-07-31 01:34:25',0);
+INSERT INTO community_building (id, building_no, floor_count, total_house, build_year, remark, create_time, update_time, deleted) VALUES (2,'B',6,6,2020,NULL,'2026-07-31 01:37:38','2026-07-31 01:37:38',0);
+INSERT INTO community_house (id, building_id, room_no, area, house_type, house_status, owner_id, remark, create_time, update_time, deleted) VALUES (2,1,'101',100.00,'独户',0,NULL,'','2026-07-31 02:00:50','2026-07-31 02:00:50',0);
+INSERT INTO community_house (id, building_id, room_no, area, house_type, house_status, owner_id, remark, create_time, update_time, deleted) VALUES (3,1,'201',95.00,'独户',1,NULL,'','2026-07-31 09:58:13','2026-07-31 09:58:13',0);
+

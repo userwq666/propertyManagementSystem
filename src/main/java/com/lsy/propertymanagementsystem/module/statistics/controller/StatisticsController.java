@@ -82,13 +82,6 @@ public class StatisticsController {
         return Result.success(data);
     }
 
-    @PreAuthorize("hasAuthority('statistics:equipment:list')")
-    @GetMapping("/equipment/maintenanceWarning")
-    public Result getMaintenanceWarning(@RequestParam(defaultValue = "6m") String timeRange) {
-        List<Map<String, Object>> data = statisticsService.getMaintenanceWarning(timeRange);
-        return Result.success(data);
-    }
-
     @PreAuthorize("hasAuthority('statistics:complaint:list')")
     @GetMapping("/complaint/satisfactionTrend")
     public Result getSatisfactionTrend(@RequestParam(defaultValue = "6m") String timeRange) {

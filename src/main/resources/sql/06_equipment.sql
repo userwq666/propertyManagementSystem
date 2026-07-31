@@ -41,33 +41,10 @@ CREATE TABLE equipment (
     CONSTRAINT fk_equip_building FOREIGN KEY (building_id) REFERENCES community_building(id) ON UPDATE CASCADE ON DELETE SET NULL
 ) COMMENT '设备表';
 
--- 设备维护记录表
-CREATE TABLE equipment_maintenance (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    equipment_id BIGINT NOT NULL COMMENT '设备id',
-    maintenance_type TINYINT NOT NULL COMMENT '维护类型：1日常巡检 2定期保养 3故障维修 4更换配件 5其他',
-    maintenance_content TEXT COMMENT '维护内容',
-    maintenance_personnel_id BIGINT COMMENT '维护人员ID',
-    start_time DATETIME COMMENT '开始时间',
-    end_time DATETIME COMMENT '结束时间',
-    cost DECIMAL(10,2) COMMENT '维护费用',
-    parts_replaced VARCHAR(500) COMMENT '更换配件',
-    next_maintenance_date DATE COMMENT '下次维护日期',
-    status TINYINT NOT NULL DEFAULT 0 COMMENT '状态：0待维护 1进行中 2已完成 3取消',
-    remark VARCHAR(500) COMMENT '备注',
-    create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除',
-    CONSTRAINT fk_maint_personnel FOREIGN KEY (maintenance_personnel_id) REFERENCES sys_user(id) ON UPDATE CASCADE ON DELETE SET NULL
-) COMMENT '设备维护记录表';
-
 -- 索引
 CREATE INDEX idx_equip_category ON equipment(category_id);
 CREATE INDEX idx_equip_building ON equipment(building_id);
 CREATE INDEX idx_equip_status ON equipment(status);
-CREATE INDEX idx_maint_equip ON equipment_maintenance(equipment_id);
-CREATE INDEX idx_maint_personnel ON equipment_maintenance(maintenance_personnel_id);
-CREATE INDEX idx_maint_status ON equipment_maintenance(status);
 
 -- =====================================================================
 
