@@ -22,7 +22,6 @@ public interface SysMenuMapper extends BaseMapper<SysMenuDomain> {
     // 根据用户ID查询其有权限的目录和菜单
     @Select("SELECT DISTINCT m.* FROM sys_menu m " +
             "WHERE m.menu_type IN (0, 1) AND m.status = 1 AND m.deleted = 0 " +
-            "AND m.id NOT IN (26, 27) " +
             "AND (EXISTS (SELECT 1 FROM sys_user_role ur " +
             "             WHERE ur.user_id = #{userId} AND ur.role_id IN (1, 2)) " +
             "     OR EXISTS (SELECT 1 FROM sys_user_role ur2 " +

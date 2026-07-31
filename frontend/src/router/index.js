@@ -8,6 +8,7 @@ const routes = [
     path: '/', component: () => import('@/layout/index.vue'), redirect: '/dashboard',
     children: [
       { path: 'dashboard', name: 'Dashboard', component: () => import('@/views/welcome/index.vue'), meta: { title: '首页', icon: 'HomeFilled' } },
+      { path: 'statistics', name: 'Statistics', component: () => import('@/views/statistics/index.vue'), meta: { title: '统计面板', icon: 'PieChart', permission: 'statistics:overview:list' } },
       { path: 'system', name: 'System', meta: { title: '系统管理', icon: 'Setting' },
         children: [
           { path: 'roles', name: 'SystemRoles', component: () => import('@/views/system/role/index.vue'), meta: { title: '角色管理', icon: 'Avatar', permission: 'system:role:list' } },
