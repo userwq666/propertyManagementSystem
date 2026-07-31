@@ -87,14 +87,16 @@
         <el-form-item label="封面图">
           <el-input v-model="form.coverImage" placeholder="封面图URL" />
         </el-form-item>
-        <el-form-item label="预发布">
-          <el-switch v-model="form.isScheduled" :active-value="1" :inactive-value="0" />
+        <el-form-item label="发布设置">
+          <div class="scheduled-row">
+            <span>预发布</span>
+            <el-switch v-model="form.isScheduled" :active-value="1" :inactive-value="0" />
+            <span class="row-gap">置顶</span>
+            <el-switch v-model="form.isTop" :active-value="1" :inactive-value="0" />
+          </div>
         </el-form-item>
         <el-form-item v-if="form.isScheduled" label="预发布时间" prop="scheduledPublishTime">
           <el-date-picker v-model="form.scheduledPublishTime" type="datetime" placeholder="选择预发布时间" value-format="YYYY-MM-DDTHH:mm:ss" style="width:100%" />
-        </el-form-item>
-        <el-form-item label="置顶">
-          <el-switch v-model="form.isTop" :active-value="1" :inactive-value="0" />
         </el-form-item>
         <el-form-item label="置顶过期">
           <el-date-picker v-model="form.topExpireTime" type="datetime" placeholder="选择日期" value-format="YYYY-MM-DDTHH:mm:ss" />
@@ -157,6 +159,10 @@ async function handleSubmit() {
     ElMessage.warning('请选择预发布时间')
     return
   }
+  if (form.scheduledPublishTime && form.topExpireTime && form.topExpireTime <= form.scheduledPublishTime) {
+    ElMessage.warning('置顶过期时间必须晚于预发布时间')
+    return
+  }
   try {
     const payload = { ...form, scheduledPublishTime: form.isScheduled ? form.scheduledPublishTime : null }
     if (isEdit.value) await updateAnnouncement(payload)
@@ -184,3 +190,14 @@ async function handleTop(row) {
   try { await updateAnnouncementTop({ id: row.id, isTop: row.isTop ? 0 : 1 }); ElMessage.success('操作成功'); fetchData() } catch (e) { /* handled */ } finally { submitting.value = false }
 }
 </script>
+
+<style scoped>
+.scheduled-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.row-gap {
+  margin-left: 16px;
+}
+</style>
