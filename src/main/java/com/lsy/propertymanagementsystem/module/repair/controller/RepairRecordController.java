@@ -84,7 +84,7 @@ public class RepairRecordController {
         return Result.success(repairRecordService.listHouses(ownerId));
     }
 
-    @PreAuthorize("hasAuthority('repair:record:process')")
+    @PreAuthorize("hasAuthority('repair:record:add') or hasAuthority('repair:record:process')")
     @GetMapping("/equipments")
     public Result<List<EquipmentDomain>> listEquipments() {
         return Result.success(repairRecordService.listEquipments());

@@ -76,7 +76,7 @@
             <el-option v-for="h in houses.filter(i => i.id != null)" :key="h.id" :label="h.roomNo" :value="h.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="关联设备" v-if="isAdmin || isWorker">
+        <el-form-item label="关联设备">
           <el-select v-model="form.equipmentId" placeholder="请选择（可空）" filterable clearable>
             <el-option v-for="e in equipments" :key="e.id" :label="e.equipmentName" :value="e.id" />
           </el-select>
@@ -227,12 +227,10 @@ onMounted(async () => {
     const hRes = await getRepairHouses()
     houses.value = hRes.data
   } catch (e) { /* handled */ }
-  if (isAdmin.value || isWorker.value) {
-    try {
-      const eRes = await getRepairEquipments()
-      equipments.value = eRes.data
-    } catch (e) { /* handled */ }
-  }
+  try {
+    const eRes = await getRepairEquipments()
+    equipments.value = eRes.data
+  } catch (e) { /* handled */ }
   if (isAdmin.value) {
     try {
       const wRes = await getUserPage({ pageNum: 1, pageSize: 100 })
