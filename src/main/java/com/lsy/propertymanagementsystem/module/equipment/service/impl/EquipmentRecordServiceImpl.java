@@ -3,7 +3,6 @@ package com.lsy.propertymanagementsystem.module.equipment.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentDomain;
 import com.lsy.propertymanagementsystem.module.equipment.mapper.EquipmentMapper;
-import com.lsy.propertymanagementsystem.module.equipment.service.EquipmentMaintenanceService;
 import com.lsy.propertymanagementsystem.module.equipment.service.EquipmentRecordService;
 import com.lsy.propertymanagementsystem.module.inspection.service.InspectionPlanService;
 import com.lsy.propertymanagementsystem.module.inspection.service.InspectionRecordService;
@@ -31,9 +30,6 @@ public class EquipmentRecordServiceImpl implements EquipmentRecordService {
     @Autowired
     private RepairRecordService repairRecordService;
 
-    @Autowired
-    private EquipmentMaintenanceService equipmentMaintenanceService;
-
     @Override
     public List<Map<String, Object>> listEquipmentOptions() {
         return equipmentMapper.selectList(new LambdaQueryWrapper<EquipmentDomain>().orderByAsc(EquipmentDomain::getId))
@@ -57,7 +53,6 @@ public class EquipmentRecordServiceImpl implements EquipmentRecordService {
         summary.put("plans", inspectionPlanService.listByEquipmentIncludeDeleted(equipmentId));
         summary.put("records", inspectionRecordService.page(1, 200, null, equipmentId).getRecords());
         summary.put("repairs", repairRecordService.page(1, 200, null, null, equipmentId, null).getRecords());
-        summary.put("maintenances", equipmentMaintenanceService.page(1, 200, equipmentId, null, null).getRecords());
         return summary;
     }
 }
