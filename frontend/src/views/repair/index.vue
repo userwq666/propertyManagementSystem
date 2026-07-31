@@ -3,6 +3,7 @@
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="业主">
         <el-select v-model="searchForm.ownerId" placeholder="请选择" clearable filterable>
+          <el-option label="系统代报" :value="0" />
           <el-option v-for="o in owners.filter(i => i.id != null)" :key="o.id" :label="o.name" :value="o.id" />
         </el-select>
       </el-form-item>

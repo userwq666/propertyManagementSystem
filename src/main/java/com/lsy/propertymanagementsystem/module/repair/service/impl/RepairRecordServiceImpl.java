@@ -87,7 +87,11 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
                     .or().eq(RepairRecordDomain::getStatus, RepairStatus.PENDING));
         } else {
             if (ownerId != null) {
-                wrapper.eq(RepairRecordDomain::getOwnerId, ownerId);
+                if (ownerId == 0L) {
+                    wrapper.isNull(RepairRecordDomain::getOwnerId);
+                } else {
+                    wrapper.eq(RepairRecordDomain::getOwnerId, ownerId);
+                }
             }
             if (handlerId != null) {
                 wrapper.eq(RepairRecordDomain::getHandlerId, handlerId);
