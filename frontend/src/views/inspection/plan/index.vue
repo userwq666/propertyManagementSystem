@@ -21,14 +21,13 @@
         <div class="toolbar-right"><el-button @click="fetchData">刷新</el-button></div>
       </div>
       <el-table :data="tableData" border stripe v-loading="loading">
-        <el-table-column prop="id" label="ID" width="80" />
+        <el-table-column label="状态" width="80">
+          <template #default="{ row }"><el-tag :type="row.status===1?'success':'info'">{{ row.status===1?'启用':'停用' }}</el-tag></template>
+        </el-table-column>
         <el-table-column prop="planName" label="计划名称" />
         <el-table-column prop="planType" label="类型" width="100" />
         <el-table-column label="巡检频率" width="130">
           <template #default="{ row }">{{ freqText(row.frequencyType) }} {{ row.frequencyValue||'' }}</template>
-        </el-table-column>
-        <el-table-column label="状态" width="80">
-          <template #default="{ row }"><el-tag :type="row.status===1?'success':'info'">{{ row.status===1?'启用':'停用' }}</el-tag></template>
         </el-table-column>
         <el-table-column prop="startDate" label="开始日期" width="110" />
         <el-table-column prop="endDate" label="结束日期" width="110" />
@@ -37,6 +36,7 @@
         </el-table-column>
         <el-table-column prop="creatorName" label="创建人" width="80" />
         <el-table-column prop="createTime" label="创建时间" width="160" />
+        <el-table-column prop="id" label="ID" width="80" />
         <el-table-column label="操作" min-width="320" class-name="action-column" fixed="right">
           <template #default="{ row }">
             <el-button size="small" @click="handleDetail(row)">详情</el-button>
