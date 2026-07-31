@@ -3,7 +3,7 @@
     <el-aside :width="isCollapse ? '64px' : '220px'" class="layout-aside">
       <div class="logo" @click="$router.push('/dashboard')">
         <img src="/favicon.svg" alt="" />
-        <span v-show="!isCollapse">物业管理系统</span>
+        <span v-show="!isCollapse">社区物业系统</span>
       </div>
       <el-menu
         :default-active="activeMenu"
