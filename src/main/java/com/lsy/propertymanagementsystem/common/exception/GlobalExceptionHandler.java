@@ -4,6 +4,7 @@ import com.lsy.propertymanagementsystem.common.result.Result;
 import com.lsy.propertymanagementsystem.common.result.ResultCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,6 +28,11 @@ public class GlobalExceptionHandler {
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.joining(", "));
         return Result.error(ResultCode.BAD_REQUEST.getCode(), message);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public Result<?> handleAccessDenied(AccessDeniedException e) {
+        return Result.error(ResultCode.FORBIDDEN);
     }
 
     @ExceptionHandler(RuntimeException.class)

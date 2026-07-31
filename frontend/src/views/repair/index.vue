@@ -42,8 +42,8 @@
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'repair:record:edit'">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'repair:record:delete'">删除</el-button>
-            <el-button v-if="row.status===0" type="warning" size="small" @click="handleStatus(row)" v-permission="'repair:record:edit'">处理</el-button>
-            <el-button v-if="row.status===2 && !row.score" type="success" size="small" @click="handleRating(row)" v-permission="'repair:record:edit'">评价</el-button>
+            <el-button v-if="row.status===0" type="warning" size="small" @click="handleStatus(row)" v-permission="'repair:record:process'">处理</el-button>
+            <el-button v-if="row.status===2 && !row.score" type="success" size="small" @click="handleRating(row)" v-permission="'repair:record:evaluate'">评价</el-button>
           </template>
         </el-table-column>
       </el-table>

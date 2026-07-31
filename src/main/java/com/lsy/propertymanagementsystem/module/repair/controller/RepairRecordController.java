@@ -55,7 +55,7 @@ public class RepairRecordController {
         return Result.success(page);
     }
 
-    @PreAuthorize("hasAuthority('repair:record:edit')")
+    @PreAuthorize("hasAuthority('repair:record:process')")
     @PutMapping("/status")
     public Result updateStatus(@RequestParam Long id,
                                @RequestParam Integer status,
@@ -65,7 +65,7 @@ public class RepairRecordController {
         return Result.success();
     }
 
-    @PreAuthorize("hasAuthority('repair:record:edit')")
+    @PreAuthorize("hasAuthority('repair:record:evaluate')")
     @PutMapping("/rating")
     public Result updateRating(@RequestParam Long id, @RequestParam Integer score, @RequestParam(required = false) String content) {
         repairRecordService.updateRating(id, score, content);
