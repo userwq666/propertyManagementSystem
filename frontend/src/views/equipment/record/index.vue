@@ -134,7 +134,7 @@ const repairStatusTag = (s) => ({ 0: 'info', 1: 'warning', 2: 'primary', 3: 'suc
 onMounted(async () => {
   try {
     const e = await getEquipmentRecordOptions()
-    equipments.value = e.data.records || []
+    equipments.value = e.data || []
   } catch (e) { /* 忽略 */ }
 })
 
