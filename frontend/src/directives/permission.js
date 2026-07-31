@@ -18,15 +18,10 @@ export default {
         return
       }
       const has = requiredPerms.some(p => userStore.hasPermission(p))
-      if (has) {
-        el.style.display = ''
-      } else {
-        el.parentNode?.removeChild(el)
-        stopWatcher()
-      }
+      el.style.display = has ? '' : 'none'
     }
 
     checkPermission()
-    const stopWatcher = watch(permissions, checkPermission)
+    watch(permissions, checkPermission)
   }
 }
