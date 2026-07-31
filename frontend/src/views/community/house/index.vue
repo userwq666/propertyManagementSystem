@@ -2,12 +2,12 @@
   <div>
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="楼栋">
-        <el-select v-model="searchForm.buildingId" placeholder="请选择楼栋" clearable style="width: 180px">
+        <el-select v-model="searchForm.buildingId" placeholder="请选择楼栋" clearable>
           <el-option v-for="b in buildingList.filter(i => i.id != null)" :key="b.id" :label="b.buildingNo" :value="b.id" />
         </el-select>
       </el-form-item>
       <el-form-item label="房屋状态">
-        <el-select v-model="searchForm.houseStatus" placeholder="请选择状态" clearable style="width: 150px">
+        <el-select v-model="searchForm.houseStatus" placeholder="请选择状态" clearable>
           <el-option label="空置" :value="0" />
           <el-option label="已入住" :value="1" />
           <el-option label="出租" :value="2" />

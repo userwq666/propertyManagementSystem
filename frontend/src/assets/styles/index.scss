@@ -29,6 +29,12 @@ a {
   padding: 20px 20px 0;
   border-radius: 4px;
   margin-bottom: 16px;
+
+  .el-input,
+  .el-select,
+  .el-date-editor {
+    width: 160px;
+  }
 }
 
 .table-container {

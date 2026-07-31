@@ -2,14 +2,14 @@
   <div>
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="通知类型">
-        <el-select v-model="searchForm.noticeType" placeholder="请选择类型" clearable style="width: 150px">
+        <el-select v-model="searchForm.noticeType" placeholder="请选择类型" clearable>
           <el-option label="缴费通知" :value="0" />
           <el-option label="催缴通知" :value="1" />
           <el-option label="欠费通知" :value="2" />
         </el-select>
       </el-form-item>
       <el-form-item label="发送状态">
-        <el-select v-model="searchForm.sendStatus" placeholder="请选择状态" clearable style="width: 150px">
+        <el-select v-model="searchForm.sendStatus" placeholder="请选择状态" clearable>
           <el-option label="未发送" :value="0" />
           <el-option label="已发送" :value="1" />
         </el-select>

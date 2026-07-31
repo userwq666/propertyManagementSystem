@@ -2,7 +2,7 @@
   <div>
     <el-form :inline="true" class="search-form">
       <el-form-item label="选择设备">
-        <el-select v-model="equipmentId" placeholder="请选择设备" filterable style="width:240px" @change="loadEquipment">
+        <el-select v-model="equipmentId" placeholder="请选择设备" filterable @change="loadEquipment">
           <el-option v-for="e in equipments.filter(i => i.id != null)" :key="e.id" :label="e.equipmentName" :value="e.id" />
         </el-select>
       </el-form-item>

@@ -2,7 +2,7 @@
   <div>
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="巡检计划">
-        <el-select v-model="searchForm.planId" placeholder="请选择计划" filterable style="width:220px" @change="loadPlanDetail">
+        <el-select v-model="searchForm.planId" placeholder="请选择计划" filterable @change="loadPlanDetail">
           <el-option v-for="p in plans.filter(i => i.id != null)" :key="p.id" :label="p.planName" :value="p.id" />
         </el-select>
       </el-form-item>

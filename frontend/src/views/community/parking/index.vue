@@ -5,7 +5,7 @@
         <el-input v-model="searchForm.parkingNo" placeholder="请输入车位编号" clearable />
       </el-form-item>
       <el-form-item label="状态">
-        <el-select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 150px">
+        <el-select v-model="searchForm.status" placeholder="请选择状态" clearable>
           <el-option label="空闲" :value="0" />
           <el-option label="已租" :value="1" />
           <el-option label="已售" :value="2" />
