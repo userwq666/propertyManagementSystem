@@ -4,7 +4,7 @@
       <el-form-item label="标题">
         <el-input v-model="searchForm.title" placeholder="请输入标题" clearable />
       </el-form-item>
-      <el-form-item label="状态" v-if="isAdmin">
+      <el-form-item label="状态">
         <el-select v-model="searchForm.status" placeholder="请选择" clearable>
           <el-option label="草稿" :value="0" /><el-option label="已发布" :value="1" /><el-option label="已撤回" :value="2" />
         </el-select>
@@ -17,7 +17,7 @@
 
     <div class="table-container">
       <div class="toolbar">
-        <div class="toolbar-left"><el-button v-if="isAdmin" type="primary" @click="handleAdd" v-permission="'announcement:list:add'">新增公告</el-button></div>
+        <div class="toolbar-left"><el-button type="primary" @click="handleAdd" v-permission="'announcement:list:add'">新增公告</el-button></div>
         <div class="toolbar-right"><el-button @click="fetchData">刷新</el-button></div>
       </div>
       <el-table :data="tableData" border stripe v-loading="loading">
@@ -43,13 +43,11 @@
         <el-table-column label="操作" min-width="400" class-name="action-column" fixed="right">
           <template #default="{ row }">
             <el-button size="small" @click="handleDetail(row)" v-permission="'announcement:list:list'">详情</el-button>
-            <template v-if="isAdmin">
-              <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'announcement:list:edit'">编辑</el-button>
-              <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'announcement:list:delete'">删除</el-button>
-              <el-button type="success" size="small" @click="handlePublish(row)" v-if="row.publishStatus!==1" v-permission="'announcement:list:edit'">发布</el-button>
-              <el-button type="warning" size="small" @click="handleRevoke(row)" v-if="row.publishStatus===1" v-permission="'announcement:list:edit'">撤回</el-button>
-              <el-button size="small" @click="handleTop(row)" v-permission="'announcement:list:edit'">{{ row.isTop ? '取消置顶' : '置顶' }}</el-button>
-            </template>
+            <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'announcement:list:edit'">编辑</el-button>
+            <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'announcement:list:delete'">删除</el-button>
+            <el-button type="success" size="small" @click="handlePublish(row)" v-if="row.publishStatus!==1" v-permission="'announcement:list:edit'">发布</el-button>
+            <el-button type="warning" size="small" @click="handleRevoke(row)" v-if="row.publishStatus===1" v-permission="'announcement:list:edit'">撤回</el-button>
+            <el-button size="small" @click="handleTop(row)" v-permission="'announcement:list:edit'">{{ row.isTop ? '取消置顶' : '置顶' }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -111,13 +109,11 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { addAnnouncement, updateAnnouncement, deleteAnnouncement, getAnnouncementPage, updateAnnouncementStatus, updateAnnouncementTop } from '@/api/announcement/index'
-import { useUserStore } from '@/stores/user'
 
 const loading = ref(false); const tableData = ref([]); const total = ref(0)
 const dialogVisible = ref(false); const formRef = ref(null); const isEdit = ref(false)
 const detailDialogVisible = ref(false)
 const detailRow = ref(null)
-const userStore = useUserStore()
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, title: '', status: '' })
 const form = reactive({ id: null, title: '', type: 1, content: '', coverImage: '', isTop: 0, topExpireTime: '' })
@@ -125,7 +121,6 @@ const form = reactive({ id: null, title: '', type: 1, content: '', coverImage: '
 const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑公告' : '新增公告')
-const isAdmin = computed(() => userStore.roles.includes('超级管理员') || userStore.roles.includes('物业管理员') || userStore.userInfo.roleName === '超级管理员' || userStore.userInfo.roleName === '物业管理员')
 const st = (s) => ({ 0: 'info', 1: 'success', 2: 'warning' }[s] || 'info')
 const stText = (s) => ({ 0: '草稿', 1: '已发布', 2: '已撤回' }[s] || '')
 const typeText = (t) => ({ 1: '通知', 2: '公告', 3: '活动' }[t] || '')

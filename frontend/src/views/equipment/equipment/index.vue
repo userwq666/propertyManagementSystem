@@ -23,7 +23,7 @@
     <div class="table-container">
       <div class="toolbar">
         <div class="toolbar-left">
-          <el-button v-if="isAdmin" type="primary" @click="handleAdd" v-permission="'equipment:list:add'">新增设备</el-button>
+          <el-button type="primary" @click="handleAdd" v-permission="'equipment:list:add'">新增设备</el-button>
         </div>
         <div class="toolbar-right"><el-button @click="fetchData">刷新</el-button></div>
       </div>
@@ -43,11 +43,9 @@
         <el-table-column label="操作" min-width="240" class-name="action-column" fixed="right">
           <template #default="{ row }">
             <el-button size="small" @click="handleDetail(row)" v-permission="'equipment:list:list'">详情</el-button>
-            <template v-if="isAdmin">
-              <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'equipment:list:edit'">编辑</el-button>
-              <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'equipment:list:delete'">删除</el-button>
-              <el-button size="small" @click="handleStatus(row)" v-permission="'equipment:list:edit'">状态</el-button>
-            </template>
+            <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'equipment:list:edit'">编辑</el-button>
+            <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'equipment:list:delete'">删除</el-button>
+            <el-button size="small" @click="handleStatus(row)" v-permission="'equipment:list:edit'">状态</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -154,7 +152,6 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { addEquipment, updateEquipment, deleteEquipment, getEquipmentPage, updateEquipmentStatus } from '@/api/equipment/equipment'
 import { getCategoryPage } from '@/api/equipment/category'
 import { getBuildingPage } from '@/api/community/building'
-import { useUserStore } from '@/stores/user'
 
 const loading = ref(false)
 const tableData = ref([])
@@ -166,7 +163,6 @@ const isEdit = ref(false)
 const detailRow = ref(null)
 const categories = ref([])
 const buildings = ref([])
-const userStore = useUserStore()
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, categoryId: '', status: '', equipmentName: '' })
 const form = reactive({
@@ -179,7 +175,6 @@ const statusDialogVisible = ref(false)
 const statusForm = reactive({ id: null, status: 1 })
 
 const dialogTitle = computed(() => isEdit.value ? '编辑设备' : '新增设备')
-const isAdmin = computed(() => userStore.roles.includes('超级管理员') || userStore.roles.includes('物业管理员') || userStore.userInfo.roleName === '超级管理员' || userStore.userInfo.roleName === '物业管理员')
 const rules = {
   equipmentName: [{ required: true, message: '请输入设备名称', trigger: 'blur' }],
   equipmentNo: [{ required: true, message: '请输入设备编号', trigger: 'blur' }],
