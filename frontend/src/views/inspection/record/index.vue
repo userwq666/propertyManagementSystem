@@ -160,7 +160,9 @@ function buildPeriods(plan) {
 function dayPeriods(start, end, max) {
   const list = []
   const s = start ? new Date(start + 'T00:00:00') : new Date()
-  const e = end ? new Date(end + 'T00:00:00') : new Date()
+  const todayStr = fmtDate(new Date())
+  const endStr = end && end < todayStr ? end : todayStr
+  const e = new Date(endStr + 'T00:00:00')
   for (let d = new Date(s); d <= e && list.length < max; d.setDate(d.getDate() + 1)) {
     const key = fmtDate(d)
     list.push({ key, label: key.slice(5), representative: key })
@@ -171,7 +173,9 @@ function dayPeriods(start, end, max) {
 function weekPeriods(start, end, max) {
   const list = []
   const s = start ? new Date(start + 'T00:00:00') : new Date()
-  const e = end ? new Date(end + 'T00:00:00') : new Date()
+  const todayStr = fmtDate(new Date())
+  const endStr = end && end < todayStr ? end : todayStr
+  const e = new Date(endStr + 'T00:00:00')
   for (let d = new Date(s); d <= e && list.length < max; d.setDate(d.getDate() + 7)) {
     const key = fmtDate(d)
     const monday = new Date(d)
@@ -183,7 +187,9 @@ function weekPeriods(start, end, max) {
 function monthPeriods(start, end) {
   const list = []
   const s = start ? new Date(start.slice(0, 7) + '-01T00:00:00') : new Date()
-  const e = end ? new Date(end.slice(0, 7) + '-01T00:00:00') : new Date()
+  const todayStr = fmtDate(new Date())
+  const endStr = end && end < todayStr ? end : todayStr
+  const e = new Date(endStr.slice(0, 7) + '-01T00:00:00')
   for (let d = new Date(s); d <= e && list.length < 60; d.setMonth(d.getMonth() + 1)) {
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
     list.push({ key, label: key, representative: key + '-01' })
@@ -194,7 +200,9 @@ function monthPeriods(start, end) {
 function quarterPeriods(start, end) {
   const list = []
   const s = start ? new Date(start.slice(0, 7) + '-01T00:00:00') : new Date()
-  const e = end ? new Date(end.slice(0, 7) + '-01T00:00:00') : new Date()
+  const todayStr = fmtDate(new Date())
+  const endStr = end && end < todayStr ? end : todayStr
+  const e = new Date(endStr.slice(0, 7) + '-01T00:00:00')
   const sTotal = s.getFullYear() * 4 + Math.floor(s.getMonth() / 3)
   const eTotal = e.getFullYear() * 4 + Math.floor(e.getMonth() / 3)
   for (let total = sTotal; total <= eTotal && list.length < 40; total++) {
@@ -210,7 +218,9 @@ function quarterPeriods(start, end) {
 function halfYearPeriods(start, end) {
   const list = []
   const s = start ? new Date(start.slice(0, 7) + '-01T00:00:00') : new Date()
-  const e = end ? new Date(end.slice(0, 7) + '-01T00:00:00') : new Date()
+  const todayStr = fmtDate(new Date())
+  const endStr = end && end < todayStr ? end : todayStr
+  const e = new Date(endStr.slice(0, 7) + '-01T00:00:00')
   const sTotal = s.getFullYear() * 2 + (s.getMonth() < 6 ? 0 : 1)
   const eTotal = e.getFullYear() * 2 + (e.getMonth() < 6 ? 0 : 1)
   for (let total = sTotal; total <= eTotal && list.length < 30; total++) {
@@ -226,7 +236,9 @@ function halfYearPeriods(start, end) {
 function yearPeriods(start, end) {
   const list = []
   const s = start ? Number(start.slice(0, 4)) : new Date().getFullYear()
-  const e = end ? Number(end.slice(0, 4)) : new Date().getFullYear()
+  const todayStr = fmtDate(new Date())
+  const endStr = end && end < todayStr ? end : todayStr
+  const e = Number(endStr.slice(0, 4))
   for (let y = s; y <= e && list.length < 30; y++) {
     list.push({ key: String(y), label: String(y), representative: `${y}-01-01` })
   }
