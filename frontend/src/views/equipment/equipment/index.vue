@@ -102,6 +102,23 @@
         </div>
       </template>
     </el-dialog>
+    <el-dialog title="修改设备状态" v-model="statusDialogVisible" width="400px">
+      <el-form label-width="80px">
+        <el-form-item label="设备状态">
+          <el-select v-model="statusForm.status">
+            <el-option label="正常" :value="1" />
+            <el-option label="故障" :value="2" />
+            <el-option label="维修中" :value="3" />
+            <el-option label="停用" :value="4" />
+            <el-option label="报废" :value="5" />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="statusDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="confirmStatusChange">确定</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -128,6 +145,8 @@ const form = reactive({
 })
 
 const submitting = ref(false)
+const statusDialogVisible = ref(false)
+const statusForm = reactive({ id: null, status: 1 })
 
 const dialogTitle = computed(() => isEdit.value ? '编辑设备' : '新增设备')
 const rules = {
@@ -182,10 +201,19 @@ async function handleDelete(row) {
 }
 
 async function handleStatus(row) {
-  const { value: newStatus } = await ElMessageBox.prompt('请选择新状态', '修改设备状态', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    inputType: 'select',
+  statusForm.id = row.id
+  statusForm.status = row.status
+  statusDialogVisible.value = true
+}
+
+async function confirmStatusChange() {
+  try {
+    await updateEquipmentStatus({ id: statusForm.id, status: statusForm.status })
+    ElMessage.success('状态修改成功')
+    statusDialogVisible.value = false
+    fetchData()
+  } catch (e) { /* handled */ }
+}
     inputValue: row.status,
     inputOptions: [
       { label: '正常', value: 1 },
