@@ -272,6 +272,7 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
         dto.setRepairType("公共设施");
         dto.setRepairContent(record.getAbnormalDesc() != null ? record.getAbnormalDesc() : "巡检异常");
         dto.setRemark("巡检异常-记录ID:" + id);
+        dto.setCreatorId(record.getInspectorUserId());
         Long repairId = repairRecordService.addRepair(dto);
         record.setRepairRecordId(repairId);
         inspectionRecordMapper.updateById(record);

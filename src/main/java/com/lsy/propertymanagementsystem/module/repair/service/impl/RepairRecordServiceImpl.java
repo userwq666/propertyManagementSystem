@@ -145,7 +145,7 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         }
         domain.setRepairNo("BX" + UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase());
         domain.prepareAdd();
-        domain.setCreatorId(SecurityUtils.getCurrentUserId());
+        domain.setCreatorId(dto.getCreatorId() != null ? dto.getCreatorId() : SecurityUtils.getCurrentUserId());
         this.save(domain);
         if (domain.getEquipmentId() != null) {
             markEquipmentFault(domain.getEquipmentId());

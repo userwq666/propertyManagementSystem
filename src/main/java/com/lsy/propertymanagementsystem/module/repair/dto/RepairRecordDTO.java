@@ -27,6 +27,8 @@ public class RepairRecordDTO {
 
     private String remark;
 
+    private Long creatorId;
+
     private Integer priority;
 
     private Long handlerId;
