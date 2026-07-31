@@ -9,7 +9,7 @@ import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordVO;
 import java.util.List;
 
 public interface RepairRecordService {
-    Page<RepairRecordVO> page(int pageNum, int pageSize, Long ownerId, Long handlerId, Integer status);
+    Page<RepairRecordVO> page(int pageNum, int pageSize, Long ownerId, Long handlerId, Long equipmentId, Integer status);
     RepairRecordVO getById(Long id);
     Long addRepair(RepairRecordDTO domain);
     void updateRepair(RepairRecordDTO domain);

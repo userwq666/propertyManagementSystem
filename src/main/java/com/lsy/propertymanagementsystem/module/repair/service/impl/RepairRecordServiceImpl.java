@@ -70,7 +70,7 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
     }
 
     @Override
-    public Page<RepairRecordVO> page(int pageNum, int pageSize, Long ownerId, Long handlerId, Integer status) {
+    public Page<RepairRecordVO> page(int pageNum, int pageSize, Long ownerId, Long handlerId, Long equipmentId, Integer status) {
         LambdaQueryWrapper<RepairRecordDomain> wrapper = new LambdaQueryWrapper<>();
         String roleKey = SecurityUtils.getRoleKey();
         if (SecurityUtils.isOwner()) {
@@ -91,6 +91,9 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
             }
             if (handlerId != null) {
                 wrapper.eq(RepairRecordDomain::getHandlerId, handlerId);
+            }
+            if (equipmentId != null) {
+                wrapper.eq(RepairRecordDomain::getEquipmentId, equipmentId);
             }
         }
         if (status != null) {
