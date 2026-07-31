@@ -41,7 +41,7 @@
           <template #default="{ row }">
             <el-button size="small" @click="handleDetail(row)">详情</el-button>
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'inspection:plan:edit'">编辑</el-button>
-            <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'inspection:plan:delete'">删除</el-button>
+            <el-button v-if="row.status===0" type="danger" size="small" @click="handleDelete(row)" v-permission="'inspection:plan:delete'">删除</el-button>
             <el-button size="small" @click="handleStatus(row)" v-permission="'inspection:plan:edit'">{{ row.status===1?'停用':'启用' }}</el-button>
           </template>
         </el-table-column>

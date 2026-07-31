@@ -225,6 +225,13 @@ public class InspectionPlanServiceImpl extends ServiceImpl<InspectionPlanMapper,
     @Override
     @Transactional
     public void deletePlan(Long id) {
+        InspectionPlanDomain plan = this.getById(id);
+        if (plan == null) {
+            throw new com.lsy.propertymanagementsystem.common.exception.BusinessException("巡检计划不存在");
+        }
+        if (plan.getStatus() != PlanStatus.DISABLED) {
+            throw new com.lsy.propertymanagementsystem.common.exception.BusinessException("只有停用状态的巡检计划才能删除");
+        }
         if (inspectionRecordService.countByPlanId(id) > 0) {
             throw new com.lsy.propertymanagementsystem.common.exception.BusinessException("该计划存在关联的巡检记录，不允许删除");
         }
