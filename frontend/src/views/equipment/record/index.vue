@@ -104,11 +104,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getEquipmentPage } from '@/api/equipment/equipment'
-import { getMaintenancePage } from '@/api/equipment/maintenance'
-import { getPlanPage } from '@/api/inspection/plan'
-import { getRecordPage } from '@/api/inspection/record'
-import { getRepairPage } from '@/api/repair/record'
+import { getEquipmentRecordOptions, getEquipmentRecordSummary } from '@/api/equipment/record'
 
 const equipments = ref([])
 const equipmentId = ref('')
@@ -137,36 +133,37 @@ const repairStatusTag = (s) => ({ 0: 'info', 1: 'warning', 2: 'primary', 3: 'suc
 
 onMounted(async () => {
   try {
-    const e = await getEquipmentPage({ pageNum: 1, pageSize: 200 }, { silent: true })
+    const e = await getEquipmentRecordOptions()
     equipments.value = e.data.records || []
   } catch (e) { /* 忽略 */ }
 })
 
 async function loadEquipment() {
   if (!equipmentId.value) return
-  equipment.value = equipments.value.find(x => x.id === equipmentId.value) || null
-  if (!equipment.value) return
-  const eqId = equipmentId.value
   loadingPlans.value = true
   loadingRecords.value = true
   loadingMaint.value = true
   loadingRepairs.value = true
   try {
-    const p = await getPlanPage({ pageNum: 1, pageSize: 100, equipmentId: eqId }, { silent: true })
-    plans.value = p.data.records || []
-  } catch (e) { plans.value = [] } finally { loadingPlans.value = false }
-  try {
-    const r = await getRecordPage({ pageNum: 1, pageSize: 200, equipmentId: eqId }, { silent: true })
-    inspectionRecords.value = r.data.records || []
-  } catch (e) { inspectionRecords.value = [] } finally { loadingRecords.value = false }
-  try {
-    const m = await getMaintenancePage({ pageNum: 1, pageSize: 200, equipmentId: eqId }, { silent: true })
-    maintenances.value = m.data.records || []
-  } catch (e) { maintenances.value = [] } finally { loadingMaint.value = false }
-  try {
-    const r = await getRepairPage({ pageNum: 1, pageSize: 200, equipmentId: eqId }, { silent: true })
-    repairs.value = r.data.records || []
-  } catch (e) { repairs.value = [] } finally { loadingRepairs.value = false }
+    const s = await getEquipmentRecordSummary(equipmentId.value)
+    const data = s.data || {}
+    equipment.value = data.equipment || null
+    plans.value = data.plans || []
+    inspectionRecords.value = data.records || []
+    maintenances.value = data.maintenances || []
+    repairs.value = data.repairs || []
+  } catch (e) {
+    equipment.value = null
+    plans.value = []
+    inspectionRecords.value = []
+    maintenances.value = []
+    repairs.value = []
+  } finally {
+    loadingPlans.value = false
+    loadingRecords.value = false
+    loadingMaint.value = false
+    loadingRepairs.value = false
+  }
 }
 
 function resetEquipment() {
