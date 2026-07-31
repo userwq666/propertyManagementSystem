@@ -56,7 +56,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDomain
         if (status != null) {
             wrapper.eq(SysUserDomain::getStatus, status);
         }
-        wrapper.orderByDesc(SysUserDomain::getCreateTime);
+        wrapper.orderByAsc(SysUserDomain::getId);
 
         IPage<SysUserDomain> page = this.page(new Page<>(pageNum, pageSize), wrapper);
         return page.convert(this::convertToResponse);
