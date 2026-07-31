@@ -1,4 +1,4 @@
-package com.lsy.propertymanagementsystem.module.equipment.service.impl;
+﻿package com.lsy.propertymanagementsystem.module.equipment.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -81,6 +81,7 @@ public class EquipmentServiceImpl extends ServiceImpl<EquipmentMapper, Equipment
         }
         EquipmentDomain domain = new EquipmentDomain();
         BeanUtils.copyProperties(dto, domain);
+        domain.setStatus(EquipmentStatus.of(dto.getStatus()));
         this.save(domain);
     }
 
@@ -99,6 +100,7 @@ public class EquipmentServiceImpl extends ServiceImpl<EquipmentMapper, Equipment
         }
         EquipmentDomain domain = new EquipmentDomain();
         BeanUtils.copyProperties(dto, domain);
+        domain.setStatus(EquipmentStatus.of(dto.getStatus()));
         this.updateById(domain);
     }
 

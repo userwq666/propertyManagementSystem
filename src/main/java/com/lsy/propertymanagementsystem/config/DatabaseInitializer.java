@@ -40,13 +40,13 @@ public class DatabaseInitializer {
     @PostConstruct
     public void init() {
         System.out.println("==========================================");
-        System.out.println("寮€濮嬪垵濮嬪寲鏁版嵁搴?..");
+        System.out.println("开始初始化数据库...");
         System.out.println("==========================================");
 
         createDatabaseIfNotExists();
 
         try (Connection connection = dataSource.getConnection()) {
-            // 鎸夋ā鍧楅『搴忔墽琛孲QL鏂囦欢
+            // 按模块顺序执行SQL文件
             String[] sqlFiles = {
                 "sql/00_init.sql",
                 "sql/01_system.sql",
@@ -63,18 +63,18 @@ public class DatabaseInitializer {
                 executeSqlFile(connection, file, file);
             }
         } catch (SQLException e) {
-            System.out.println("鏁版嵁搴撳垵濮嬪寲澶辫触: " + e.getMessage());
-            throw new RuntimeException("鏁版嵁搴撳垵濮嬪寲澶辫触", e);
+            System.out.println("数据库初始化失败: " + e.getMessage());
+            throw new RuntimeException("数据库初始化失败", e);
         }
     }
 
     @EventListener(ApplicationReadyEvent.class)
     public void onReady() {
         System.out.println("==========================================");
-        System.out.println("鏁版嵁搴撳垵濮嬪寲鎴愬姛锛?);
+        System.out.println("数据库初始化成功！");
         System.out.println("==========================================");
-        System.out.println("瓒呯骇绠＄悊鍛樿处鍙凤細root / 123456");
-        System.out.println("鐗╀笟绠＄悊鍛樿处鍙凤細admin / 123456");
+        System.out.println("超级管理员账号：root / 123456");
+        System.out.println("物业管理员账号：admin / 123456");
         System.out.println("==========================================");
     }
 
@@ -84,8 +84,8 @@ public class DatabaseInitializer {
              Statement stmt = conn.createStatement()) {
             stmt.execute("CREATE DATABASE IF NOT EXISTS property_management_system DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci");
         } catch (SQLException e) {
-            System.out.println("鍒涘缓鏁版嵁搴撳け璐? " + e.getMessage());
-            throw new RuntimeException("鍒涘缓鏁版嵁搴撳け璐?, e);
+            System.out.println("创建数据库失败: " + e.getMessage());
+            throw new RuntimeException("创建数据库失败", e);
         }
     }
 
@@ -93,7 +93,7 @@ public class DatabaseInitializer {
         try {
             ClassPathResource resource = new ClassPathResource(resourcePath);
             if (!resource.exists()) {
-                System.out.println("SQL鏂囦欢涓嶅瓨鍦紝璺宠繃: " + resourcePath);
+                System.out.println("SQL文件不存在，跳过: " + resourcePath);
                 return;
             }
 
@@ -122,10 +122,10 @@ public class DatabaseInitializer {
                 }
             }
 
-            System.out.println(description + "鍒濆鍖栧畬鎴?(鎵ц: " + successCount + ", 璺宠繃: " + skipCount + ")");
+            System.out.println(description + "初始化完成(执行: " + successCount + ", 跳过: " + skipCount + ")");
         } catch (Exception e) {
-            System.out.println("鎵цSQL澶辫触 [" + description + "]: " + e.getMessage());
-            throw new RuntimeException("鎵цSQL澶辫触: " + description, e);
+            System.out.println("执行SQL失败 [" + description + "]: " + e.getMessage());
+            throw new RuntimeException("执行SQL失败: " + description, e);
         }
     }
 
