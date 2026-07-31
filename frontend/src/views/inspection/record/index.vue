@@ -88,7 +88,7 @@
       <template #footer>
         <el-button @click="taskDialogVisible = false">取消</el-button>
         <el-button v-if="!currentCell.record || isManager" type="primary" @click="submitCell">{{ currentCell.record ? '保存修改' : '保存打卡' }}</el-button>
-        <el-button v-if="currentCell && currentCell.record && currentCell.record.status === 2 && !currentCell.record.repairRecordId" type="danger" @click="handleRepair">生成报修单</el-button>
+        <el-button v-if="currentCell && currentCell.record && currentCell.record.status === 2 && !currentCell.record.repairRecordId" type="danger" @click="handleRepair" v-permission="'inspection:record:edit'">生成报修单</el-button>
       </template>
     </el-dialog>
 
