@@ -3,7 +3,7 @@
     <div class="welcome-banner">
       <div>
         <h2 class="welcome-title">{{ greeting }}，{{ userStore.realName || userStore.userInfo.username }}</h2>
-        <p class="welcome-sub">欢迎使用物业管理系统，祝你工作顺利</p>
+        <p class="welcome-sub">欢迎使用社区物业系统，祝您生活愉快</p>
       </div>
       <div class="welcome-date">{{ nowText }}</div>
     </div>
