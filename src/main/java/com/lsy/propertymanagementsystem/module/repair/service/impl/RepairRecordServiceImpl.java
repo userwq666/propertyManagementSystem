@@ -73,6 +73,7 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
     public Page<RepairRecordVO> page(int pageNum, int pageSize, Long ownerId, Long handlerId, Long equipmentId, Integer status) {
         LambdaQueryWrapper<RepairRecordDomain> wrapper = new LambdaQueryWrapper<>();
         String roleKey = SecurityUtils.getRoleKey();
+        Long currentUserId = SecurityUtils.getCurrentUserId();
         if (SecurityUtils.isOwner()) {
             Long currentOwnerId = getOwnerIdByUserId(SecurityUtils.getCurrentUserId());
             if (currentOwnerId == null) {
@@ -86,18 +87,27 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
             wrapper.and(w -> w.eq(RepairRecordDomain::getHandlerId, userId)
                     .or().eq(RepairRecordDomain::getStatus, RepairStatus.PENDING));
         } else {
-            if (ownerId != null) {
-                if (ownerId == 0L) {
-                    wrapper.isNull(RepairRecordDomain::getOwnerId);
-                } else {
-                    wrapper.eq(RepairRecordDomain::getOwnerId, ownerId);
+            if ("admin".equals(roleKey) || "property_admin".equals(roleKey)) {
+                if (ownerId != null) {
+                    if (ownerId == 0L) {
+                        wrapper.isNull(RepairRecordDomain::getOwnerId);
+                    } else {
+                        wrapper.eq(RepairRecordDomain::getOwnerId, ownerId);
+                    }
                 }
-            }
-            if (handlerId != null) {
-                wrapper.eq(RepairRecordDomain::getHandlerId, handlerId);
-            }
-            if (equipmentId != null) {
-                wrapper.eq(RepairRecordDomain::getEquipmentId, equipmentId);
+                if (handlerId != null) {
+                    wrapper.eq(RepairRecordDomain::getHandlerId, handlerId);
+                }
+                if (equipmentId != null) {
+                    wrapper.eq(RepairRecordDomain::getEquipmentId, equipmentId);
+                }
+            } else {
+                // 巡检员等其他角色只能看到自己创建的工单
+                if (currentUserId != null) {
+                    wrapper.eq(RepairRecordDomain::getCreatorId, currentUserId);
+                } else {
+                    wrapper.eq(RepairRecordDomain::getId, -1);
+                }
             }
         }
         if (status != null) {
