@@ -161,10 +161,14 @@ const statusText = (s) => ({ 1: '正常', 2: '故障', 3: '维修中', 4: '停�
 
 onMounted(async () => {
   fetchData()
-  const catRes = await getCategoryPage({ pageNum: 1, pageSize: 100 })
-  categories.value = catRes.data.records
-  const bldRes = await getBuildingPage({ pageNum: 1, pageSize: 100 })
-  buildings.value = bldRes.data.records
+  try {
+    const catRes = await getCategoryPage({ pageNum: 1, pageSize: 100 })
+    categories.value = catRes.data?.records || []
+  } catch (e) { console.error("加载分类失败", e) }
+  try {
+    const bldRes = await getBuildingPage({ pageNum: 1, pageSize: 100 })
+    buildings.value = bldRes.data?.records || []
+  } catch (e) { console.error("加载楼栋失败", e) }
 })
 
 async function fetchData() {
