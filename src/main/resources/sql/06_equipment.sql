@@ -31,7 +31,6 @@ CREATE TABLE equipment (
     building_id BIGINT COMMENT '所属楼栋',
     floor VARCHAR(20) COMMENT '楼层',
     install_date DATE COMMENT '安装日期',
-    warranty_end_date DATE COMMENT '保修截止日期',
     status TINYINT NOT NULL DEFAULT 1 COMMENT '状态：1正常 2故障 3维修中 4停用 5报废',
     qr_code VARCHAR(255) COMMENT '二维码地址',
     remark VARCHAR(500) COMMENT '备注',

@@ -26,7 +26,6 @@ public class EquipmentDTO {
     private Long buildingId;
     private String floor;
     private LocalDate installDate;
-    private LocalDate warrantyEndDate;
 
     private Integer status;
 

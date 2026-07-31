@@ -67,7 +67,6 @@
         <el-descriptions-item label="楼栋">{{ detailRow.buildingNo || '-' }}</el-descriptions-item>
         <el-descriptions-item label="楼层">{{ detailRow.floor || '-' }}</el-descriptions-item>
         <el-descriptions-item label="安装日期">{{ detailRow.installDate || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="维保到期">{{ detailRow.warrantyEndDate || '-' }}</el-descriptions-item>
         <el-descriptions-item label="状态">
           <el-tag :type="statusType(detailRow.status)">{{ statusText(detailRow.status) }}</el-tag>
         </el-descriptions-item>
@@ -106,9 +105,6 @@
         </el-form-item>
         <el-form-item label="安装日期">
           <el-date-picker v-model="form.installDate" type="date" placeholder="选择日期" value-format="YYYY-MM-DD" />
-        </el-form-item>
-        <el-form-item label="维保到期日">
-          <el-date-picker v-model="form.warrantyEndDate" type="date" placeholder="选择日期" value-format="YYYY-MM-DD" />
         </el-form-item>
         <el-form-item label="设备状态" prop="status">
           <el-select v-model="form.status">
@@ -167,7 +163,7 @@ const buildings = ref([])
 const searchForm = reactive({ pageNum: 1, pageSize: 10, categoryId: '', status: '', equipmentName: '' })
 const form = reactive({
   id: null, equipmentName: '', equipmentNo: '', categoryId: null, model: '', spec: '',
-  location: '', buildingId: null, installDate: '', warrantyEndDate: '', status: 1, remark: ''
+  location: '', buildingId: null, installDate: '', status: 1, remark: ''
 })
 
 const submitting = ref(false)
@@ -209,7 +205,7 @@ async function fetchData() {
 function handleSearch() { searchForm.pageNum = 1; fetchData() }
 function resetSearch() { Object.assign(searchForm, { pageNum: 1, pageSize: 10, categoryId: '', status: '', equipmentName: '' }); fetchData() }
 function handleAdd() { isEdit.value = false; resetForm(); dialogVisible.value = true }
-function handleEdit(row) { isEdit.value = true; Object.assign(form, { ...row, installDate: row.installDate || row.purchaseDate || '', warrantyEndDate: row.warrantyEndDate || row.warrantyExpire || '' }); dialogVisible.value = true }
+function handleEdit(row) { isEdit.value = true; Object.assign(form, { ...row, installDate: row.installDate || row.purchaseDate || '' }); dialogVisible.value = true }
 function handleDetail(row) { detailRow.value = row; detailDialogVisible.value = true }
 function resetForm() { formRef.value?.resetFields(); form.id = null }
 

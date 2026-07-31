@@ -21,7 +21,6 @@ public class EquipmentDomain {
     private Long buildingId;
     private String floor;
     private LocalDate installDate;
-    private LocalDate warrantyEndDate;
     private EquipmentStatus status;
     private String qrCode;
     private String remark;
