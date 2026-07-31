@@ -83,13 +83,26 @@ public class InspectionPlanServiceImpl extends ServiceImpl<InspectionPlanMapper,
     }
 
     @Override
-    public Page<InspectionPlanVO> page(int pageNum, int pageSize, String planName, Integer status) {
+    public Page<InspectionPlanVO> page(int pageNum, int pageSize, String planName, Integer status, Long equipmentId) {
         LambdaQueryWrapper<InspectionPlanDomain> wrapper = new LambdaQueryWrapper<>();
         if (planName != null && !planName.isEmpty()) {
             wrapper.like(InspectionPlanDomain::getPlanName, planName);
         }
         if (status != null) {
             wrapper.eq(InspectionPlanDomain::getStatus, PlanStatus.of(status));
+        }
+        if (equipmentId != null) {
+            List<Long> planIds = planEquipmentMapper.selectList(
+                            new LambdaQueryWrapper<InspectionPlanEquipmentDomain>()
+                                    .eq(InspectionPlanEquipmentDomain::getEquipmentId, equipmentId))
+                    .stream()
+                    .map(InspectionPlanEquipmentDomain::getPlanId)
+                    .collect(Collectors.toList());
+            if (planIds.isEmpty()) {
+                wrapper.eq(InspectionPlanDomain::getId, -1);
+            } else {
+                wrapper.in(InspectionPlanDomain::getId, planIds);
+            }
         }
         wrapper.orderByDesc(InspectionPlanDomain::getCreateTime);
         Page<InspectionPlanDomain> domainPage = this.page(new Page<>(pageNum, pageSize), wrapper);

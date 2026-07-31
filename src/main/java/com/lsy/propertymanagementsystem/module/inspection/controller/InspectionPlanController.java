@@ -53,8 +53,9 @@ public class InspectionPlanController {
     public Result page(@RequestParam(defaultValue = "1") int pageNum,
                        @RequestParam(defaultValue = "10") int pageSize,
                        @RequestParam(required = false) String planName,
-                       @RequestParam(required = false) Integer status) {
-        Page<InspectionPlanVO> page = inspectionPlanService.page(pageNum, pageSize, planName, status);
+                       @RequestParam(required = false) Integer status,
+                       @RequestParam(required = false) Long equipmentId) {
+        Page<InspectionPlanVO> page = inspectionPlanService.page(pageNum, pageSize, planName, status, equipmentId);
         return Result.success(page);
     }
 

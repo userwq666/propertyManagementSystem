@@ -153,7 +153,7 @@ INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, me
 (19, 0, '设备管理',   'Monitor',   '/equipment',                NULL,                     NULL,                      0, 6, 1),
 (20, 19,'设备分类',   'Collection','/equipment/categories',     'equipment/category/index','equipment:category:list', 1, 1, 1),
 (21, 19,'设备台账',   'Cpu',       '/equipment/equipments',     'equipment/equipment/index','equipment:list:list',     1, 2, 1),
-(22, 19,'维保记录',   'Tools',     '/equipment/maintenances',   'equipment/maintenance/index','equipment:maintenance:list', 1, 3, 1);
+(22, 19,'设备记录',   'Tools',     '/equipment/records',        'equipment/record/index',     'equipment:maintenance:list', 1, 3, 1);
 
 -- 3.7 巡检管理 (parent: 23)
 INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES

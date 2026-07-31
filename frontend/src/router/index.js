@@ -36,7 +36,7 @@ const routes = [
         children: [
           { path: 'categories', name: 'EquipmentCategories', component: () => import('@/views/equipment/category/index.vue'), meta: { title: '设备分类', icon: 'Collection', permission: 'equipment:category:list' } },
           { path: 'equipments', name: 'Equipments', component: () => import('@/views/equipment/equipment/index.vue'), meta: { title: '设备信息', icon: 'Cpu', permission: 'equipment:list:list' } },
-          { path: 'maintenances', name: 'EquipmentMaintenances', component: () => import('@/views/equipment/maintenance/index.vue'), meta: { title: '维保记录', icon: 'Tools', permission: 'equipment:maintenance:list' } }
+          { path: 'records', name: 'EquipmentRecords', component: () => import('@/views/equipment/record/index.vue'), meta: { title: '设备记录', icon: 'Tools', permission: 'equipment:maintenance:list' } }
         ]
       },
       { path: 'repair', name: 'Repair', meta: { title: '报修管理', icon: 'Tools' },
