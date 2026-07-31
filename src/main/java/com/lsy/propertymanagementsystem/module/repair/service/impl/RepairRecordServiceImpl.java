@@ -370,9 +370,9 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         Set<Long> handlerIds = records.stream().map(RepairRecordDomain::getHandlerId).filter(Objects::nonNull).collect(Collectors.toSet());
         Set<Long> equipmentIds = records.stream().map(RepairRecordDomain::getEquipmentId).filter(Objects::nonNull).collect(Collectors.toSet());
 
-        Map<Long, String> ownerNameMap = !ownerIds.isEmpty()
+        Map<Long, CommunityOwnerDomain> ownerMap = !ownerIds.isEmpty()
                 ? communityOwnerMapper.selectBatchIds(ownerIds).stream()
-                    .collect(Collectors.toMap(CommunityOwnerDomain::getId, CommunityOwnerDomain::getName))
+                    .collect(Collectors.toMap(CommunityOwnerDomain::getId, o -> o))
                 : new HashMap<>();
         Map<Long, String> roomNoMap = !houseIds.isEmpty()
                 ? communityHouseMapper.selectBatchIds(houseIds).stream()
@@ -391,7 +391,11 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
             RepairRecordVO vo = new RepairRecordVO();
             BeanUtils.copyProperties(domain, vo);
             if (domain.getOwnerId() != null) {
-                vo.setOwnerName(ownerNameMap.get(domain.getOwnerId()));
+        CommunityOwnerDomain owner = ownerMap.get(domain.getOwnerId());
+        if (owner != null) {
+            vo.setOwnerName(owner.getName());
+            vo.setOwnerPhone(owner.getPhone());
+        }
             }
             if (domain.getHouseId() != null) {
                 vo.setRoomNo(roomNoMap.get(domain.getHouseId()));
