@@ -3,6 +3,7 @@ package com.lsy.propertymanagementsystem.module.repair.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.common.result.Result;
 import com.lsy.propertymanagementsystem.module.community.domain.CommunityHouseDomain;
+import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentDomain;
 import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordDTO;
 import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordVO;
 import com.lsy.propertymanagementsystem.module.repair.service.RepairRecordService;
@@ -64,8 +65,9 @@ public class RepairRecordController {
     public Result updateStatus(@RequestParam Long id,
                                @RequestParam Integer status,
                                @RequestParam(required = false) Long handlerId,
+                               @RequestParam(required = false) Long equipmentId,
                                @RequestParam(required = false) String handleContent) {
-        repairRecordService.updateStatus(id, status, handlerId, handleContent);
+        repairRecordService.updateStatus(id, status, handlerId, equipmentId, handleContent);
         return Result.success();
     }
 
@@ -80,5 +82,11 @@ public class RepairRecordController {
     @GetMapping("/houses")
     public Result<List<CommunityHouseDomain>> listHouses(@RequestParam(required = false) Long ownerId) {
         return Result.success(repairRecordService.listHouses(ownerId));
+    }
+
+    @PreAuthorize("hasAuthority('repair:record:process')")
+    @GetMapping("/equipments")
+    public Result<List<EquipmentDomain>> listEquipments() {
+        return Result.success(repairRecordService.listEquipments());
     }
 }

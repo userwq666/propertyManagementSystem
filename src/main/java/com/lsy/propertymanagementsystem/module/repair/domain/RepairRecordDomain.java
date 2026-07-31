@@ -18,6 +18,7 @@ public class RepairRecordDomain {
     private RepairType repairType;
     private String repairContent;
     private String repairImages;
+    private Long equipmentId;
     private RepairStatus status;
     private RepairPriority priority;
     private Long handlerId;

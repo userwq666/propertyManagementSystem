@@ -21,6 +21,8 @@ public class RepairRecordDTO {
 
     private String repairImages;
 
+    private Long equipmentId;
+
     private Integer status;
 
     private Integer priority;

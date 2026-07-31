@@ -18,6 +18,8 @@ public class RepairRecordVO {
     private RepairType repairType;
     private String repairContent;
     private String repairImages;
+    private Long equipmentId;
+    private String equipmentName;
     private RepairStatus status;
     private RepairPriority priority;
     private Long handlerId;

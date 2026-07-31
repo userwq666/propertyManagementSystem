@@ -33,6 +33,9 @@
         <el-table-column label="报修类型" width="100">
           <template #default="{ row }">{{ typeText(row.repairType) }}</template>
         </el-table-column>
+        <el-table-column label="关联设备" width="120">
+          <template #default="{ row }">{{ row.equipmentName || '-' }}</template>
+        </el-table-column>
         <el-table-column prop="repairContent" label="报修描述" show-overflow-tooltip />
         <el-table-column label="状态" width="100">
           <template #default="{ row }">
@@ -114,6 +117,11 @@
     <!-- 结单 -->
     <el-dialog title="结单" v-model="completeDialogVisible" width="500px">
       <el-form label-width="100px">
+        <el-form-item label="关联设备">
+          <el-select v-model="completeForm.equipmentId" placeholder="请选择（可空）" filterable clearable>
+            <el-option v-for="e in equipments" :key="e.id" :label="e.equipmentName" :value="e.id" />
+          </el-select>
+        </el-form-item>
         <el-form-item label="处理内容">
           <el-input v-model="completeForm.handleContent" type="textarea" :rows="3" />
         </el-form-item>
@@ -149,7 +157,7 @@
 <script setup>
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { addRepair, updateRepair, deleteRepair, getRepairById, getRepairPage, updateRepairStatus, updateRepairRating, getRepairHouses } from '@/api/repair/record'
+import { addRepair, updateRepair, deleteRepair, getRepairById, getRepairPage, updateRepairStatus, updateRepairRating, getRepairHouses, getRepairEquipments } from '@/api/repair/record'
 import { getOwnerPage } from '@/api/community/owner'
 import { getUserPage } from '@/api/system/user'
 import { useUserStore } from '@/stores/user'
@@ -165,6 +173,7 @@ const formRef = ref(null)
 const isEdit = ref(false)
 const owners = ref([])
 const houses = ref([])
+const equipments = ref([])
 const workers = ref([])
 const currentRow = ref(null)
 const userStore = useUserStore()
@@ -172,7 +181,7 @@ const userStore = useUserStore()
 const searchForm = reactive({ pageNum: 1, pageSize: 10, ownerId: '', status: '' })
 const form = reactive({ id: null, ownerId: null, houseId: null, repairType: '水电', repairContent: '', repairImages: '', remark: '' })
 const assignForm = reactive({ handlerId: null })
-const completeForm = reactive({ handleContent: '' })
+const completeForm = reactive({ equipmentId: null, handleContent: '' })
 const ratingForm = reactive({ score: 5, content: '' })
 
 const submitting = ref(false)
@@ -213,6 +222,12 @@ onMounted(async () => {
     const hRes = await getRepairHouses()
     houses.value = hRes.data
   } catch (e) { /* handled */ }
+  if (isAdmin.value || isWorker.value) {
+    try {
+      const eRes = await getRepairEquipments()
+      equipments.value = eRes.data
+    } catch (e) { /* handled */ }
+  }
   if (isAdmin.value) {
     try {
       const wRes = await getUserPage({ pageNum: 1, pageSize: 100 })
@@ -295,12 +310,13 @@ async function handleAccept(row) {
 }
 function handleComplete(row) {
   currentRow.value = row
+  completeForm.equipmentId = row.equipmentId || null
   completeForm.handleContent = ''
   completeDialogVisible.value = true
 }
 async function submitComplete() {
   try {
-    await updateRepairStatus({ id: currentRow.value.id, status: 2, handleContent: completeForm.handleContent })
+    await updateRepairStatus({ id: currentRow.value.id, status: 2, equipmentId: completeForm.equipmentId || undefined, handleContent: completeForm.handleContent })
     ElMessage.success('结单成功，等待确认')
     completeDialogVisible.value = false
     fetchData()

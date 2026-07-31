@@ -14,6 +14,7 @@ CREATE TABLE repair_record (
     repair_type VARCHAR(50) COMMENT '报修类型：水电、门窗、家电、公共设施、其他',
     repair_content TEXT NOT NULL COMMENT '报修内容',
     repair_images VARCHAR(1000) COMMENT '报修图片，逗号分隔',
+    equipment_id BIGINT NULL COMMENT '关联设备id，结单时可指定',
     status TINYINT NOT NULL DEFAULT 0 COMMENT '状态：0待派单 1处理中 2待评价 3已完成 4已取消',
     priority TINYINT NOT NULL DEFAULT 1 COMMENT '优先级：1普通 2加急 3紧急',
     handler_id BIGINT NULL COMMENT '处理人ID',
@@ -28,6 +29,7 @@ CREATE TABLE repair_record (
     deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除',
     CONSTRAINT fk_repair_owner FOREIGN KEY (owner_id) REFERENCES community_owner(id) ON UPDATE CASCADE ON DELETE RESTRICT,
     CONSTRAINT fk_repair_house FOREIGN KEY (house_id) REFERENCES community_house(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT fk_repair_equipment FOREIGN KEY (equipment_id) REFERENCES equipment(id) ON UPDATE CASCADE ON DELETE SET NULL,
     CONSTRAINT fk_repair_handler FOREIGN KEY (handler_id) REFERENCES sys_user(id) ON UPDATE CASCADE ON DELETE SET NULL
 ) COMMENT '报修记录表';
 
@@ -36,6 +38,7 @@ CREATE INDEX idx_repair_owner ON repair_record(owner_id);
 CREATE INDEX idx_repair_house ON repair_record(house_id);
 CREATE INDEX idx_repair_handler ON repair_record(handler_id);
 CREATE INDEX idx_repair_status ON repair_record(status);
+CREATE INDEX idx_repair_equipment ON repair_record(equipment_id);
 CREATE INDEX idx_repair_no ON repair_record(repair_no);
 CREATE INDEX idx_repair_create_time ON repair_record(create_time);
 

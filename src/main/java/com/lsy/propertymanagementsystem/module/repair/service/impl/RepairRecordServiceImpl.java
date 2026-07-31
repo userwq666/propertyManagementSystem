@@ -10,6 +10,13 @@ import com.lsy.propertymanagementsystem.module.community.domain.CommunityHouseDo
 import com.lsy.propertymanagementsystem.module.community.domain.CommunityOwnerDomain;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityHouseMapper;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityOwnerMapper;
+import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentDomain;
+import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentMaintenanceDomain;
+import com.lsy.propertymanagementsystem.module.equipment.enums.EquipmentStatus;
+import com.lsy.propertymanagementsystem.module.equipment.enums.MaintenanceStatus;
+import com.lsy.propertymanagementsystem.module.equipment.enums.MaintenanceType;
+import com.lsy.propertymanagementsystem.module.equipment.mapper.EquipmentMaintenanceMapper;
+import com.lsy.propertymanagementsystem.module.equipment.mapper.EquipmentMapper;
 import com.lsy.propertymanagementsystem.module.repair.domain.RepairRecordDomain;
 import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordDTO;
 import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordVO;
@@ -46,6 +53,12 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
 
     @Autowired
     private SysUserMapper sysUserMapper;
+
+    @Autowired
+    private EquipmentMapper equipmentMapper;
+
+    @Autowired
+    private EquipmentMaintenanceMapper equipmentMaintenanceMapper;
 
     @Override
     public RepairRecordVO getById(Long id) {
@@ -149,7 +162,7 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
 
     @Override
     @Transactional
-    public void updateStatus(Long id, Integer status, Long handlerId, String handleContent) {
+    public void updateStatus(Long id, Integer status, Long handlerId, Long equipmentId, String handleContent) {
         RepairRecordDomain domain = super.getById(id);
         if (domain == null) {
             throw new BusinessException("报修记录不存在");
@@ -197,7 +210,13 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
                     throw new BusinessException("只有处理中的报修才能结单");
                 }
                 domain.complete(handleContent, null);
+                if (equipmentId != null) {
+                    domain.setEquipmentId(equipmentId);
+                }
                 this.updateById(domain);
+                if (equipmentId != null) {
+                    linkEquipmentAfterComplete(domain, equipmentId, userId);
+                }
             }
             case CANCELLED -> {
                 boolean canCancel = isAdmin
@@ -268,6 +287,36 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         return communityHouseMapper.selectList(wrapper);
     }
 
+    @Override
+    public List<EquipmentDomain> listEquipments() {
+        return equipmentMapper.selectList(new LambdaQueryWrapper<EquipmentDomain>()
+                .orderByAsc(EquipmentDomain::getId));
+    }
+
+    private void linkEquipmentAfterComplete(RepairRecordDomain domain, Long equipmentId, Long userId) {
+        EquipmentDomain equipment = equipmentMapper.selectById(equipmentId);
+        if (equipment == null) {
+            return;
+        }
+        EquipmentMaintenanceDomain maintenance = new EquipmentMaintenanceDomain();
+        maintenance.setEquipmentId(equipmentId);
+        maintenance.setMaintenanceType(MaintenanceType.FAULT_REPAIR);
+        maintenance.setMaintenanceContent(domain.getRepairContent());
+        maintenance.setMaintenancePersonnelId(userId);
+        maintenance.setStartTime(domain.getHandleTime());
+        maintenance.setEndTime(domain.getHandleTime());
+        maintenance.setStatus(MaintenanceStatus.COMPLETED);
+        maintenance.setRemark("报修单号：" + domain.getRepairNo());
+        equipmentMaintenanceMapper.insert(maintenance);
+
+        if (equipment.getStatus() == EquipmentStatus.FAULT
+                || equipment.getStatus() == EquipmentStatus.UNDER_REPAIR
+                || equipment.getStatus() == EquipmentStatus.DISABLED) {
+            equipment.changeStatus(EquipmentStatus.NORMAL);
+            equipmentMapper.updateById(equipment);
+        }
+    }
+
     private List<RepairRecordVO> batchConvertToVO(List<RepairRecordDomain> records) {
         if (records == null || records.isEmpty()) {
             return Collections.emptyList();
@@ -275,6 +324,7 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         Set<Long> ownerIds = records.stream().map(RepairRecordDomain::getOwnerId).filter(Objects::nonNull).collect(Collectors.toSet());
         Set<Long> houseIds = records.stream().map(RepairRecordDomain::getHouseId).filter(Objects::nonNull).collect(Collectors.toSet());
         Set<Long> handlerIds = records.stream().map(RepairRecordDomain::getHandlerId).filter(Objects::nonNull).collect(Collectors.toSet());
+        Set<Long> equipmentIds = records.stream().map(RepairRecordDomain::getEquipmentId).filter(Objects::nonNull).collect(Collectors.toSet());
 
         Map<Long, String> ownerNameMap = !ownerIds.isEmpty()
                 ? communityOwnerMapper.selectBatchIds(ownerIds).stream()
@@ -288,6 +338,10 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
                 ? sysUserMapper.selectBatchIds(handlerIds).stream()
                     .collect(Collectors.toMap(SysUserDomain::getId, SysUserDomain::getRealName))
                 : new HashMap<>();
+        Map<Long, String> equipmentNameMap = !equipmentIds.isEmpty()
+                ? equipmentMapper.selectBatchIds(equipmentIds).stream()
+                    .collect(Collectors.toMap(EquipmentDomain::getId, EquipmentDomain::getEquipmentName))
+                : new HashMap<>();
 
         return records.stream().map(domain -> {
             RepairRecordVO vo = new RepairRecordVO();
@@ -300,6 +354,9 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
             }
             if (domain.getHandlerId() != null) {
                 vo.setHandlerName(handlerNameMap.get(domain.getHandlerId()));
+            }
+            if (domain.getEquipmentId() != null) {
+                vo.setEquipmentName(equipmentNameMap.get(domain.getEquipmentId()));
             }
             return vo;
         }).collect(Collectors.toList());
