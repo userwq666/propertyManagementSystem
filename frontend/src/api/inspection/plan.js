@@ -16,8 +16,8 @@ export function getPlanById(id) {
   return request({ url: `/inspection/plan/${id}`, method: 'get' })
 }
 
-export function getPlanPage(params) {
-  return request({ url: '/inspection/plan/page', method: 'get', params })
+export function getPlanPage(params, config = {}) {
+  return request({ url: '/inspection/plan/page', method: 'get', params, ...config })
 }
 
 export function updatePlanStatus(params) {
@@ -28,6 +28,6 @@ export function generateRecords(params) {
   return request({ url: '/inspection/plan/generate', method: 'post', params })
 }
 
-export function getInspectors() {
-  return request({ url: '/inspection/plan/inspectors', method: 'get' })
+export function getInspectors(config = {}) {
+  return request({ url: '/inspection/plan/inspectors', method: 'get', ...config })
 }

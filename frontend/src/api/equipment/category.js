@@ -12,6 +12,6 @@ export function deleteCategory(id) {
   return request({ url: `/equipment/category/${id}`, method: 'delete' })
 }
 
-export function getCategoryPage(params) {
-  return request({ url: '/equipment/category/page', method: 'get', params })
+export function getCategoryPage(params, config = {}) {
+  return request({ url: '/equipment/category/page', method: 'get', params, ...config })
 }

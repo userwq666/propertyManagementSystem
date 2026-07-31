@@ -16,6 +16,6 @@ export function getBuildingById(id) {
   return request({ url: `/community/building/${id}`, method: 'get' })
 }
 
-export function getBuildingPage(params) {
-  return request({ url: '/community/building/page', method: 'get', params })
+export function getBuildingPage(params, config = {}) {
+  return request({ url: '/community/building/page', method: 'get', params, ...config })
 }

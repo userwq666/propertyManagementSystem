@@ -16,8 +16,8 @@ export function getEquipmentById(id) {
   return request({ url: `/equipment/${id}`, method: 'get' })
 }
 
-export function getEquipmentPage(params) {
-  return request({ url: '/equipment/page', method: 'get', params })
+export function getEquipmentPage(params, config = {}) {
+  return request({ url: '/equipment/page', method: 'get', params, ...config })
 }
 
 export function updateEquipmentStatus(params) {

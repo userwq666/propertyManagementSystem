@@ -16,8 +16,8 @@ export function getUserById(id) {
   return request({ url: '/system/user/' + id, method: 'get' })
 }
 
-export function getUserPage(params) {
-  return request({ url: '/system/user/page', method: 'get', params })
+export function getUserPage(params, config = {}) {
+  return request({ url: '/system/user/page', method: 'get', params, ...config })
 }
 
 export function updateUserStatus(params) {

@@ -31,7 +31,9 @@ request.interceptors.response.use(
       router.push('/login')
       return Promise.reject(new Error(res.msg || '认证失败'))
     }
-    ElMessage.error(res.msg || '请求失败')
+    if (!response.config.silent) {
+      ElMessage.error(res.msg || '请求失败')
+    }
     return Promise.reject(new Error(res.msg || '请求失败'))
   },
   error => {
@@ -39,7 +41,9 @@ request.interceptors.response.use(
       removeToken()
       router.push('/login')
     }
-    ElMessage.error(error.message || '网络错误')
+    if (!error.config || !error.config.silent) {
+      ElMessage.error(error.message || '网络错误')
+    }
     return Promise.reject(error)
   }
 )

@@ -242,23 +242,23 @@ onMounted(async () => {
   fetchData()
   if (isAdmin.value) {
     try {
-      const oRes = await getOwnerPage({ pageNum: 1, pageSize: 200 })
+      const oRes = await getOwnerPage({ pageNum: 1, pageSize: 200 }, { silent: true })
       owners.value = oRes.data.records
     } catch (e) { /* handled */ }
   }
   if (isAdmin.value || isOwner.value) {
     try {
-      const hRes = await getRepairHouses()
+      const hRes = await getRepairHouses({}, { silent: true })
       houses.value = hRes.data
     } catch (e) { /* handled */ }
   }
   try {
-    const eRes = await getRepairEquipments()
+    const eRes = await getRepairEquipments({ silent: true })
     equipments.value = eRes.data
   } catch (e) { /* handled */ }
   if (isAdmin.value) {
     try {
-      const wRes = await getUserPage({ pageNum: 1, pageSize: 100 })
+      const wRes = await getUserPage({ pageNum: 1, pageSize: 100 }, { silent: true })
       workers.value = (wRes.data.records || []).filter(u => u.roleName === '维修工')
     } catch (e) { /* handled */ }
   }

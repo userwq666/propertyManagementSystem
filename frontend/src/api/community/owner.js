@@ -16,6 +16,6 @@ export function getOwnerById(id) {
   return request({ url: `/community/owner/${id}`, method: 'get' })
 }
 
-export function getOwnerPage(params) {
-  return request({ url: '/community/owner/page', method: 'get', params })
+export function getOwnerPage(params, config = {}) {
+  return request({ url: '/community/owner/page', method: 'get', params, ...config })
 }

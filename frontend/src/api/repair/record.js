@@ -28,10 +28,10 @@ export function updateRepairRating(params) {
   return request({ url: '/repair/record/rating', method: 'put', params })
 }
 
-export function getRepairHouses(params) {
-  return request({ url: '/repair/record/houses', method: 'get', params })
+export function getRepairHouses(params, config = {}) {
+  return request({ url: '/repair/record/houses', method: 'get', params, ...config })
 }
 
-export function getRepairEquipments() {
-  return request({ url: '/repair/record/equipments', method: 'get' })
+export function getRepairEquipments(config = {}) {
+  return request({ url: '/repair/record/equipments', method: 'get', ...config })
 }
