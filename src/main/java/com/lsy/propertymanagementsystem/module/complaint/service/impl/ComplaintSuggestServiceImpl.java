@@ -112,6 +112,7 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
         }
         ComplaintSuggestDomain domain = new ComplaintSuggestDomain();
         BeanUtils.copyProperties(dto, domain);
+        domain.setComplaintNo("TS" + java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase());
         domain.prepareAdd();
         this.save(domain);
     }
