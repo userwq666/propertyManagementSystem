@@ -39,12 +39,11 @@
           <el-icon class="collapse-btn" @click="isCollapse = !isCollapse">
             <Fold v-if="!isCollapse" /><Expand v-else />
           </el-icon>
-          <el-button text class="home-link" @click="router.push('/dashboard')">
-            <el-icon><HomeFilled /></el-icon>
-            <span>首页</span>
-          </el-button>
           <el-breadcrumb separator="/">
-            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/dashboard' }">
+              <el-icon class="breadcrumb-home-icon"><HomeFilled /></el-icon>
+              <span>首页</span>
+            </el-breadcrumb-item>
             <el-breadcrumb-item v-for="item in breadcrumbs" :key="item.path">{{ item.meta.title }}</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
@@ -136,7 +135,7 @@ function handleCommand(command) {
 .logo img { width: 32px; height: 32px; margin-right: 8px; }
 .layout-header { display: flex; align-items: center; justify-content: space-between; background: #fff; border-bottom: 1px solid #e6e6e6; height: 60px; padding: 0 20px; }
 .header-left { display: flex; align-items: center; gap: 16px; }
-.home-link { color: #303133; font-size: 14px; }
+.breadcrumb-home-icon { margin-right: 4px; vertical-align: -2px; }
 .collapse-btn { font-size: 20px; cursor: pointer; }
 .header-right { display: flex; align-items: center; }
 .user-info { display: flex; align-items: center; gap: 8px; cursor: pointer; }
