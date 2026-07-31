@@ -109,6 +109,8 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
             if (house == null || !Objects.equals(house.getOwnerId(), currentOwnerId)) {
                 throw new BusinessException("只能选择自己名下房屋报修");
             }
+        } else if (dto.getOwnerId() == null) {
+            throw new BusinessException("请选择业主");
         }
         domain.setRepairNo("BX" + UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase());
         domain.prepareAdd();
@@ -245,6 +247,22 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
                 .isNull(RepairRecordDomain::getEvaluateTime)
                 .lt(RepairRecordDomain::getHandleTime, deadline)
                 .set(RepairRecordDomain::getStatus, RepairStatus.COMPLETED));
+    }
+
+    @Override
+    public List<CommunityHouseDomain> listHouses(Long ownerId) {
+        LambdaQueryWrapper<CommunityHouseDomain> wrapper = new LambdaQueryWrapper<>();
+        if (SecurityUtils.isOwner()) {
+            Long currentOwnerId = getOwnerIdByUserId(SecurityUtils.getCurrentUserId());
+            if (currentOwnerId == null) {
+                return Collections.emptyList();
+            }
+            wrapper.eq(CommunityHouseDomain::getOwnerId, currentOwnerId);
+        } else if (ownerId != null) {
+            wrapper.eq(CommunityHouseDomain::getOwnerId, ownerId);
+        }
+        wrapper.orderByAsc(CommunityHouseDomain::getId);
+        return communityHouseMapper.selectList(wrapper);
     }
 
     private List<RepairRecordVO> batchConvertToVO(List<RepairRecordDomain> records) {

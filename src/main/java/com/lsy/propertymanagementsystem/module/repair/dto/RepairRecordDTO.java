@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 public class RepairRecordDTO {
     private Long id;
 
-    @NotNull(message = "业主ID不能为空")
     private Long ownerId;
 
     @NotNull(message = "房屋ID不能为空")

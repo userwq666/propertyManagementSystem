@@ -2,6 +2,7 @@ package com.lsy.propertymanagementsystem.module.repair.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.common.result.Result;
+import com.lsy.propertymanagementsystem.module.community.domain.CommunityHouseDomain;
 import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordDTO;
 import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordVO;
 import com.lsy.propertymanagementsystem.module.repair.service.RepairRecordService;
@@ -9,6 +10,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/repair/record")
@@ -71,5 +74,11 @@ public class RepairRecordController {
     public Result updateRating(@RequestParam Long id, @RequestParam Integer score, @RequestParam(required = false) String content) {
         repairRecordService.updateRating(id, score, content);
         return Result.success();
+    }
+
+    @PreAuthorize("hasAuthority('repair:record:add')")
+    @GetMapping("/houses")
+    public Result<List<CommunityHouseDomain>> listHouses(@RequestParam(required = false) Long ownerId) {
+        return Result.success(repairRecordService.listHouses(ownerId));
     }
 }

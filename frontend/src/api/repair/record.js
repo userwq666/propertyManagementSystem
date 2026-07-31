@@ -27,3 +27,7 @@ export function updateRepairStatus(params) {
 export function updateRepairRating(params) {
   return request({ url: '/repair/record/rating', method: 'put', params })
 }
+
+export function getRepairHouses(params) {
+  return request({ url: '/repair/record/houses', method: 'get', params })
+}

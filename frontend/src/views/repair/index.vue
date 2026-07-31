@@ -57,7 +57,7 @@
     <!-- 新增/编辑 -->
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="600px" @close="resetForm">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
-        <el-form-item label="业主" prop="ownerId">
+        <el-form-item label="业主" prop="ownerId" v-if="isAdmin">
           <el-select v-model="form.ownerId" placeholder="请选择" filterable>
             <el-option v-for="o in owners.filter(i => i.id != null)" :key="o.id" :label="o.name" :value="o.id" />
           </el-select>
@@ -141,11 +141,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { addRepair, updateRepair, deleteRepair, getRepairById, getRepairPage, updateRepairStatus, updateRepairRating } from '@/api/repair/record'
+import { addRepair, updateRepair, deleteRepair, getRepairById, getRepairPage, updateRepairStatus, updateRepairRating, getRepairHouses } from '@/api/repair/record'
 import { getOwnerPage } from '@/api/community/owner'
-import { getHousePage } from '@/api/community/house'
 import { getUserPage } from '@/api/system/user'
 import { useUserStore } from '@/stores/user'
 
@@ -188,12 +187,26 @@ const rules = {
   repairContent: [{ required: true, message: '请输入报修描述', trigger: 'blur' }]
 }
 
+watch(() => form.ownerId, async (val) => {
+  if (!isAdmin.value) return
+  try {
+    const res = await getRepairHouses(val ? { ownerId: val } : {})
+    houses.value = res.data
+  } catch (e) { /* handled */ }
+})
+
 onMounted(async () => {
   fetchData()
-  const oRes = await getOwnerPage({ pageNum: 1, pageSize: 200 })
-  owners.value = oRes.data.records
-  const hRes = await getHousePage({ pageNum: 1, pageSize: 200 })
-  houses.value = hRes.data.records
+  if (isAdmin.value) {
+    try {
+      const oRes = await getOwnerPage({ pageNum: 1, pageSize: 200 })
+      owners.value = oRes.data.records
+    } catch (e) { /* handled */ }
+  }
+  try {
+    const hRes = await getRepairHouses()
+    houses.value = hRes.data
+  } catch (e) { /* handled */ }
   if (isAdmin.value) {
     try {
       const wRes = await getUserPage({ pageNum: 1, pageSize: 100 })
@@ -213,7 +226,7 @@ async function fetchData() {
 
 function handleSearch() { searchForm.pageNum = 1; fetchData() }
 function resetSearch() { searchForm.ownerId = ''; searchForm.status = ''; handleSearch() }
-function handleAdd() { isEdit.value = false; resetForm(); dialogVisible.value = true }
+function handleAdd() { isEdit.value = false; resetForm(); if (!isAdmin.value) form.ownerId = null; dialogVisible.value = true }
 function handleEdit(row) { isEdit.value = true; Object.assign(form, { ...row, repairType: row.repairType || 'WATER_ELECTRICITY', repairContent: row.repairContent || row.description || '', repairImages: row.repairImages || row.images || '' }); dialogVisible.value = true }
 function resetForm() { formRef.value?.resetFields(); form.id = null }
 
