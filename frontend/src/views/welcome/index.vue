@@ -9,7 +9,7 @@
     </div>
 
     <el-row :gutter="16">
-      <el-col :span="10" class="panel-col">
+      <el-col :span="12" class="panel-col">
         <el-card shadow="never" class="panel-card">
           <template #header>今日天气</template>
           <div v-if="weather" class="weather-body">
@@ -24,7 +24,7 @@
           <el-empty v-else description="天气加载失败" :image-size="60" />
         </el-card>
       </el-col>
-      <el-col :span="14" class="panel-col">
+      <el-col :span="12" class="panel-col">
         <el-card shadow="never" class="panel-card">
           <template #header>最新公告</template>
           <div v-if="latest" class="notice-body" @click="router.push('/announcement')">
