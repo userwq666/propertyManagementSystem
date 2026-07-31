@@ -31,7 +31,7 @@
         </el-table-column>
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column label="业主" width="100">
-          <template #default="{ row }">{{ row.ownerName || '系统代报' }}</template>
+          <template #default="{ row }">{{ row.ownerName || '系统代报' }}{{ row.ownerPhone ? '（' + row.ownerPhone + '）' : '' }}</template>
         </el-table-column>
         <el-table-column label="房号" width="100">
           <template #default="{ row }">{{ row.roomNo || '公共区域' }}</template>
