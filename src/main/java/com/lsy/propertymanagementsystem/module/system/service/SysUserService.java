@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface SysUserService {
     // 获取用户分页列表
-    IPage<UserVO> getUserPage(Integer pageNum, Integer pageSize, String username, UserStatus status);
+    IPage<UserVO> getUserPage(Integer pageNum, Integer pageSize, String username, Long roleId, UserStatus status);
     // 添加用户
     void addUser(UserDTO request);
     // 更新用户

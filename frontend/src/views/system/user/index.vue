@@ -4,6 +4,11 @@
       <el-form-item label="用户名">
         <el-input v-model="searchForm.username" placeholder="请输入用户名" clearable />
       </el-form-item>
+      <el-form-item label="角色">
+        <el-select v-model="searchForm.roleId" placeholder="请选择" clearable>
+          <el-option v-for="r in roleList.filter(i => i.id != null)" :key="r.id" :label="r.roleName" :value="r.id" />
+        </el-select>
+      </el-form-item>
       <el-form-item label="状态">
         <el-select v-model="searchForm.status" placeholder="请选择" clearable>
           <el-option label="启用" :value="1" /><el-option label="禁用" :value="0" />
@@ -108,7 +113,7 @@ const formRef = ref(null)
 const isEdit = ref(false)
 const roleList = ref([])
 
-const searchForm = reactive({ pageNum: 1, pageSize: 10, username: '', status: '' })
+const searchForm = reactive({ pageNum: 1, pageSize: 10, username: '', roleId: '', status: '' })
 const form = reactive({ id: null, username: '', realName: '', password: '', phone: '', roleId: null, status: 1 })
 
 const submitting = ref(false)
@@ -138,7 +143,7 @@ async function fetchData() {
 }
 
 function handleSearch() { searchForm.pageNum = 1; fetchData() }
-function resetSearch() { searchForm.username = ''; searchForm.status = ''; handleSearch() }
+function resetSearch() { searchForm.username = ''; searchForm.roleId = ''; searchForm.status = ''; handleSearch() }
 function handleAdd() { isEdit.value = false; resetForm(); dialogVisible.value = true }
 async function handleEdit(row) {
   isEdit.value = true

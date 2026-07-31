@@ -55,8 +55,9 @@ public class SysUserController {
             @RequestParam(defaultValue = "1") Integer pageNum,
             @RequestParam(defaultValue = "10") Integer pageSize,
             @RequestParam(required = false) String username,
+            @RequestParam(required = false) Long roleId,
             @RequestParam(required = false) Integer status) {
-        IPage<UserVO> page = userService.getUserPage(pageNum, pageSize, username, status != null ? UserStatus.of(status) : null);
+        IPage<UserVO> page = userService.getUserPage(pageNum, pageSize, username, roleId, status != null ? UserStatus.of(status) : null);
         return Result.success(page);
     }
 

@@ -36,10 +36,22 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDomain
 
     //获取用户分页列表
     @Override
-    public IPage<UserVO> getUserPage(Integer pageNum, Integer pageSize, String username, UserStatus status) {
+    public IPage<UserVO> getUserPage(Integer pageNum, Integer pageSize, String username, Long roleId, UserStatus status) {
         LambdaQueryWrapper<SysUserDomain> wrapper = new LambdaQueryWrapper<>();
         if (username != null && !username.isEmpty()) {
             wrapper.like(SysUserDomain::getUsername, username);
+        }
+        if (roleId != null) {
+            List<Long> userIds = userRoleMapper.selectList(new LambdaQueryWrapper<SysUserRoleDomain>()
+                            .eq(SysUserRoleDomain::getRoleId, roleId))
+                    .stream()
+                    .map(SysUserRoleDomain::getUserId)
+                    .collect(Collectors.toList());
+            if (userIds.isEmpty()) {
+                wrapper.eq(SysUserDomain::getId, -1);
+            } else {
+                wrapper.in(SysUserDomain::getId, userIds);
+            }
         }
         if (status != null) {
             wrapper.eq(SysUserDomain::getStatus, status);
