@@ -53,7 +53,7 @@
             <el-button v-if="row.status===0 && isAdmin" type="warning" size="small" @click="handleAssign(row)" v-permission="'repair:record:process'">派单</el-button>
             <el-button v-if="row.status===0 && isWorker" type="warning" size="small" @click="handleAccept(row)" v-permission="'repair:record:process'">接单</el-button>
             <el-button v-if="row.status===1 && (isAdmin || row.handlerId === userId)" type="success" size="small" @click="handleComplete(row)" v-permission="'repair:record:process'">结单</el-button>
-            <el-button v-if="row.status===2 && !row.evaluateScore && (isAdmin || isOwner)" type="success" size="small" @click="handleRating(row)" v-permission="'repair:record:evaluate'">评价</el-button>
+            <el-button v-if="row.status===2 && !row.evaluateScore && (isAdmin || isOwner)" type="success" size="small" @click="handleRating(row)" v-permission="'repair:record:evaluate'">确认</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -161,7 +161,7 @@
     </el-dialog>
 
     <!-- 评价 -->
-    <el-dialog title="评价报修" v-model="ratingDialogVisible" width="400px">
+    <el-dialog title="确认并评价" v-model="ratingDialogVisible" width="400px">
       <el-form :model="ratingForm" label-width="100px">
         <el-form-item label="评分" required>
           <el-rate v-model="ratingForm.score" :max="5" />
@@ -360,9 +360,13 @@ async function submitComplete() {
 
 function handleRating(row) { currentRow.value = row; ratingForm.score = 5; ratingForm.content = ''; ratingDialogVisible.value = true }
 async function submitRating() {
+  if (!ratingForm.score) {
+    ElMessage.warning('请先评分')
+    return
+  }
   try {
     await updateRepairRating({ id: currentRow.value.id, ...ratingForm })
-    ElMessage.success('评价成功')
+    ElMessage.success('确认并评价成功')
     ratingDialogVisible.value = false
     fetchData()
   } catch (e) { /* handled */ } finally { submitting.value = false }
