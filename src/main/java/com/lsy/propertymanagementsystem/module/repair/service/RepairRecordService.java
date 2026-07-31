@@ -11,7 +11,7 @@ import java.util.List;
 public interface RepairRecordService {
     Page<RepairRecordVO> page(int pageNum, int pageSize, Long ownerId, Long handlerId, Integer status);
     RepairRecordVO getById(Long id);
-    void addRepair(RepairRecordDTO domain);
+    Long addRepair(RepairRecordDTO domain);
     void updateRepair(RepairRecordDTO domain);
     void deleteRepair(Long id);
     void updateStatus(Long id, Integer status, Long handlerId, Long equipmentId, String handleContent);

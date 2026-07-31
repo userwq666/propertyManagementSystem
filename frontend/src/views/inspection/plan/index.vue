@@ -87,7 +87,7 @@ const form = reactive({ id: null, planName: '', planType: 1, frequencyType: 1, f
 const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑计划' : '新增计划')
-const freqText = (f) => ({ daily:'每天', weekly:'每周', monthly:'每月', custom:'每' }[f]||'')
+const freqText = (f) => ({ 1:'每天', 2:'每周', 3:'每月', 4:'每季度', 5:'每半年', 6:'每年', 7:'一次性' }[f]||'')
 const rules = { planName: [{ required: true, message: '请输入', trigger: 'blur' }] }
 
 onMounted(async () => {
@@ -99,9 +99,19 @@ async function fetchData() { loading.value=true; try{const r=await getPlanPage({
 function handleSearch(){searchForm.pageNum=1;fetchData()}
 function resetSearch(){searchForm.planName='';searchForm.status='';handleSearch()}
 function handleAdd(){isEdit.value=false;resetForm();dialogVisible.value=true}
-function handleEdit(row){isEdit.value=true;Object.assign(form,{...row,equipmentIds:row.equipmentIds||[],inspectorIds:row.inspectorIds||[]});dialogVisible.value=true}
+function handleEdit(row){
+  isEdit.value=true
+  Object.assign(form,{...row,equipmentIds:row.equipmentIds||[],inspectorIds:row.inspectorIds||[]})
+  if (form.frequencyType === 2 && typeof form.frequencyValue === 'string') form.frequencyValue = form.frequencyValue.split(',').map(Number)
+  dialogVisible.value=true
+}
 function resetForm(){formRef.value?.resetFields();Object.assign(form,{id:null,planName:'',planType:1,frequencyType:1,frequencyValue:'',startDate:'',endDate:'',remark:'',equipmentIds:[],inspectorIds:[]})}
-async function handleSubmit(){const v=await formRef.value.validate().catch(()=>false);if(!v)return;try{if(isEdit.value)await updatePlan(form);else await addPlan(form);ElMessage.success(isEdit.value?'编辑成功':'新增成功');dialogVisible.value=false;fetchData()}catch(e){}}
+async function handleSubmit(){
+  const v=await formRef.value.validate().catch(()=>false)
+  if(!v)return
+  const payload={...form,frequencyValue:Array.isArray(form.frequencyValue)?form.frequencyValue.join(','):form.frequencyValue}
+  try{if(isEdit.value)await updatePlan(payload);else await addPlan(payload);ElMessage.success(isEdit.value?'编辑成功':'新增成功');dialogVisible.value=false;fetchData()}catch(e){}
+}
 async function handleDelete(row){await ElMessageBox.confirm('确定删除？','提示',{type:'warning'});try{await deletePlan(row.id);ElMessage.success('删除成功');fetchData()}catch(e){}}
 async function handleStatus(row){const s=row.status===1?1:0;try{await updatePlanStatus({id:row.id,status:s});ElMessage.success('操作成功');fetchData()}catch(e){}}
 </script>

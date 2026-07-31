@@ -54,4 +54,18 @@ public class InspectionRecordController {
         Page<InspectionRecordVO> page = inspectionRecordService.page(pageNum, pageSize, planId, equipmentId);
         return Result.success(page);
     }
+
+    @PreAuthorize("hasAuthority('inspection:record:edit')")
+    @PutMapping("/{id}/accept")
+    public Result accept(@PathVariable Long id) {
+        inspectionRecordService.acceptRecord(id);
+        return Result.success();
+    }
+
+    @PreAuthorize("hasAuthority('inspection:record:edit')")
+    @PostMapping("/{id}/repair")
+    public Result createRepair(@PathVariable Long id) {
+        Long repairId = inspectionRecordService.createRepairForAbnormal(id);
+        return Result.success(repairId);
+    }
 }

@@ -19,3 +19,11 @@ export function getRecordById(id) {
 export function getRecordPage(params) {
   return request({ url: '/inspection/record/page', method: 'get', params })
 }
+
+export function acceptRecord(id) {
+  return request({ url: `/inspection/record/${id}/accept`, method: 'put' })
+}
+
+export function createRecordRepair(id) {
+  return request({ url: `/inspection/record/${id}/repair`, method: 'post' })
+}

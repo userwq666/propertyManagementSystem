@@ -2,7 +2,7 @@ package com.lsy.propertymanagementsystem.module.inspection.dto;
 
 import com.lsy.propertymanagementsystem.module.inspection.enums.FrequencyType;
 import com.lsy.propertymanagementsystem.module.inspection.enums.InspectionPlanType;
-import com.lsy.propertymanagementsystem.module.system.enums.EnableStatus;
+import com.lsy.propertymanagementsystem.module.inspection.enums.PlanStatus;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -21,7 +21,7 @@ public class InspectionPlanVO {
     private LocalDate endDate;
     private LocalTime startTime;
     private LocalTime endTime;
-    private EnableStatus status;
+    private PlanStatus status;
     private String remark;
     private Long creatorId;
     private String creatorName;

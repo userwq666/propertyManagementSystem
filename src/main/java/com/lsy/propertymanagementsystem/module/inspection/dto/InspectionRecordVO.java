@@ -2,6 +2,7 @@ package com.lsy.propertymanagementsystem.module.inspection.dto;
 
 import com.lsy.propertymanagementsystem.module.inspection.enums.HandleStatus;
 import com.lsy.propertymanagementsystem.module.inspection.enums.InspectResult;
+import com.lsy.propertymanagementsystem.module.inspection.enums.TaskStatus;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -17,7 +18,9 @@ public class InspectionRecordVO {
     private Long inspectorUserId;
     private String inspectorName;
     private LocalDateTime inspectionTime;
+    private TaskStatus taskStatus;
     private InspectResult status;
+    private Long repairRecordId;
     private String abnormalDesc;
     private String abnormalImages;
     private HandleStatus handleStatus;

@@ -3,6 +3,7 @@ package com.lsy.propertymanagementsystem.module.inspection.domain;
 import com.baomidou.mybatisplus.annotation.*;
 import com.lsy.propertymanagementsystem.module.inspection.enums.HandleStatus;
 import com.lsy.propertymanagementsystem.module.inspection.enums.InspectResult;
+import com.lsy.propertymanagementsystem.module.inspection.enums.TaskStatus;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,7 +17,9 @@ public class InspectionRecordDomain {
     private Long equipmentId;
     private Long inspectorUserId;
     private LocalDateTime inspectionTime;
+    private TaskStatus taskStatus;
     private InspectResult status;
+    private Long repairRecordId;
     private String abnormalDesc;
     private String abnormalImages;
     private HandleStatus handleStatus;
@@ -34,7 +37,17 @@ public class InspectionRecordDomain {
     @TableLogic
     private Integer deleted;
 
-    public void startInspect() { this.status = InspectResult.NORMAL; }
+    public void startInspect() {
+        this.taskStatus = TaskStatus.PENDING;
+        this.status = InspectResult.NOT_INSPECTED;
+    }
+    public void accept(Long inspectorUserId) {
+        this.taskStatus = TaskStatus.ACCEPTED;
+        this.inspectorUserId = inspectorUserId;
+    }
+    public void completeInspect() {
+        this.taskStatus = TaskStatus.DONE;
+    }
     public void normal() { this.status = InspectResult.NORMAL; }
     public void abnormal(String desc, String images) {
         this.status = InspectResult.ABNORMAL;

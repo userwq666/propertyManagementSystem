@@ -106,7 +106,7 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
 
     @Override
     @Transactional
-    public void addRepair(RepairRecordDTO dto) {
+    public Long addRepair(RepairRecordDTO dto) {
         RepairRecordDomain domain = new RepairRecordDomain();
         BeanUtils.copyProperties(dto, domain);
         if (dto.getRepairType() != null) {
@@ -132,6 +132,7 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         if (domain.getEquipmentId() != null) {
             markEquipmentFault(domain.getEquipmentId());
         }
+        return domain.getId();
     }
 
     @Override

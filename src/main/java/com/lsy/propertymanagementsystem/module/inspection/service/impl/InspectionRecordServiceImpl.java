@@ -2,16 +2,22 @@ package com.lsy.propertymanagementsystem.module.inspection.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.lsy.propertymanagementsystem.common.exception.BusinessException;
+import com.lsy.propertymanagementsystem.common.utils.SecurityUtils;
 import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentDomain;
 import com.lsy.propertymanagementsystem.module.equipment.mapper.EquipmentMapper;
 import com.lsy.propertymanagementsystem.module.inspection.domain.InspectionPlanDomain;
 import com.lsy.propertymanagementsystem.module.inspection.domain.InspectionRecordDomain;
 import com.lsy.propertymanagementsystem.module.inspection.dto.InspectionRecordDTO;
 import com.lsy.propertymanagementsystem.module.inspection.dto.InspectionRecordVO;
+import com.lsy.propertymanagementsystem.module.inspection.enums.HandleStatus;
 import com.lsy.propertymanagementsystem.module.inspection.enums.InspectResult;
+import com.lsy.propertymanagementsystem.module.inspection.enums.TaskStatus;
 import com.lsy.propertymanagementsystem.module.inspection.mapper.InspectionPlanMapper;
 import com.lsy.propertymanagementsystem.module.inspection.mapper.InspectionRecordMapper;
 import com.lsy.propertymanagementsystem.module.inspection.service.InspectionRecordService;
+import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordDTO;
+import com.lsy.propertymanagementsystem.module.repair.service.RepairRecordService;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserDomain;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserMapper;
 import org.springframework.beans.BeanUtils;
@@ -20,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,6 +44,9 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
 
     @Autowired
     private SysUserMapper sysUserMapper;
+
+    @Autowired
+    private RepairRecordService repairRecordService;
 
     @Override
     public Page<InspectionRecordVO> page(int pageNum, int pageSize, Long planId, Long equipmentId) {
@@ -133,16 +143,25 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
     @Override
     @Transactional
     public void updateRecord(InspectionRecordDTO dto) {
-        InspectionRecordDomain domain = new InspectionRecordDomain();
-        BeanUtils.copyProperties(dto, domain);
-        if (dto.getStatus() != null) {
-            domain.setStatus(InspectResult.of(dto.getStatus()));
-        }
-        InspectionRecordDomain existing = inspectionRecordMapper.selectById(domain.getId());
+        InspectionRecordDomain existing = inspectionRecordMapper.selectById(dto.getId());
         if (existing == null) {
             throw new com.lsy.propertymanagementsystem.common.exception.BusinessException("巡检记录不存在");
         }
-        inspectionRecordMapper.updateById(domain);
+        if (dto.getStatus() != null) {
+            InspectResult result = InspectResult.of(dto.getStatus());
+            existing.setStatus(result);
+            existing.setAbnormalDesc(dto.getAbnormalDesc());
+            existing.setAbnormalImages(dto.getAbnormalImages());
+            existing.setLocationLat(dto.getLocationLat());
+            existing.setLocationLng(dto.getLocationLng());
+            existing.setLocationAddress(dto.getLocationAddress());
+            if (result == InspectResult.ABNORMAL) {
+                existing.setHandleStatus(HandleStatus.PENDING);
+            }
+            existing.setTaskStatus(TaskStatus.DONE);
+        }
+        existing.setRemark(dto.getRemark());
+        inspectionRecordMapper.updateById(existing);
     }
 
     @Override
@@ -154,6 +173,57 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
     @Override
     public long countByPlanId(Long planId) {
         return inspectionRecordMapper.selectCount(new LambdaQueryWrapper<InspectionRecordDomain>().eq(InspectionRecordDomain::getPlanId, planId));
+    }
+
+    @Override
+    public long countByPlanAndDate(Long planId, LocalDate date) {
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = date.plusDays(1).atStartOfDay();
+        return inspectionRecordMapper.selectCount(new LambdaQueryWrapper<InspectionRecordDomain>()
+                .eq(InspectionRecordDomain::getPlanId, planId)
+                .ge(InspectionRecordDomain::getInspectionTime, start)
+                .lt(InspectionRecordDomain::getInspectionTime, end));
+    }
+
+    @Override
+    @Transactional
+    public void acceptRecord(Long id) {
+        InspectionRecordDomain record = inspectionRecordMapper.selectById(id);
+        if (record == null) {
+            throw new BusinessException("巡检记录不存在");
+        }
+        if (record.getTaskStatus() != TaskStatus.PENDING) {
+            throw new BusinessException("该任务当前不可接单");
+        }
+        if (record.getInspectorUserId() != null) {
+            throw new BusinessException("该任务已指定巡检员");
+        }
+        record.accept(SecurityUtils.getCurrentUserId());
+        inspectionRecordMapper.updateById(record);
+    }
+
+    @Override
+    @Transactional
+    public Long createRepairForAbnormal(Long id) {
+        InspectionRecordDomain record = inspectionRecordMapper.selectById(id);
+        if (record == null) {
+            throw new BusinessException("巡检记录不存在");
+        }
+        if (record.getStatus() != InspectResult.ABNORMAL) {
+            throw new BusinessException("只有异常巡检记录才能生成报修单");
+        }
+        if (record.getRepairRecordId() != null) {
+            throw new BusinessException("该异常已生成报修单，不能重复报修");
+        }
+        RepairRecordDTO dto = new RepairRecordDTO();
+        dto.setEquipmentId(record.getEquipmentId());
+        dto.setRepairType("公共设施");
+        dto.setRepairContent(record.getAbnormalDesc() != null ? record.getAbnormalDesc() : "巡检异常");
+        dto.setRemark("巡检异常-记录ID:" + id);
+        Long repairId = repairRecordService.addRepair(dto);
+        record.setRepairRecordId(repairId);
+        inspectionRecordMapper.updateById(record);
+        return repairId;
     }
 
     private InspectionRecordVO convertToVO(InspectionRecordDomain record) {

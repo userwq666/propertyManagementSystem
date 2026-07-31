@@ -25,6 +25,8 @@ public class RepairRecordDTO {
 
     private Integer status;
 
+    private String remark;
+
     private Integer priority;
 
     private Long handlerId;

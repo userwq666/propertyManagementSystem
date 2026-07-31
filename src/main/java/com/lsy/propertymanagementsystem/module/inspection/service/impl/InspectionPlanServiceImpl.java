@@ -12,13 +12,17 @@ import com.lsy.propertymanagementsystem.module.inspection.domain.InspectionPlanI
 import com.lsy.propertymanagementsystem.module.inspection.dto.InspectionPlanDTO;
 import com.lsy.propertymanagementsystem.module.inspection.dto.InspectionPlanVO;
 import com.lsy.propertymanagementsystem.module.inspection.enums.FrequencyType;
+import com.lsy.propertymanagementsystem.module.inspection.enums.InspectResult;
+import com.lsy.propertymanagementsystem.module.inspection.enums.InspectionPlanType;
+import com.lsy.propertymanagementsystem.module.inspection.enums.PlanStatus;
+import com.lsy.propertymanagementsystem.module.inspection.enums.TaskStatus;
 import com.lsy.propertymanagementsystem.module.inspection.mapper.InspectionPlanMapper;
 import com.lsy.propertymanagementsystem.module.inspection.mapper.InspectionPlanEquipmentMapper;
 import com.lsy.propertymanagementsystem.module.inspection.mapper.InspectionPlanInspectorMapper;
 import com.lsy.propertymanagementsystem.module.inspection.service.InspectionPlanService;
 import com.lsy.propertymanagementsystem.module.inspection.service.InspectionRecordService;
+import com.lsy.propertymanagementsystem.common.utils.SecurityUtils;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserDomain;
-import com.lsy.propertymanagementsystem.module.system.enums.EnableStatus;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -55,7 +60,7 @@ public class InspectionPlanServiceImpl extends ServiceImpl<InspectionPlanMapper,
             wrapper.like(InspectionPlanDomain::getPlanName, planName);
         }
         if (status != null) {
-            wrapper.eq(InspectionPlanDomain::getStatus, EnableStatus.of(status));
+            wrapper.eq(InspectionPlanDomain::getStatus, PlanStatus.of(status));
         }
         wrapper.orderByDesc(InspectionPlanDomain::getCreateTime);
         Page<InspectionPlanDomain> domainPage = this.page(new Page<>(pageNum, pageSize), wrapper);
@@ -135,10 +140,16 @@ public class InspectionPlanServiceImpl extends ServiceImpl<InspectionPlanMapper,
     public void addPlan(InspectionPlanDTO dto) {
         InspectionPlanDomain domain = new InspectionPlanDomain();
         BeanUtils.copyProperties(dto, domain);
-        if (domain.getStatus() == null) {
-            domain.setStatus(EnableStatus.ENABLED);
+        if (dto.getPlanType() != null) {
+            domain.setPlanType(InspectionPlanType.of(dto.getPlanType()));
         }
+        if (dto.getFrequencyType() != null) {
+            domain.setFrequencyType(FrequencyType.of(dto.getFrequencyType()));
+        }
+        domain.setStatus(PlanStatus.ENABLED);
+        domain.setCreatorId(SecurityUtils.getCurrentUserId());
         this.save(domain);
+        savePlanRelations(domain.getId(), dto.getEquipmentIds(), dto.getInspectorIds());
     }
 
     @Override
@@ -150,7 +161,17 @@ public class InspectionPlanServiceImpl extends ServiceImpl<InspectionPlanMapper,
         if (existing == null) {
             throw new com.lsy.propertymanagementsystem.common.exception.BusinessException("巡检计划不存在");
         }
-        this.updateById(domain);
+        existing.setPlanName(domain.getPlanName());
+        existing.setPlanType(dto.getPlanType() != null ? InspectionPlanType.of(dto.getPlanType()) : existing.getPlanType());
+        existing.setFrequencyType(dto.getFrequencyType() != null ? FrequencyType.of(dto.getFrequencyType()) : existing.getFrequencyType());
+        existing.setFrequencyValue(domain.getFrequencyValue());
+        existing.setStartDate(domain.getStartDate());
+        existing.setEndDate(domain.getEndDate());
+        existing.setStartTime(domain.getStartTime());
+        existing.setEndTime(domain.getEndTime());
+        existing.setRemark(domain.getRemark());
+        this.updateById(existing);
+        savePlanRelations(domain.getId(), dto.getEquipmentIds(), dto.getInspectorIds());
     }
 
     @Override
@@ -180,7 +201,7 @@ public class InspectionPlanServiceImpl extends ServiceImpl<InspectionPlanMapper,
         if (plan == null) {
             throw new com.lsy.propertymanagementsystem.common.exception.BusinessException("巡检计划不存在");
         }
-        plan.changeStatus(EnableStatus.of(status));
+        plan.changeStatus(PlanStatus.of(status));
         this.updateById(plan);
     }
 
@@ -224,44 +245,24 @@ public class InspectionPlanServiceImpl extends ServiceImpl<InspectionPlanMapper,
         return vo;
     }
 
-    private LocalDate calculateNextDate(InspectionPlanDomain plan, LocalDate today) {
-        LocalDate date = plan.getStartDate();
-        if (date == null) return null;
-
-        String freqValue = plan.getFrequencyValue();
-        int cycle = freqValue != null ? Integer.parseInt(freqValue) : 1;
-
-        while (!date.isAfter(today)) {
-            FrequencyType freqType = plan.getFrequencyType();
-            if (freqType == FrequencyType.DAILY) {
-                date = date.plusDays(cycle);
-            } else if (freqType == FrequencyType.WEEKLY) {
-                date = date.plusWeeks(cycle);
-            } else if (freqType == FrequencyType.MONTHLY) {
-                date = date.plusMonths(cycle);
-            } else {
-                return date;
+    private void savePlanRelations(Long planId, List<Long> equipmentIds, List<Long> inspectorIds) {
+        planEquipmentMapper.delete(new LambdaQueryWrapper<InspectionPlanEquipmentDomain>().eq(InspectionPlanEquipmentDomain::getPlanId, planId));
+        planInspectorMapper.delete(new LambdaQueryWrapper<InspectionPlanInspectorDomain>().eq(InspectionPlanInspectorDomain::getPlanId, planId));
+        if (equipmentIds != null) {
+            for (Long equipmentId : equipmentIds) {
+                InspectionPlanEquipmentDomain pe = new InspectionPlanEquipmentDomain();
+                pe.setPlanId(planId);
+                pe.setEquipmentId(equipmentId);
+                planEquipmentMapper.insert(pe);
             }
         }
-        return date;
-    }
-
-    private void createInspectionRecords(InspectionPlanDomain plan) {
-        List<InspectionPlanEquipmentDomain> equipments = planEquipmentMapper.selectList(
-            new LambdaQueryWrapper<InspectionPlanEquipmentDomain>().eq(InspectionPlanEquipmentDomain::getPlanId, plan.getId()));
-        List<InspectionPlanInspectorDomain> inspectors = planInspectorMapper.selectList(
-            new LambdaQueryWrapper<InspectionPlanInspectorDomain>().eq(InspectionPlanInspectorDomain::getPlanId, plan.getId()));
-
-        if (equipments.isEmpty() || inspectors.isEmpty()) return;
-
-        for (int i = 0; i < equipments.size(); i++) {
-            InspectionRecordDomain record = new InspectionRecordDomain();
-            record.setPlanId(plan.getId());
-            record.setEquipmentId(equipments.get(i).getEquipmentId());
-            record.setInspectorUserId(inspectors.get(i % inspectors.size()).getInspectorId());
-            record.setInspectionTime(LocalDateTime.now());
-            record.startInspect();
-            inspectionRecordService.addRecordDomain(record);
+        if (inspectorIds != null) {
+            for (Long inspectorId : inspectorIds) {
+                InspectionPlanInspectorDomain pi = new InspectionPlanInspectorDomain();
+                pi.setPlanId(planId);
+                pi.setInspectorId(inspectorId);
+                planInspectorMapper.insert(pi);
+            }
         }
     }
 
@@ -269,22 +270,70 @@ public class InspectionPlanServiceImpl extends ServiceImpl<InspectionPlanMapper,
     @Transactional
     public void generateByCycle() {
         LocalDate today = LocalDate.now();
-
-        LambdaQueryWrapper<InspectionPlanDomain> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(InspectionPlanDomain::getPlanType, 1);
-        wrapper.ne(InspectionPlanDomain::getStatus, EnableStatus.DISABLED);
-        List<InspectionPlanDomain> plans = this.list(wrapper);
+        List<InspectionPlanDomain> plans = this.list(new LambdaQueryWrapper<InspectionPlanDomain>()
+                .eq(InspectionPlanDomain::getStatus, PlanStatus.ENABLED)
+                .and(w -> w.isNull(InspectionPlanDomain::getEndDate).or().ge(InspectionPlanDomain::getEndDate, today)));
 
         for (InspectionPlanDomain plan : plans) {
-            LocalDate nextDate = calculateNextDate(plan, today);
-            if (nextDate != null && nextDate.isAfter(today)) {
-                plan.setStartDate(nextDate);
-                this.updateById(plan);
-                continue;
-            }
+            if (!shouldGenerateToday(plan, today)) continue;
+            if (inspectionRecordService.countByPlanAndDate(plan.getId(), today) > 0) continue;
             createInspectionRecords(plan);
-            plan.setStartDate(calculateNextDate(plan, today));
-            this.updateById(plan);
+            if (plan.getFrequencyType() == FrequencyType.ONCE) {
+                plan.changeStatus(PlanStatus.DISABLED);
+                this.updateById(plan);
+            }
+        }
+    }
+
+    private boolean shouldGenerateToday(InspectionPlanDomain plan, LocalDate today) {
+        if (plan.getStartDate() != null && today.isBefore(plan.getStartDate())) return false;
+        FrequencyType type = plan.getFrequencyType();
+        if (type == null) return false;
+        if (type == FrequencyType.DAILY) return true;
+        if (type == FrequencyType.ONCE) return true;
+        if (type == FrequencyType.WEEKLY) {
+            String value = plan.getFrequencyValue();
+            if (value == null) return false;
+            return Arrays.stream(value.split(","))
+                    .anyMatch(v -> String.valueOf(today.getDayOfWeek().getValue()).equals(v.trim()));
+        }
+        if (type == FrequencyType.MONTHLY) {
+            String value = plan.getFrequencyValue();
+            if (value == null) return false;
+            return String.valueOf(today.getDayOfMonth()).equals(value.trim());
+        }
+        LocalDate start = plan.getStartDate();
+        if (start == null) return false;
+        int months = switch (type) {
+            case QUARTERLY -> 3;
+            case HALF_YEAR -> 6;
+            case YEARLY -> 12;
+            default -> 0;
+        };
+        return months > 0 && today.getDayOfMonth() == start.getDayOfMonth()
+                && ChronoUnit.MONTHS.between(start, today) % months == 0;
+    }
+
+    private void createInspectionRecords(InspectionPlanDomain plan) {
+        List<InspectionPlanEquipmentDomain> equipments = planEquipmentMapper.selectList(
+                new LambdaQueryWrapper<InspectionPlanEquipmentDomain>().eq(InspectionPlanEquipmentDomain::getPlanId, plan.getId()));
+        List<InspectionPlanInspectorDomain> inspectors = planInspectorMapper.selectList(
+                new LambdaQueryWrapper<InspectionPlanInspectorDomain>().eq(InspectionPlanInspectorDomain::getPlanId, plan.getId()));
+        if (equipments.isEmpty()) return;
+
+        for (int i = 0; i < equipments.size(); i++) {
+            InspectionRecordDomain record = new InspectionRecordDomain();
+            record.setPlanId(plan.getId());
+            record.setEquipmentId(equipments.get(i).getEquipmentId());
+            if (!inspectors.isEmpty()) {
+                record.setInspectorUserId(inspectors.get(i % inspectors.size()).getInspectorId());
+                record.setTaskStatus(TaskStatus.ACCEPTED);
+            } else {
+                record.setTaskStatus(TaskStatus.PENDING);
+            }
+            record.setInspectionTime(LocalDateTime.now());
+            record.setStatus(InspectResult.NOT_INSPECTED);
+            inspectionRecordService.addRecordDomain(record);
         }
     }
 }

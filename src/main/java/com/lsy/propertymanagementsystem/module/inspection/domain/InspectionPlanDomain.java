@@ -3,7 +3,7 @@ package com.lsy.propertymanagementsystem.module.inspection.domain;
 import com.baomidou.mybatisplus.annotation.*;
 import com.lsy.propertymanagementsystem.module.inspection.enums.FrequencyType;
 import com.lsy.propertymanagementsystem.module.inspection.enums.InspectionPlanType;
-import com.lsy.propertymanagementsystem.module.system.enums.EnableStatus;
+import com.lsy.propertymanagementsystem.module.inspection.enums.PlanStatus;
 import lombok.Data;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -22,7 +22,7 @@ public class InspectionPlanDomain {
     private LocalDate endDate;
     private LocalTime startTime;
     private LocalTime endTime;
-    private EnableStatus status;
+    private PlanStatus status;
     private String remark;
     private Long creatorId;
     @TableField(fill = FieldFill.INSERT)
@@ -32,5 +32,5 @@ public class InspectionPlanDomain {
     @TableLogic
     private Integer deleted;
 
-    public void changeStatus(EnableStatus status) { this.status = status; }
+    public void changeStatus(PlanStatus status) { this.status = status; }
 }
