@@ -16,8 +16,8 @@ export function getMaintenanceById(id) {
   return request({ url: `/equipment/maintenance/${id}`, method: 'get' })
 }
 
-export function getMaintenancePage(params) {
-  return request({ url: '/equipment/maintenance/page', method: 'get', params })
+export function getMaintenancePage(params, config = {}) {
+  return request({ url: '/equipment/maintenance/page', method: 'get', params, ...config })
 }
 
 export function startMaintenance(id) {
