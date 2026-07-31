@@ -21,6 +21,11 @@
         <div class="toolbar-right"><el-button @click="fetchData">刷新</el-button></div>
       </div>
       <el-table :data="tableData" border stripe v-loading="loading">
+        <el-table-column label="状态" width="100">
+          <template #default="{ row }">
+            <el-tag :type="st(row.publishStatus)">{{ stText(row.publishStatus) }}</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="title" label="标题" show-overflow-tooltip />
         <el-table-column label="类型" width="100">
@@ -30,11 +35,6 @@
           <template #default="{ row }">
             <el-tag v-if="row.isTop" type="danger" size="small">置顶</el-tag>
             <span v-else>-</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="状态" width="100">
-          <template #default="{ row }">
-            <el-tag :type="st(row.publishStatus)">{{ stText(row.publishStatus) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="creatorName" label="发布人" width="100" />
