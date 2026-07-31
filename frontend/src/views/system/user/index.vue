@@ -2,15 +2,15 @@
   <div>
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="用户名">
-        <el-input v-model="searchForm.username" placeholder="请输入用户名" clearable style="width: 120px" />
+        <el-input v-model="searchForm.username" placeholder="请输入用户名" clearable style="width: 100px" />
       </el-form-item>
       <el-form-item label="角色">
-        <el-select v-model="searchForm.roleId" placeholder="请选择" clearable style="width: 150px">
+        <el-select v-model="searchForm.roleId" placeholder="请选择" clearable style="width: 130px">
           <el-option v-for="r in roleList.filter(i => i.id != null)" :key="r.id" :label="r.roleName" :value="r.id" />
         </el-select>
       </el-form-item>
       <el-form-item label="状态">
-        <el-select v-model="searchForm.status" placeholder="请选择" clearable style="width: 150px">
+        <el-select v-model="searchForm.status" placeholder="请选择" clearable style="width: 130px">
           <el-option label="启用" :value="1" /><el-option label="禁用" :value="0" />
         </el-select>
       </el-form-item>
