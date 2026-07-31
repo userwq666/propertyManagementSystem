@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div>
     <el-form :inline="true" :model="searchForm" class="search-form">
       <el-form-item label="设备分类">
@@ -137,8 +137,8 @@ const rules = {
   status: [{ required: true, message: '请选择状态', trigger: 'change' }]
 }
 
-const statusType = (s) => ({ 0: 'success', 1: 'danger', 2: 'warning', 3: 'info' }[s] || 'info')
-const statusText = (s) => ({ 0: '正常', 1: '故障', 2: '维修中', 3: '报废' }[s] || '未知')
+const statusType = (s) => ({ 1: 'success', 2: 'danger', 3: 'warning', 4: 'info', 5: 'info' }[s] || 'info')
+const statusText = (s) => ({ 1: '正常', 2: '故障', 3: '维修中', 4: '停用', 5: '报废' }[s] || '未知')
 
 onMounted(async () => {
   fetchData()
@@ -182,8 +182,20 @@ async function handleDelete(row) {
 }
 
 async function handleStatus(row) {
-  const newStatus = row.status === 0 ? 1 : 0
-  await ElMessageBox.confirm('确定修改设备状态吗？', '提示', { type: 'warning' })
-  try { await updateEquipmentStatus({ id: row.id, status: newStatus }); ElMessage.success('状态修改成功'); fetchData() } catch (e) { /* handled */ } finally { submitting.value = false }
+  const { value: newStatus } = await ElMessageBox.prompt('请选择新状态', '修改设备状态', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    inputType: 'select',
+    inputValue: row.status,
+    inputOptions: [
+      { label: '正常', value: 1 },
+      { label: '故障', value: 2 },
+      { label: '维修中', value: 3 },
+      { label: '停用', value: 4 },
+      { label: '报废', value: 5 }
+    ]
+  }).catch(() => null)
+  if (newStatus == null) return
+  try { await updateEquipmentStatus({ id: row.id, status: newStatus }); ElMessage.success('状态修改成功'); fetchData() } catch (e) { /* handled */ }
 }
 </script>
