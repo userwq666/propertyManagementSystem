@@ -266,12 +266,6 @@ INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, me
 (76, 21,'设备编辑', NULL, '', '', 'equipment:list:edit',   2, 2, 1),
 (77, 21,'设备删除', NULL, '', '', 'equipment:list:delete', 2, 3, 1);
 
--- 维保记录按钮 (parent: 22)
-INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
-(78, 22,'维保新增', NULL, '', '', 'equipment:maintenance:add',    2, 1, 1),
-(79, 22,'维保编辑', NULL, '', '', 'equipment:maintenance:edit',   2, 2, 1),
-(80, 22,'维保删除', NULL, '', '', 'equipment:maintenance:delete', 2, 3, 1);
-
 -- 巡检计划按钮 (parent: 24)
 INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
 (81, 24,'计划新增', NULL, '', '', 'inspection:plan:add',    2, 1, 1),
@@ -329,7 +323,6 @@ INSERT INTO sys_role_menu (role_id, menu_id) VALUES
 (5,19),(5,20),(5,21),(5,22),  -- 设备管理
 (5,23),(5,24),(5,25),  -- 巡检管理
 -- 按钮权限
-(5,78),(5,79),  -- 维保：新增、编辑
 (5,81),(5,82),(5,84),(5,85);  -- 巡检：计划新增/编辑、记录新增/编辑
 
 SET FOREIGN_KEY_CHECKS = 1;
