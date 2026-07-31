@@ -140,8 +140,7 @@ INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_typ
 -- 3.4 报修管理 (parent: 15)
 INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
 (15, 0, '报修管理',   '/repair',             NULL,                     NULL,                      0, 4, 1),
-(16, 15,'报修记录',   '/repair/record',      'repair/index',           'repair:record:list',      1, 1, 1),
-(93, 15,'接单大厅',   '/repair/accept',      'repair/accept',          'repair:record:process',   1, 2, 1);
+(16, 15,'报修记录',   '/repair/record',      'repair/index',           'repair:record:list',      1, 1, 1);
 
 -- 3.5 投诉建议 (parent: 17)
 INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
@@ -319,7 +318,6 @@ INSERT INTO sys_role_menu (role_id, menu_id) VALUES
 -- 目录和菜单
 (4,26),(4,27),  -- 数据统计/首页
 (4,15),(4,16),  -- 报修管理
-(4,93),  -- 接单大厅
 -- 按钮权限
 (4,66);  -- 报修：处理/接单/结单
 

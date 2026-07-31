@@ -47,6 +47,7 @@
         <el-table-column prop="createTime" label="报修时间" width="180" />
         <el-table-column label="操作" min-width="320" class-name="action-column" fixed="right">
           <template #default="{ row }">
+            <el-button size="small" @click="handleDetail(row)" v-permission="'repair:record:list'">详情</el-button>
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'repair:record:edit'">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'repair:record:delete'">删除</el-button>
             <el-button v-if="row.status===0 && isAdmin" type="warning" size="small" @click="handleAssign(row)" v-permission="'repair:record:process'">派单</el-button>
@@ -60,6 +61,26 @@
         :total="total" :page-sizes="[10, 20, 50]" layout="total, sizes, prev, pager, next"
         @size-change="fetchData" @current-change="fetchData" style="margin-top:16px;justify-content:flex-end" />
     </div>
+
+    <!-- 详情 -->
+    <el-dialog title="报修详情" v-model="detailDialogVisible" width="640px">
+      <el-descriptions :column="2" border v-if="detailRow">
+        <el-descriptions-item label="报修单号">{{ detailRow.repairNo }}</el-descriptions-item>
+        <el-descriptions-item label="状态">{{ statusText(detailRow.status) }}</el-descriptions-item>
+        <el-descriptions-item label="业主">{{ detailRow.ownerName || '系统代报' }}</el-descriptions-item>
+        <el-descriptions-item label="房号">{{ detailRow.roomNo || '公共区域' }}</el-descriptions-item>
+        <el-descriptions-item label="报修类型">{{ typeText(detailRow.repairType) }}</el-descriptions-item>
+        <el-descriptions-item label="关联设备">{{ detailRow.equipmentName || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="报修内容" :span="2">{{ detailRow.repairContent }}</el-descriptions-item>
+        <el-descriptions-item label="处理人">{{ detailRow.handlerName || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="处理时间">{{ detailRow.handleTime || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="处理内容" :span="2">{{ detailRow.handleContent || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="评分">{{ detailRow.evaluateScore ? detailRow.evaluateScore + ' 分' : '-' }}</el-descriptions-item>
+        <el-descriptions-item label="评价时间">{{ detailRow.evaluateTime || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="评价内容" :span="2">{{ detailRow.evaluateContent || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="报修时间" :span="2">{{ detailRow.createTime }}</el-descriptions-item>
+      </el-descriptions>
+    </el-dialog>
 
     <!-- 新增/编辑 -->
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="600px" @close="resetForm">
@@ -171,6 +192,7 @@ const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)
 const dialogVisible = ref(false)
+const detailDialogVisible = ref(false)
 const assignDialogVisible = ref(false)
 const completeDialogVisible = ref(false)
 const ratingDialogVisible = ref(false)
@@ -181,6 +203,7 @@ const houses = ref([])
 const equipments = ref([])
 const workers = ref([])
 const currentRow = ref(null)
+const detailRow = ref(null)
 const userStore = useUserStore()
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, ownerId: '', status: '' })
@@ -252,6 +275,7 @@ async function fetchData() {
 
 function handleSearch() { searchForm.pageNum = 1; fetchData() }
 function resetSearch() { searchForm.ownerId = ''; searchForm.status = ''; handleSearch() }
+function handleDetail(row) { detailRow.value = row; detailDialogVisible.value = true }
 function handleAdd() { isEdit.value = false; resetForm(); if (isAdmin.value) { form.ownerId = null; form.houseId = null } else { form.ownerId = null } form.equipmentId = null; dialogVisible.value = true }
 function handleEdit(row) {
   isEdit.value = true

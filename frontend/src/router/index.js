@@ -40,8 +40,7 @@ const routes = [
       },
       { path: 'repair', name: 'Repair', meta: { title: '报修管理', icon: 'Tools' },
         children: [
-          { path: 'record', name: 'RepairRecords', component: () => import('@/views/repair/index.vue'), meta: { title: '报修工单', icon: 'Tickets', permission: 'repair:record:list' } },
-          { path: 'accept', name: 'RepairAccept', component: () => import('@/views/repair/accept.vue'), meta: { title: '接单大厅', icon: 'Handbag', permission: 'repair:record:process' } }
+          { path: 'record', name: 'RepairRecords', component: () => import('@/views/repair/index.vue'), meta: { title: '报修工单', icon: 'Tickets', permission: 'repair:record:list' } }
         ]
       },
       { path: 'complaint', name: 'Complaint', component: () => import('@/views/complaint/index.vue'), meta: { title: '投诉建议', icon: 'ChatLineSquare', permission: 'complaint:list:list' } },
