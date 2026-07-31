@@ -85,7 +85,7 @@
     <!-- 新增/编辑 -->
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="600px" @close="resetForm">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
-        <el-form-item label="业主" prop="ownerId" v-if="hasOwnerPerm">
+        <el-form-item label="业主" prop="ownerId" v-if="hasOwnerPerm || hasAssign">
           <el-select v-model="form.ownerId" placeholder="请选择" filterable clearable>
             <el-option label="系统代报" :value="0" />
             <el-option v-for="o in owners.filter(i => i.id != null)" :key="o.id" :label="o.name" :value="o.id" />
@@ -93,7 +93,7 @@
         </el-form-item>
         <el-form-item label="房屋" prop="houseId">
           <el-select v-model="form.houseId" placeholder="请选择" filterable clearable>
-            <el-option v-if="hasOwnerPerm" label="公共区域" :value="0" />
+            <el-option v-if="hasOwnerPerm || hasAssign" label="公共区域" :value="0" />
             <el-option v-for="h in houses.filter(i => i.id != null)" :key="h.id" :label="h.roomNo" :value="h.id" />
           </el-select>
         </el-form-item>
@@ -232,7 +232,7 @@ const rules = {
 }
 
 watch(() => form.ownerId, async (val) => {
-  if (!hasOwnerPerm.value) return
+  if (!hasOwnerPerm.value && !hasAssign.value) return
   try {
     const res = await getRepairHouses(val && val !== 0 ? { ownerId: val } : {})
     houses.value = res.data
@@ -241,13 +241,13 @@ watch(() => form.ownerId, async (val) => {
 
 onMounted(async () => {
   fetchData()
-  if (hasOwnerPerm.value) {
+  if (hasOwnerPerm.value || hasAssign.value) {
     try {
       const oRes = await getOwnerPage({ pageNum: 1, pageSize: 200 }, { silent: true })
       owners.value = oRes.data.records
     } catch (e) { /* handled */ }
   }
-  if (hasAddPerm.value || hasOwnerPerm.value) {
+  if (hasAddPerm.value || hasOwnerPerm.value || hasAssign.value) {
     try {
       const hRes = await getRepairHouses({}, { silent: true })
       houses.value = hRes.data
@@ -257,7 +257,7 @@ onMounted(async () => {
     const eRes = await getRepairEquipments({ silent: true })
     equipments.value = eRes.data
   } catch (e) { /* handled */ }
-  if (hasUserPerm.value) {
+  if (hasUserPerm.value || hasAssign.value) {
     try {
       const wRes = await getUserPage({ pageNum: 1, pageSize: 100 }, { silent: true })
       workers.value = (wRes.data.records || []).filter(u => u.roleName === '维修工')
@@ -277,13 +277,13 @@ async function fetchData() {
 function handleSearch() { searchForm.pageNum = 1; fetchData() }
 function resetSearch() { searchForm.ownerId = ''; searchForm.status = ''; handleSearch() }
 function handleDetail(row) { detailRow.value = row; detailDialogVisible.value = true }
-function handleAdd() { isEdit.value = false; resetForm(); if (hasOwnerPerm.value) { form.ownerId = null; form.houseId = null } else { form.ownerId = null } form.equipmentId = null; dialogVisible.value = true }
+function handleAdd() { isEdit.value = false; resetForm(); if (hasOwnerPerm.value || hasAssign.value) { form.ownerId = null; form.houseId = null } else { form.ownerId = null } form.equipmentId = null; dialogVisible.value = true }
 function handleEdit(row) {
   isEdit.value = true
   Object.assign(form, {
     ...row,
-    ownerId: hasOwnerPerm.value ? (row.ownerId || 0) : row.ownerId,
-    houseId: hasOwnerPerm.value ? (row.houseId || 0) : row.houseId,
+    ownerId: (hasOwnerPerm.value || hasAssign.value) ? (row.ownerId || 0) : row.ownerId,
+    houseId: (hasOwnerPerm.value || hasAssign.value) ? (row.houseId || 0) : row.houseId,
     equipmentId: row.equipmentId || null,
     repairType: row.repairType || 'WATER_ELECTRICITY',
     repairContent: row.repairContent || row.description || '',
