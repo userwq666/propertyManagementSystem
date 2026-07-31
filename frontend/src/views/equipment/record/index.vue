@@ -13,6 +13,12 @@
     </el-form>
 
     <el-card v-if="equipment" shadow="never" class="equip-info">
+      <template #header>
+        <div class="equip-info-header">
+          <span>设备信息</span>
+          <el-button size="small" :loading="refreshing" @click="loadEquipment">刷新</el-button>
+        </div>
+      </template>
       <div class="equip-info-row">
         <span><b>{{ equipment.equipmentName }}</b></span>
         <el-tag :type="statusType(equipment.status)">{{ statusText(equipment.status) }}</el-tag>
@@ -118,6 +124,7 @@ const loadingPlans = ref(false)
 const loadingRecords = ref(false)
 const loadingMaint = ref(false)
 const loadingRepairs = ref(false)
+const refreshing = ref(false)
 
 const statusType = (s) => ({ 1: 'success', 2: 'danger', 3: 'warning', 4: 'info', 5: 'info' }[s] || 'info')
 const statusText = (s) => ({ 1: '正常', 2: '故障', 3: '维修中', 4: '停用', 5: '报废' }[s] || '未知')
@@ -140,6 +147,7 @@ onMounted(async () => {
 
 async function loadEquipment() {
   if (!equipmentId.value) return
+  refreshing.value = true
   loadingPlans.value = true
   loadingRecords.value = true
   loadingMaint.value = true
@@ -159,6 +167,7 @@ async function loadEquipment() {
     maintenances.value = []
     repairs.value = []
   } finally {
+    refreshing.value = false
     loadingPlans.value = false
     loadingRecords.value = false
     loadingMaint.value = false
@@ -178,5 +187,6 @@ function resetEquipment() {
 
 <style scoped>
 .equip-info { margin-bottom: 16px; border-radius: 8px; }
+.equip-info-header { display: flex; justify-content: space-between; align-items: center; }
 .equip-info-row { display: flex; align-items: center; gap: 20px; margin: 6px 0; font-size: 14px; color: #606266; }
 </style>
