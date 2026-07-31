@@ -39,6 +39,7 @@
         <el-table-column prop="createTime" label="创建时间" width="160" />
         <el-table-column label="操作" min-width="240" class-name="action-column" fixed="right">
           <template #default="{ row }">
+            <el-button size="small" @click="handleDetail(row)">详情</el-button>
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'inspection:plan:edit'">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'inspection:plan:delete'">删除</el-button>
             <el-button size="small" @click="handleStatus(row)" v-permission="'inspection:plan:edit'">{{ row.status===1?'停用':'启用' }}</el-button>
@@ -49,6 +50,24 @@
         :total="total" :page-sizes="[10,20,50]" layout="total,sizes,prev,pager,next"
         @size-change="fetchData" @current-change="fetchData" style="margin-top:16px;justify-content:flex-end" />
     </div>
+
+    <!-- 详情 -->
+    <el-dialog title="巡检计划详情" v-model="detailDialogVisible" width="640px">
+      <el-descriptions :column="2" border v-if="detailRow">
+        <el-descriptions-item label="计划名称" :span="2">{{ detailRow.planName }}</el-descriptions-item>
+        <el-descriptions-item label="计划类型">{{ planTypeText(detailRow.planType) }}</el-descriptions-item>
+        <el-descriptions-item label="状态">{{ detailRow.status === 1 ? '启用' : '停用' }}</el-descriptions-item>
+        <el-descriptions-item label="巡检频率">{{ freqText(detailRow.frequencyType) }}</el-descriptions-item>
+        <el-descriptions-item label="频率值">{{ detailRow.frequencyValue || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="开始日期">{{ detailRow.startDate || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="结束日期">{{ detailRow.endDate || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="关联设备" :span="2">{{ (detailRow.equipmentNames || []).join('、') || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="巡检人员" :span="2">{{ (detailRow.inspectorNames || []).join('、') || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="创建人">{{ detailRow.creatorName || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="创建时间">{{ detailRow.createTime }}</el-descriptions-item>
+        <el-descriptions-item label="备注" :span="2">{{ detailRow.remark || '-' }}</el-descriptions-item>
+      </el-descriptions>
+    </el-dialog>
 
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="650px" @close="resetForm">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="90px">
@@ -83,6 +102,8 @@ import { getEquipmentPage } from '@/api/equipment/equipment'
 
 const loading = ref(false); const tableData = ref([]); const total = ref(0)
 const dialogVisible = ref(false); const formRef = ref(null); const isEdit = ref(false)
+const detailDialogVisible = ref(false)
+const detailRow = ref(null)
 const equipments = ref([]); const users = ref([])
 const searchForm = reactive({ pageNum: 1, pageSize: 10, planName: '', status: '' })
 const form = reactive({ id: null, planName: '', planType: 1, frequencyType: 1, frequencyValue: '', startDate: '', endDate: '', remark: '', equipmentIds: [], inspectorIds: [] })
@@ -90,6 +111,7 @@ const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑计划' : '新增计划')
 const freqText = (f) => ({ 1:'每天', 2:'每周', 3:'每月', 4:'每季度', 5:'每半年', 6:'每年', 7:'一次性' }[f]||'')
+const planTypeText = (t) => ({ 1:'日常巡检', 2:'专项巡检', 3:'季节性巡检', 4:'临时巡检' }[t] || '')
 const rules = { planName: [{ required: true, message: '请输入', trigger: 'blur' }] }
 
 onMounted(async () => {
@@ -101,6 +123,7 @@ async function fetchData() { loading.value=true; try{const r=await getPlanPage({
 function handleSearch(){searchForm.pageNum=1;fetchData()}
 function resetSearch(){searchForm.planName='';searchForm.status='';handleSearch()}
 function handleAdd(){isEdit.value=false;resetForm();dialogVisible.value=true}
+function handleDetail(row){detailRow.value=row;detailDialogVisible.value=true}
 function handleEdit(row){
   isEdit.value=true
   Object.assign(form,{...row,equipmentIds:row.equipmentIds||[],inspectorIds:row.inspectorIds||[]})
@@ -116,5 +139,5 @@ async function handleSubmit(){
   try{if(isEdit.value)await updatePlan(payload);else await addPlan(payload);ElMessage.success(isEdit.value?'编辑成功':'新增成功');dialogVisible.value=false;fetchData()}catch(e){}
 }
 async function handleDelete(row){await ElMessageBox.confirm('确定删除？','提示',{type:'warning'});try{await deletePlan(row.id);ElMessage.success('删除成功');fetchData()}catch(e){}}
-async function handleStatus(row){const s=row.status===1?1:0;try{await updatePlanStatus({id:row.id,status:s});ElMessage.success('操作成功');fetchData()}catch(e){}}
+async function handleStatus(row){const s=row.status===1?0:1;try{await updatePlanStatus({id:row.id,status:s});ElMessage.success('操作成功');fetchData()}catch(e){}}
 </script>
