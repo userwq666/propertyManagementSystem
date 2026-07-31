@@ -82,26 +82,10 @@
               <el-tag :type="repairStatusTag(row.status)">{{ repairStatusText(row.status) }}</el-tag>
             </template>
           </el-table-column>
+          <el-table-column prop="handleContent" label="维修内容" show-overflow-tooltip />
+          <el-table-column prop="handleTime" label="完成时间" width="160" />
           <el-table-column prop="handlerName" label="处理人" width="90" />
           <el-table-column prop="createTime" label="报修时间" width="160" />
-        </el-table>
-      </el-tab-pane>
-
-      <el-tab-pane label="维修记录" name="maintenances">
-        <el-table :data="maintenances" border stripe v-loading="loadingMaint">
-          <el-table-column label="类型" width="100">
-            <template #default="{ row }">{{ maintTypeText(row.maintenanceType) }}</template>
-          </el-table-column>
-          <el-table-column label="状态" width="100">
-            <template #default="{ row }">
-              <el-tag :type="maintStatusTag(row.status)">{{ maintStatusText(row.status) }}</el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column prop="maintenanceContent" label="维修内容" show-overflow-tooltip />
-          <el-table-column prop="maintenancePersonnelName" label="维修人" width="90" />
-          <el-table-column prop="startTime" label="开始时间" width="160" />
-          <el-table-column prop="endTime" label="结束时间" width="160" />
-          <el-table-column prop="remark" label="备注" show-overflow-tooltip />
         </el-table>
       </el-tab-pane>
     </el-tabs>
@@ -118,11 +102,9 @@ const equipment = ref(null)
 const activeTab = ref('plans')
 const plans = ref([])
 const inspectionRecords = ref([])
-const maintenances = ref([])
 const repairs = ref([])
 const loadingPlans = ref(false)
 const loadingRecords = ref(false)
-const loadingMaint = ref(false)
 const loadingRepairs = ref(false)
 const refreshing = ref(false)
 
@@ -131,9 +113,6 @@ const statusText = (s) => ({ 1: '正常', 2: '故障', 3: '维修中', 4: '停�
 const planTypeText = (t) => ({ 1: '日常巡检', 2: '专项巡检', 3: '季节性巡检', 4: '临时巡检' }[t] || '')
 const freqText = (f) => ({ 1: '每天', 2: '每周', 3: '每月', 4: '每季度', 5: '每半年', 6: '每年', 7: '一次性' }[f] || '')
 const resultText = (s) => ({ 1: '正常', 2: '异常', 3: '未巡检' }[s] || '')
-const maintTypeText = (t) => ({ 1: '日常巡检', 2: '定期保养', 3: '故障维修', 4: '更换配件', 5: '其他' }[t] || '')
-const maintStatusText = (s) => ({ 0: '待维护', 1: '进行中', 2: '已完成', 3: '取消' }[s] || '')
-const maintStatusTag = (s) => ({ 0: 'info', 1: 'warning', 2: 'success', 3: 'danger' }[s] || 'info')
 const repairTypeText = (t) => ({ 水电: '水电', 门窗: '门窗', 家电: '家电', 公共设施: '公共设施', 其他: '其他' }[t] || t || '')
 const repairStatusText = (s) => ({ 0: '待派单', 1: '处理中', 2: '待确认', 3: '已完成', 4: '已取消' }[s] || '')
 const repairStatusTag = (s) => ({ 0: 'info', 1: 'warning', 2: 'primary', 3: 'success', 4: 'danger' }[s] || 'info')
@@ -150,7 +129,6 @@ async function loadEquipment() {
   refreshing.value = true
   loadingPlans.value = true
   loadingRecords.value = true
-  loadingMaint.value = true
   loadingRepairs.value = true
   try {
     const s = await getEquipmentRecordSummary(equipmentId.value)
@@ -158,19 +136,16 @@ async function loadEquipment() {
     equipment.value = data.equipment || null
     plans.value = data.plans || []
     inspectionRecords.value = data.records || []
-    maintenances.value = data.maintenances || []
     repairs.value = data.repairs || []
   } catch (e) {
     equipment.value = null
     plans.value = []
     inspectionRecords.value = []
-    maintenances.value = []
     repairs.value = []
   } finally {
     refreshing.value = false
     loadingPlans.value = false
     loadingRecords.value = false
-    loadingMaint.value = false
     loadingRepairs.value = false
   }
 }
@@ -180,7 +155,6 @@ function resetEquipment() {
   equipment.value = null
   plans.value = []
   inspectionRecords.value = []
-  maintenances.value = []
   repairs.value = []
 }
 </script>
