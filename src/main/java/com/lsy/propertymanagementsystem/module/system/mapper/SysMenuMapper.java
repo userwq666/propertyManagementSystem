@@ -18,4 +18,15 @@ public interface SysMenuMapper extends BaseMapper<SysMenuDomain> {
             "JOIN sys_user_role ur ON rm.role_id = ur.role_id " +
             "WHERE ur.user_id = #{userId} AND m.perms IS NOT NULL AND m.perms != '' AND m.deleted = 0")
     List<String> selectPermsByUserId(@Param("userId") Long userId);
+
+    // 根据用户ID查询其有权限的目录和菜单
+    @Select("SELECT DISTINCT m.* FROM sys_menu m " +
+            "WHERE m.menu_type IN (0, 1) AND m.status = 1 AND m.deleted = 0 " +
+            "AND (EXISTS (SELECT 1 FROM sys_user_role ur " +
+            "             WHERE ur.user_id = #{userId} AND ur.role_id IN (1, 2)) " +
+            "     OR EXISTS (SELECT 1 FROM sys_user_role ur2 " +
+            "               JOIN sys_role_menu rm2 ON rm2.role_id = ur2.role_id " +
+            "               WHERE ur2.user_id = #{userId} AND rm2.menu_id = m.id)) " +
+            "ORDER BY m.sort")
+    List<SysMenuDomain> selectUserMenus(@Param("userId") Long userId);
 }

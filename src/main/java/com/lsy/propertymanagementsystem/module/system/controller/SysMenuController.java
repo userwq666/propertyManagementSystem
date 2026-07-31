@@ -1,6 +1,7 @@
 package com.lsy.propertymanagementsystem.module.system.controller;
 
 import com.lsy.propertymanagementsystem.common.result.Result;
+import com.lsy.propertymanagementsystem.common.utils.SecurityUtils;
 import com.lsy.propertymanagementsystem.module.system.dto.MenuDTO;
 import com.lsy.propertymanagementsystem.module.system.dto.MenuVO;
 import com.lsy.propertymanagementsystem.module.system.service.SysMenuService;
@@ -58,5 +59,11 @@ public class SysMenuController {
     public Result<List<MenuVO>> getMenuList() {
         List<MenuVO> menus = menuService.getMenuList();
         return Result.success(menus);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/user-tree")
+    public Result<List<MenuVO>> getUserMenuTree() {
+        return Result.success(menuService.getUserMenuTree(SecurityUtils.getCurrentUserId()));
     }
 }

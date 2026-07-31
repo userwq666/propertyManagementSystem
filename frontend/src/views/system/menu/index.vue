@@ -53,6 +53,9 @@
         <el-form-item label="菜单名称" prop="menuName">
           <el-input v-model="form.menuName" placeholder="请输入菜单名称" />
         </el-form-item>
+        <el-form-item v-if="form.menuType !== 2" label="菜单图标">
+          <el-input v-model="form.icon" placeholder="如: Setting / User / Monitor" />
+        </el-form-item>
         <el-form-item label="菜单类型" prop="menuType">
           <el-select v-model="form.menuType" style="width:100%">
             <el-option label="目录" :value="0" />
@@ -100,7 +103,7 @@ const dialogVisible = ref(false)
 const formRef = ref(null)
 const isEdit = ref(false)
 
-const form = reactive({ id: null, parentId: null, menuName: '', menuType: 1, path: '', component: '', perms: '', sort: 0, status: 1 })
+const form = reactive({ id: null, parentId: null, menuName: '', icon: '', menuType: 1, path: '', component: '', perms: '', sort: 0, status: 1 })
 
 const submitting = ref(false)
 
@@ -134,6 +137,7 @@ function handleEdit(row) {
     id: row.id,
     parentId: row.parentId || null,
     menuName: row.menuName,
+    icon: row.icon || '',
     menuType: row.menuType ?? 1,
     path: row.path || '',
     component: row.component || '',
@@ -146,7 +150,7 @@ function handleEdit(row) {
 
 function resetForm() {
   formRef.value?.resetFields()
-  Object.assign(form, { id: null, parentId: null, menuName: '', menuType: 1, path: '', component: '', perms: '', sort: 0, status: 1 })
+  Object.assign(form, { id: null, parentId: null, menuName: '', icon: '', menuType: 1, path: '', component: '', perms: '', sort: 0, status: 1 })
 }
 
 async function handleSubmit() {

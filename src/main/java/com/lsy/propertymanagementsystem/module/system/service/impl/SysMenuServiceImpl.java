@@ -38,6 +38,13 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDomain
         return buildMenuTree(menus, 0L);
     }
 
+    // 获取当前用户有权限的菜单树
+    @Override
+    public List<MenuVO> getUserMenuTree(Long userId) {
+        List<SysMenuDomain> menus = baseMapper.selectUserMenus(userId);
+        return buildMenuTree(menus, 0L);
+    }
+
     // 添加菜单
     @Override
     @Transactional
@@ -45,6 +52,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDomain
         SysMenuDomain menu = new SysMenuDomain();
         menu.setParentId(request.getParentId());
         menu.setMenuName(request.getMenuName());
+        menu.setIcon(request.getIcon());
         menu.setPath(request.getPath());
         menu.setComponent(request.getComponent());
         menu.setPerms(request.getPerms());
@@ -65,6 +73,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDomain
 
         menu.setParentId(request.getParentId());
         menu.setMenuName(request.getMenuName());
+        menu.setIcon(request.getIcon());
         menu.setPath(request.getPath());
         menu.setComponent(request.getComponent());
         menu.setPerms(request.getPerms());
@@ -97,6 +106,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDomain
         vo.setId(menu.getId());
         vo.setParentId(menu.getParentId());
         vo.setMenuName(menu.getMenuName());
+        vo.setIcon(menu.getIcon());
         vo.setPath(menu.getPath());
         vo.setComponent(menu.getComponent());
         vo.setPerms(menu.getPerms());
@@ -115,6 +125,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDomain
                 response.setId(menu.getId());
                 response.setParentId(menu.getParentId());
                 response.setMenuName(menu.getMenuName());
+                response.setIcon(menu.getIcon());
                 response.setPath(menu.getPath());
                 response.setComponent(menu.getComponent());
                 response.setPerms(menu.getPerms());

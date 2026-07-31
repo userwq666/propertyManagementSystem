@@ -16,6 +16,8 @@ public class SysMenuDomain {
     private Long parentId;
     // 菜单名称
     private String menuName;
+    // 菜单图标
+    private String icon;
     // 路径
     private String path;
     // 组件路径

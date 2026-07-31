@@ -11,6 +11,8 @@ public interface SysMenuService {
     List<MenuVO> getMenuTree();
     // 获取菜单列表
     List<MenuVO> getMenuList();
+    // 获取当前用户有权限的菜单树
+    List<MenuVO> getUserMenuTree(Long userId);
     // 添加菜单
     void addMenu(MenuDTO request);
     // 更新菜单

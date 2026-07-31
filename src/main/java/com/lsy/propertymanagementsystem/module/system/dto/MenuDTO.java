@@ -16,6 +16,9 @@ public class MenuDTO {
     @NotBlank(message = "菜单名称不能为空")
     private String menuName;
 
+    // 菜单图标
+    private String icon;
+
     // 路径
     private String path;
 

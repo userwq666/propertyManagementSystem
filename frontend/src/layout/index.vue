@@ -14,20 +14,20 @@
         active-text-color="#409EFF"
         router
       >
-        <template v-for="route in filteredRoutes" :key="route.path">
-          <el-sub-menu v-if="route.children && route.children.length" :index="'/' + route.path">
+        <template v-for="menu in userMenus" :key="menu.id">
+          <el-sub-menu v-if="menu.children && menu.children.length" :index="menu.path">
             <template #title>
-              <el-icon><component :is="route.meta.icon" /></el-icon>
-              <span>{{ route.meta.title }}</span>
+              <el-icon v-if="menu.icon"><component :is="menu.icon" /></el-icon>
+              <span>{{ menu.menuName }}</span>
             </template>
-            <el-menu-item v-for="child in route.children" :key="child.path" :index="'/' + route.path + '/' + child.path">
-              <el-icon><component :is="child.meta.icon" /></el-icon>
-              <span>{{ child.meta.title }}</span>
+            <el-menu-item v-for="child in menu.children" :key="child.id" :index="child.path">
+              <el-icon v-if="child.icon"><component :is="child.icon" /></el-icon>
+              <span>{{ child.menuName }}</span>
             </el-menu-item>
           </el-sub-menu>
-          <el-menu-item v-else :index="'/' + route.path">
-            <el-icon><component :is="route.meta.icon" /></el-icon>
-            <span>{{ route.meta.title }}</span>
+          <el-menu-item v-else :index="menu.path">
+            <el-icon v-if="menu.icon"><component :is="menu.icon" /></el-icon>
+            <span>{{ menu.menuName }}</span>
           </el-menu-item>
         </template>
       </el-menu>
@@ -74,50 +74,26 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { getUserMenus } from '@/api/system/menu'
 
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 const isCollapse = ref(false)
+const userMenus = ref([])
 
 // 确保用户权限已加载
 onMounted(async () => {
   if (!userStore.permissions || userStore.permissions.length === 0) {
     try { await userStore.getUserInfo() } catch (e) {}
   }
+  try {
+    const res = await getUserMenus()
+    userMenus.value = res.data || []
+  } catch (e) { userMenus.value = [] }
 })
 
-// 根据权限过滤菜单
-const filteredRoutes = computed(() => {
-  const allRoutes = router.options.routes.find(r => r.path === '/')?.children || []
-  return allRoutes.filter(r => {
-    // 父级菜单：有子菜单的，过滤子菜单
-    if (r.children) {
-      const visibleChildren = r.children.filter(child => {
-        const perm = child.meta?.permission
-        return !perm || userStore.hasPermission(perm)
-      })
-      // 如果至少有一个子菜单可见，则父菜单显示
-      return visibleChildren.length > 0
-    }
-    // 普通菜单项
-    const perm = r.meta?.permission
-    return !perm || userStore.hasPermission(perm)
-  }).map(r => {
-    if (r.children) {
-      return {
-        ...r,
-        children: r.children.filter(child => {
-          const perm = child.meta?.permission
-          return !perm || userStore.hasPermission(perm)
-        })
-      }
-    }
-    return r
-  })
-})
-
-const activeMenu = computed(() => '/' + route.path.split('/').slice(1, 3).join('/'))
+const activeMenu = computed(() => route.path)
 
 const breadcrumbs = computed(() => route.matched.filter(r => r.meta.title && r.path !== '/'))
 

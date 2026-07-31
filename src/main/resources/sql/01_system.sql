@@ -45,6 +45,7 @@ CREATE TABLE sys_menu (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     parent_id BIGINT DEFAULT 0 COMMENT '父菜单id',
     menu_name VARCHAR(50) NOT NULL COMMENT '菜单名称',
+    icon VARCHAR(50) COMMENT '菜单图标',
     path VARCHAR(255) COMMENT '前端路由',
     component VARCHAR(255) COMMENT '前端组件地址',
     perms VARCHAR(100) COMMENT '权限标识',
@@ -115,182 +116,182 @@ INSERT INTO sys_user_role (user_id, role_id) VALUES
 -- 3. 菜单权限 (menu_type: 0目录 1菜单 2按钮)
 
 -- 3.1 系统管理 (parent: 1)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(1,  0, '系统管理',   '/system',             NULL,                     NULL,                      0, 1, 1),
-(2,  1, '用户管理',   '/system/user',        'system/user/index',      'system:user:list',        1, 1, 1),
-(3,  1, '角色管理',   '/system/role',        'system/role/index',      'system:role:list',        1, 2, 1),
-(4,  1, '菜单管理',   '/system/menu',        'system/menu/index',      'system:menu:list',        1, 3, 1),
-(5,  1, '操作日志',   '/system/operlog',     'system/operlog/index',   'system:operLog:list',     1, 4, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(1,  0, '系统管理',   'Setting',     '/system',             NULL,                     NULL,                      0, 1, 1),
+(2,  1, '用户管理',   'User',        '/system/users',       'system/user/index',      'system:user:list',        1, 1, 1),
+(3,  1, '角色管理',   'Avatar',      '/system/roles',       'system/role/index',      'system:role:list',        1, 2, 1),
+(4,  1, '菜单管理',   'Menu',        '/system/menus',       'system/menu/index',      'system:menu:list',        1, 3, 1),
+(5,  1, '操作日志',   'Document',    '/system/operLogs',    'system/operlog/index',   'system:operLog:list',     1, 4, 1);
 
 -- 3.2 社区管理 (parent: 6)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(6,  0, '社区管理',   '/community',          NULL,                     NULL,                      0, 2, 1),
-(7,  6, '楼栋管理',   '/community/building', 'community/building/index','community:building:list', 1, 1, 1),
-(8,  6, '房屋管理',   '/community/house',    'community/house/index',   'community:house:list',    1, 2, 1),
-(9,  6, '业主管理',   '/community/owner',    'community/owner/index',   'community:owner:list',    1, 3, 1),
-(10, 6, '车位管理',   '/community/parking',  'community/parking/index', 'community:parking:list',  1, 4, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(6,  0, '社区管理',   'OfficeBuilding', '/community',             NULL,                     NULL,                      0, 2, 1),
+(7,  6, '楼栋管理',   'HomeFilled',     '/community/buildings',   'community/building/index','community:building:list', 1, 1, 1),
+(8,  6, '房屋管理',   'House',          '/community/houses',      'community/house/index',   'community:house:list',    1, 2, 1),
+(9,  6, '业主管理',   'UserFilled',     '/community/owners',      'community/owner/index',   'community:owner:list',    1, 3, 1),
+(10, 6, '车位管理',   'Van',            '/community/parkings',    'community/parking/index', 'community:parking:list',  1, 4, 1);
 
 -- 3.3 收费管理 (parent: 11)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(11, 0, '收费管理',   '/fee',                NULL,                     NULL,                      0, 3, 1),
-(12, 11,'收费项目',   '/fee/item',           'fee/item/index',         'fee:item:list',           1, 1, 1),
-(13, 11,'收费记录',   '/fee/record',         'fee/record/index',       'fee:record:list',         1, 2, 1),
-(14, 11,'收费通知',   '/fee/notice',         'fee/notice/index',       'fee:notice:list',         1, 3, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(11, 0, '收费管理',   'Money',   '/fee',          NULL,                     NULL,                      0, 3, 1),
+(12, 11,'收费项目',   'List',    '/fee/items',    'fee/item/index',         'fee:item:list',           1, 1, 1),
+(13, 11,'收费记录',   'Tickets', '/fee/records',  'fee/record/index',       'fee:record:list',         1, 2, 1),
+(14, 11,'收费通知',   'Bell',    '/fee/notices',  'fee/notice/index',       'fee:notice:list',         1, 3, 1);
 
 -- 3.4 报修管理 (parent: 15)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(15, 0, '报修管理',   '/repair',             NULL,                     NULL,                      0, 4, 1),
-(16, 15,'报修记录',   '/repair/record',      'repair/index',           'repair:record:list',      1, 1, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(15, 0, '报修管理',   'Tools', '/repair',       NULL,                     NULL,                      0, 4, 1),
+(16, 15,'报修工单',   'Ticket','/repair/record','repair/index',           'repair:record:list',      1, 1, 1);
 
 -- 3.5 投诉建议 (parent: 17)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(17, 0, '投诉建议',   '/complaint',          NULL,                     NULL,                      0, 5, 1),
-(18, 17,'投诉列表',   '/complaint/list',     'complaint/index',        'complaint:list:list',     1, 1, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(17, 0, '投诉建议',   'ChatLineSquare', '/complaint', NULL,                     NULL,                      0, 5, 1),
+(18, 17,'投诉列表',   'ChatDotSquare',  '/complaint', 'complaint/index',        'complaint:list:list',     1, 1, 1);
 
 -- 3.6 设备管理 (parent: 19)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(19, 0, '设备管理',   '/equipment',          NULL,                     NULL,                      0, 6, 1),
-(20, 19,'设备分类',   '/equipment/category', 'equipment/category/index','equipment:category:list', 1, 1, 1),
-(21, 19,'设备台账',   '/equipment/list',     'equipment/equipment/index','equipment:list:list',     1, 2, 1),
-(22, 19,'维保记录',   '/equipment/maintenance','equipment/maintenance/index','equipment:maintenance:list', 1, 3, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(19, 0, '设备管理',   'Monitor',   '/equipment',                NULL,                     NULL,                      0, 6, 1),
+(20, 19,'设备分类',   'Collection','/equipment/categories',     'equipment/category/index','equipment:category:list', 1, 1, 1),
+(21, 19,'设备台账',   'Cpu',       '/equipment/equipments',     'equipment/equipment/index','equipment:list:list',     1, 2, 1),
+(22, 19,'维保记录',   'Tools',     '/equipment/maintenances',   'equipment/maintenance/index','equipment:maintenance:list', 1, 3, 1);
 
 -- 3.7 巡检管理 (parent: 23)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(23, 0, '巡检管理',   '/inspection',         NULL,                     NULL,                      0, 7, 1),
-(24, 23,'巡检计划',   '/inspection/plan',    'inspection/plan/index',  'inspection:plan:list',    1, 1, 1),
-(25, 23,'巡检记录',   '/inspection/record',  'inspection/record/index','inspection:record:list',  1, 2, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(23, 0, '巡检管理',   'Search',   '/inspection',         NULL,                     NULL,                      0, 7, 1),
+(24, 23,'巡检计划',   'Calendar', '/inspection/plans',   'inspection/plan/index',  'inspection:plan:list',    1, 1, 1),
+(25, 23,'巡检记录',   'Finished', '/inspection/records', 'inspection/record/index','inspection:record:list',  1, 2, 1);
 
 -- 3.8 数据统计 (parent: 26)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(26, 0, '数据统计',   '/statistics',         NULL,                     NULL,                      0, 8, 1),
-(27, 26,'统计面板',   '/statistics/dashboard','statistics/index',      'statistics:overview:list', 1, 1, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(26, 0, '数据统计',   'DataAnalysis', '/statistics', NULL,                     NULL,                      0, 8, 1),
+(27, 26,'统计面板',   'PieChart',     '/dashboard',  'statistics/index',      'statistics:overview:list', 1, 1, 1);
 
 -- 3.9 公告通知 (parent: 28)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(28, 0, '公告通知',   '/announcement',       NULL,                     NULL,                      0, 9, 1),
-(29, 28,'公告列表',   '/announcement/list',  'announcement/index',     'announcement:list:list',   1, 1, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(28, 0, '公告通知',   'Notification', '/announcement', NULL,                     NULL,                      0, 9, 1),
+(29, 28,'公告列表',   'Document',     '/announcement', 'announcement/index',     'announcement:list:list',   1, 1, 1);
 
 -- 3.10 按钮权限
 
 -- 用户管理按钮 (parent: 2)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(30, 2, '用户新增', '', '', 'system:user:add',      2, 1, 1),
-(31, 2, '用户编辑', '', '', 'system:user:edit',     2, 2, 1),
-(32, 2, '用户删除', '', '', 'system:user:delete',   2, 3, 1),
-(33, 2, '重置密码', '', '', 'system:user:resetPwd', 2, 4, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(30, 2, '用户新增', NULL, '', '', 'system:user:add',      2, 1, 1),
+(31, 2, '用户编辑', NULL, '', '', 'system:user:edit',     2, 2, 1),
+(32, 2, '用户删除', NULL, '', '', 'system:user:delete',   2, 3, 1),
+(33, 2, '重置密码', NULL, '', '', 'system:user:resetPwd', 2, 4, 1);
 
 -- 角色管理按钮 (parent: 3)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(34, 3, '角色新增', '', '', 'system:role:add',         2, 1, 1),
-(35, 3, '角色编辑', '', '', 'system:role:edit',        2, 2, 1),
-(36, 3, '角色删除', '', '', 'system:role:delete',      2, 3, 1),
-(37, 3, '分配菜单', '', '', 'system:role:assignMenus', 2, 4, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(34, 3, '角色新增', NULL, '', '', 'system:role:add',         2, 1, 1),
+(35, 3, '角色编辑', NULL, '', '', 'system:role:edit',        2, 2, 1),
+(36, 3, '角色删除', NULL, '', '', 'system:role:delete',      2, 3, 1),
+(37, 3, '分配菜单', NULL, '', '', 'system:role:assignMenus', 2, 4, 1);
 
 -- 菜单管理按钮 (parent: 4)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(38, 4, '菜单新增', '', '', 'system:menu:add',    2, 1, 1),
-(39, 4, '菜单编辑', '', '', 'system:menu:edit',   2, 2, 1),
-(40, 4, '菜单删除', '', '', 'system:menu:delete', 2, 3, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(38, 4, '菜单新增', NULL, '', '', 'system:menu:add',    2, 1, 1),
+(39, 4, '菜单编辑', NULL, '', '', 'system:menu:edit',   2, 2, 1),
+(40, 4, '菜单删除', NULL, '', '', 'system:menu:delete', 2, 3, 1);
 
 -- 操作日志按钮 (parent: 5)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(41, 5, '日志删除', '', '', 'system:operLog:delete', 2, 1, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(41, 5, '日志删除', NULL, '', '', 'system:operLog:delete', 2, 1, 1);
 
 -- 楼栋管理按钮 (parent: 7)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(42, 7, '楼栋新增', '', '', 'community:building:add',    2, 1, 1),
-(43, 7, '楼栋编辑', '', '', 'community:building:edit',   2, 2, 1),
-(44, 7, '楼栋删除', '', '', 'community:building:delete', 2, 3, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(42, 7, '楼栋新增', NULL, '', '', 'community:building:add',    2, 1, 1),
+(43, 7, '楼栋编辑', NULL, '', '', 'community:building:edit',   2, 2, 1),
+(44, 7, '楼栋删除', NULL, '', '', 'community:building:delete', 2, 3, 1);
 
 -- 房屋管理按钮 (parent: 8)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(45, 8, '房屋新增', '', '', 'community:house:add',    2, 1, 1),
-(46, 8, '房屋编辑', '', '', 'community:house:edit',   2, 2, 1),
-(47, 8, '房屋删除', '', '', 'community:house:delete', 2, 3, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(45, 8, '房屋新增', NULL, '', '', 'community:house:add',    2, 1, 1),
+(46, 8, '房屋编辑', NULL, '', '', 'community:house:edit',   2, 2, 1),
+(47, 8, '房屋删除', NULL, '', '', 'community:house:delete', 2, 3, 1);
 
 -- 业主管理按钮 (parent: 9)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(48, 9, '业主新增', '', '', 'community:owner:add',    2, 1, 1),
-(49, 9, '业主编辑', '', '', 'community:owner:edit',   2, 2, 1),
-(50, 9, '业主删除', '', '', 'community:owner:delete', 2, 3, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(48, 9, '业主新增', NULL, '', '', 'community:owner:add',    2, 1, 1),
+(49, 9, '业主编辑', NULL, '', '', 'community:owner:edit',   2, 2, 1),
+(50, 9, '业主删除', NULL, '', '', 'community:owner:delete', 2, 3, 1);
 
 -- 车位管理按钮 (parent: 10)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(51, 10,'车位新增', '', '', 'community:parking:add',    2, 1, 1),
-(52, 10,'车位编辑', '', '', 'community:parking:edit',   2, 2, 1),
-(53, 10,'车位删除', '', '', 'community:parking:delete', 2, 3, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(51, 10,'车位新增', NULL, '', '', 'community:parking:add',    2, 1, 1),
+(52, 10,'车位编辑', NULL, '', '', 'community:parking:edit',   2, 2, 1),
+(53, 10,'车位删除', NULL, '', '', 'community:parking:delete', 2, 3, 1);
 
 -- 收费项目按钮 (parent: 12)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(54, 12,'项目新增', '', '', 'fee:item:add',    2, 1, 1),
-(55, 12,'项目编辑', '', '', 'fee:item:edit',   2, 2, 1),
-(56, 12,'项目删除', '', '', 'fee:item:delete', 2, 3, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(54, 12,'项目新增', NULL, '', '', 'fee:item:add',    2, 1, 1),
+(55, 12,'项目编辑', NULL, '', '', 'fee:item:edit',   2, 2, 1),
+(56, 12,'项目删除', NULL, '', '', 'fee:item:delete', 2, 3, 1);
 
 -- 收费记录按钮 (parent: 13)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(57, 13,'生成账单', '', '', 'fee:record:add',  2, 1, 1),
-(58, 13,'缴纳费用', '', '', 'fee:record:edit', 2, 2, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(57, 13,'生成账单', NULL, '', '', 'fee:record:add',  2, 1, 1),
+(58, 13,'缴纳费用', NULL, '', '', 'fee:record:edit', 2, 2, 1);
 
 -- 收费通知按钮 (parent: 14)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(59, 14,'通知新增', '', '', 'fee:notice:add',    2, 1, 1),
-(60, 14,'通知编辑', '', '', 'fee:notice:edit',   2, 2, 1),
-(61, 14,'通知删除', '', '', 'fee:notice:delete', 2, 3, 1),
-(62, 14,'发送通知', '', '', 'fee:notice:send',   2, 4, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(59, 14,'通知新增', NULL, '', '', 'fee:notice:add',    2, 1, 1),
+(60, 14,'通知编辑', NULL, '', '', 'fee:notice:edit',   2, 2, 1),
+(61, 14,'通知删除', NULL, '', '', 'fee:notice:delete', 2, 3, 1),
+(62, 14,'发送通知', NULL, '', '', 'fee:notice:send',   2, 4, 1);
 
 -- 报修管理按钮 (parent: 16)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(63, 16,'报修新增', '', '', 'repair:record:add',      2, 1, 1),
-(64, 16,'报修编辑', '', '', 'repair:record:edit',     2, 2, 1),
-(65, 16,'报修删除', '', '', 'repair:record:delete',   2, 3, 1),
-(66, 16,'处理报修', '', '', 'repair:record:process',  2, 4, 1),
-(67, 16,'服务评价', '', '', 'repair:record:evaluate', 2, 5, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(63, 16,'报修新增', NULL, '', '', 'repair:record:add',      2, 1, 1),
+(64, 16,'报修编辑', NULL, '', '', 'repair:record:edit',     2, 2, 1),
+(65, 16,'报修删除', NULL, '', '', 'repair:record:delete',   2, 3, 1),
+(66, 16,'处理报修', NULL, '', '', 'repair:record:process',  2, 4, 1),
+(67, 16,'服务评价', NULL, '', '', 'repair:record:evaluate', 2, 5, 1);
 
 -- 投诉建议按钮 (parent: 18)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(68, 18,'投诉新增', '', '', 'complaint:list:add',      2, 1, 1),
-(69, 18,'投诉编辑', '', '', 'complaint:list:edit',     2, 2, 1),
-(70, 18,'投诉删除', '', '', 'complaint:list:delete',   2, 3, 1),
-(71, 18,'处理投诉', '', '', 'complaint:list:process',  2, 4, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(68, 18,'投诉新增', NULL, '', '', 'complaint:list:add',      2, 1, 1),
+(69, 18,'投诉编辑', NULL, '', '', 'complaint:list:edit',     2, 2, 1),
+(70, 18,'投诉删除', NULL, '', '', 'complaint:list:delete',   2, 3, 1),
+(71, 18,'处理投诉', NULL, '', '', 'complaint:list:process',  2, 4, 1);
 
 -- 设备分类按钮 (parent: 20)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(72, 20,'分类新增', '', '', 'equipment:category:add',    2, 1, 1),
-(73, 20,'分类编辑', '', '', 'equipment:category:edit',   2, 2, 1),
-(74, 20,'分类删除', '', '', 'equipment:category:delete', 2, 3, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(72, 20,'分类新增', NULL, '', '', 'equipment:category:add',    2, 1, 1),
+(73, 20,'分类编辑', NULL, '', '', 'equipment:category:edit',   2, 2, 1),
+(74, 20,'分类删除', NULL, '', '', 'equipment:category:delete', 2, 3, 1);
 
 -- 设备台账按钮 (parent: 21)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(75, 21,'设备新增', '', '', 'equipment:list:add',    2, 1, 1),
-(76, 21,'设备编辑', '', '', 'equipment:list:edit',   2, 2, 1),
-(77, 21,'设备删除', '', '', 'equipment:list:delete', 2, 3, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(75, 21,'设备新增', NULL, '', '', 'equipment:list:add',    2, 1, 1),
+(76, 21,'设备编辑', NULL, '', '', 'equipment:list:edit',   2, 2, 1),
+(77, 21,'设备删除', NULL, '', '', 'equipment:list:delete', 2, 3, 1);
 
 -- 维保记录按钮 (parent: 22)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(78, 22,'维保新增', '', '', 'equipment:maintenance:add',    2, 1, 1),
-(79, 22,'维保编辑', '', '', 'equipment:maintenance:edit',   2, 2, 1),
-(80, 22,'维保删除', '', '', 'equipment:maintenance:delete', 2, 3, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(78, 22,'维保新增', NULL, '', '', 'equipment:maintenance:add',    2, 1, 1),
+(79, 22,'维保编辑', NULL, '', '', 'equipment:maintenance:edit',   2, 2, 1),
+(80, 22,'维保删除', NULL, '', '', 'equipment:maintenance:delete', 2, 3, 1);
 
 -- 巡检计划按钮 (parent: 24)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(81, 24,'计划新增', '', '', 'inspection:plan:add',    2, 1, 1),
-(82, 24,'计划编辑', '', '', 'inspection:plan:edit',   2, 2, 1),
-(83, 24,'计划删除', '', '', 'inspection:plan:delete', 2, 3, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(81, 24,'计划新增', NULL, '', '', 'inspection:plan:add',    2, 1, 1),
+(82, 24,'计划编辑', NULL, '', '', 'inspection:plan:edit',   2, 2, 1),
+(83, 24,'计划删除', NULL, '', '', 'inspection:plan:delete', 2, 3, 1);
 
 -- 巡检记录按钮 (parent: 25)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(84, 25,'记录新增', '', '', 'inspection:record:add',    2, 1, 1),
-(85, 25,'记录编辑', '', '', 'inspection:record:edit',   2, 2, 1),
-(86, 25,'记录删除', '', '', 'inspection:record:delete', 2, 3, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(84, 25,'记录新增', NULL, '', '', 'inspection:record:add',    2, 1, 1),
+(85, 25,'记录编辑', NULL, '', '', 'inspection:record:edit',   2, 2, 1),
+(86, 25,'记录删除', NULL, '', '', 'inspection:record:delete', 2, 3, 1);
 
 -- 公告通知按钮 (parent: 29)
-INSERT INTO sys_menu (id, parent_id, menu_name, path, component, perms, menu_type, sort, status) VALUES
-(87, 29,'公告新增', '', '', 'announcement:list:add',     2, 1, 1),
-(88, 29,'公告编辑', '', '', 'announcement:list:edit',    2, 2, 1),
-(89, 29,'公告删除', '', '', 'announcement:list:delete',  2, 3, 1),
-(90, 29,'发布公告', '', '', 'announcement:list:publish', 2, 4, 1),
-(91, 29,'撤回公告', '', '', 'announcement:list:revoke',  2, 5, 1),
-(92, 29,'置顶公告', '', '', 'announcement:list:top',     2, 6, 1);
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(87, 29,'公告新增', NULL, '', '', 'announcement:list:add',     2, 1, 1),
+(88, 29,'公告编辑', NULL, '', '', 'announcement:list:edit',    2, 2, 1),
+(89, 29,'公告删除', NULL, '', '', 'announcement:list:delete',  2, 3, 1),
+(90, 29,'发布公告', NULL, '', '', 'announcement:list:publish', 2, 4, 1),
+(91, 29,'撤回公告', NULL, '', '', 'announcement:list:revoke',  2, 5, 1),
+(92, 29,'置顶公告', NULL, '', '', 'announcement:list:top',     2, 6, 1);
 
 -- 4. 角色-菜单权限分配
 

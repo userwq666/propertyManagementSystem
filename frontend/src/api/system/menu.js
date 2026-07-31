@@ -4,6 +4,10 @@ export function getMenuTree() {
   return request({ url: '/system/menu/tree', method: 'get' })
 }
 
+export function getUserMenus() {
+  return request({ url: '/system/menu/user-tree', method: 'get' })
+}
+
 export function getMenuById(id) {
   return request({ url: `/system/menu/${id}`, method: 'get' })
 }
