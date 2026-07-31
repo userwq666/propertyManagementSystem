@@ -201,6 +201,6 @@ async function handleTop(row) {
   margin-left: 16px;
 }
 .announcement-table :deep(.el-table__row) {
-  height: 72px;
+  height: 56px;
 }
 </style>

@@ -51,6 +51,7 @@
         :data="menuTree"
         show-checkbox
         check-strictly
+        @check="handleMenuCheck"
         node-key="id"
         default-expand-all
         :props="{ label: 'menuName', children: 'children' }"
@@ -159,5 +160,24 @@ function collectAncestors(ids) {
   }
   walk(menuTree.value, [])
   return [...idSet]
+}
+
+function handleMenuCheck(node) {
+  if (!node.checked) return
+  let parent = findParentNode(menuTree.value, node.data.id)
+  const tree = menuTreeRef.value
+  while (parent) {
+    tree.setChecked(parent.id, true, false)
+    parent = findParentNode(menuTree.value, parent.id)
+  }
+}
+
+function findParentNode(nodes, id, parent = null) {
+  for (const node of nodes || []) {
+    if (node.id === id) return parent
+    const found = findParentNode(node.children, id, node)
+    if (found) return found
+  }
+  return null
 }
 </script>
