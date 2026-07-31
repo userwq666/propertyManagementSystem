@@ -223,10 +223,12 @@ onMounted(async () => {
       owners.value = oRes.data.records
     } catch (e) { /* handled */ }
   }
-  try {
-    const hRes = await getRepairHouses()
-    houses.value = hRes.data
-  } catch (e) { /* handled */ }
+  if (isAdmin.value || isOwner.value) {
+    try {
+      const hRes = await getRepairHouses()
+      houses.value = hRes.data
+    } catch (e) { /* handled */ }
+  }
   try {
     const eRes = await getRepairEquipments()
     equipments.value = eRes.data
