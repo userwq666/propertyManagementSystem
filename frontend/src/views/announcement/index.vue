@@ -63,8 +63,8 @@
         <el-descriptions-item label="状态">{{ stText(detailRow.publishStatus) }}</el-descriptions-item>
         <el-descriptions-item label="发布人">{{ detailRow.creatorName || '-' }}</el-descriptions-item>
         <el-descriptions-item label="发布时间">{{ detailRow.publishTime || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="浏览量">{{ detailRow.viewCount ?? 0 }}</el-descriptions-item>
         <el-descriptions-item label="置顶">{{ detailRow.isTop ? '是' : '否' }}</el-descriptions-item>
+        <el-descriptions-item label="预发布时间">{{ detailRow.scheduledPublishTime || '-' }}</el-descriptions-item>
         <el-descriptions-item label="封面" :span="2">
           <el-image v-if="detailRow.coverImage" :src="detailRow.coverImage" fit="cover" style="max-width:100%;max-height:120px" />
           <span v-else>-</span>
@@ -87,11 +87,17 @@
         <el-form-item label="封面图">
           <el-input v-model="form.coverImage" placeholder="封面图URL" />
         </el-form-item>
+        <el-form-item label="预发布">
+          <el-switch v-model="form.isScheduled" :active-value="1" :inactive-value="0" />
+        </el-form-item>
+        <el-form-item v-if="form.isScheduled" label="预发布时间" prop="scheduledPublishTime">
+          <el-date-picker v-model="form.scheduledPublishTime" type="datetime" placeholder="选择预发布时间" value-format="YYYY-MM-DDTHH:mm:ss" style="width:100%" />
+        </el-form-item>
         <el-form-item label="置顶">
           <el-switch v-model="form.isTop" :active-value="1" :inactive-value="0" />
         </el-form-item>
         <el-form-item label="置顶过期">
-          <el-date-picker v-model="form.topExpireTime" type="datetime" placeholder="选择日期" value-format="YYYY-MM-DD HH:mm:ss" />
+          <el-date-picker v-model="form.topExpireTime" type="datetime" placeholder="选择日期" value-format="YYYY-MM-DDTHH:mm:ss" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -115,7 +121,7 @@ const detailDialogVisible = ref(false)
 const detailRow = ref(null)
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, title: '', status: '' })
-const form = reactive({ id: null, title: '', type: 1, content: '', coverImage: '', isTop: 0, topExpireTime: '' })
+const form = reactive({ id: null, title: '', type: 1, content: '', coverImage: '', isScheduled: 0, scheduledPublishTime: '', isTop: 0, topExpireTime: '' })
 
 const submitting = ref(false)
 
@@ -139,17 +145,22 @@ async function fetchData() {
 function handleSearch() { searchForm.pageNum = 1; fetchData() }
 function resetSearch() { searchForm.title = ''; searchForm.status = ''; handleSearch() }
 function handleAdd() { isEdit.value = false; resetForm(); dialogVisible.value = true }
-function handleEdit(row) { isEdit.value = true; Object.assign(form, row); dialogVisible.value = true }
+function handleEdit(row) { isEdit.value = true; Object.assign(form, { ...row, isScheduled: row.scheduledPublishTime ? 1 : 0, scheduledPublishTime: row.scheduledPublishTime || '' }); dialogVisible.value = true }
 function handleDetail(row) { detailRow.value = row; detailDialogVisible.value = true }
-function resetForm() { formRef.value?.resetFields(); Object.assign(form, { id: null, title: '', type: 1, content: '', coverImage: '', isTop: 0, topExpireTime: '' }) }
+function resetForm() { formRef.value?.resetFields(); Object.assign(form, { id: null, title: '', type: 1, content: '', coverImage: '', isScheduled: 0, scheduledPublishTime: '', isTop: 0, topExpireTime: '' }) }
 
 async function handleSubmit() {
   if (submitting.value) return
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
+  if (form.isScheduled && !form.scheduledPublishTime) {
+    ElMessage.warning('请选择预发布时间')
+    return
+  }
   try {
-    if (isEdit.value) await updateAnnouncement(form)
-    else await addAnnouncement(form)
+    const payload = { ...form, scheduledPublishTime: form.isScheduled ? form.scheduledPublishTime : null }
+    if (isEdit.value) await updateAnnouncement(payload)
+    else await addAnnouncement(payload)
     ElMessage.success(isEdit.value ? '编辑成功' : '新增成功')
     dialogVisible.value = false
     fetchData()

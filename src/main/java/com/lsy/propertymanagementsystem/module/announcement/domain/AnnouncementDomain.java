@@ -19,6 +19,7 @@ public class AnnouncementDomain {
     private LocalDateTime topExpireTime;
     private PublishStatus publishStatus;
     private LocalDateTime publishTime;
+    private LocalDateTime scheduledPublishTime;
     private Long creatorId;
     private Integer viewCount;
     @TableField(fill = FieldFill.INSERT)

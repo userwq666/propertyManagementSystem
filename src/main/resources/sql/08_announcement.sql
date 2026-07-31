@@ -16,6 +16,7 @@ CREATE TABLE announcement (
     top_expire_time DATETIME COMMENT '置顶过期时间',
     publish_status TINYINT NOT NULL DEFAULT 0 COMMENT '发布状态：0草稿 1发布 2下架',
     publish_time DATETIME COMMENT '发布时间',
+    scheduled_publish_time DATETIME COMMENT '预发布时间',
     creator_id BIGINT COMMENT '创建人ID',
     view_count INT DEFAULT 0 COMMENT '浏览次数',
     create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

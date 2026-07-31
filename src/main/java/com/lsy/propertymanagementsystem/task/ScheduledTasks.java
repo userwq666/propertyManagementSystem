@@ -1,6 +1,7 @@
 package com.lsy.propertymanagementsystem.task;
 
 import com.lsy.propertymanagementsystem.common.utils.JwtUtils;
+import com.lsy.propertymanagementsystem.module.announcement.service.AnnouncementService;
 import com.lsy.propertymanagementsystem.module.fee.service.FeeRecordService;
 import com.lsy.propertymanagementsystem.module.inspection.service.InspectionPlanService;
 import com.lsy.propertymanagementsystem.module.repair.service.RepairRecordService;
@@ -20,6 +21,9 @@ public class ScheduledTasks {
     @Autowired
     private RepairRecordService repairRecordService;
 
+    @Autowired
+    private AnnouncementService announcementService;
+
     @Scheduled(cron = "0 0 1 * * ?")
     public void markOverdueFees() {
         feeRecordService.markOverdue();
@@ -38,5 +42,10 @@ public class ScheduledTasks {
     @Scheduled(cron = "0 0 * * * ?")
     public void autoCompleteExpiredRepairs() {
         repairRecordService.autoCompleteExpired();
+    }
+
+    @Scheduled(cron = "0 */5 * * * ?")
+    public void publishScheduledAnnouncements() {
+        announcementService.publishScheduled();
     }
 }

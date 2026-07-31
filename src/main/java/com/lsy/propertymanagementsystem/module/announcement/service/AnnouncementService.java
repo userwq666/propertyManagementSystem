@@ -12,4 +12,5 @@ public interface AnnouncementService {
     Page<AnnouncementVO> page(int pageNum, int pageSize, String title, Integer status);
     void updateStatus(Long id, Integer status);
     void updateIsTop(Long id, Integer isTop);
+    int publishScheduled();
 }

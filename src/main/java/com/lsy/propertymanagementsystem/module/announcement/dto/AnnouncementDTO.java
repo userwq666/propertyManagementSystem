@@ -25,5 +25,6 @@ public class AnnouncementDTO {
     private Integer isTop;
     private LocalDateTime topExpireTime;
     private LocalDateTime publishTime;
+    private LocalDateTime scheduledPublishTime;
     private Long creatorId;
 }

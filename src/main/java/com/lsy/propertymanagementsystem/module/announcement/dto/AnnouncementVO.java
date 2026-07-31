@@ -17,6 +17,7 @@ public class AnnouncementVO {
     private LocalDateTime topExpireTime;
     private PublishStatus publishStatus;
     private LocalDateTime publishTime;
+    private LocalDateTime scheduledPublishTime;
     private Long creatorId;
     private String creatorName;
     private Integer viewCount;

@@ -1,6 +1,7 @@
 package com.lsy.propertymanagementsystem.module.announcement.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lsy.propertymanagementsystem.common.exception.BusinessException;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +69,7 @@ public class AnnouncementServiceImpl extends ServiceImpl<AnnouncementMapper, Ann
         AnnouncementDomain domain = new AnnouncementDomain();
         BeanUtils.copyProperties(dto, domain);
         domain.prepareAdd();
+        domain.setCreatorId(SecurityUtils.getCurrentUserId());
         this.save(domain);
     }
 
@@ -84,6 +87,10 @@ public class AnnouncementServiceImpl extends ServiceImpl<AnnouncementMapper, Ann
         existing.setType(domain.getType());
         existing.setPublishTime(domain.getPublishTime());
         existing.setTopExpireTime(domain.getTopExpireTime());
+        existing.setScheduledPublishTime(domain.getScheduledPublishTime());
+        if (existing.getScheduledPublishTime() != null && existing.getPublishStatus() == PublishStatus.DRAFT) {
+            existing.setPublishStatus(PublishStatus.DRAFT);
+        }
         this.updateById(existing);
     }
 
@@ -124,6 +131,25 @@ public class AnnouncementServiceImpl extends ServiceImpl<AnnouncementMapper, Ann
             announcement.cancelTop();
         }
         this.updateById(announcement);
+    }
+
+    @Override
+    @Transactional
+    public int publishScheduled() {
+        List<AnnouncementDomain> scheduledList = this.list(new LambdaQueryWrapper<AnnouncementDomain>()
+                .eq(AnnouncementDomain::getPublishStatus, PublishStatus.DRAFT)
+                .isNotNull(AnnouncementDomain::getScheduledPublishTime)
+                .le(AnnouncementDomain::getScheduledPublishTime, LocalDateTime.now()));
+        int count = 0;
+        for (AnnouncementDomain announcement : scheduledList) {
+            baseMapper.update(null, new LambdaUpdateWrapper<AnnouncementDomain>()
+                    .eq(AnnouncementDomain::getId, announcement.getId())
+                    .set(AnnouncementDomain::getPublishStatus, PublishStatus.PUBLISHED)
+                    .set(AnnouncementDomain::getPublishTime, LocalDateTime.now())
+                    .set(AnnouncementDomain::getScheduledPublishTime, null));
+            count++;
+        }
+        return count;
     }
 
     private boolean isManager() {
