@@ -127,7 +127,11 @@ const fillForm = reactive({ status: 1, abnormalDesc: '', remark: '', reason: '' 
 const userStore = useUserStore()
 
 const freqText = (f) => ({ 1:'每天', 2:'每周', 3:'每月', 4:'每季度', 5:'每半年', 6:'每年', 7:'一次性' }[f] || '')
-const isManager = computed(() => userStore.roles.includes('超级管理员') || userStore.roles.includes('物业管理员') || userStore.userInfo.roleName === '超级管理员' || userStore.userInfo.roleName === '物业管理员')
+const isManager = computed(() => {
+  const roles = userStore.roles || userStore.userInfo.roles || []
+  return roles.includes('超级管理员') || roles.includes('物业管理员')
+    || userStore.userInfo.roleName === '超级管理员' || userStore.userInfo.roleName === '物业管理员'
+})
 const resultText = (s) => ({ 1: '正常', 2: '异常', 3: '未巡检' }[s] || '-')
 
 const periods = computed(() => currentPlan.value ? buildPeriods(currentPlan.value) : [])
