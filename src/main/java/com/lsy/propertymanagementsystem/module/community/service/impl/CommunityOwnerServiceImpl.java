@@ -68,6 +68,7 @@ public class CommunityOwnerServiceImpl extends ServiceImpl<CommunityOwnerMapper,
     @Override
     @Transactional
     public void addOwner(CommunityOwnerDTO owner) {
+        validateUserAssociation(owner.getUserId(), null);
         CommunityOwnerDomain domain = new CommunityOwnerDomain();
         BeanUtils.copyProperties(owner, domain);
         this.save(domain);
@@ -80,8 +81,25 @@ public class CommunityOwnerServiceImpl extends ServiceImpl<CommunityOwnerMapper,
         if (existing == null) {
             throw new BusinessException("业主不存在");
         }
+        validateUserAssociation(owner.getUserId(), existing.getId());
         BeanUtils.copyProperties(owner, existing);
         this.updateById(existing);
+    }
+
+    private void validateUserAssociation(Long userId, Long excludeOwnerId) {
+        if (userId == null) {
+            throw new BusinessException("请选择关联用户，每个业主必须有登录账号");
+        }
+        SysUserDomain user = sysUserMapper.selectById(userId);
+        if (user == null) {
+            throw new BusinessException("关联的用户账号不存在");
+        }
+        LambdaQueryWrapper<CommunityOwnerDomain> wrapper = new LambdaQueryWrapper<CommunityOwnerDomain>()
+                .eq(CommunityOwnerDomain::getUserId, userId)
+                .ne(excludeOwnerId != null, CommunityOwnerDomain::getId, excludeOwnerId);
+        if (this.count(wrapper) > 0) {
+            throw new BusinessException("该用户账号已关联其他业主，不能重复使用");
+        }
     }
 
     @Override

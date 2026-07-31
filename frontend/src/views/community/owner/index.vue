@@ -24,6 +24,7 @@
       </div>
 
       <el-table :data="tableData" border stripe v-loading="loading">
+        <el-table-column prop="username" label="关联账号" width="140" />
         <el-table-column prop="name" label="姓名" width="120" />
         <el-table-column prop="phone" label="电话" width="140" />
         <el-table-column prop="idCard" label="身份证号" width="200" />
@@ -62,7 +63,7 @@
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="600px" @close="resetForm">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <el-form-item label="关联用户" prop="userId">
-          <el-select v-model="form.userId" placeholder="请选择关联用户（可选）" clearable filterable style="width: 100%" @change="onUserSelect">
+          <el-select v-model="form.userId" placeholder="请选择关联用户" filterable style="width: 100%" @change="onUserSelect">
             <el-option v-for="u in ownerUserList" :key="u.id" :label="u.username + '（' + (u.realName || '未设置') + '）'" :value="u.id" />
           </el-select>
         </el-form-item>
@@ -132,6 +133,7 @@ function ownerTypeLabel(v) { return ownerTypeMap[v] || '未知' }
 function ownerTypeTag(v) { return ownerTypeTagMap[v] || '' }
 
 const rules = {
+  userId: [{ required: true, message: '请选择关联用户', trigger: 'change' }],
   name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
   phone: [{ required: true, message: '请输入电话', trigger: 'blur' }],
   idCard: [{ required: true, message: '请输入身份证号', trigger: 'blur' }]
