@@ -218,6 +218,9 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
                 if (domain.getStatus() != RepairStatus.PROCESSING) {
                     throw new BusinessException("只有处理中的报修才能结单");
                 }
+                if (equipmentId != null && domain.getEquipmentId() == null) {
+                    throw new BusinessException("该报修未关联设备，结单时不能选择设备");
+                }
                 domain.complete(handleContent, null);
                 Long linkedEquipmentId = equipmentId != null ? equipmentId : domain.getEquipmentId();
                 if (linkedEquipmentId != null) {

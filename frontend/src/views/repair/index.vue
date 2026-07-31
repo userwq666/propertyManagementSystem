@@ -143,8 +143,8 @@
     <!-- 结单 -->
     <el-dialog title="结单" v-model="completeDialogVisible" width="500px">
       <el-form label-width="100px">
-        <el-form-item label="关联设备">
-          <el-select v-model="completeForm.equipmentId" placeholder="请选择（可空）" filterable clearable>
+        <el-form-item label="关联设备" v-if="completeForm.hasEquipment" required>
+          <el-select v-model="completeForm.equipmentId" placeholder="请选择关联设备" filterable>
             <el-option v-for="e in equipments" :key="e.id" :label="e.equipmentName" :value="e.id" />
           </el-select>
         </el-form-item>
@@ -209,7 +209,7 @@ const userStore = useUserStore()
 const searchForm = reactive({ pageNum: 1, pageSize: 10, ownerId: '', status: '' })
 const form = reactive({ id: null, ownerId: null, houseId: null, equipmentId: null, repairType: '水电', repairContent: '', repairImages: '', remark: '' })
 const assignForm = reactive({ handlerId: null })
-const completeForm = reactive({ equipmentId: null, handleContent: '' })
+const completeForm = reactive({ equipmentId: null, hasEquipment: false, handleContent: '' })
 const ratingForm = reactive({ score: 5, content: '' })
 
 const submitting = ref(false)
@@ -341,12 +341,17 @@ async function handleAccept(row) {
 function handleComplete(row) {
   currentRow.value = row
   completeForm.equipmentId = row.equipmentId || null
+  completeForm.hasEquipment = !!row.equipmentId
   completeForm.handleContent = ''
   completeDialogVisible.value = true
 }
 async function submitComplete() {
+  if (completeForm.hasEquipment && !completeForm.equipmentId) {
+    ElMessage.warning('该报修已关联设备，结单时必须选择关联设备')
+    return
+  }
   try {
-    await updateRepairStatus({ id: currentRow.value.id, status: 2, equipmentId: completeForm.equipmentId || undefined, handleContent: completeForm.handleContent })
+    await updateRepairStatus({ id: currentRow.value.id, status: 2, equipmentId: completeForm.hasEquipment ? completeForm.equipmentId : undefined, handleContent: completeForm.handleContent })
     ElMessage.success('结单成功，等待确认')
     completeDialogVisible.value = false
     fetchData()
