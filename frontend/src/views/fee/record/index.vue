@@ -1,12 +1,12 @@
 <template>
   <div>
     <el-form :inline="true" :model="searchForm" class="search-form">
-      <el-form-item label="业主">
+      <el-form-item v-if="!isOwnerRole" label="业主">
         <el-select v-model="searchForm.ownerId" placeholder="请选择业主" clearable>
           <el-option v-for="o in ownerList.filter(i => i.id != null)" :key="o.id" :label="o.name" :value="o.id" />
         </el-select>
       </el-form-item>
-      <el-form-item label="房屋">
+      <el-form-item v-if="!isOwnerRole" label="房屋">
         <el-select v-model="searchForm.houseId" placeholder="请选择房屋" clearable>
           <el-option v-for="h in houseList.filter(i => i.id != null)" :key="h.id" :label="h.roomNo" :value="h.id" />
         </el-select>
@@ -88,12 +88,15 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getFeeRecordPage, payFeeRecord, generateFeeRecords } from '@/api/fee/record'
 import { getOwnerPage } from '@/api/community/owner'
 import { getHousePage } from '@/api/community/house'
+import { useUserStore } from '@/stores/user'
 
+const userStore = useUserStore()
+const isOwnerRole = computed(() => (userStore.roles || []).includes('owner'))
 const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)
@@ -111,10 +114,12 @@ const payText = (t) => ({ 'CASH': '现金', 'WECHAT': '微信', 'ALIPAY': '支�
 
 onMounted(async () => {
   fetchData()
-  const oRes = await getOwnerPage({ pageNum: 1, pageSize: 200 })
-  ownerList.value = oRes.data.records
-  const hRes = await getHousePage({ pageNum: 1, pageSize: 200 })
-  houseList.value = hRes.data.records
+  if (!isOwnerRole.value) {
+    const oRes = await getOwnerPage({ pageNum: 1, pageSize: 200 })
+    ownerList.value = oRes.data.records
+    const hRes = await getHousePage({ pageNum: 1, pageSize: 200 })
+    houseList.value = hRes.data.records
+  }
 })
 
 async function fetchData() {

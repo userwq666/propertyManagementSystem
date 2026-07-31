@@ -100,7 +100,8 @@ INSERT INTO sys_role (id, role_name, role_key, remark) VALUES
 (2, '物业管理员', 'property_admin',  '社区日常业务管理'),
 (3, '业主',       'owner',           '个人线上服务'),
 (4, '维修工',     'repair_worker',   '处理报修工单'),
-(5, '巡检员',     'inspector',       '设备巡检与记录');
+(5, '巡检员',     'inspector',       '设备巡检与记录'),
+(6, '财务',       'finance',         '负责收费记录管理');
 
 -- 2. 系统用户 (密码: 123456)
 INSERT INTO sys_user (id, username, password, real_name, phone, status) VALUES
@@ -445,6 +446,11 @@ INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (3506,5,67);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (3501,5,84);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (3502,5,85);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (3503,5,86);
+
+-- 财务 -> 收费管理（项目查看、记录管理）
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES
+(6,11),(6,12),(6,13),  -- 收费管理目录、收费项目、收费记录
+(6,57),(6,58);  -- 收费记录：生成账单、缴纳费用
 
 SET FOREIGN_KEY_CHECKS = 1;
 

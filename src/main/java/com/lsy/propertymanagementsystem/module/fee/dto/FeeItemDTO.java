@@ -21,6 +21,12 @@ public class FeeItemDTO {
 
     private Integer cycleType;
 
+    private Integer dueDay;
+
+    private String noticeRoles;
+
+    private Integer totalTimes;
+
     private String description;
 
     private Integer status;

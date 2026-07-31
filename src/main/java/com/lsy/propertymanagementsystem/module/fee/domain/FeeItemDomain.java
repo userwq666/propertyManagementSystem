@@ -18,6 +18,9 @@ public class FeeItemDomain {
     private BigDecimal unitPrice;
     private String unit;
     private FeeCycleType cycleType;
+    private Integer dueDay;
+    private String noticeRoles;
+    private Integer totalTimes;
     private String description;
     private EnableStatus status;
     @TableField(fill = FieldFill.INSERT)

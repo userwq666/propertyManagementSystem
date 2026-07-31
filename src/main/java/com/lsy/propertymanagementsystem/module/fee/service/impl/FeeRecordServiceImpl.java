@@ -72,9 +72,11 @@ public class FeeRecordServiceImpl implements FeeRecordService {
     @Override
     public Page<FeeRecordVO> page(int pageNum, int pageSize, Long ownerId, Long houseId, Integer status) {
         LambdaQueryWrapper<FeeRecordDomain> wrapper = new LambdaQueryWrapper<>();
-        if (ownerId != null) {
-                        // 安全控制：业主角色只能查看自己的欠费，管理员可查看指定业主
-            wrapper.eq(FeeRecordDomain::getOwnerId, SecurityUtils.isOwner() ? SecurityUtils.getCurrentUserId() : ownerId);
+        if (SecurityUtils.isOwner()) {
+            // 业主只能查看自己的缴费记录
+            wrapper.eq(FeeRecordDomain::getOwnerId, getCurrentOwnerId());
+        } else if (ownerId != null) {
+            wrapper.eq(FeeRecordDomain::getOwnerId, ownerId);
         }
         if (houseId != null) {
             wrapper.eq(FeeRecordDomain::getHouseId, houseId);
@@ -112,9 +114,10 @@ public class FeeRecordServiceImpl implements FeeRecordService {
     public Map<String, Object> getStatistics(Long ownerId, Long houseId) {
         LambdaQueryWrapper<FeeRecordDomain> wrapper = new LambdaQueryWrapper<>();
         wrapper.in(FeeRecordDomain::getStatus, FeeRecordStatus.UNPAID, FeeRecordStatus.OVERDUE);
-        if (ownerId != null) {
-                        // 安全控制：业主角色只能查看自己的欠费，管理员可查看指定业主
-            wrapper.eq(FeeRecordDomain::getOwnerId, SecurityUtils.isOwner() ? SecurityUtils.getCurrentUserId() : ownerId);
+        if (SecurityUtils.isOwner()) {
+            wrapper.eq(FeeRecordDomain::getOwnerId, getCurrentOwnerId());
+        } else if (ownerId != null) {
+            wrapper.eq(FeeRecordDomain::getOwnerId, ownerId);
         }
         if (houseId != null) {
             wrapper.eq(FeeRecordDomain::getHouseId, houseId);
@@ -130,6 +133,13 @@ public class FeeRecordServiceImpl implements FeeRecordService {
         result.put("totalArrears", totalArrears);
         result.put("count", arrearsList.size());
         return result;
+    }
+
+    private Long getCurrentOwnerId() {
+        CommunityOwnerDomain owner = communityOwnerMapper.selectOne(
+                new LambdaQueryWrapper<CommunityOwnerDomain>()
+                        .eq(CommunityOwnerDomain::getUserId, SecurityUtils.getCurrentUserId()));
+        return owner != null ? owner.getId() : -1L;
     }
 
     @Override

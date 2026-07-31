@@ -36,6 +36,15 @@
         <el-table-column label="周期" width="80">
           <template #default="{ row }">{{ cycleTypeLabel(row.cycleType) }}</template>
         </el-table-column>
+        <el-table-column prop="dueDay" label="最迟收款日" width="100">
+          <template #default="{ row }">{{ row.dueDay ? '每月' + row.dueDay + '日' : '-' }}</template>
+        </el-table-column>
+        <el-table-column label="通知角色" width="140">
+          <template #default="{ row }">{{ noticeRolesText(row.noticeRoles) }}</template>
+        </el-table-column>
+        <el-table-column prop="totalTimes" label="收费次数" width="90">
+          <template #default="{ row }">{{ row.totalTimes ? row.totalTimes + ' 次' : '长期' }}</template>
+        </el-table-column>
         <el-table-column label="状态" width="80">
           <template #default="{ row }">
             <el-tag :type="row.status === 0 ? 'success' : 'danger'">{{ row.status === 0 ? '启用' : '停用' }}</el-tag>
@@ -76,11 +85,12 @@
         <el-form-item label="类型" prop="itemType">
           <el-select v-model="form.itemType" placeholder="请选择类型" style="width: 100%">
             <el-option label="物业费" :value="1" />
+            <el-option label="车位费" :value="2" />
             <el-option label="水费" :value="3" />
             <el-option label="电费" :value="4" />
             <el-option label="燃气费" :value="5" />
-            <el-option label="停车费" :value="2" />
-            <el-option label="其他" :value="5" />
+            <el-option label="暖气费" :value="6" />
+            <el-option label="其他" :value="9" />
           </el-select>
         </el-form-item>
         <el-form-item label="单价" prop="unitPrice">
@@ -91,11 +101,26 @@
         </el-form-item>
         <el-form-item label="周期" prop="cycleType">
           <el-select v-model="form.cycleType" placeholder="请选择周期" style="width: 100%">
-            <el-option label="月" :value="1" />
-            <el-option label="季" :value="2" />
-            <el-option label="年" :value="4" />
+            <el-option label="按月" :value="1" />
+            <el-option label="按季" :value="2" />
+            <el-option label="按半年" :value="3" />
+            <el-option label="按年" :value="4" />
             <el-option label="一次性" :value="5" />
           </el-select>
+        </el-form-item>
+        <el-form-item label="最迟收款日" prop="dueDay">
+          <el-input-number v-model="form.dueDay" :min="1" :max="31" placeholder="每月第几天截止" style="width: 100%" />
+          <div class="form-tip">每个收费周期内的截止日期（如 15 = 每月15日）</div>
+        </el-form-item>
+        <el-form-item label="通知角色" prop="noticeRoles">
+          <el-select v-model="form.noticeRoles" multiple placeholder="选择通知角色" style="width: 100%">
+            <el-option v-for="r in roleList" :key="r.id" :label="r.roleName" :value="r.roleKey" />
+          </el-select>
+          <div class="form-tip">按角色身份通知，如选择"业主"则通知业主缴费</div>
+        </el-form-item>
+        <el-form-item label="收费次数" prop="totalTimes">
+          <el-input-number v-model="form.totalTimes" :min="0" placeholder="0=长期周期收费" style="width: 100%" />
+          <div class="form-tip">0 表示长期周期性收费；填写 N 表示仅收费 N 次</div>
         </el-form-item>
         <el-form-item label="描述" prop="description">
           <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入描述" />
@@ -121,6 +146,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { addFeeItem, updateFeeItem, deleteFeeItem, getFeeItemPage, updateFeeItemStatus } from '@/api/fee/item'
+import { getRoleList } from '@/api/system/role'
 
 const loading = ref(false)
 const tableData = ref([])
@@ -128,9 +154,10 @@ const total = ref(0)
 const dialogVisible = ref(false)
 const formRef = ref(null)
 const isEdit = ref(false)
+const roleList = ref([])
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, itemName: '', status: null })
-const form = reactive({ id: null, itemName: '', itemType: 0, unitPrice: null, unit: '', cycleType: 1, description: '', status: 0 })
+const form = reactive({ id: null, itemName: '', itemType: 1, unitPrice: null, unit: '', cycleType: 1, dueDay: null, noticeRoles: [], totalTimes: 0, description: '', status: 0 })
 
 const submitting = ref(false)
 
@@ -144,12 +171,25 @@ const rules = {
   cycleType: [{ required: true, message: '请选择周期', trigger: 'change' }]
 }
 
-const itemTypeMap = { 0: '物业费', 1: '水费', 2: '电费', 3: '燃气费', 4: '停车费', 5: '其他' }
-const cycleTypeMap = { 0: '月', 1: '季', 2: '年', 3: '一次性' }
+const itemTypeMap = { 1: '物业费', 2: '车位费', 3: '水费', 4: '电费', 5: '燃气费', 6: '暖气费', 9: '其他' }
+const cycleTypeMap = { 1: '按月', 2: '按季', 3: '按半年', 4: '按年', 5: '一次性' }
 function itemTypeLabel(t) { return itemTypeMap[t] || '未知' }
 function cycleTypeLabel(t) { return cycleTypeMap[t] || '未知' }
+function noticeRolesText(roles) {
+  if (!roles) return '-'
+  const keys = String(roles).split(',')
+  const nameMap = Object.fromEntries(roleList.value.map(r => [r.roleKey, r.roleName]))
+  return keys.map(k => nameMap[k] || k).join('、')
+}
 
-onMounted(() => fetchData())
+onMounted(() => { fetchData(); loadRoles() })
+
+async function loadRoles() {
+  try {
+    const res = await getRoleList()
+    roleList.value = res.data || []
+  } catch (e) { /* ignore */ }
+}
 
 async function fetchData() {
   loading.value = true
@@ -166,8 +206,12 @@ function handleSearch() { searchForm.pageNum = 1; fetchData() }
 function resetSearch() { searchForm.itemName = ''; searchForm.status = null; handleSearch() }
 
 function handleAdd() { isEdit.value = false; resetForm(); dialogVisible.value = true }
-function handleEdit(row) { isEdit.value = true; Object.assign(form, row); dialogVisible.value = true }
-function resetForm() { formRef.value?.resetFields(); form.id = null; form.itemType = 0; form.cycleType = 0; form.status = 0 }
+function handleEdit(row) {
+  isEdit.value = true
+  Object.assign(form, { ...row, noticeRoles: row.noticeRoles ? String(row.noticeRoles).split(',') : [] })
+  dialogVisible.value = true
+}
+function resetForm() { formRef.value?.resetFields(); form.id = null; form.itemType = 1; form.cycleType = 1; form.dueDay = null; form.noticeRoles = []; form.totalTimes = 0; form.status = 0 }
 
 async function handleSubmit() {
   if (submitting.value) return
@@ -202,3 +246,7 @@ async function handleToggleStatus(row) {
   } catch (e) { /* handled */ }
 }
 </script>
+
+<style scoped>
+.form-tip { font-size: 12px; color: #909399; line-height: 1.6; margin-top: 4px; }
+</style>
