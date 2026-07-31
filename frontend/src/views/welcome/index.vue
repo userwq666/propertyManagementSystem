@@ -9,7 +9,7 @@
     </div>
 
     <el-row :gutter="16">
-      <el-col :span="10">
+      <el-col :span="10" class="panel-col">
         <el-card shadow="never" class="panel-card">
           <template #header>今日天气</template>
           <div v-if="weather" class="weather-body">
@@ -24,7 +24,7 @@
           <el-empty v-else description="天气加载失败" :image-size="60" />
         </el-card>
       </el-col>
-      <el-col :span="14">
+      <el-col :span="14" class="panel-col">
         <el-card shadow="never" class="panel-card">
           <template #header>最新公告</template>
           <div v-if="latest" class="notice-body" @click="router.push('/announcement')">
@@ -115,12 +115,20 @@ async function loadWeather() {
 .welcome-title { margin: 0 0 8px; font-size: 24px; font-weight: 600; }
 .welcome-sub { margin: 0; opacity: 0.9; font-size: 14px; }
 .welcome-date { font-size: 14px; opacity: 0.95; }
-.panel-card { border-radius: 8px; min-height: 220px; }
+.panel-col { display: flex; }
+.panel-card { border-radius: 8px; flex: 1; height: 240px; }
+.panel-card :deep(.el-card__body) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100% - 53px);
+  padding: 16px 24px;
+}
 .weather-body { text-align: center; padding: 8px 0; }
 .weather-temp { font-size: 44px; font-weight: 600; color: #409eff; }
 .weather-desc { margin: 8px 0; font-size: 16px; color: #606266; }
 .weather-meta { display: flex; justify-content: center; gap: 16px; margin-top: 6px; font-size: 13px; color: #909399; }
-.notice-body { cursor: pointer; }
+.notice-body { cursor: pointer; width: 100%; }
 .notice-title { font-size: 18px; font-weight: 600; color: #303133; }
 .notice-meta { display: flex; align-items: center; gap: 12px; margin: 10px 0; font-size: 13px; color: #909399; }
 .notice-content {
