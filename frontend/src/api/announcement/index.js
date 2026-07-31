@@ -20,6 +20,10 @@ export function getAnnouncementPage(params) {
   return request({ url: '/announcement/page', method: 'get', params })
 }
 
+export function getAnnouncementLatest() {
+  return request({ url: '/announcement/latest', method: 'get' })
+}
+
 export function updateAnnouncementStatus(params) {
   return request({ url: '/announcement/status', method: 'put', params })
 }

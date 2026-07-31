@@ -13,4 +13,5 @@ public interface AnnouncementService {
     void updateStatus(Long id, Integer status);
     void updateIsTop(Long id, Integer isTop);
     int publishScheduled();
+    AnnouncementVO getLatestPublished();
 }

@@ -5,9 +5,9 @@ import { useUserStore } from '@/stores/user'
 const routes = [
   { path: '/login', name: 'Login', component: () => import('@/views/login/index.vue'), meta: { title: '登录' } },
   {
-    path: '/', component: () => import('@/layout/index.vue'), redirect: '/announcement',
+    path: '/', component: () => import('@/layout/index.vue'), redirect: '/dashboard',
     children: [
-      { path: 'dashboard', name: 'Dashboard', component: () => import('@/views/welcome/index.vue'), meta: { title: '首页', icon: 'HomeFilled', permission: 'statistics:overview:list' } },
+      { path: 'dashboard', name: 'Dashboard', component: () => import('@/views/welcome/index.vue'), meta: { title: '首页', icon: 'HomeFilled' } },
       { path: 'system', name: 'System', meta: { title: '系统管理', icon: 'Setting' },
         children: [
           { path: 'roles', name: 'SystemRoles', component: () => import('@/views/system/role/index.vue'), meta: { title: '角色管理', icon: 'Avatar', permission: 'system:role:list' } },

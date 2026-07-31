@@ -55,6 +55,12 @@ public class AnnouncementController {
         return Result.success(page);
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/latest")
+    public Result latest() {
+        return Result.success(announcementService.getLatestPublished());
+    }
+
     @PreAuthorize("hasAuthority('announcement:list:edit')")
     @PutMapping("/status")
     public Result updateStatus(@RequestParam Long id, @RequestParam Integer status) {

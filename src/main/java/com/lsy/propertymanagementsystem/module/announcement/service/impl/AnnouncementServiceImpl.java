@@ -152,6 +152,15 @@ public class AnnouncementServiceImpl extends ServiceImpl<AnnouncementMapper, Ann
         return count;
     }
 
+    @Override
+    public AnnouncementVO getLatestPublished() {
+        AnnouncementDomain domain = this.getOne(new LambdaQueryWrapper<AnnouncementDomain>()
+                .eq(AnnouncementDomain::getPublishStatus, PublishStatus.PUBLISHED)
+                .orderByDesc(AnnouncementDomain::getPublishTime)
+                .last("LIMIT 1"));
+        return domain == null ? null : convertToVO(domain);
+    }
+
     private boolean isManager() {
         String roleKey = SecurityUtils.getRoleKey();
         return "admin".equals(roleKey) || "property_admin".equals(roleKey);
