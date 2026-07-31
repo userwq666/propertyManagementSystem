@@ -131,6 +131,7 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         }
         domain.setRepairNo("BX" + UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase());
         domain.prepareAdd();
+        domain.setCreatorId(SecurityUtils.getCurrentUserId());
         this.save(domain);
         if (domain.getEquipmentId() != null) {
             markEquipmentFault(domain.getEquipmentId());
@@ -369,6 +370,7 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         Set<Long> houseIds = records.stream().map(RepairRecordDomain::getHouseId).filter(Objects::nonNull).collect(Collectors.toSet());
         Set<Long> handlerIds = records.stream().map(RepairRecordDomain::getHandlerId).filter(Objects::nonNull).collect(Collectors.toSet());
         Set<Long> equipmentIds = records.stream().map(RepairRecordDomain::getEquipmentId).filter(Objects::nonNull).collect(Collectors.toSet());
+        Set<Long> creatorIds = records.stream().map(RepairRecordDomain::getCreatorId).filter(Objects::nonNull).collect(Collectors.toSet());
 
         Map<Long, CommunityOwnerDomain> ownerMap = !ownerIds.isEmpty()
                 ? communityOwnerMapper.selectBatchIds(ownerIds).stream()
@@ -381,6 +383,10 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         Map<Long, String> handlerNameMap = !handlerIds.isEmpty()
                 ? sysUserMapper.selectBatchIds(handlerIds).stream()
                     .collect(Collectors.toMap(SysUserDomain::getId, SysUserDomain::getRealName))
+                : new HashMap<>();
+        Map<Long, SysUserDomain> creatorMap = !creatorIds.isEmpty()
+                ? sysUserMapper.selectBatchIds(creatorIds).stream()
+                    .collect(Collectors.toMap(SysUserDomain::getId, u -> u))
                 : new HashMap<>();
         Map<Long, String> equipmentNameMap = !equipmentIds.isEmpty()
                 ? equipmentMapper.selectBatchIds(equipmentIds).stream()
@@ -402,6 +408,11 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
             }
             if (domain.getHandlerId() != null) {
                 vo.setHandlerName(handlerNameMap.get(domain.getHandlerId()));
+            }
+            SysUserDomain creator = creatorMap.get(domain.getCreatorId());
+            if (creator != null) {
+                vo.setCreatorName(creator.getRealName());
+                vo.setCreatorPhone(creator.getPhone());
             }
             if (domain.getEquipmentId() != null) {
                 vo.setEquipmentName(equipmentNameMap.get(domain.getEquipmentId()));

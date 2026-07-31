@@ -67,7 +67,7 @@
       <el-descriptions :column="2" border v-if="detailRow">
         <el-descriptions-item label="报修单号">{{ detailRow.repairNo }}</el-descriptions-item>
         <el-descriptions-item label="状态">{{ statusText(detailRow.status) }}</el-descriptions-item>
-        <el-descriptions-item label="业主">{{ detailRow.ownerName ? detailRow.ownerName + (detailRow.ownerPhone ? '（' + detailRow.ownerPhone + '）' : '') : '系统代报' }}</el-descriptions-item>
+        <el-descriptions-item label="业主">{{ detailRow.ownerName ? detailRow.ownerName + (detailRow.ownerPhone ? '（' + detailRow.ownerPhone + '）' : '') : '系统代报' + (detailRow.creatorPhone ? '（' + detailRow.creatorName + ' ' + detailRow.creatorPhone + '）' : '') }}</el-descriptions-item>
         <el-descriptions-item label="房号">{{ detailRow.roomNo || '公共区域' }}</el-descriptions-item>
         <el-descriptions-item label="报修类型">{{ typeText(detailRow.repairType) }}</el-descriptions-item>
         <el-descriptions-item label="关联设备">{{ detailRow.equipmentName || '-' }}</el-descriptions-item>

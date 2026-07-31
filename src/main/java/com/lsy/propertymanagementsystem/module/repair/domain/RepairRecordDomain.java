@@ -28,6 +28,7 @@ public class RepairRecordDomain {
     private Integer evaluateScore;
     private String evaluateContent;
     private LocalDateTime evaluateTime;
+    private Long creatorId;
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
     @TableField(fill = FieldFill.INSERT_UPDATE)

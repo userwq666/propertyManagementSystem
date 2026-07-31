@@ -25,6 +25,9 @@ public class RepairRecordVO {
     private RepairPriority priority;
     private Long handlerId;
     private String handlerName;
+    private Long creatorId;
+    private String creatorName;
+    private String creatorPhone;
     private String handleContent;
     private String handleImages;
     private LocalDateTime handleTime;

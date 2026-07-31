@@ -24,6 +24,7 @@ CREATE TABLE repair_record (
     evaluate_score TINYINT COMMENT '评价分数：1-5',
     evaluate_content VARCHAR(500) COMMENT '评价内容',
     evaluate_time DATETIME COMMENT '评价时间',
+    creator_id BIGINT NULL COMMENT '创建人ID',
     create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除',
