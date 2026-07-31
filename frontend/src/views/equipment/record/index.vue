@@ -64,6 +64,23 @@
         </el-table>
       </el-tab-pane>
 
+      <el-tab-pane label="报修记录" name="repairs">
+        <el-table :data="repairs" border stripe v-loading="loadingRepairs">
+          <el-table-column prop="repairNo" label="报修单号" width="150" />
+          <el-table-column label="类型" width="100">
+            <template #default="{ row }">{{ repairTypeText(row.repairType) }}</template>
+          </el-table-column>
+          <el-table-column prop="repairContent" label="报修内容" show-overflow-tooltip />
+          <el-table-column label="状态" width="100">
+            <template #default="{ row }">
+              <el-tag :type="repairStatusTag(row.status)">{{ repairStatusText(row.status) }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="handlerName" label="处理人" width="90" />
+          <el-table-column prop="createTime" label="报修时间" width="160" />
+        </el-table>
+      </el-tab-pane>
+
       <el-tab-pane label="维修记录" name="maintenances">
         <el-table :data="maintenances" border stripe v-loading="loadingMaint">
           <el-table-column label="类型" width="100">
@@ -79,23 +96,6 @@
           <el-table-column prop="startTime" label="开始时间" width="160" />
           <el-table-column prop="endTime" label="结束时间" width="160" />
           <el-table-column prop="remark" label="备注" show-overflow-tooltip />
-        </el-table>
-      </el-tab-pane>
-
-      <el-tab-pane label="报修记录" name="repairs">
-        <el-table :data="repairs" border stripe v-loading="loadingRepairs">
-          <el-table-column prop="repairNo" label="报修单号" width="150" />
-          <el-table-column label="类型" width="100">
-            <template #default="{ row }">{{ repairTypeText(row.repairType) }}</template>
-          </el-table-column>
-          <el-table-column prop="repairContent" label="报修内容" show-overflow-tooltip />
-          <el-table-column label="状态" width="100">
-            <template #default="{ row }">
-              <el-tag :type="repairStatusTag(row.status)">{{ repairStatusText(row.status) }}</el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column prop="handlerName" label="处理人" width="90" />
-          <el-table-column prop="createTime" label="报修时间" width="160" />
         </el-table>
       </el-tab-pane>
     </el-tabs>
