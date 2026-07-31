@@ -143,6 +143,9 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         if (existing == null) {
             throw new BusinessException("报修记录不存在");
         }
+        if (existing.getStatus() != RepairStatus.PENDING && existing.getStatus() != RepairStatus.PROCESSING) {
+            throw new BusinessException("当前状态不允许编辑");
+        }
         if (SecurityUtils.isOwner()
                 && !Objects.equals(existing.getOwnerId(), getOwnerIdByUserId(SecurityUtils.getCurrentUserId()))) {
             throw new BusinessException("无权编辑该报修");
