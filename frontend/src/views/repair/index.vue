@@ -23,6 +23,11 @@
         <div class="toolbar-right"><el-button @click="fetchData">刷新</el-button></div>
       </div>
       <el-table :data="tableData" border stripe v-loading="loading">
+        <el-table-column label="状态" width="100">
+          <template #default="{ row }">
+            <el-tag :type="statusTag(row.status)">{{ statusText(row.status) }}</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column label="业主" width="100">
           <template #default="{ row }">{{ row.ownerName || '系统代报' }}</template>
@@ -37,11 +42,6 @@
           <template #default="{ row }">{{ row.equipmentName || '-' }}</template>
         </el-table-column>
         <el-table-column prop="repairContent" label="报修描述" show-overflow-tooltip />
-        <el-table-column label="状态" width="100">
-          <template #default="{ row }">
-            <el-tag :type="statusTag(row.status)">{{ statusText(row.status) }}</el-tag>
-          </template>
-        </el-table-column>
         <el-table-column prop="handlerName" label="处理人" width="100" />
         <el-table-column prop="score" label="评分" width="80" />
         <el-table-column prop="createTime" label="报修时间" width="180" />
