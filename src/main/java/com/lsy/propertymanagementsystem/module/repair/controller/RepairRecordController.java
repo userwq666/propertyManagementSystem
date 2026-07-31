@@ -50,8 +50,9 @@ public class RepairRecordController {
     public Result page(@RequestParam(defaultValue = "1") int pageNum,
                        @RequestParam(defaultValue = "10") int pageSize,
                        @RequestParam(required = false) Long ownerId,
+                       @RequestParam(required = false) Long handlerId,
                        @RequestParam(required = false) Integer status) {
-        Page<RepairRecordVO> page = repairRecordService.page(pageNum, pageSize, ownerId, status);
+        Page<RepairRecordVO> page = repairRecordService.page(pageNum, pageSize, ownerId, handlerId, status);
         return Result.success(page);
     }
 

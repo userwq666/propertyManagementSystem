@@ -1,6 +1,7 @@
 package com.lsy.propertymanagementsystem.module.repair.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lsy.propertymanagementsystem.common.exception.BusinessException;
@@ -24,12 +25,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,10 +57,28 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
     }
 
     @Override
-    public Page<RepairRecordVO> page(int pageNum, int pageSize, Long ownerId, Integer status) {
+    public Page<RepairRecordVO> page(int pageNum, int pageSize, Long ownerId, Long handlerId, Integer status) {
         LambdaQueryWrapper<RepairRecordDomain> wrapper = new LambdaQueryWrapper<>();
-        if (ownerId != null) {
-            wrapper.eq(RepairRecordDomain::getOwnerId, SecurityUtils.isOwner() ? SecurityUtils.getCurrentUserId() : ownerId);
+        String roleKey = SecurityUtils.getRoleKey();
+        if (SecurityUtils.isOwner()) {
+            Long currentOwnerId = getOwnerIdByUserId(SecurityUtils.getCurrentUserId());
+            if (currentOwnerId == null) {
+                Page<RepairRecordVO> empty = new Page<>(pageNum, pageSize, 0);
+                empty.setRecords(Collections.emptyList());
+                return empty;
+            }
+            wrapper.eq(RepairRecordDomain::getOwnerId, currentOwnerId);
+        } else if ("repair_worker".equals(roleKey)) {
+            Long userId = SecurityUtils.getCurrentUserId();
+            wrapper.and(w -> w.eq(RepairRecordDomain::getHandlerId, userId)
+                    .or().eq(RepairRecordDomain::getStatus, RepairStatus.PENDING));
+        } else {
+            if (ownerId != null) {
+                wrapper.eq(RepairRecordDomain::getOwnerId, ownerId);
+            }
+            if (handlerId != null) {
+                wrapper.eq(RepairRecordDomain::getHandlerId, handlerId);
+            }
         }
         if (status != null) {
             wrapper.eq(RepairRecordDomain::getStatus, RepairStatus.of(status));
@@ -78,6 +99,18 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         if (dto.getRepairType() != null) {
             domain.setRepairType(RepairType.of(dto.getRepairType()));
         }
+        if (SecurityUtils.isOwner()) {
+            Long currentOwnerId = getOwnerIdByUserId(SecurityUtils.getCurrentUserId());
+            if (currentOwnerId == null) {
+                throw new BusinessException("未找到业主档案，无法报修");
+            }
+            domain.setOwnerId(currentOwnerId);
+            CommunityHouseDomain house = communityHouseMapper.selectById(dto.getHouseId());
+            if (house == null || !Objects.equals(house.getOwnerId(), currentOwnerId)) {
+                throw new BusinessException("只能选择自己名下房屋报修");
+            }
+        }
+        domain.setRepairNo("BX" + UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase());
         domain.prepareAdd();
         this.save(domain);
     }
@@ -90,6 +123,10 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         RepairRecordDomain existing = super.getById(domain.getId());
         if (existing == null) {
             throw new BusinessException("报修记录不存在");
+        }
+        if (SecurityUtils.isOwner()
+                && !Objects.equals(existing.getOwnerId(), getOwnerIdByUserId(SecurityUtils.getCurrentUserId()))) {
+            throw new BusinessException("无权编辑该报修");
         }
         if (dto.getRepairType() != null) {
             existing.setRepairType(RepairType.of(dto.getRepairType()));
@@ -113,14 +150,65 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
             throw new BusinessException("报修记录不存在");
         }
         RepairStatus newStatus = RepairStatus.of(status);
-        if (newStatus == RepairStatus.PROCESSING) {
-            domain.assignHandler(handlerId);
-        } else if (newStatus == RepairStatus.COMPLETED) {
-            domain.complete(handleContent, null);
-        } else {
-            domain.setStatus(newStatus);
+        Long userId = SecurityUtils.getCurrentUserId();
+        String roleKey = SecurityUtils.getRoleKey();
+        boolean isAdmin = "admin".equals(roleKey) || "property_admin".equals(roleKey);
+        boolean isOwner = SecurityUtils.isOwner();
+        boolean isWorker = "repair_worker".equals(roleKey);
+
+        switch (newStatus) {
+            case PROCESSING -> {
+                // 管理员派单或维修工接单：仅待派单可进入，条件更新防并发抢单
+                if (domain.getStatus() != RepairStatus.PENDING) {
+                    throw new BusinessException("只有待派单的报修才能派单或接单");
+                }
+                Long targetHandler;
+                if (isAdmin) {
+                    if (handlerId == null) {
+                        throw new BusinessException("请选择维修工");
+                    }
+                    targetHandler = handlerId;
+                } else if (isWorker) {
+                    targetHandler = userId;
+                } else {
+                    throw new BusinessException("无权派单或接单");
+                }
+                int updated = baseMapper.update(null, new LambdaUpdateWrapper<RepairRecordDomain>()
+                        .eq(RepairRecordDomain::getId, id)
+                        .eq(RepairRecordDomain::getStatus, RepairStatus.PENDING)
+                        .isNull(RepairRecordDomain::getHandlerId)
+                        .set(RepairRecordDomain::getHandlerId, targetHandler)
+                        .set(RepairRecordDomain::getStatus, RepairStatus.PROCESSING));
+                if (updated != 1) {
+                    throw new BusinessException("该报修已被其他人处理");
+                }
+            }
+            case PENDING_EVALUATE -> {
+                // 维修工结单：只能完成自己负责的单；管理员可代完成
+                if (!isAdmin && (!isWorker || !Objects.equals(domain.getHandlerId(), userId))) {
+                    throw new BusinessException("只能完成自己负责的报修");
+                }
+                if (domain.getStatus() != RepairStatus.PROCESSING) {
+                    throw new BusinessException("只有处理中的报修才能结单");
+                }
+                domain.complete(handleContent, null);
+                this.updateById(domain);
+            }
+            case CANCELLED -> {
+                boolean canCancel = isAdmin
+                        || (isOwner && Objects.equals(domain.getOwnerId(), getOwnerIdByUserId(userId)));
+                if (!canCancel) {
+                    throw new BusinessException("无权取消该报修");
+                }
+                if (domain.getStatus() == RepairStatus.PENDING_EVALUATE
+                        || domain.getStatus() == RepairStatus.COMPLETED) {
+                    throw new BusinessException("当前状态不允许取消");
+                }
+                domain.cancel();
+                this.updateById(domain);
+            }
+            default -> throw new BusinessException("不支持的状态变更");
         }
-        this.updateById(domain);
     }
 
     @Override
@@ -133,11 +221,30 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         if (domain == null) {
             throw new BusinessException("报修记录不存在");
         }
-        if (domain.getStatus() != RepairStatus.COMPLETED) {
-            throw new BusinessException("只有已完成的报修才能评价");
+        if (domain.getStatus() != RepairStatus.PENDING_EVALUATE) {
+            throw new BusinessException("只有待确认的报修才能评价，确认后不可补评");
+        }
+        Long userId = SecurityUtils.getCurrentUserId();
+        boolean isAdmin = "admin".equals(SecurityUtils.getRoleKey())
+                || "property_admin".equals(SecurityUtils.getRoleKey());
+        boolean ownerOk = SecurityUtils.isOwner()
+                && Objects.equals(domain.getOwnerId(), getOwnerIdByUserId(userId));
+        if (!isAdmin && !ownerOk) {
+            throw new BusinessException("无权评价该报修");
         }
         domain.evaluate(score, content);
         this.updateById(domain);
+    }
+
+    @Override
+    @Transactional
+    public int autoCompleteExpired() {
+        LocalDateTime deadline = LocalDateTime.now().minusHours(24);
+        return baseMapper.update(null, new LambdaUpdateWrapper<RepairRecordDomain>()
+                .eq(RepairRecordDomain::getStatus, RepairStatus.PENDING_EVALUATE)
+                .isNull(RepairRecordDomain::getEvaluateTime)
+                .lt(RepairRecordDomain::getHandleTime, deadline)
+                .set(RepairRecordDomain::getStatus, RepairStatus.COMPLETED));
     }
 
     private List<RepairRecordVO> batchConvertToVO(List<RepairRecordDomain> records) {
@@ -175,5 +282,18 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
             }
             return vo;
         }).collect(Collectors.toList());
+    }
+
+    private Long getOwnerIdByUserId(Long userId) {
+        if (userId == null) {
+            return null;
+        }
+        return communityOwnerMapper.selectList(new LambdaQueryWrapper<CommunityOwnerDomain>()
+                        .eq(CommunityOwnerDomain::getUserId, userId)
+                        .last("LIMIT 1"))
+                .stream()
+                .map(CommunityOwnerDomain::getId)
+                .findFirst()
+                .orElse(null);
     }
 }

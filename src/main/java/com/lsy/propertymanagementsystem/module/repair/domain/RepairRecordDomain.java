@@ -36,6 +36,7 @@ public class RepairRecordDomain {
 
     public void prepareAdd() { this.status = RepairStatus.PENDING; this.priority = RepairPriority.NORMAL; }
     public void assignHandler(Long handlerId) { this.handlerId = handlerId; this.status = RepairStatus.PROCESSING; }
-    public void complete(String handleContent, String handleImages) { this.status = RepairStatus.COMPLETED; this.handleContent = handleContent; this.handleImages = handleImages; this.handleTime = LocalDateTime.now(); }
-    public void evaluate(Integer score, String content) { this.evaluateScore = score; this.evaluateContent = content; this.evaluateTime = LocalDateTime.now(); }
+    public void complete(String handleContent, String handleImages) { this.status = RepairStatus.PENDING_EVALUATE; this.handleContent = handleContent; this.handleImages = handleImages; this.handleTime = LocalDateTime.now(); }
+    public void evaluate(Integer score, String content) { this.evaluateScore = score; this.evaluateContent = content; this.evaluateTime = LocalDateTime.now(); this.status = RepairStatus.COMPLETED; }
+    public void cancel() { this.status = RepairStatus.CANCELLED; }
 }

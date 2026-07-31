@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 public enum RepairStatus {
     PENDING(0, "待派单"),
     PROCESSING(1, "处理中"),
-    PENDING_EVALUATE(2, "待评价"),
+    PENDING_EVALUATE(2, "待确认"),
     COMPLETED(3, "已完成"),
     CANCELLED(4, "已取消");
 

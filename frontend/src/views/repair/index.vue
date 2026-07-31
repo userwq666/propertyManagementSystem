@@ -8,7 +8,7 @@
       </el-form-item>
       <el-form-item label="报修状态">
         <el-select v-model="searchForm.status" placeholder="请选择" clearable>
-          <el-option label="待处理" :value="0" /><el-option label="处理中" :value="1" /><el-option label="已完成" :value="2" /><el-option label="已取消" :value="3" />
+          <el-option label="待派单" :value="0" /><el-option label="处理中" :value="1" /><el-option label="待确认" :value="2" /><el-option label="已完成" :value="3" /><el-option label="已取消" :value="4" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -42,8 +42,10 @@
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'repair:record:edit'">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'repair:record:delete'">删除</el-button>
-            <el-button v-if="row.status===0" type="warning" size="small" @click="handleStatus(row)" v-permission="'repair:record:process'">处理</el-button>
-            <el-button v-if="row.status===2 && !row.score" type="success" size="small" @click="handleRating(row)" v-permission="'repair:record:evaluate'">评价</el-button>
+            <el-button v-if="row.status===0 && isAdmin" type="warning" size="small" @click="handleAssign(row)" v-permission="'repair:record:process'">派单</el-button>
+            <el-button v-if="row.status===0 && isWorker" type="warning" size="small" @click="handleAccept(row)" v-permission="'repair:record:process'">接单</el-button>
+            <el-button v-if="row.status===1 && (isAdmin || row.handlerId === userId)" type="success" size="small" @click="handleComplete(row)" v-permission="'repair:record:process'">结单</el-button>
+            <el-button v-if="row.status===2 && !row.evaluateScore && (isAdmin || isOwner)" type="success" size="small" @click="handleRating(row)" v-permission="'repair:record:evaluate'">评价</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -66,7 +68,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="报修类型" prop="repairType">
-          <el-select v-model="form.repairType"><el-option label="水电维修" value="水电" /><el-option label="门窗维修" value="门窗" /><el-option label="公共设施" value="公共设施" /><el-option label="电器维修" value="家电" /><el-option label="其他" value="OTHER" /></el-select>
+          <el-select v-model="form.repairType"><el-option label="水电维修" value="水电" /><el-option label="门窗维修" value="门窗" /><el-option label="公共设施" value="公共设施" /><el-option label="电器维修" value="家电" /><el-option label="其他" value="其他" /></el-select>
         </el-form-item>
         <el-form-item label="报修描述" prop="repairContent">
           <el-input v-model="form.repairContent" type="textarea" :rows="3" />
@@ -86,22 +88,34 @@
       </template>
     </el-dialog>
 
-    <!-- 处理报修 -->
-    <el-dialog title="处理报修" v-model="statusDialogVisible" width="500px">
-      <el-form :model="statusForm" label-width="100px">
-        <el-form-item label="处理状态">
-          <el-select v-model="statusForm.status">
-            <el-option label="处理中" :value="1" /><el-option label="已完成" :value="2" /><el-option label="已取消" :value="3" />
+    <!-- 派单 -->
+    <el-dialog title="派单" v-model="assignDialogVisible" width="450px">
+      <el-form label-width="100px">
+        <el-form-item label="维修工" required>
+          <el-select v-model="assignForm.handlerId" placeholder="请选择维修工" filterable>
+            <el-option v-for="w in workers" :key="w.id" :label="w.realName" :value="w.id" />
           </el-select>
-        </el-form-item>
-        <el-form-item label="处理内容">
-          <el-input v-model="statusForm.handleContent" type="textarea" :rows="3" />
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="statusDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitStatus">确定</el-button>
+          <el-button @click="assignDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="submitAssign">确定</el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!-- 结单 -->
+    <el-dialog title="结单" v-model="completeDialogVisible" width="500px">
+      <el-form label-width="100px">
+        <el-form-item label="处理内容">
+          <el-input v-model="completeForm.handleContent" type="textarea" :rows="3" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="completeDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="submitComplete">确定</el-button>
         </div>
       </template>
     </el-dialog>
@@ -132,30 +146,40 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { addRepair, updateRepair, deleteRepair, getRepairById, getRepairPage, updateRepairStatus, updateRepairRating } from '@/api/repair/record'
 import { getOwnerPage } from '@/api/community/owner'
 import { getHousePage } from '@/api/community/house'
+import { getUserPage } from '@/api/system/user'
+import { useUserStore } from '@/stores/user'
 
 const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)
 const dialogVisible = ref(false)
-const statusDialogVisible = ref(false)
+const assignDialogVisible = ref(false)
+const completeDialogVisible = ref(false)
 const ratingDialogVisible = ref(false)
 const formRef = ref(null)
 const isEdit = ref(false)
 const owners = ref([])
 const houses = ref([])
+const workers = ref([])
 const currentRow = ref(null)
+const userStore = useUserStore()
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, ownerId: '', status: '' })
 const form = reactive({ id: null, ownerId: null, houseId: null, repairType: '水电', repairContent: '', repairImages: '', remark: '' })
-const statusForm = reactive({ status: 1, handleContent: '' })
+const assignForm = reactive({ handlerId: null })
+const completeForm = reactive({ handleContent: '' })
 const ratingForm = reactive({ score: 5, content: '' })
 
 const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑报修' : '新增报修')
-const typeText = (t) => ({ 0: '水电维修', 1: '门窗维修', 2: '管道疏通', 3: '电器维修', 4: '其他' }[t] || '')
-const statusTag = (s) => ({ 0: 'info', 1: 'warning', 2: 'success', 3: 'danger' }[s] || 'info')
-const statusText = (s) => ({ 0: '待处理', 1: '处理中', 2: '已完成', 3: '已取消' }[s] || '')
+const isAdmin = computed(() => userStore.roles.includes('超级管理员') || userStore.roles.includes('物业管理员'))
+const isWorker = computed(() => userStore.roles.includes('维修工'))
+const isOwner = computed(() => userStore.roles.includes('业主'))
+const userId = computed(() => userStore.userInfo.id)
+const typeText = (t) => ({ 水电: '水电维修', 门窗: '门窗维修', 家电: '电器维修', 公共设施: '公共设施', 其他: '其他' }[t] || t || '')
+const statusTag = (s) => ({ 0: 'info', 1: 'warning', 2: 'primary', 3: 'success', 4: 'danger' }[s] || 'info')
+const statusText = (s) => ({ 0: '待派单', 1: '处理中', 2: '待确认', 3: '已完成', 4: '已取消' }[s] || '')
 
 const rules = {
   ownerId: [{ required: true, message: '请选择业主', trigger: 'change' }],
@@ -170,6 +194,12 @@ onMounted(async () => {
   owners.value = oRes.data.records
   const hRes = await getHousePage({ pageNum: 1, pageSize: 200 })
   houses.value = hRes.data.records
+  if (isAdmin.value) {
+    try {
+      const wRes = await getUserPage({ pageNum: 1, pageSize: 100 })
+      workers.value = (wRes.data.records || []).filter(u => u.roleName === '维修工')
+    } catch (e) { /* handled */ }
+  }
 })
 
 async function fetchData() {
@@ -205,12 +235,41 @@ async function handleDelete(row) {
   try { await deleteRepair(row.id); ElMessage.success('删除成功'); fetchData() } catch (e) { /* handled */ }
 }
 
-function handleStatus(row) { currentRow.value = row; statusForm.status = 1; statusForm.handleContent = ''; statusDialogVisible.value = true }
-async function submitStatus() {
+function handleAssign(row) {
+  currentRow.value = row
+  assignForm.handlerId = null
+  assignDialogVisible.value = true
+}
+async function submitAssign() {
+  if (!assignForm.handlerId) {
+    ElMessage.warning('请选择维修工')
+    return
+  }
   try {
-    await updateRepairStatus({ id: currentRow.value.id, ...statusForm })
-    ElMessage.success('处理成功')
-    statusDialogVisible.value = false
+    await updateRepairStatus({ id: currentRow.value.id, status: 1, handlerId: assignForm.handlerId })
+    ElMessage.success('派单成功')
+    assignDialogVisible.value = false
+    fetchData()
+  } catch (e) { /* handled */ }
+}
+async function handleAccept(row) {
+  await ElMessageBox.confirm('确定接单吗？', '提示', { type: 'warning' })
+  try {
+    await updateRepairStatus({ id: row.id, status: 1 })
+    ElMessage.success('接单成功')
+    fetchData()
+  } catch (e) { /* handled */ }
+}
+function handleComplete(row) {
+  currentRow.value = row
+  completeForm.handleContent = ''
+  completeDialogVisible.value = true
+}
+async function submitComplete() {
+  try {
+    await updateRepairStatus({ id: currentRow.value.id, status: 2, handleContent: completeForm.handleContent })
+    ElMessage.success('结单成功，等待确认')
+    completeDialogVisible.value = false
     fetchData()
   } catch (e) { /* handled */ }
 }
