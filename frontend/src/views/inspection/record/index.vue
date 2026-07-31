@@ -79,7 +79,11 @@
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <el-form-item label="巡检计划"><el-select v-model="form.planId" filterable placeholder="请选择" style="width:100%"><el-option v-for="p in plans.filter(i => i.id != null)" :key="p.id" :label="p.planName" :value="p.id" /></el-select></el-form-item>
         <el-form-item label="设备" prop="equipmentId"><el-select v-model="form.equipmentId" filterable placeholder="请选择" style="width:100%"><el-option v-for="e in equipments.filter(i => i.id != null)" :key="e.id" :label="e.equipmentName" :value="e.id" /></el-select></el-form-item>
-        <el-form-item label="巡检人员" prop="inspectorUserId"><el-select v-model="form.inspectorUserId" filterable placeholder="请选择" style="width:100%"><el-option v-for="u in users.filter(i => i.id != null)" :key="u.id" :label="u.realName" :value="u.id" /></el-select></el-form-item>
+        <el-form-item label="巡检人员" prop="inspectorUserId">
+          <el-select v-model="form.inspectorUserId" filterable placeholder="请选择" style="width:100%" :disabled="isInspector">
+            <el-option v-for="u in inspectorOptions.filter(i => i.id != null)" :key="u.id" :label="u.realName" :value="u.id" />
+          </el-select>
+        </el-form-item>
         <el-form-item label="巡检时间"><el-date-picker v-model="form.inspectionTime" type="datetime" value-format="YYYY-MM-DDTHH:mm:ss" style="width:100%" /></el-form-item>
         <el-form-item label="巡检结果" prop="status"><el-select v-model="form.status"><el-option label="正常" :value="1" /><el-option label="异常" :value="2" /></el-select></el-form-item>
         <el-form-item v-if="form.status === 2" label="异常描述"><el-input v-model="form.abnormalDesc" type="textarea" :rows="3" /></el-form-item>
@@ -96,8 +100,10 @@ import { ElMessage } from 'element-plus'
 import { addRecord, updateRecord, getRecordPage, acceptRecord, createRecordRepair } from '@/api/inspection/record'
 import { getPlanPage, getInspectors } from '@/api/inspection/plan'
 import { getEquipmentPage } from '@/api/equipment/equipment'
+import { useUserStore } from '@/stores/user'
 
 const loading = ref(false)
+const userStore = useUserStore()
 const records = ref([])
 const plans = ref([])
 const equipments = ref([])
@@ -116,6 +122,16 @@ const rules = {
   inspectorUserId: [{ required: true, message: '请选择巡检人员', trigger: 'change' }],
   status: [{ required: true, message: '请选择结果', trigger: 'change' }]
 }
+
+const isInspector = computed(() => userStore.roles.includes('巡检员') || userStore.userInfo.roleName === '巡检员')
+const selectedPlan = computed(() => plans.value.find(p => p.id === form.planId))
+const inspectorOptions = computed(() => {
+  const planInspectorIds = selectedPlan.value?.inspectorIds || []
+  if (planInspectorIds.length > 0) {
+    return users.value.filter(u => planInspectorIds.includes(u.id))
+  }
+  return users.value
+})
 
 const dates = computed(() => [...new Set(records.value.map(r => (r.inspectionTime || '').slice(0, 10)))].sort())
 const matrixRows = computed(() => {
@@ -211,7 +227,11 @@ async function handleRepair() {
   } catch (e) { /* handled */ }
 }
 
-function handleAdd() { resetForm(); dialogVisible.value = true }
+function handleAdd() {
+  resetForm()
+  if (isInspector.value) form.inspectorUserId = userStore.userInfo.id || userStore.userInfo.userId
+  dialogVisible.value = true
+}
 function resetForm() { formRef.value?.resetFields(); Object.assign(form, { id: null, planId: null, equipmentId: null, inspectorUserId: null, inspectionTime: '', status: 1, abnormalDesc: '', remark: '' }) }
 async function handleSubmit() {
   const valid = await formRef.value.validate().catch(() => false)

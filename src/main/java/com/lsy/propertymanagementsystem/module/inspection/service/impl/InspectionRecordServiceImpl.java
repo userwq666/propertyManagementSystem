@@ -114,6 +114,9 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
     @Override
     @Transactional
     public void addRecord(InspectionRecordDTO dto) {
+        if ("inspector".equals(SecurityUtils.getRoleKey())) {
+            dto.setInspectorUserId(SecurityUtils.getCurrentUserId());
+        }
         InspectionRecordDomain domain = new InspectionRecordDomain();
         BeanUtils.copyProperties(dto, domain);
         if (dto.getStatus() != null) {
