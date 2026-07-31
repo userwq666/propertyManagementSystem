@@ -35,4 +35,5 @@ public class InspectionRecordVO {
     private String locationAddress;
     private String remark;
     private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 }

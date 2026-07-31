@@ -33,7 +33,10 @@
         <el-table-column v-for="p in periods" :key="p.key" :label="p.label" min-width="96" align="center">
           <template #default="{ row }">
             <div class="matrix-cell" :class="cellClass(row, p)" @click="openCell(row, p)">
-              {{ cellText(row, p) }}
+              <div>
+                <div>{{ cellText(row, p) }}</div>
+                <div v-if="cellOf(row, p) && cellOf(row, p).updateTime" class="cell-time">{{ timeShort(cellOf(row, p).updateTime) }}</div>
+              </div>
             </div>
           </template>
         </el-table-column>
@@ -50,7 +53,8 @@
           <el-descriptions-item v-if="currentCell.record" label="巡检人">{{ currentCell.record.inspectorName || '-' }}</el-descriptions-item>
           <el-descriptions-item v-if="currentCell.record" label="填写人">{{ currentCell.record.fillerName || '-' }}</el-descriptions-item>
         </el-descriptions>
-        <el-form :model="fillForm" label-width="90px" style="margin-top:16px">
+        <el-alert v-if="currentCell.record" type="info" :closable="false" show-icon title="该周期已打卡，不能重复修改" style="margin-top:16px" />
+        <el-form v-if="!currentCell.record" :model="fillForm" label-width="90px" style="margin-top:16px">
           <el-form-item label="巡检结果">
             <el-radio-group v-model="fillForm.status">
               <el-radio :value="1">正常</el-radio>
@@ -67,7 +71,7 @@
       </template>
       <template #footer>
         <el-button @click="taskDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitCell">保存打卡</el-button>
+        <el-button v-if="!currentCell.record" type="primary" @click="submitCell">保存打卡</el-button>
         <el-button v-if="currentCell && currentCell.record && currentCell.record.status === 2 && !currentCell.record.repairRecordId" type="danger" @click="handleRepair">生成报修单</el-button>
       </template>
     </el-dialog>
@@ -110,6 +114,7 @@ const cellText = (row, period) => {
   if (!r) return '待巡检'
   return { 1: '正常', 2: '异常', 3: '未巡检' }[r.status] || ''
 }
+const timeShort = (t) => (t || '').slice(5, 16).replace('T', ' ')
 const cellClass = (row, period) => {
   const r = cellOf(row, period)
   if (!r) return 'cell-empty'
@@ -296,6 +301,7 @@ async function handleRepair() {
 .plan-header-name { font-weight: 600; font-size: 15px; color: #303133; margin-bottom: 8px; }
 .plan-header-meta { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #909399; }
 .matrix-cell { min-height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 4px; font-size: 13px; }
+.cell-time { margin-top: 2px; font-size: 11px; opacity: 0.75; }
 .cell-empty { color: #909399; background: #f5f7fa; }
 .cell-normal { color: #67c23a; background: #f0f9eb; }
 .cell-abnormal { color: #f56c6c; background: #fef0f0; }

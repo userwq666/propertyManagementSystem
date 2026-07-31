@@ -159,6 +159,9 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
         if (!isManager && !currentUserId.equals(existing.getInspectorUserId())) {
             throw new BusinessException("只能填写自己负责的巡检记录");
         }
+        if (existing.getStatus() != null && existing.getStatus() != InspectResult.NOT_INSPECTED) {
+            throw new BusinessException("该周期已打卡，不能重复修改");
+        }
         if (dto.getStatus() != null) {
             InspectResult result = InspectResult.of(dto.getStatus());
             existing.setStatus(result);
