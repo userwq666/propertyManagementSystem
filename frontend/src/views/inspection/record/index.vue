@@ -162,10 +162,6 @@ onMounted(async () => {
   try {
     const p = await getPlanPage({ pageNum: 1, pageSize: 200 }, { silent: true })
     plans.value = (p.data.records || []).filter(x => x.status === 1)
-    if (plans.value.length > 0) {
-      searchForm.planId = plans.value[0].id
-      loadPlanDetail(plans.value[0].id)
-    }
   } catch (e) { /* 忽略 */ }
 })
 
