@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/inspection/plan")
 public class InspectionPlanController {
@@ -67,5 +70,11 @@ public class InspectionPlanController {
     public Result generate() {
         inspectionPlanService.generateByCycle();
         return Result.success();
+    }
+
+    @PreAuthorize("hasAuthority('inspection:plan:list') or hasAuthority('inspection:record:list')")
+    @GetMapping("/inspectors")
+    public Result<List<Map<String, Object>>> inspectors() {
+        return Result.success(inspectionPlanService.listInspectors());
     }
 }

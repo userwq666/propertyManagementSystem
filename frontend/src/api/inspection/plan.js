@@ -27,3 +27,7 @@ export function updatePlanStatus(params) {
 export function generateRecords(params) {
   return request({ url: '/inspection/plan/generate', method: 'post', params })
 }
+
+export function getInspectors() {
+  return request({ url: '/inspection/plan/inspectors', method: 'get' })
+}

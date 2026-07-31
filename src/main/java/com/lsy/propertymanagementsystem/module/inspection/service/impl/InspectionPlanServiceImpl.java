@@ -23,7 +23,11 @@ import com.lsy.propertymanagementsystem.module.inspection.service.InspectionPlan
 import com.lsy.propertymanagementsystem.module.inspection.service.InspectionRecordService;
 import com.lsy.propertymanagementsystem.common.utils.SecurityUtils;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserDomain;
+import com.lsy.propertymanagementsystem.module.system.domain.SysRoleDomain;
+import com.lsy.propertymanagementsystem.module.system.domain.SysUserRoleDomain;
+import com.lsy.propertymanagementsystem.module.system.mapper.SysRoleMapper;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserMapper;
+import com.lsy.propertymanagementsystem.module.system.mapper.SysUserRoleMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,6 +56,31 @@ public class InspectionPlanServiceImpl extends ServiceImpl<InspectionPlanMapper,
 
     @Autowired
     private SysUserMapper sysUserMapper;
+
+    @Autowired
+    private SysRoleMapper sysRoleMapper;
+
+    @Autowired
+    private SysUserRoleMapper sysUserRoleMapper;
+
+    @Override
+    public List<Map<String, Object>> listInspectors() {
+        SysRoleDomain inspectorRole = sysRoleMapper.selectOne(
+                new LambdaQueryWrapper<SysRoleDomain>().eq(SysRoleDomain::getRoleKey, "inspector"));
+        if (inspectorRole == null) return Collections.emptyList();
+        List<Long> userIds = sysUserRoleMapper.selectList(
+                        new LambdaQueryWrapper<SysUserRoleDomain>().eq(SysUserRoleDomain::getRoleId, inspectorRole.getId()))
+                .stream()
+                .map(SysUserRoleDomain::getUserId)
+                .collect(Collectors.toList());
+        if (userIds.isEmpty()) return Collections.emptyList();
+        return sysUserMapper.selectBatchIds(userIds).stream().map(user -> {
+            Map<String, Object> item = new HashMap<>();
+            item.put("id", user.getId());
+            item.put("realName", user.getRealName());
+            return item;
+        }).collect(Collectors.toList());
+    }
 
     @Override
     public Page<InspectionPlanVO> page(int pageNum, int pageSize, String planName, Integer status) {

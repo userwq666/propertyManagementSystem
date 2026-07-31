@@ -75,9 +75,8 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { addPlan, updatePlan, deletePlan, getPlanPage, updatePlanStatus } from '@/api/inspection/plan'
+import { addPlan, updatePlan, deletePlan, getPlanPage, updatePlanStatus, getInspectors } from '@/api/inspection/plan'
 import { getEquipmentPage } from '@/api/equipment/equipment'
-import { getUserPage } from '@/api/system/user'
 
 const loading = ref(false); const tableData = ref([]); const total = ref(0)
 const dialogVisible = ref(false); const formRef = ref(null); const isEdit = ref(false)
@@ -93,7 +92,7 @@ const rules = { planName: [{ required: true, message: '请输入', trigger: 'blu
 onMounted(async () => {
   fetchData()
   try { const e = await getEquipmentPage({ pageNum: 1, pageSize: 200 }); equipments.value = e.data.records } catch (e) { /* 无权限忽略 */ }
-  try { const u = await getUserPage({ pageNum: 1, pageSize: 200 }); users.value = (u.data.records || []).filter(x => x.roleName === '巡检员') } catch (e) { /* 无权限忽略 */ }
+  try { const u = await getInspectors(); users.value = u.data || [] } catch (e) { /* 无权限忽略 */ }
 })
 async function fetchData() { loading.value=true; try{const r=await getPlanPage({...searchForm});tableData.value=r.data.records;total.value=r.data.total}finally{loading.value=false} }
 function handleSearch(){searchForm.pageNum=1;fetchData()}
