@@ -20,7 +20,7 @@
         <div class="toolbar-left"><el-button type="primary" @click="handleAdd" v-permission="'announcement:list:add'">新增公告</el-button></div>
         <div class="toolbar-right"><el-button @click="fetchData">刷新</el-button></div>
       </div>
-      <el-table :data="tableData" border stripe v-loading="loading">
+      <el-table :data="tableData" border stripe v-loading="loading" class="announcement-table">
         <el-table-column label="状态" width="100">
           <template #default="{ row }">
             <el-tag :type="st(row.publishStatus)">{{ stText(row.publishStatus) }}</el-tag>
@@ -199,5 +199,8 @@ async function handleTop(row) {
 }
 .row-gap {
   margin-left: 16px;
+}
+.announcement-table :deep(.el-table__row) {
+  height: 56px;
 }
 </style>

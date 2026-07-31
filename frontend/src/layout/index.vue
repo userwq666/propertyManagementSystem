@@ -1,7 +1,7 @@
 <template>
   <el-container class="layout-container">
     <el-aside :width="isCollapse ? '64px' : '220px'" class="layout-aside">
-      <div class="logo" @click="$router.push('/')">
+      <div class="logo" @click="$router.push('/dashboard')">
         <img src="/favicon.svg" alt="" />
         <span v-show="!isCollapse">物业管理系统</span>
       </div>

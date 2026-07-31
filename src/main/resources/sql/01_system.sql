@@ -163,8 +163,8 @@ INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, me
 
 -- 3.8 数据统计 (parent: 26)
 INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
-(26, 0, '数据统计',   'DataAnalysis', '/statistics', NULL,                     NULL,                      0, 8, 1),
-(27, 26,'统计面板',   'PieChart',     '/dashboard',  'statistics/index',      'statistics:overview:list', 1, 1, 1);
+(26, 0, '首页',       'HomeFilled',   '/statistics', NULL,                     NULL,                      0, 8, 1),
+(27, 26,'欢迎页',     'HomeFilled',   '/dashboard',  'welcome/index',         'statistics:overview:list', 1, 1, 1);
 
 -- 3.9 公告通知 (parent: 28)
 INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
