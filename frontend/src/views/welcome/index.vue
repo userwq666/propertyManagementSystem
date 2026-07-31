@@ -107,14 +107,14 @@ async function loadWeather() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 28px 32px;
+  padding: 48px 48px;
   background: linear-gradient(135deg, #409eff, #36cfc9);
   border-radius: 8px;
   color: #fff;
 }
-.welcome-title { margin: 0 0 8px; font-size: 24px; font-weight: 600; }
-.welcome-sub { margin: 0; opacity: 0.9; font-size: 14px; }
-.welcome-date { font-size: 14px; opacity: 0.95; }
+.welcome-title { margin: 0 0 12px; font-size: 32px; font-weight: 600; }
+.welcome-sub { margin: 0; opacity: 0.9; font-size: 16px; }
+.welcome-date { font-size: 15px; opacity: 0.95; }
 .panel-col { display: flex; }
 .panel-card { border-radius: 8px; flex: 1; height: 240px; }
 .panel-card :deep(.el-card__body) {
