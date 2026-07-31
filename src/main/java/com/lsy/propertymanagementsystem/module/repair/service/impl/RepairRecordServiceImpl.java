@@ -129,6 +129,9 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         domain.setRepairNo("BX" + UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase());
         domain.prepareAdd();
         this.save(domain);
+        if (domain.getEquipmentId() != null) {
+            markEquipmentFault(domain.getEquipmentId());
+        }
     }
 
     @Override
@@ -152,6 +155,9 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         existing.setRepairContent(domain.getRepairContent());
         existing.setRepairImages(domain.getRepairImages());
         this.updateById(existing);
+        if (existing.getEquipmentId() != null) {
+            markEquipmentFault(existing.getEquipmentId());
+        }
     }
 
     @Override
@@ -200,6 +206,9 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
                 if (updated != 1) {
                     throw new BusinessException("该报修已被其他人处理");
                 }
+                if (domain.getEquipmentId() != null) {
+                    markEquipmentRepair(domain.getEquipmentId());
+                }
             }
             case PENDING_EVALUATE -> {
                 // 维修工结单：只能完成自己负责的单；管理员可代完成
@@ -210,12 +219,13 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
                     throw new BusinessException("只有处理中的报修才能结单");
                 }
                 domain.complete(handleContent, null);
-                if (equipmentId != null) {
-                    domain.setEquipmentId(equipmentId);
+                Long linkedEquipmentId = equipmentId != null ? equipmentId : domain.getEquipmentId();
+                if (linkedEquipmentId != null) {
+                    domain.setEquipmentId(linkedEquipmentId);
                 }
                 this.updateById(domain);
-                if (equipmentId != null) {
-                    linkEquipmentAfterComplete(domain, equipmentId, userId);
+                if (linkedEquipmentId != null) {
+                    linkEquipmentAfterComplete(domain, linkedEquipmentId, userId);
                 }
             }
             case CANCELLED -> {
@@ -313,6 +323,30 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
                 || equipment.getStatus() == EquipmentStatus.UNDER_REPAIR
                 || equipment.getStatus() == EquipmentStatus.DISABLED) {
             equipment.changeStatus(EquipmentStatus.NORMAL);
+            equipmentMapper.updateById(equipment);
+        }
+    }
+
+    private void markEquipmentFault(Long equipmentId) {
+        EquipmentDomain equipment = equipmentMapper.selectById(equipmentId);
+        if (equipment == null) {
+            return;
+        }
+        EquipmentStatus status = equipment.getStatus();
+        if (status == EquipmentStatus.NORMAL || status == EquipmentStatus.DISABLED) {
+            equipment.changeStatus(EquipmentStatus.FAULT);
+            equipmentMapper.updateById(equipment);
+        }
+    }
+
+    private void markEquipmentRepair(Long equipmentId) {
+        EquipmentDomain equipment = equipmentMapper.selectById(equipmentId);
+        if (equipment == null) {
+            return;
+        }
+        EquipmentStatus status = equipment.getStatus();
+        if (status == EquipmentStatus.FAULT || status == EquipmentStatus.NORMAL) {
+            equipment.changeStatus(EquipmentStatus.UNDER_REPAIR);
             equipmentMapper.updateById(equipment);
         }
     }
