@@ -245,7 +245,8 @@ INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, me
 (64, 16,'报修编辑', NULL, '', '', 'repair:record:edit',     2, 2, 1),
 (65, 16,'报修删除', NULL, '', '', 'repair:record:delete',   2, 3, 1),
 (66, 16,'处理报修', NULL, '', '', 'repair:record:process',  2, 4, 1),
-(67, 16,'服务评价', NULL, '', '', 'repair:record:evaluate', 2, 5, 1);
+(67, 16,'服务评价', NULL, '', '', 'repair:record:evaluate', 2, 5, 1),
+(94, 16,'报修派单', NULL, '', '', 'repair:record:assign',   2, 6, 1);
 
 -- 投诉建议按钮 (parent: 18)
 INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
