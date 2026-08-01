@@ -70,8 +70,8 @@ public class RepairRecordController {
                                @RequestParam(required = false) Long equipmentId,
                                @RequestParam(required = false) String handleContent,
                                @RequestParam(required = false) BigDecimal expenseAmount,
-                               @RequestParam(required = false) String expenseName) {
-        repairRecordService.updateStatus(id, status, handlerId, equipmentId, handleContent, expenseAmount, expenseName);
+                               @RequestParam(required = false) Integer expenseType) {
+        repairRecordService.updateStatus(id, status, handlerId, equipmentId, handleContent, expenseAmount, expenseType);
         return Result.success();
     }
 

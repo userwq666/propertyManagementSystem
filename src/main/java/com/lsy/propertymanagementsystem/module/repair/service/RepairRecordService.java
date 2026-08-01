@@ -16,7 +16,7 @@ public interface RepairRecordService {
     Long addRepair(RepairRecordDTO domain);
     void updateRepair(RepairRecordDTO domain);
     void deleteRepair(Long id);
-    void updateStatus(Long id, Integer status, Long handlerId, Long equipmentId, String handleContent, BigDecimal expenseAmount, String expenseName);
+    void updateStatus(Long id, Integer status, Long handlerId, Long equipmentId, String handleContent, BigDecimal expenseAmount, Integer expenseType);
     void updateRating(Long id, Integer score, String content);
     int autoCompleteExpired();
     List<CommunityHouseDomain> listHouses(Long ownerId);

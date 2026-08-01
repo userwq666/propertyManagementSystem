@@ -190,7 +190,7 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
 
     @Override
     @Transactional
-    public void updateStatus(Long id, Integer status, Long handlerId, Long equipmentId, String handleContent, BigDecimal expenseAmount, String expenseName) {
+    public void updateStatus(Long id, Integer status, Long handlerId, Long equipmentId, String handleContent, BigDecimal expenseAmount, Integer expenseType) {
         RepairRecordDomain domain = super.getById(id);
         if (domain == null) {
             throw new BusinessException("报修记录不存在");
@@ -254,8 +254,9 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
                 }
                 if (expenseAmount != null && expenseAmount.compareTo(BigDecimal.ZERO) > 0) {
                     FeeExpenseDomain expense = new FeeExpenseDomain();
-                    expense.setExpenseName(expenseName != null && !expenseName.isBlank() ? expenseName : "报修维修支出");
-                    expense.setExpenseType(1);
+                    int type = expenseType != null ? expenseType : 1;
+                    expense.setExpenseName("报修" + expenseTypeName(type) + "支出");
+                    expense.setExpenseType(type);
                     expense.setAmount(expenseAmount.setScale(2, java.math.RoundingMode.HALF_UP));
                     expense.setExpenseDate(LocalDate.now());
                     expense.setContent("报修单号：" + domain.getRepairNo());
@@ -277,6 +278,16 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
                 this.updateById(domain);
             }
             default -> throw new BusinessException("不支持的状态变更");
+        }
+    }
+
+    private String expenseTypeName(Integer type) {
+        if (type == null) return "维修";
+        switch (type) {
+            case 2: return "人工";
+            case 3: return "材料";
+            case 4: return "其他";
+            default: return "维修";
         }
     }
 
