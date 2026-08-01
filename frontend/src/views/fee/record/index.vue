@@ -87,8 +87,11 @@
         <el-form-item label="缴费方式">
           <el-select v-model="payForm.payWay" style="width:100%"><el-option label="现金" value="CASH" /><el-option label="微信" value="WECHAT" /><el-option label="支付宝" value="ALIPAY" /><el-option label="银行转账" value="BANK" /></el-select>
         </el-form-item>
-        <el-form-item label="应收金额">
-          <span class="pay-amount">{{ currentPayRow?.amount ?? '-' }}</span>
+        <el-form-item label="实缴金额">
+          <el-input-number v-model="payForm.paidAmount" :min="0" :precision="2" style="width:100%" />
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="payForm.remark" type="textarea" :rows="2" placeholder="选填" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -123,7 +126,7 @@ const currentPayRow = ref(null)
 const detailRow = ref(null)
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, ownerId: '', houseId: '', status: '' })
-const payForm = reactive({ payWay: 'WECHAT' })
+const payForm = reactive({ payWay: 'WECHAT', paidAmount: null, remark: '' })
 
 const statusTag = (s) => ({ 0: 'warning', 1: 'warning', 2: 'success', 3: 'danger', 4: 'info' }[s] || 'info')
 const statusText = (s) => ({ 0: '待缴费', 1: '部分缴费', 2: '已缴费', 3: '逾期', 4: '作废' }[s] || '')
@@ -154,12 +157,14 @@ function resetSearch() { searchForm.ownerId = ''; searchForm.houseId = ''; searc
 function handlePay(row) {
   currentPayRow.value = row
   payForm.payWay = 'WECHAT'
+  payForm.paidAmount = row.amount || 0
+  payForm.remark = ''
   payDialogVisible.value = true
 }
 
 async function submitPay() {
   try {
-    await payFeeRecord(currentPayRow.value.id, payForm.payWay)
+    await payFeeRecord(currentPayRow.value.id, payForm.payWay, payForm.paidAmount, payForm.remark)
     ElMessage.success('填报成功')
     payDialogVisible.value = false
     fetchData()

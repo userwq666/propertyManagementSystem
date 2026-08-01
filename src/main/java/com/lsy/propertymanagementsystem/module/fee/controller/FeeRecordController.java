@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/api/fee/record")
@@ -48,8 +49,10 @@ public class FeeRecordController {
 
     @PreAuthorize("hasAuthority('fee:record:edit')")
     @PutMapping("/pay")
-    public Result confirmPay(@RequestParam Long id, @RequestParam String payWay) {
-        feeRecordService.confirmPay(id, payWay);
+    public Result confirmPay(@RequestParam Long id, @RequestParam String payWay,
+                             @RequestParam(required = false) BigDecimal paidAmount,
+                             @RequestParam(required = false) String remark) {
+        feeRecordService.confirmPay(id, payWay, paidAmount, remark);
         return Result.success();
     }
 

@@ -117,7 +117,7 @@ public class FeeRecordServiceImpl implements FeeRecordService {
 
     @Override
     @Transactional
-    public void confirmPay(Long id, String payWay) {
+    public void confirmPay(Long id, String payWay, BigDecimal paidAmount, String remark) {
         FeeRecordDomain domain = feeRecordMapper.selectById(id);
         if (domain == null) {
             throw new BusinessException("账单不存在");
@@ -129,7 +129,16 @@ public class FeeRecordServiceImpl implements FeeRecordService {
         if (payWay != null) {
             try { payType = Integer.parseInt(payWay); } catch (NumberFormatException ignored) {}
         }
-        domain.confirmPay(PayType.of(payType));
+        if (remark != null && !remark.isBlank()) {
+            domain.setRemark(remark);
+        }
+        if (paidAmount == null || paidAmount.compareTo(domain.getAmount()) >= 0) {
+            domain.confirmPay(PayType.of(payType));
+        } else if (paidAmount.compareTo(BigDecimal.ZERO) > 0) {
+            domain.markPartialPay(paidAmount.setScale(2, java.math.RoundingMode.HALF_UP), PayType.of(payType));
+        } else {
+            throw new BusinessException("实缴金额必须大于0");
+        }
         feeRecordMapper.updateById(domain);
     }
 
