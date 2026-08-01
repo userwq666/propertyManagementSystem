@@ -218,8 +218,9 @@ async function handleSubmit() {
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
   try {
-    if (isEdit.value) { await updateFeeItem(form) }
-    else { await addFeeItem(form) }
+    const payload = { ...form, noticeRoles: Array.isArray(form.noticeRoles) ? form.noticeRoles.join(',') : form.noticeRoles }
+    if (isEdit.value) { await updateFeeItem(payload) }
+    else { await addFeeItem(payload) }
     ElMessage.success(isEdit.value ? '编辑成功' : '新增成功')
     dialogVisible.value = false
     fetchData()
