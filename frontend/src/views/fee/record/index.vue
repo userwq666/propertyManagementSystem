@@ -64,6 +64,23 @@
         @size-change="fetchData" @current-change="fetchData" style="margin-top:16px;justify-content:flex-end" />
     </div>
 
+    <!-- 账单详情 -->
+    <el-dialog title="账单详情" v-model="detailDialogVisible" width="640px">
+      <el-descriptions :column="2" border v-if="detailRow">
+        <el-descriptions-item label="账单编号">{{ detailRow.feeNo }}</el-descriptions-item>
+        <el-descriptions-item label="状态">
+          <el-tag :type="statusTag(detailRow.status)">{{ statusText(detailRow.status) }}</el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="业主">{{ detailRow.ownerName || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="房间号">{{ detailRow.roomNo || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="收费项目">{{ detailRow.itemName || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="应收金额">{{ detailRow.amount ?? '-' }}</el-descriptions-item>
+        <el-descriptions-item label="缴费方式">{{ payText(detailRow.payType) || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="缴费时间">{{ detailRow.payTime || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="创建时间" :span="2">{{ detailRow.createTime }}</el-descriptions-item>
+      </el-descriptions>
+    </el-dialog>
+
     <!-- 缴费弹窗 -->
     <el-dialog title="填报收款" v-model="payDialogVisible" width="400px">
       <el-form :model="payForm" label-width="80px">
@@ -99,9 +116,11 @@ const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)
 const payDialogVisible = ref(false)
+const detailDialogVisible = ref(false)
 const ownerList = ref([])
 const houseList = ref([])
 const currentPayRow = ref(null)
+const detailRow = ref(null)
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, ownerId: '', houseId: '', status: '' })
 const payForm = reactive({ payWay: 'WECHAT' })
@@ -148,16 +167,8 @@ async function submitPay() {
 }
 
 function handleDetail(row) {
-  var detail = [
-    '账单编号: ' + (row.feeNo || ''),
-    '业主: ' + (row.ownerName || ''),
-    '房间号: ' + (row.roomNo || ''),
-    '收费项目: ' + (row.itemName || ''),
-    '应收金额: ' + (row.amount || 0),
-    '已缴金额: ' + (row.paidAmount || 0),
-    '状态: ' + statusText(row.status)
-  ].join('\n')
-  ElMessageBox.alert(detail, '账单详情')
+  detailRow.value = row
+  detailDialogVisible.value = true
 }
 
 </script>
