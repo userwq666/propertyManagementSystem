@@ -396,9 +396,17 @@ INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, me
 (96, 27, '报修统计', NULL, '', '', 'statistics:repair:list', 2, 2, 1),
 (97, 27, '设备统计', NULL, '', '', 'statistics:equipment:list', 2, 3, 1),
 (98, 27, '投诉统计', NULL, '', '', 'statistics:complaint:list', 2, 4, 1),
-(99, 27, '巡检统计', NULL, '', '', 'statistics:inspection:list', 2, 5, 1);
+(99, 27, '巡检统计', NULL, '', '', 'statistics:inspection:list', 2, 5, 1),
+(105, 27, '人员统计', NULL, '', '', 'statistics:user:list', 2, 6, 1);
 INSERT INTO sys_role_menu (role_id, menu_id) SELECT 1, id FROM sys_menu WHERE id BETWEEN 95 AND 99;
 INSERT INTO sys_role_menu (role_id, menu_id) SELECT 2, id FROM sys_menu WHERE id BETWEEN 95 AND 99;
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (1,105),(2,105);
+-- 统计模块按角色开放
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES
+(6,27),(6,95),(6,96),   -- 财务：总览+费用+维修(支出)
+(4,96),                 -- 维修工：维修统计
+(5,97),(5,99),          -- 巡检员：设备+巡检
+(3,95);                 -- 业主：物业费收支
 -- 消费事项（收费管理子菜单：管理员维护，财务/业主查看公示）
 INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
 (100, 11, '消费事项', 'List', '/fee/expenses', 'fee/expense/index', 'fee:expense:list', 1, 4, 1),

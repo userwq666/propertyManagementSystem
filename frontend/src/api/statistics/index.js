@@ -1,53 +1,29 @@
-﻿import request from '@/utils/request'
+import request from '@/utils/request'
 
-export function getOverview() {
+export function getStatisticsOverview() {
   return request({ url: '/statistics/overview', method: 'get' })
 }
 
-export function getMonthlyFee(year) {
-  return request({ url: '/statistics/fee/monthly', method: 'get', params: { year } })
+export function getRepairSummary() {
+  return request({ url: '/statistics/repair/summary', method: 'get' })
 }
 
-export function getFeeByItem() {
-  return request({ url: '/statistics/fee/byItem', method: 'get' })
+export function getEquipmentSummary() {
+  return request({ url: '/statistics/equipment/summary', method: 'get' })
 }
 
-export function getFeeTrend(params) {
-  return request({ url: '/statistics/fee/trend', method: 'get', params })
+export function getUserSummary() {
+  return request({ url: '/statistics/user/summary', method: 'get' })
 }
 
-export function getRepairOverview() {
-  return request({ url: '/statistics/repair/overview', method: 'get' })
+export function getFeeSummary() {
+  return request({ url: '/statistics/fee/summary', method: 'get' })
 }
 
-export function getRepairByType() {
-  return request({ url: '/statistics/repair/byType', method: 'get' })
+export function getComplaintSummary() {
+  return request({ url: '/statistics/complaint/summary', method: 'get' })
 }
 
-export function getRepairTrend(params) {
-  return request({ url: '/statistics/repair/trend', method: 'get', params })
-}
-
-export function getRepairTypeRatio(params) {
-  return request({ url: '/statistics/repair/typeRatio', method: 'get', params })
-}
-
-export function getEquipmentStatus(params) {
-  return request({ url: '/statistics/equipment/status', method: 'get', params })
-}
-
-export function getSatisfactionTrend(params) {
-  return request({ url: '/statistics/complaint/satisfactionTrend', method: 'get', params })
-}
-
-export function getComplaintTypeRatio(params) {
-  return request({ url: '/statistics/complaint/typeRatio', method: 'get', params })
-}
-
-export function getInspectionCompletion(params) {
-  return request({ url: '/statistics/inspection/completion', method: 'get', params })
-}
-
-export function getInspectionAbnormal(params) {
-  return request({ url: '/statistics/inspection/abnormal', method: 'get', params })
+export function getInspectionSummary() {
+  return request({ url: '/statistics/inspection/summary', method: 'get' })
 }
