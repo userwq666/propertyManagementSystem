@@ -42,8 +42,6 @@
         <el-table-column prop="roomNo" label="房间号" width="100" />
         <el-table-column prop="itemName" label="收费项目" width="120" />
         <el-table-column prop="amount" label="应收金额" width="100" />
-        <el-table-column prop="paidAmount" label="已缴金额" width="100" />
-        <el-table-column prop="discountAmount" label="优惠金额" width="100" />
         <el-table-column label="状态" width="100">
           <template #default="{ row }">
             <el-tag :type="statusTag(row.status)">{{ statusText(row.status) }}</el-tag>
@@ -74,8 +72,8 @@
         <el-form-item label="缴费方式">
           <el-select v-model="payForm.payWay" style="width:100%"><el-option label="现金" value="CASH" /><el-option label="微信" value="WECHAT" /><el-option label="支付宝" value="ALIPAY" /><el-option label="银行转账" value="BANK" /></el-select>
         </el-form-item>
-        <el-form-item label="实缴金额">
-          <el-input-number v-model="payForm.paidAmount" :min="0" :precision="2" style="width:100%" />
+        <el-form-item label="应收金额">
+          <span class="pay-amount">{{ currentPayRow?.amount ?? '-' }}</span>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -108,7 +106,7 @@ const houseList = ref([])
 const currentPayRow = ref(null)
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, ownerId: '', houseId: '', status: '' })
-const payForm = reactive({ payWay: 'WECHAT', paidAmount: 0 })
+const payForm = reactive({ payWay: 'WECHAT' })
 
 const statusTag = (s) => ({ 0: 'warning', 1: 'warning', 2: 'success', 3: 'danger', 4: 'info' }[s] || 'info')
 const statusText = (s) => ({ 0: '待缴费', 1: '部分缴费', 2: '已缴费', 3: '逾期', 4: '作废' }[s] || '')
@@ -139,7 +137,6 @@ function resetSearch() { searchForm.ownerId = ''; searchForm.houseId = ''; searc
 function handlePay(row) {
   currentPayRow.value = row
   payForm.payWay = 'WECHAT'
-  payForm.paidAmount = row.amount || 0
   payDialogVisible.value = true
 }
 
