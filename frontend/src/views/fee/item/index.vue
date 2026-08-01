@@ -58,12 +58,8 @@
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'fee:item:edit'">编辑</el-button>
             <el-button v-if="row.status === 0" type="danger" size="small" @click="handleDelete(row)" v-permission="'fee:item:delete'">删除</el-button>
-            <el-button
-              :type="row.status === 1 ? 'warning' : 'success'"
-              size="small"
-              @click="handleToggleStatus(row)"
-            v-permission="'fee:item:edit'">{{ row.status === 1 ? '停用' : '启用' }}</el-button>
-            <el-button v-if="row.published !== 1" type="primary" size="small" @click="handlePublish(row)" v-permission="'fee:item:edit'">发布</el-button>
+            <el-button size="small" @click="handleToggleStatus(row)" v-permission="'fee:item:edit'">{{ row.status === 1 ? '停用' : '启用' }}</el-button>
+            <el-button v-if="row.published !== 1" type="success" size="small" @click="handlePublish(row)" v-permission="'fee:item:edit'">发布</el-button>
           </template>
         </el-table-column>
       </el-table>

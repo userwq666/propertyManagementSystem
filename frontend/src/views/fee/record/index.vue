@@ -55,7 +55,7 @@
         <el-table-column label="操作" min-width="160" class-name="action-column" fixed="right">
           <template #default="{ row }">
             <el-button v-if="row.status===0" type="success" size="small" @click="handlePay(row)" v-permission="'fee:record:edit'">填报</el-button>
-            <el-button type="primary" size="small" @click="handleDetail(row)">详情</el-button>
+            <el-button size="small" @click="handleDetail(row)">详情</el-button>
           </template>
         </el-table-column>
       </el-table>
