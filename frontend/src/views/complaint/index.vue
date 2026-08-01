@@ -164,7 +164,7 @@ import { getUserPage } from '@/api/system/user'
 import { useUserStore } from '@/stores/user'
 
 const userStore = useUserStore()
-const isOwnerRole = computed(() => (userStore.roles || []).includes('业主'))
+const isOwnerRole = computed(() => (userStore.roles || []).includes('owner'))
 
 const loading = ref(false)
 const tableData = ref([])

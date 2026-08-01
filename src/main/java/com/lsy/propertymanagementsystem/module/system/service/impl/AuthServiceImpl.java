@@ -84,7 +84,7 @@ public class AuthServiceImpl implements AuthService {
         response.setRealName(user.getRealName());
         response.setAvatar(user.getAvatar());
         response.setPermissions(permissions);
-        response.setRoles(getRoleNames(roleIds));
+        response.setRoles(getRoleKeys(roleIds));
 
         // 返回登录响应
         return response;
@@ -132,7 +132,7 @@ public class AuthServiceImpl implements AuthService {
             SysRoleDomain role = roleMapper.selectById(roleIds.get(0));
             if (role != null) response.setRoleName(role.getRoleName());
         }
-        response.setRoles(getRoleNames(roleIds));
+        response.setRoles(getRoleKeys(roleIds));
         // 获取用户权限
         List<String> permissions = menuMapper.selectPermsByUserId(userId);
         response.setPermissions(permissions);
@@ -143,14 +143,14 @@ public class AuthServiceImpl implements AuthService {
 
 
     // 获取角色名称列表
-    private List<String> getRoleNames(List<Long> roleIds) {
+    private List<String> getRoleKeys(List<Long> roleIds) {
         if (roleIds == null || roleIds.isEmpty()) {
             return new ArrayList<>();
         }
         LambdaQueryWrapper<SysRoleDomain> wrapper = new LambdaQueryWrapper<>();
         wrapper.in(SysRoleDomain::getId, roleIds);
         return roleMapper.selectList(wrapper).stream()
-                .map(SysRoleDomain::getRoleName)
+                .map(SysRoleDomain::getRoleKey)
                 .collect(Collectors.toList());
     }
 
