@@ -117,7 +117,7 @@ import { getHousePage } from '@/api/community/house'
 import { useUserStore } from '@/stores/user'
 
 const userStore = useUserStore()
-const isOwnerRole = computed(() => (userStore.roles || []).includes('owner'))
+const isOwnerRole = computed(() => (userStore.roles || []).includes('业主'))
 const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)
@@ -138,9 +138,9 @@ const payText = (t) => ({ 1: '现金', 2: '微信', 3: '支付宝', 4: '银行�
 onMounted(async () => {
   fetchData()
   if (!isOwnerRole.value) {
-    const oRes = await getOwnerPage({ pageNum: 1, pageSize: 200 })
+    const oRes = await getOwnerPage({ pageNum: 1, pageSize: 200 }, { silent: true })
     ownerList.value = oRes.data.records
-    const hRes = await getHousePage({ pageNum: 1, pageSize: 200 })
+    const hRes = await getHousePage({ pageNum: 1, pageSize: 200 }, { silent: true })
     houseList.value = hRes.data.records
   }
 })

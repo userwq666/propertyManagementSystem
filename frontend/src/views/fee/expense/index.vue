@@ -137,7 +137,7 @@ import { useUserStore } from '@/stores/user'
 
 const userStore = useUserStore()
 const userId = computed(() => userStore.userInfo.id || userStore.userInfo.userId)
-const managerLike = computed(() => (userStore.roles || []).some(r => ['admin', 'property_admin', 'finance'].includes(r)))
+const managerLike = computed(() => (userStore.roles || []).some(r => ['超级管理员', '物业管理员', '财务'].includes(r)))
 
 const loading = ref(false)
 const tableData = ref([])
