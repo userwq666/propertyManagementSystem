@@ -29,7 +29,7 @@
     <div class="table-container">
       <div class="toolbar">
         <div class="toolbar-left">
-          <el-button type="primary" @click="handleGenerate" v-permission="'fee:record:add'">批量生成账单</el-button>
+          <span class="toolbar-hint">账单由收费项目发布自动生成</span>
         </div>
         <div class="toolbar-right">
           <el-button @click="fetchData">刷新</el-button>
@@ -86,41 +86,15 @@
       </template>
     </el-dialog>
 
-    <el-dialog title="批量生成账单" v-model="genDialogVisible" width="520px">
-      <el-form :model="genForm" label-width="100px">
-        <el-form-item label="收费项目">
-          <el-select v-model="genForm.itemId" placeholder="请选择收费项目" style="width:100%">
-            <el-option v-for="it in feeItems" :key="it.id" :label="it.itemName + '（单价 ' + it.unitPrice + ' ' + (it.unit || '') + '）'" :value="it.id" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="目标房屋">
-          <el-select v-model="genForm.houseIds" multiple filterable placeholder="请选择房屋（可多选）" style="width:100%">
-            <el-option v-for="h in houseList.filter(i => i.id != null)" :key="h.id"
-              :label="(h.buildingNo || '') + ' ' + h.roomNo + '（' + (h.area ?? '-') + '㎡' + (h.ownerName ? '，' + h.ownerName : '') + '）'"
-              :value="h.id" />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <div class="gen-tip">金额将按 房屋面积 × 项目单价 自动计算，已关联业主的房屋才会生成账单</div>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="genDialogVisible=false">取消</el-button>
-          <el-button type="primary" @click="submitGenerate">生成账单</el-button>
-        </div>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getFeeRecordPage, payFeeRecord, generateFeeRecords } from '@/api/fee/record'
+import { getFeeRecordPage, payFeeRecord } from '@/api/fee/record'
 import { getOwnerPage } from '@/api/community/owner'
 import { getHousePage } from '@/api/community/house'
-import { getFeeItemPage } from '@/api/fee/item'
 import { useUserStore } from '@/stores/user'
 
 const userStore = useUserStore()
@@ -129,12 +103,9 @@ const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)
 const payDialogVisible = ref(false)
-const genDialogVisible = ref(false)
 const ownerList = ref([])
 const houseList = ref([])
-const feeItems = ref([])
 const currentPayRow = ref(null)
-const genForm = reactive({ itemId: null, houseIds: [] })
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, ownerId: '', houseId: '', status: '' })
 const payForm = reactive({ payWay: 'WECHAT', paidAmount: 0 })
@@ -150,8 +121,6 @@ onMounted(async () => {
     ownerList.value = oRes.data.records
     const hRes = await getHousePage({ pageNum: 1, pageSize: 200 })
     houseList.value = hRes.data.records
-    const iRes = await getFeeItemPage({ pageNum: 1, pageSize: 200 }, { silent: true })
-    feeItems.value = iRes.data?.records || []
   }
 })
 
@@ -196,20 +165,4 @@ function handleDetail(row) {
   ElMessageBox.alert(detail, '账单详情')
 }
 
-async function handleGenerate() {
-  genForm.itemId = feeItems.value[0]?.id || null
-  genForm.houseIds = []
-  genDialogVisible.value = true
-}
-
-async function submitGenerate() {
-  if (!genForm.itemId) { ElMessage.warning('请选择收费项目'); return }
-  if (!genForm.houseIds.length) { ElMessage.warning('请选择目标房屋'); return }
-  try {
-    await generateFeeRecords({ itemId: genForm.itemId, houseIds: genForm.houseIds })
-    ElMessage.success('账单生成成功')
-    genDialogVisible.value = false
-    fetchData()
-  } catch (e) {}
-}
 </script>
