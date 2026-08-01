@@ -54,7 +54,7 @@
         <el-table-column prop="createTime" label="创建时间" width="160" />
         <el-table-column label="操作" min-width="160" class-name="action-column" fixed="right">
           <template #default="{ row }">
-            <el-button v-if="row.status===0" type="success" size="small" @click="handlePay(row)" v-permission="'fee:record:edit'">缴费</el-button>
+            <el-button v-if="row.status===0" type="success" size="small" @click="handlePay(row)" v-permission="'fee:record:edit'">填报</el-button>
             <el-button type="primary" size="small" @click="handleDetail(row)">详情</el-button>
           </template>
         </el-table-column>
@@ -65,7 +65,7 @@
     </div>
 
     <!-- 缴费弹窗 -->
-    <el-dialog title="确认缴费" v-model="payDialogVisible" width="400px">
+    <el-dialog title="填报收款" v-model="payDialogVisible" width="400px">
       <el-form :model="payForm" label-width="80px">
         <el-form-item label="缴费方式">
           <el-select v-model="payForm.payWay" style="width:100%"><el-option label="现金" value="CASH" /><el-option label="微信" value="WECHAT" /><el-option label="支付宝" value="ALIPAY" /><el-option label="银行转账" value="BANK" /></el-select>
@@ -77,7 +77,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="payDialogVisible=false">取消</el-button>
-          <el-button type="primary" @click="submitPay">确定缴费</el-button>
+          <el-button type="primary" @click="submitPay">确认填报</el-button>
         </div>
       </template>
     </el-dialog>
@@ -141,7 +141,7 @@ function handlePay(row) {
 async function submitPay() {
   try {
     await payFeeRecord(currentPayRow.value.id, payForm.payWay)
-    ElMessage.success('缴费成功')
+    ElMessage.success('填报成功')
     payDialogVisible.value = false
     fetchData()
   } catch (e) {}
