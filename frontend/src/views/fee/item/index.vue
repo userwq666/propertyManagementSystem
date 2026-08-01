@@ -36,9 +36,6 @@
         <el-table-column label="周期" width="80">
           <template #default="{ row }">{{ cycleTypeLabel(row.cycleType) }}</template>
         </el-table-column>
-        <el-table-column prop="dueDay" label="最迟收款日" width="100">
-          <template #default="{ row }">{{ row.dueDay ? '每月' + row.dueDay + '日' : '-' }}</template>
-        </el-table-column>
         <el-table-column label="通知角色" width="140">
           <template #default="{ row }">{{ noticeRolesText(row.noticeRoles) }}</template>
         </el-table-column>
@@ -95,10 +92,6 @@
           <el-tag>单次收费</el-tag>
           <div class="form-tip">生成账单时按房屋面积 × 单价自动计算金额</div>
         </el-form-item>
-        <el-form-item label="最迟收款日" prop="dueDay">
-          <el-input-number v-model="form.dueDay" :min="1" :max="31" placeholder="每月第几天截止" style="width: 100%" />
-          <div class="form-tip">每个收费周期内的截止日期（如 15 = 每月15日）</div>
-        </el-form-item>
         <el-form-item label="通知角色" prop="noticeRoles">
           <el-select v-model="form.noticeRoles" multiple placeholder="选择通知角色" style="width: 100%">
             <el-option v-for="r in roleList" :key="r.id" :label="r.roleName" :value="r.roleKey" />
@@ -140,7 +133,7 @@ const isEdit = ref(false)
 const roleList = ref([])
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, itemName: '', status: null })
-const form = reactive({ id: null, itemName: '物业费', itemType: 1, unitPrice: null, unit: '元/㎡', cycleType: 5, dueDay: null, noticeRoles: [], totalTimes: 1, description: '', status: 0 })
+const form = reactive({ id: null, itemName: '物业费', itemType: 1, unitPrice: null, unit: '元/㎡', cycleType: 5, noticeRoles: [], totalTimes: 1, description: '', status: 0 })
 
 const submitting = ref(false)
 
@@ -194,7 +187,7 @@ function handleEdit(row) {
   Object.assign(form, { ...row, noticeRoles: row.noticeRoles ? String(row.noticeRoles).split(',') : [] })
   dialogVisible.value = true
 }
-function resetForm() { formRef.value?.resetFields(); form.id = null; form.itemName = '物业费'; form.itemType = 1; form.cycleType = 5; form.totalTimes = 1; form.dueDay = null; form.noticeRoles = []; form.status = 0 }
+function resetForm() { formRef.value?.resetFields(); form.id = null; form.itemName = '物业费'; form.itemType = 1; form.cycleType = 5; form.totalTimes = 1; form.noticeRoles = []; form.status = 0 }
 
 async function handleSubmit() {
   if (submitting.value) return
