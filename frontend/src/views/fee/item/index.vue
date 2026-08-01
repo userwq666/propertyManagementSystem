@@ -306,7 +306,7 @@ async function handleToggleStatus(row) {
   const action = newStatus === 1 ? '启用' : '停用'
   await ElMessageBox.confirm(`确定要${action}该收费项目吗？`, '提示', { type: 'warning' })
   try {
-    await updateFeeItemStatus(row.id, newStatus)
+    await updateFeeItemStatus({ id: row.id, status: newStatus })
     ElMessage.success(`${action}成功`)
     fetchData()
   } catch (e) { /* handled */ }
