@@ -18,11 +18,9 @@ import com.lsy.propertymanagementsystem.module.fee.mapper.FeeItemMapper;
 import com.lsy.propertymanagementsystem.module.fee.mapper.FeeItemScopeMapper;
 import com.lsy.propertymanagementsystem.module.fee.mapper.FeeRecordMapper;
 import com.lsy.propertymanagementsystem.module.fee.service.FeeItemService;
-import com.lsy.propertymanagementsystem.module.fee.service.FeeRecordService;
 import com.lsy.propertymanagementsystem.module.system.enums.EnableStatus;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,10 +31,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class FeeItemServiceImpl extends ServiceImpl<FeeItemMapper, FeeItemDomain> implements FeeItemService {
-
-    @Autowired
-    @Lazy
-    private FeeRecordService feeRecordService;
 
     @Autowired
     private FeeItemScopeMapper feeItemScopeMapper;
@@ -119,8 +113,12 @@ public class FeeItemServiceImpl extends ServiceImpl<FeeItemMapper, FeeItemDomain
     @Override
     @Transactional
     public void delete(Long id) {
-        if (feeRecordService.countByItemId(id) > 0) {
-            throw new BusinessException("该收费项目存在关联的收费记录，不允许删除");
+        FeeItemDomain item = super.getById(id);
+        if (item == null) {
+            throw new BusinessException("收费项目不存在");
+        }
+        if (item.getStatus() != EnableStatus.DISABLED) {
+            throw new BusinessException("只有停用状态的收费项目才能删除");
         }
         feeItemScopeMapper.delete(new LambdaQueryWrapper<FeeItemScopeDomain>().eq(FeeItemScopeDomain::getItemId, id));
         this.removeById(id);

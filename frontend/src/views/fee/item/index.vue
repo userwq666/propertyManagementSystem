@@ -57,7 +57,7 @@
         <el-table-column label="操作" min-width="240" class-name="action-column" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'fee:item:edit'">编辑</el-button>
-            <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'fee:item:delete'">删除</el-button>
+            <el-button v-if="row.status === 0" type="danger" size="small" @click="handleDelete(row)" v-permission="'fee:item:delete'">删除</el-button>
             <el-button
               :type="row.status === 1 ? 'warning' : 'success'"
               size="small"
