@@ -13,8 +13,7 @@ const routes = [
         children: [
           { path: 'roles', name: 'SystemRoles', component: () => import('@/views/system/role/index.vue'), meta: { title: '角色管理', icon: 'Avatar', permission: 'system:role:list' } },
           { path: 'users', name: 'SystemUsers', component: () => import('@/views/system/user/index.vue'), meta: { title: '用户管理', icon: 'User', permission: 'system:user:list' } },
-          { path: 'menus', name: 'SystemMenus', component: () => import('@/views/system/menu/index.vue'), meta: { title: '菜单管理', icon: 'Menu', permission: 'system:menu:list' } },
-          { path: 'operLogs', name: 'SystemOperLogs', component: () => import('@/views/system/operLog/index.vue'), meta: { title: '操作日志', icon: 'Document', permission: 'system:operLog:list' } }
+          { path: 'menus', name: 'SystemMenus', component: () => import('@/views/system/menu/index.vue'), meta: { title: '菜单管理', icon: 'Menu', permission: 'system:menu:list' } }
         ]
       },
       { path: 'community', name: 'Community', meta: { title: '社区基础', icon: 'OfficeBuilding' },

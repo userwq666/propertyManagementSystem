@@ -62,24 +62,6 @@ CREATE TABLE sys_role_menu (
     CONSTRAINT fk_role_menu_menu FOREIGN KEY (menu_id) REFERENCES sys_menu(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) COMMENT '角色菜单关联表';
 -- 操作日志表
-CREATE TABLE sys_oper_log (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT NULL COMMENT '操作人ID',
-    user_name VARCHAR(50) COMMENT '操作人账号(冗余)',
-    oper_module VARCHAR(50) COMMENT '操作模块',
-    oper_type VARCHAR(20) COMMENT '操作类型（新增/编辑/删除）',
-    oper_ip VARCHAR(50) COMMENT '请求ip',
-    oper_desc VARCHAR(500) COMMENT '操作描述',
-    create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_oper_log_user FOREIGN KEY (user_id) REFERENCES sys_user(id) ON UPDATE CASCADE ON DELETE SET NULL
-) COMMENT '操作日志表';
--- 索引
-CREATE INDEX idx_user_role_user ON sys_user_role(user_id);
-CREATE INDEX idx_user_role_role ON sys_user_role(role_id);
-CREATE INDEX idx_role_menu_role ON sys_role_menu(role_id);
-CREATE INDEX idx_role_menu_menu ON sys_role_menu(menu_id);
-CREATE INDEX idx_oper_log_user ON sys_oper_log(user_id);
-CREATE INDEX idx_oper_log_time ON sys_oper_log(create_time);
 -- =====================================================================
 -- ===============================================================
 -- 初始数据
@@ -108,7 +90,6 @@ INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, me
 INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status, create_time, update_time, deleted) VALUES (2,1,'用户管理','User','/system/users','system/user/index','system:user:list',1,2,1,'2026-07-31 01:02:22','2026-07-31 21:35:03',0);
 INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status, create_time, update_time, deleted) VALUES (3,1,'角色管理','Avatar','/system/roles','system/role/index','system:role:list',1,1,1,'2026-07-31 01:02:22','2026-07-31 21:35:03',0);
 INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status, create_time, update_time, deleted) VALUES (4,1,'菜单管理','Menu','/system/menus','system/menu/index','system:menu:list',1,3,1,'2026-07-31 01:02:22','2026-07-31 21:35:03',0);
-INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status, create_time, update_time, deleted) VALUES (5,1,'操作日志','Document','/system/operLogs','system/operlog/index','system:operLog:list',1,4,1,'2026-07-31 01:02:22','2026-07-31 21:35:03',0);
 INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status, create_time, update_time, deleted) VALUES (6,0,'社区管理','OfficeBuilding','/community','','',0,3,1,'2026-07-31 01:02:22','2026-07-31 21:35:03',0);
 INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status, create_time, update_time, deleted) VALUES (7,6,'楼栋管理','HomeFilled','/community/buildings','community/building/index','community:building:list',1,1,1,'2026-07-31 01:02:22','2026-07-31 21:35:03',0);
 INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status, create_time, update_time, deleted) VALUES (8,6,'房屋管理','House','/community/houses','community/house/index','community:house:list',1,2,1,'2026-07-31 01:02:22','2026-07-31 21:35:03',0);
@@ -142,7 +123,6 @@ INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, me
 INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status, create_time, update_time, deleted) VALUES (38,4,'菜单新增',NULL,'','','system:menu:add',2,1,1,'2026-07-31 01:02:22','2026-07-31 01:02:22',0);
 INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status, create_time, update_time, deleted) VALUES (39,4,'菜单编辑',NULL,'','','system:menu:edit',2,2,1,'2026-07-31 01:02:22','2026-07-31 01:02:22',0);
 INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status, create_time, update_time, deleted) VALUES (40,4,'菜单删除',NULL,'','','system:menu:delete',2,3,1,'2026-07-31 01:02:22','2026-07-31 01:02:22',0);
-INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status, create_time, update_time, deleted) VALUES (41,5,'日志删除',NULL,'','','system:operLog:delete',2,1,1,'2026-07-31 01:02:22','2026-07-31 01:02:22',0);
 INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status, create_time, update_time, deleted) VALUES (42,7,'楼栋新增',NULL,'','','community:building:add',2,1,1,'2026-07-31 01:02:22','2026-07-31 01:02:22',0);
 INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status, create_time, update_time, deleted) VALUES (43,7,'楼栋编辑',NULL,'','','community:building:edit',2,2,1,'2026-07-31 01:02:22','2026-07-31 01:02:22',0);
 INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status, create_time, update_time, deleted) VALUES (44,7,'楼栋删除',NULL,'','','community:building:delete',2,3,1,'2026-07-31 01:02:22','2026-07-31 01:02:22',0);
@@ -192,7 +172,6 @@ INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (1,1,1);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (2,1,2);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (3,1,3);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (4,1,4);
-INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (5,1,5);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (6,1,6);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (7,1,7);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (8,1,8);
@@ -226,7 +205,6 @@ INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (36,1,36);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (38,1,38);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (39,1,39);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (40,1,40);
-INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (41,1,41);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (42,1,42);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (43,1,43);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (44,1,44);
@@ -275,7 +253,6 @@ INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (1935,2,1);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (1849,2,2);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (1936,2,3);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (1854,2,4);
-INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (1858,2,5);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (1868,2,6);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (1869,2,7);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (1873,2,8);
@@ -308,7 +285,6 @@ INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (1848,2,35);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (1855,2,38);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (1856,2,39);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (1857,2,40);
-INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (1859,2,41);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (1870,2,42);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (1871,2,43);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (1872,2,44);
