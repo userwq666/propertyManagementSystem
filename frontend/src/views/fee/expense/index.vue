@@ -47,6 +47,7 @@
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column label="操作" min-width="220" class-name="action-column" fixed="right">
           <template #default="{ row }">
+            <el-button size="small" @click="handleDetail(row)">详情</el-button>
             <el-button v-if="canEdit(row)" type="primary" size="small" @click="handleEdit(row)" v-permission="'fee:expense:edit'">编辑</el-button>
             <el-button v-if="row.auditStatus === 0" type="success" size="small" @click="openAudit(row)" v-permission="'fee:expense:audit'">审核</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'fee:expense:delete'">删除</el-button>
@@ -108,6 +109,23 @@
         </div>
       </template>
     </el-dialog>
+
+    <el-dialog title="消费事项详情" v-model="detailDialogVisible" width="640px">
+      <el-descriptions :column="2" border v-if="detailRow">
+        <el-descriptions-item label="事项名称">{{ detailRow.expenseName }}</el-descriptions-item>
+        <el-descriptions-item label="支出类型">{{ detailRow.expenseTypeName || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="支出金额">{{ detailRow.amount ?? '-' }} 元</el-descriptions-item>
+        <el-descriptions-item label="支出日期">{{ detailRow.expenseDate || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="审核状态">
+          <el-tag :type="auditTag(detailRow.auditStatus)">{{ auditText(detailRow.auditStatus) }}</el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="审核人">{{ detailRow.auditorName || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="审核时间">{{ detailRow.auditTime || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="记录人">{{ detailRow.creatorName || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="说明" :span="2">{{ detailRow.content || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="记录时间" :span="2">{{ detailRow.createTime }}</el-descriptions-item>
+      </el-descriptions>
+    </el-dialog>
   </div>
 </template>
 
@@ -126,9 +144,11 @@ const tableData = ref([])
 const total = ref(0)
 const dialogVisible = ref(false)
 const auditDialogVisible = ref(false)
+const detailDialogVisible = ref(false)
 const formRef = ref(null)
 const isEdit = ref(false)
 const auditRow = ref(null)
+const detailRow = ref(null)
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, expenseName: '', expenseType: '' })
 const form = reactive({ id: null, expenseName: '', expenseType: 1, amount: null, expenseDate: '', content: '' })
@@ -194,6 +214,11 @@ function openAudit(row) {
   auditRow.value = row
   auditForm.status = 1
   auditDialogVisible.value = true
+}
+
+function handleDetail(row) {
+  detailRow.value = row
+  detailDialogVisible.value = true
 }
 
 async function submitAudit() {
