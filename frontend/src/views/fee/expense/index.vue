@@ -48,8 +48,7 @@
         <el-table-column label="操作" min-width="180" class-name="action-column" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'fee:expense:edit'">编辑</el-button>
-            <el-button v-if="row.auditStatus === 0" type="success" size="small" @click="handleAudit(row, 1)" v-permission="'fee:expense:edit'">通过</el-button>
-            <el-button v-if="row.auditStatus === 0" type="warning" size="small" @click="handleAudit(row, 2)" v-permission="'fee:expense:edit'">驳回</el-button>
+            <el-button v-if="row.auditStatus === 0" type="success" size="small" @click="openAudit(row)" v-permission="'fee:expense:edit'">审核</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'fee:expense:delete'">删除</el-button>
           </template>
         </el-table-column>
@@ -86,6 +85,29 @@
         </div>
       </template>
     </el-dialog>
+
+    <el-dialog title="审核消费事项" v-model="auditDialogVisible" width="420px">
+      <el-form :model="auditForm" label-width="90px">
+        <el-form-item label="事项名称">
+          <span>{{ auditRow?.expenseName }}</span>
+        </el-form-item>
+        <el-form-item label="支出金额">
+          <span>{{ auditRow?.amount ?? '-' }} 元</span>
+        </el-form-item>
+        <el-form-item label="审核结果">
+          <el-radio-group v-model="auditForm.status">
+            <el-radio :value="1">通过（向业主公示）</el-radio>
+            <el-radio :value="2">驳回</el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="auditDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="submitAudit">确定</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -98,11 +120,14 @@ const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)
 const dialogVisible = ref(false)
+const auditDialogVisible = ref(false)
 const formRef = ref(null)
 const isEdit = ref(false)
+const auditRow = ref(null)
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, expenseName: '', expenseType: '' })
 const form = reactive({ id: null, expenseName: '', expenseType: 1, amount: null, expenseDate: '', content: '' })
+const auditForm = reactive({ status: 1 })
 
 const submitting = ref(false)
 const dialogTitle = computed(() => isEdit.value ? '编辑消费事项' : '新增消费事项')
@@ -156,12 +181,17 @@ async function handleDelete(row) {
   } catch (e) { /* handled */ }
 }
 
-async function handleAudit(row, status) {
-  const action = status === 1 ? '通过' : '驳回'
-  await ElMessageBox.confirm(`确定${action}该消费事项？${action === '通过' ? '通过后将向业主公示' : ''}`, '提示', { type: 'warning' })
+function openAudit(row) {
+  auditRow.value = row
+  auditForm.status = 1
+  auditDialogVisible.value = true
+}
+
+async function submitAudit() {
   try {
-    await auditFeeExpense({ id: row.id, status })
-    ElMessage.success(`${action}成功`)
+    await auditFeeExpense({ id: auditRow.value.id, status: auditForm.status })
+    ElMessage.success(auditForm.status === 1 ? '审核通过，已向业主公示' : '已驳回')
+    auditDialogVisible.value = false
     fetchData()
   } catch (e) { /* handled */ }
 }
