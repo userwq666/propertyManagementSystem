@@ -29,7 +29,8 @@ const routes = [
         children: [
           { path: 'items', name: 'FeeItems', component: () => import('@/views/fee/item/index.vue'), meta: { title: '收费项目', icon: 'List', permission: 'fee:item:list' } },
           { path: 'notices', name: 'FeeNotices', component: () => import('@/views/fee/notice/index.vue'), meta: { title: '收费通知', icon: 'Bell', permission: 'fee:notice:list' } },
-          { path: 'records', name: 'FeeRecords', component: () => import('@/views/fee/record/index.vue'), meta: { title: '收费记录', icon: 'Tickets', permission: 'fee:record:list' } }
+          { path: 'records', name: 'FeeRecords', component: () => import('@/views/fee/record/index.vue'), meta: { title: '收费记录', icon: 'Tickets', permission: 'fee:record:list' } },
+          { path: 'expenses', name: 'FeeExpenses', component: () => import('@/views/fee/expense/index.vue'), meta: { title: '消费事项', icon: 'List', permission: 'fee:expense:list' } }
         ]
       },
       { path: 'equipment', name: 'Equipment', meta: { title: '设备管理', icon: 'Monitor' },
