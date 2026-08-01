@@ -7,7 +7,9 @@ import com.lsy.propertymanagementsystem.common.exception.BusinessException;
 import com.lsy.propertymanagementsystem.module.fee.domain.FeeNoticeDomain;
 import com.lsy.propertymanagementsystem.module.fee.dto.FeeNoticeDTO;
 import com.lsy.propertymanagementsystem.module.fee.dto.FeeNoticeVO;
+import com.lsy.propertymanagementsystem.module.fee.domain.FeeItemDomain;
 import com.lsy.propertymanagementsystem.module.fee.mapper.FeeNoticeMapper;
+import com.lsy.propertymanagementsystem.module.fee.mapper.FeeItemMapper;
 import com.lsy.propertymanagementsystem.module.fee.service.FeeNoticeService;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserDomain;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserMapper;
@@ -26,6 +28,9 @@ public class FeeNoticeServiceImpl extends ServiceImpl<FeeNoticeMapper, FeeNotice
 
     @Autowired
     private SysUserMapper sysUserMapper;
+
+    @Autowired
+    private FeeItemMapper feeItemMapper;
 
     @Override
     @Transactional
@@ -122,6 +127,12 @@ public class FeeNoticeServiceImpl extends ServiceImpl<FeeNoticeMapper, FeeNotice
         }
         FeeNoticeVO vo = new FeeNoticeVO();
         BeanUtils.copyProperties(domain, vo);
+        if (domain.getItemId() != null) {
+            FeeItemDomain item = feeItemMapper.selectById(domain.getItemId());
+            if (item != null) {
+                vo.setItemName(item.getItemName());
+            }
+        }
         if (creatorNameMap.containsKey(domain.getCreatorId())) {
             vo.setCreatorName(creatorNameMap.get(domain.getCreatorId()));
         }

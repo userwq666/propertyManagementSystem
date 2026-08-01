@@ -1,0 +1,1 @@
+import{aa as t}from"./index-C61eWQMe.js";function o(e){return t({url:"/equipment/category",method:"post",data:e})}function u(e){return t({url:"/equipment/category",method:"put",data:e})}function n(e){return t({url:`/equipment/category/${e}`,method:"delete"})}function g(e,r={}){return t({url:"/equipment/category/page",method:"get",params:e,...r})}export{o as a,n as d,g,u};

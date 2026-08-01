@@ -48,6 +48,7 @@
         <el-table-column prop="createTime" label="创建时间" width="180" />
         <el-table-column label="操作" min-width="240" class-name="action-column" fixed="right">
           <template #default="{ row }">
+            <el-button size="small" @click="handleDetail(row)">详情</el-button>
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'fee:notice:edit'">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'fee:notice:delete'">删除</el-button>
             <el-button
@@ -101,6 +102,22 @@
         </div>
       </template>
     </el-dialog>
+
+    <el-dialog title="收费通知详情" v-model="detailDialogVisible" width="640px">
+      <el-descriptions :column="2" border v-if="detailRow">
+        <el-descriptions-item label="通知标题" :span="2">{{ detailRow.noticeTitle }}</el-descriptions-item>
+        <el-descriptions-item label="通知类型">{{ noticeTypeLabel(detailRow.noticeType) }}</el-descriptions-item>
+        <el-descriptions-item label="关联项目">{{ detailRow.itemName || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="发送范围">{{ sendScopeText(detailRow.sendScope) }}</el-descriptions-item>
+        <el-descriptions-item label="发送状态">
+          <el-tag :type="detailRow.sendStatus === 1 ? 'success' : 'info'">{{ detailRow.sendStatus === 1 ? '已发送' : '未发送' }}</el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="发送时间" :span="2">{{ detailRow.sendTime || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="通知内容" :span="2">{{ detailRow.noticeContent || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="创建人">{{ detailRow.creatorName || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="创建时间">{{ detailRow.createTime }}</el-descriptions-item>
+      </el-descriptions>
+    </el-dialog>
   </div>
 </template>
 
@@ -113,8 +130,10 @@ const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)
 const dialogVisible = ref(false)
+const detailDialogVisible = ref(false)
 const formRef = ref(null)
 const isEdit = ref(false)
+const detailRow = ref(null)
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, noticeType: null, sendStatus: null })
 const form = reactive({ id: null, noticeTitle: '', noticeContent: '', noticeType: 0, sendScope: 0, sendStatus: 0, creatorId: null })
@@ -150,6 +169,8 @@ function resetSearch() { searchForm.noticeType = null; searchForm.sendStatus = n
 
 function handleAdd() { isEdit.value = false; resetForm(); dialogVisible.value = true }
 function handleEdit(row) { isEdit.value = true; Object.assign(form, row); dialogVisible.value = true }
+function handleDetail(row) { detailRow.value = row; detailDialogVisible.value = true }
+const sendScopeText = (s) => ({ 0: '全部', 1: '指定楼栋' }[s] || '全部')
 function resetForm() { formRef.value?.resetFields(); form.id = null; form.noticeType = 0; form.sendScope = 0; form.sendStatus = 0 }
 
 async function handleSubmit() {
