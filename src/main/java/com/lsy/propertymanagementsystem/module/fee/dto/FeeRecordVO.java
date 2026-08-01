@@ -14,6 +14,7 @@ public class FeeRecordVO {
     private String feeNo;
     private Long ownerId;
     private String ownerName;
+    private String ownerPhone;
     private Long houseId;
     private String roomNo;
     private Long itemId;

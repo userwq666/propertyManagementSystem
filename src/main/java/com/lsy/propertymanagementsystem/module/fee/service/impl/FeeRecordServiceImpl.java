@@ -208,6 +208,10 @@ public class FeeRecordServiceImpl implements FeeRecordService {
                 ? communityOwnerMapper.selectBatchIds(ownerIds).stream()
                     .collect(Collectors.toMap(CommunityOwnerDomain::getId, CommunityOwnerDomain::getName))
                 : java.util.Collections.emptyMap();
+        Map<Long, String> ownerPhoneMap = !ownerIds.isEmpty()
+                ? communityOwnerMapper.selectBatchIds(ownerIds).stream()
+                    .collect(Collectors.toMap(CommunityOwnerDomain::getId, CommunityOwnerDomain::getPhone))
+                : java.util.Collections.emptyMap();
 
         Map<Long, String> houseRoomMap = !houseIds.isEmpty()
                 ? communityHouseMapper.selectBatchIds(houseIds).stream()
@@ -219,14 +223,14 @@ public class FeeRecordServiceImpl implements FeeRecordService {
                     .collect(Collectors.toMap(FeeItemDomain::getId, FeeItemDomain::getItemName))
                 : java.util.Collections.emptyMap();
 
-        return domains.stream().map(domain -> convertToVO(domain, ownerNameMap, houseRoomMap, itemNameMap)).collect(Collectors.toList());
+        return domains.stream().map(domain -> convertToVO(domain, ownerNameMap, ownerPhoneMap, houseRoomMap, itemNameMap)).collect(Collectors.toList());
     }
 
     private FeeRecordVO convertToVO(FeeRecordDomain domain) {
-        return convertToVO(domain, null, null, null);
+        return convertToVO(domain, null, null, null, null);
     }
 
-    private FeeRecordVO convertToVO(FeeRecordDomain domain, Map<Long, String> ownerNameMap, Map<Long, String> houseRoomMap, Map<Long, String> itemNameMap) {
+    private FeeRecordVO convertToVO(FeeRecordDomain domain, Map<Long, String> ownerNameMap, Map<Long, String> ownerPhoneMap, Map<Long, String> houseRoomMap, Map<Long, String> itemNameMap) {
         if (domain == null) {
             return null;
         }
@@ -234,6 +238,9 @@ public class FeeRecordServiceImpl implements FeeRecordService {
         BeanUtils.copyProperties(domain, vo);
         if (ownerNameMap != null && ownerNameMap.containsKey(domain.getOwnerId())) {
             vo.setOwnerName(ownerNameMap.get(domain.getOwnerId()));
+        }
+        if (ownerPhoneMap != null && ownerPhoneMap.containsKey(domain.getOwnerId())) {
+            vo.setOwnerPhone(ownerPhoneMap.get(domain.getOwnerId()));
         }
         if (houseRoomMap != null && houseRoomMap.containsKey(domain.getHouseId())) {
             vo.setRoomNo(houseRoomMap.get(domain.getHouseId()));

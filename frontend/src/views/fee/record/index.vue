@@ -72,11 +72,14 @@
           <el-tag :type="statusTag(detailRow.status)">{{ statusText(detailRow.status) }}</el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="业主">{{ detailRow.ownerName || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="业主电话">{{ detailRow.ownerPhone || '-' }}</el-descriptions-item>
         <el-descriptions-item label="房间号">{{ detailRow.roomNo || '-' }}</el-descriptions-item>
         <el-descriptions-item label="收费项目">{{ detailRow.itemName || '-' }}</el-descriptions-item>
         <el-descriptions-item label="应收金额">{{ detailRow.amount ?? '-' }}</el-descriptions-item>
+        <el-descriptions-item label="实缴金额">{{ detailRow.paidAmount ?? '-' }}</el-descriptions-item>
         <el-descriptions-item label="缴费方式">{{ payText(detailRow.payType) || '-' }}</el-descriptions-item>
         <el-descriptions-item label="缴费时间">{{ detailRow.payTime || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="备注" :span="2">{{ detailRow.remark || '-' }}</el-descriptions-item>
         <el-descriptions-item label="创建时间" :span="2">{{ detailRow.createTime }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
@@ -130,7 +133,7 @@ const payForm = reactive({ payWay: 'WECHAT', paidAmount: null, remark: '' })
 
 const statusTag = (s) => ({ 0: 'warning', 1: 'warning', 2: 'success', 3: 'danger', 4: 'info' }[s] || 'info')
 const statusText = (s) => ({ 0: '待缴费', 1: '部分缴费', 2: '已缴费', 3: '逾期', 4: '作废' }[s] || '')
-const payText = (t) => ({ 'CASH': '现金', 'WECHAT': '微信', 'ALIPAY': '支付宝', 'BANK': '银行转账' }[t] || '')
+const payText = (t) => ({ 1: '现金', 2: '微信', 3: '支付宝', 4: '银行卡', 5: '转账' }[t] || '')
 
 onMounted(async () => {
   fetchData()
