@@ -36,8 +36,8 @@
         <el-table-column label="周期" width="80">
           <template #default="{ row }">{{ cycleTypeLabel(row.cycleType) }}</template>
         </el-table-column>
-        <el-table-column label="通知角色" width="140">
-          <template #default="{ row }">{{ noticeRolesText(row.noticeRoles) }}</template>
+        <el-table-column label="通知角色" width="90">
+          <template #default="{ row }">业主</template>
         </el-table-column>
         <el-table-column label="发布状态" width="90">
           <template #default="{ row }">
@@ -98,11 +98,9 @@
           <el-tag>单次收费</el-tag>
           <div class="form-tip">生成账单时按房屋面积 × 单价自动计算金额</div>
         </el-form-item>
-        <el-form-item label="通知角色" prop="noticeRoles">
-          <el-select v-model="form.noticeRoles" multiple placeholder="选择通知角色" style="width: 100%">
-            <el-option v-for="r in roleList" :key="r.id" :label="r.roleName" :value="r.roleKey" />
-          </el-select>
-          <div class="form-tip">按角色身份通知，如选择"业主"则通知业主缴费</div>
+        <el-form-item label="通知角色">
+          <el-tag type="primary">业主</el-tag>
+          <div class="form-tip">收费通知固定发送给业主</div>
         </el-form-item>
         <el-form-item label="收费范围">
           <el-tree
@@ -140,7 +138,6 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { addFeeItem, updateFeeItem, deleteFeeItem, getFeeItemPage, updateFeeItemStatus, publishFeeItem } from '@/api/fee/item'
-import { getRoleList } from '@/api/system/role'
 import { getBuildingPage } from '@/api/community/building'
 import { getHousePage } from '@/api/community/house'
 
@@ -150,12 +147,11 @@ const total = ref(0)
 const dialogVisible = ref(false)
 const formRef = ref(null)
 const isEdit = ref(false)
-const roleList = ref([])
 const scopeTreeRef = ref(null)
 const scopeTreeData = ref([])
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, itemName: '', status: null })
-const form = reactive({ id: null, itemName: '物业费', itemType: 1, unitPrice: null, unit: '元/㎡', cycleType: 5, noticeRoles: [], totalTimes: 1, scopeType: 1, scopeIds: [], description: '', status: 0 })
+const form = reactive({ id: null, itemName: '物业费', itemType: 1, unitPrice: null, unit: '元/㎡', cycleType: 5, noticeRoles: 'owner', totalTimes: 1, scopeType: 1, scopeIds: [], description: '', status: 1 })
 
 const submitting = ref(false)
 
@@ -173,21 +169,7 @@ const itemTypeMap = { 1: '物业费', 2: '车位费', 3: '水费', 4: '电费', 
 const cycleTypeMap = { 1: '按月', 2: '按季', 3: '按半年', 4: '按年', 5: '一次性' }
 function itemTypeLabel(t) { return itemTypeMap[t] || '未知' }
 function cycleTypeLabel(t) { return cycleTypeMap[t] || '未知' }
-function noticeRolesText(roles) {
-  if (!roles) return '-'
-  const keys = String(roles).split(',')
-  const nameMap = Object.fromEntries(roleList.value.map(r => [r.roleKey, r.roleName]))
-  return keys.map(k => nameMap[k] || k).join('、')
-}
-
-onMounted(() => { fetchData(); loadRoles(); loadScopeTree() })
-
-async function loadRoles() {
-  try {
-    const res = await getRoleList()
-    roleList.value = res.data || []
-  } catch (e) { /* ignore */ }
-}
+onMounted(() => { fetchData(); loadScopeTree() })
 
 async function loadScopeTree() {
   try {
@@ -234,7 +216,7 @@ function resetSearch() { searchForm.itemName = ''; searchForm.status = null; han
 function handleAdd() { isEdit.value = false; resetForm(); dialogVisible.value = true }
 function handleEdit(row) {
   isEdit.value = true
-  Object.assign(form, { ...row, noticeRoles: row.noticeRoles ? String(row.noticeRoles).split(',') : [] })
+  Object.assign(form, { ...row, noticeRoles: 'owner' })
   dialogVisible.value = true
   // 回填范围树勾选
   requestAnimationFrame(() => {
@@ -248,7 +230,7 @@ function handleEdit(row) {
     }
   })
 }
-function resetForm() { formRef.value?.resetFields(); form.id = null; form.itemName = '物业费'; form.itemType = 1; form.cycleType = 5; form.totalTimes = 1; form.noticeRoles = []; form.scopeType = 1; form.scopeIds = []; form.status = 0; scopeTreeRef.value?.setCheckedKeys([]) }
+function resetForm() { formRef.value?.resetFields(); form.id = null; form.itemName = '物业费'; form.itemType = 1; form.cycleType = 5; form.totalTimes = 1; form.noticeRoles = 'owner'; form.scopeType = 1; form.scopeIds = []; form.status = 1; scopeTreeRef.value?.setCheckedKeys([]) }
 
 function resolveScope() {
   const tree = scopeTreeRef.value
@@ -274,7 +256,7 @@ async function handleSubmit() {
   if (!valid) return
   try {
     const scope = resolveScope()
-    const payload = { ...form, noticeRoles: Array.isArray(form.noticeRoles) ? form.noticeRoles.join(',') : form.noticeRoles, scopeType: scope.scopeType, scopeIds: scope.scopeIds }
+    const payload = { ...form, noticeRoles: 'owner', scopeType: scope.scopeType, scopeIds: scope.scopeIds }
     if (isEdit.value) { await updateFeeItem(payload) }
     else { await addFeeItem(payload) }
     ElMessage.success(isEdit.value ? '编辑成功' : '新增成功')
