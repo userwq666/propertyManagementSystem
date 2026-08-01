@@ -8,6 +8,7 @@ import com.lsy.propertymanagementsystem.module.community.domain.CommunityHouseDo
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityHouseMapper;
 import com.lsy.propertymanagementsystem.module.fee.domain.FeeItemDomain;
 import com.lsy.propertymanagementsystem.module.fee.domain.FeeItemScopeDomain;
+import com.lsy.propertymanagementsystem.module.fee.domain.FeeNoticeDomain;
 import com.lsy.propertymanagementsystem.module.fee.domain.FeeRecordDomain;
 import com.lsy.propertymanagementsystem.module.fee.dto.FeeItemDTO;
 import com.lsy.propertymanagementsystem.module.fee.dto.FeeItemVO;
@@ -16,6 +17,7 @@ import com.lsy.propertymanagementsystem.module.fee.enums.FeeRecordStatus;
 import com.lsy.propertymanagementsystem.module.fee.enums.FeeItemType;
 import com.lsy.propertymanagementsystem.module.fee.mapper.FeeItemMapper;
 import com.lsy.propertymanagementsystem.module.fee.mapper.FeeItemScopeMapper;
+import com.lsy.propertymanagementsystem.module.fee.mapper.FeeNoticeMapper;
 import com.lsy.propertymanagementsystem.module.fee.mapper.FeeRecordMapper;
 import com.lsy.propertymanagementsystem.module.fee.service.FeeItemService;
 import com.lsy.propertymanagementsystem.module.system.enums.EnableStatus;
@@ -40,6 +42,9 @@ public class FeeItemServiceImpl extends ServiceImpl<FeeItemMapper, FeeItemDomain
 
     @Autowired
     private FeeRecordMapper feeRecordMapper;
+
+    @Autowired
+    private FeeNoticeMapper feeNoticeMapper;
 
     @Override
     public FeeItemVO getById(Long id) {
@@ -164,8 +169,33 @@ public class FeeItemServiceImpl extends ServiceImpl<FeeItemMapper, FeeItemDomain
         if (count == 0) {
             throw new BusinessException("范围内房屋均未关联业主，无法生成账单");
         }
+        // 同步生成收费通知
+        FeeNoticeDomain notice = new FeeNoticeDomain();
+        notice.setNoticeTitle(item.getItemName() + "缴费通知");
+        notice.setNoticeContent("【" + item.getItemName() + "】单价 " + item.getUnitPrice()
+                + (item.getUnit() != null ? " " + item.getUnit() : "")
+                + "，本次已生成 " + count + " 条待缴费账单，请相关业主及时缴纳。");
+        notice.setNoticeType(1);
+        notice.setSendScope(noticeScopeOf(item.getScopeType()));
+        notice.setSendStatus(1);
+        notice.setSendTime(java.time.LocalDateTime.now());
+        notice.setItemId(item.getId());
+        notice.setCreatorId(com.lsy.propertymanagementsystem.common.utils.SecurityUtils.getCurrentUserId());
+        feeNoticeMapper.insert(notice);
         item.setPublished(1);
         this.updateById(item);
+    }
+
+    private Integer noticeScopeOf(Integer scopeType) {
+        if (scopeType == null) {
+            return 1;
+        }
+        switch (scopeType) {
+            case 2: return 2;   // 楼栋
+            case 3: return 3;   // 房屋
+            case 4: return 3;   // 业主
+            default: return 1;  // 全体
+        }
     }
 
     private List<Long> resolveScopeHouses(FeeItemDomain item) {
