@@ -80,8 +80,8 @@ router.beforeEach(async (to, from, next) => {
 
   const userStore = useUserStore()
 
-  // 有 token 但权限为空时，调用 /api/auth/me 获取用户信息和权限
-  if (!userInfoReady && userStore.permissions.length === 0) {
+  // 首次进入应用时调用 /api/auth/me 刷新用户信息与权限，避免旧权限快照
+  if (!userInfoReady) {
     if (!userInfoPromise) {
       userInfoPromise = userStore.getUserInfo().then(() => {
         userInfoReady = true
