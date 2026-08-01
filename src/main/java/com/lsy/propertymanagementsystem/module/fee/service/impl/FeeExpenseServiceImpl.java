@@ -1,0 +1,100 @@
+package com.lsy.propertymanagementsystem.module.fee.service.impl;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.lsy.propertymanagementsystem.common.exception.BusinessException;
+import com.lsy.propertymanagementsystem.common.utils.SecurityUtils;
+import com.lsy.propertymanagementsystem.module.fee.domain.FeeExpenseDomain;
+import com.lsy.propertymanagementsystem.module.fee.dto.FeeExpenseDTO;
+import com.lsy.propertymanagementsystem.module.fee.dto.FeeExpenseVO;
+import com.lsy.propertymanagementsystem.module.fee.mapper.FeeExpenseMapper;
+import com.lsy.propertymanagementsystem.module.fee.service.FeeExpenseService;
+import com.lsy.propertymanagementsystem.module.system.domain.SysUserDomain;
+import com.lsy.propertymanagementsystem.module.system.mapper.SysUserMapper;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+@Service
+public class FeeExpenseServiceImpl extends ServiceImpl<FeeExpenseMapper, FeeExpenseDomain> implements FeeExpenseService {
+
+    @Autowired
+    private SysUserMapper sysUserMapper;
+
+    @Override
+    public Page<FeeExpenseVO> page(int pageNum, int pageSize, String expenseName, Integer expenseType) {
+        LambdaQueryWrapper<FeeExpenseDomain> wrapper = new LambdaQueryWrapper<>();
+        if (expenseName != null && !expenseName.isEmpty()) {
+            wrapper.like(FeeExpenseDomain::getExpenseName, expenseName);
+        }
+        if (expenseType != null) {
+            wrapper.eq(FeeExpenseDomain::getExpenseType, expenseType);
+        }
+        wrapper.orderByDesc(FeeExpenseDomain::getExpenseDate).orderByDesc(FeeExpenseDomain::getCreateTime);
+        Page<FeeExpenseDomain> domainPage = this.page(new Page<>(pageNum, pageSize), wrapper);
+        Page<FeeExpenseVO> voPage = new Page<>(pageNum, pageSize, domainPage.getTotal());
+        voPage.setRecords(convertToVO(domainPage.getRecords()));
+        return voPage;
+    }
+
+    @Override
+    @Transactional
+    public void add(FeeExpenseDTO dto) {
+        FeeExpenseDomain domain = new FeeExpenseDomain();
+        BeanUtils.copyProperties(dto, domain);
+        domain.setCreatorId(SecurityUtils.getCurrentUserId());
+        this.save(domain);
+    }
+
+    @Override
+    @Transactional
+    public void update(FeeExpenseDTO dto) {
+        FeeExpenseDomain existing = this.getById(dto.getId());
+        if (existing == null) {
+            throw new BusinessException("消费事项不存在");
+        }
+        BeanUtils.copyProperties(dto, existing);
+        this.updateById(existing);
+    }
+
+    @Override
+    @Transactional
+    public void delete(Long id) {
+        this.removeById(id);
+    }
+
+    private List<FeeExpenseVO> convertToVO(List<FeeExpenseDomain> domains) {
+        if (domains.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<Long> creatorIds = domains.stream().map(FeeExpenseDomain::getCreatorId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+        Map<Long, String> creatorNameMap = creatorIds.isEmpty() ? Collections.emptyMap()
+                : sysUserMapper.selectBatchIds(creatorIds).stream()
+                        .collect(Collectors.toMap(SysUserDomain::getId, SysUserDomain::getRealName));
+        return domains.stream().map(d -> {
+            FeeExpenseVO vo = new FeeExpenseVO();
+            BeanUtils.copyProperties(d, vo);
+            vo.setExpenseTypeName(expenseTypeName(d.getExpenseType()));
+            vo.setCreatorName(creatorNameMap.get(d.getCreatorId()));
+            return vo;
+        }).collect(Collectors.toList());
+    }
+
+    private String expenseTypeName(Integer type) {
+        if (type == null) return "";
+        switch (type) {
+            case 1: return "维修";
+            case 2: return "人工";
+            case 3: return "材料";
+            default: return "其他";
+        }
+    }
+}

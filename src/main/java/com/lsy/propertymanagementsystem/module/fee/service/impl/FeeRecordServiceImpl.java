@@ -52,14 +52,37 @@ public class FeeRecordServiceImpl implements FeeRecordService {
 
     @Override
     @Transactional
-    public void generateBills(List<FeeRecordDTO> domains) {
-        for (FeeRecordDTO dto : domains) {
-            if (feeItemService.getById(dto.getItemId()) == null) {
-                throw new BusinessException("收费项目不存在，itemId=" + dto.getItemId());
+    public void generateBills(Long itemId, List<Long> houseIds) {
+        FeeItemDomain item = feeItemMapper.selectById(itemId);
+        if (item == null) {
+            throw new BusinessException("收费项目不存在");
+        }
+        if (item.getUnitPrice() == null) {
+            throw new BusinessException("收费项目未设置单价");
+        }
+        if (houseIds == null || houseIds.isEmpty()) {
+            throw new BusinessException("请选择要生成账单的房屋");
+        }
+        List<CommunityHouseDomain> houses = communityHouseMapper.selectBatchIds(houseIds);
+        for (CommunityHouseDomain house : houses) {
+            if (house == null) {
+                continue;
             }
-            FeeRecordDomain domain = new FeeRecordDomain();
-            BeanUtils.copyProperties(dto, domain);
-            feeRecordMapper.insert(domain);
+            if (house.getOwnerId() == null) {
+                throw new BusinessException("房屋 " + house.getRoomNo() + " 未关联业主，无法生成账单");
+            }
+            BigDecimal amount = house.getArea() != null
+                    ? item.getUnitPrice().multiply(house.getArea()).setScale(2, java.math.RoundingMode.HALF_UP)
+                    : item.getUnitPrice();
+            FeeRecordDomain record = new FeeRecordDomain();
+            record.setFeeNo("FEE" + java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase());
+            record.setOwnerId(house.getOwnerId());
+            record.setHouseId(house.getId());
+            record.setItemId(item.getId());
+            record.setAmount(amount);
+            record.setPaidAmount(java.math.BigDecimal.ZERO);
+            record.setStatus(FeeRecordStatus.UNPAID);
+            feeRecordMapper.insert(record);
         }
     }
 

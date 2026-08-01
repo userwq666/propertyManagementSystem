@@ -47,7 +47,7 @@
         </el-table-column>
         <el-table-column label="状态" width="80">
           <template #default="{ row }">
-            <el-tag :type="row.status === 0 ? 'success' : 'danger'">{{ row.status === 0 ? '启用' : '停用' }}</el-tag>
+            <el-tag :type="row.status === 1 ? 'success' : 'danger'">{{ row.status === 1 ? '启用' : '停用' }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="description" label="描述" show-overflow-tooltip />
@@ -57,10 +57,10 @@
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'fee:item:edit'">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'fee:item:delete'">删除</el-button>
             <el-button
-              :type="row.status === 0 ? 'warning' : 'success'"
+              :type="row.status === 1 ? 'warning' : 'success'"
               size="small"
               @click="handleToggleStatus(row)"
-             v-permission="'fee:item:edit'">{{ row.status === 0 ? '停用' : '启用' }}</el-button>
+            v-permission="'fee:item:edit'">{{ row.status === 1 ? '停用' : '启用' }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -82,16 +82,8 @@
         <el-form-item label="项目名称" prop="itemName">
           <el-input v-model="form.itemName" placeholder="请输入项目名称" />
         </el-form-item>
-        <el-form-item label="类型" prop="itemType">
-          <el-select v-model="form.itemType" placeholder="请选择类型" style="width: 100%">
-            <el-option label="物业费" :value="1" />
-            <el-option label="车位费" :value="2" />
-            <el-option label="水费" :value="3" />
-            <el-option label="电费" :value="4" />
-            <el-option label="燃气费" :value="5" />
-            <el-option label="暖气费" :value="6" />
-            <el-option label="其他" :value="9" />
-          </el-select>
+        <el-form-item label="类型">
+          <el-tag type="primary">物业费</el-tag>
         </el-form-item>
         <el-form-item label="单价" prop="unitPrice">
           <el-input-number v-model="form.unitPrice" :min="0" :precision="2" placeholder="请输入单价" style="width: 100%" />
@@ -99,14 +91,9 @@
         <el-form-item label="单位" prop="unit">
           <el-input v-model="form.unit" placeholder="请输入单位（如：元/㎡、元/吨）" />
         </el-form-item>
-        <el-form-item label="周期" prop="cycleType">
-          <el-select v-model="form.cycleType" placeholder="请选择周期" style="width: 100%">
-            <el-option label="按月" :value="1" />
-            <el-option label="按季" :value="2" />
-            <el-option label="按半年" :value="3" />
-            <el-option label="按年" :value="4" />
-            <el-option label="一次性" :value="5" />
-          </el-select>
+        <el-form-item label="收费方式">
+          <el-tag>单次收费</el-tag>
+          <div class="form-tip">生成账单时按房屋面积 × 单价自动计算金额</div>
         </el-form-item>
         <el-form-item label="最迟收款日" prop="dueDay">
           <el-input-number v-model="form.dueDay" :min="1" :max="31" placeholder="每月第几天截止" style="width: 100%" />
@@ -118,17 +105,13 @@
           </el-select>
           <div class="form-tip">按角色身份通知，如选择"业主"则通知业主缴费</div>
         </el-form-item>
-        <el-form-item label="收费次数" prop="totalTimes">
-          <el-input-number v-model="form.totalTimes" :min="0" placeholder="0=长期周期收费" style="width: 100%" />
-          <div class="form-tip">0 表示长期周期性收费；填写 N 表示仅收费 N 次</div>
-        </el-form-item>
         <el-form-item label="描述" prop="description">
           <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入描述" />
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="form.status">
-            <el-radio :value="0">启用</el-radio>
-            <el-radio :value="1">停用</el-radio>
+            <el-radio :value="1">启用</el-radio>
+            <el-radio :value="0">停用</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
@@ -157,7 +140,7 @@ const isEdit = ref(false)
 const roleList = ref([])
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, itemName: '', status: null })
-const form = reactive({ id: null, itemName: '', itemType: 1, unitPrice: null, unit: '', cycleType: 1, dueDay: null, noticeRoles: [], totalTimes: 0, description: '', status: 0 })
+const form = reactive({ id: null, itemName: '物业费', itemType: 1, unitPrice: null, unit: '元/㎡', cycleType: 5, dueDay: null, noticeRoles: [], totalTimes: 1, description: '', status: 0 })
 
 const submitting = ref(false)
 
@@ -211,7 +194,7 @@ function handleEdit(row) {
   Object.assign(form, { ...row, noticeRoles: row.noticeRoles ? String(row.noticeRoles).split(',') : [] })
   dialogVisible.value = true
 }
-function resetForm() { formRef.value?.resetFields(); form.id = null; form.itemType = 1; form.cycleType = 1; form.dueDay = null; form.noticeRoles = []; form.totalTimes = 0; form.status = 0 }
+function resetForm() { formRef.value?.resetFields(); form.id = null; form.itemName = '物业费'; form.itemType = 1; form.cycleType = 5; form.totalTimes = 1; form.dueDay = null; form.noticeRoles = []; form.status = 0 }
 
 async function handleSubmit() {
   if (submitting.value) return
@@ -237,8 +220,8 @@ async function handleDelete(row) {
 }
 
 async function handleToggleStatus(row) {
-  const newStatus = row.status === 0 ? 1 : 0
-  const action = newStatus === 1 ? '停用' : '启用'
+  const newStatus = row.status === 1 ? 0 : 1
+  const action = newStatus === 1 ? '启用' : '停用'
   await ElMessageBox.confirm(`确定要${action}该收费项目吗？`, '提示', { type: 'warning' })
   try {
     await updateFeeItemStatus(row.id, newStatus)

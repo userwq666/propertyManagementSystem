@@ -7,6 +7,8 @@ import com.lsy.propertymanagementsystem.common.exception.BusinessException;
 import com.lsy.propertymanagementsystem.module.fee.domain.FeeItemDomain;
 import com.lsy.propertymanagementsystem.module.fee.dto.FeeItemDTO;
 import com.lsy.propertymanagementsystem.module.fee.dto.FeeItemVO;
+import com.lsy.propertymanagementsystem.module.fee.enums.FeeCycleType;
+import com.lsy.propertymanagementsystem.module.fee.enums.FeeItemType;
 import com.lsy.propertymanagementsystem.module.fee.mapper.FeeItemMapper;
 import com.lsy.propertymanagementsystem.module.fee.service.FeeItemService;
 import com.lsy.propertymanagementsystem.module.fee.service.FeeRecordService;
@@ -52,6 +54,9 @@ public class FeeItemServiceImpl extends ServiceImpl<FeeItemMapper, FeeItemDomain
     public void add(FeeItemDTO domain) {
         FeeItemDomain feeItemDomain = new FeeItemDomain();
         BeanUtils.copyProperties(domain, feeItemDomain);
+        feeItemDomain.setItemType(FeeItemType.of(domain.getItemType()));
+        feeItemDomain.setCycleType(FeeCycleType.of(domain.getCycleType()));
+        feeItemDomain.setStatus(EnableStatus.of(domain.getStatus()));
         this.save(feeItemDomain);
     }
 
@@ -64,6 +69,15 @@ public class FeeItemServiceImpl extends ServiceImpl<FeeItemMapper, FeeItemDomain
         }
         FeeItemDomain feeItemDomain = new FeeItemDomain();
         BeanUtils.copyProperties(domain, feeItemDomain);
+        if (domain.getItemType() != null) {
+            feeItemDomain.setItemType(FeeItemType.of(domain.getItemType()));
+        }
+        if (domain.getCycleType() != null) {
+            feeItemDomain.setCycleType(FeeCycleType.of(domain.getCycleType()));
+        }
+        if (domain.getStatus() != null) {
+            feeItemDomain.setStatus(EnableStatus.of(domain.getStatus()));
+        }
         this.updateById(feeItemDomain);
     }
 

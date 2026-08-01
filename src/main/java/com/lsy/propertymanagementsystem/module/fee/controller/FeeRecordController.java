@@ -2,6 +2,7 @@ package com.lsy.propertymanagementsystem.module.fee.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.common.result.Result;
+import com.lsy.propertymanagementsystem.module.fee.dto.FeeGenerateDTO;
 import com.lsy.propertymanagementsystem.module.fee.dto.FeeRecordDTO;
 import com.lsy.propertymanagementsystem.module.fee.dto.FeeRecordVO;
 import com.lsy.propertymanagementsystem.module.fee.service.FeeRecordService;
@@ -22,8 +23,8 @@ public class FeeRecordController {
 
     @PreAuthorize("hasAuthority('fee:record:add')")
     @PostMapping("/generate")
-    public Result generateBills(@Valid @RequestBody List<FeeRecordDTO> domains) {
-        feeRecordService.generateBills(domains);
+    public Result generateBills(@Valid @RequestBody FeeGenerateDTO dto) {
+        feeRecordService.generateBills(dto.getItemId(), dto.getHouseIds());
         return Result.success();
     }
 

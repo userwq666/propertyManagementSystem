@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface FeeRecordService {
-    void generateBills(List<FeeRecordDTO> domains);
+    void generateBills(Long itemId, List<Long> houseIds);
     FeeRecordVO getById(Long id);
     Page<FeeRecordVO> page(int pageNum, int pageSize, Long ownerId, Long houseId, Integer payStatus);
     void confirmPay(Long id, String payWay);

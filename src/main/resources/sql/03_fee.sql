@@ -84,6 +84,21 @@ CREATE TABLE fee_notice_owner (
     CONSTRAINT fk_fno_owner FOREIGN KEY (owner_id) REFERENCES community_owner(id) ON DELETE CASCADE
 ) COMMENT '收费通知-业主关联表';
 
+-- 物业消费事项表（费用支出公示）
+CREATE TABLE fee_expense (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    expense_name VARCHAR(100) NOT NULL COMMENT '支出事项名称',
+    expense_type TINYINT NOT NULL DEFAULT 1 COMMENT '支出类型：1维修 2人工 3材料 4其他',
+    amount DECIMAL(10,2) NOT NULL COMMENT '支出金额',
+    expense_date DATE COMMENT '支出日期',
+    content VARCHAR(1000) COMMENT '支出说明',
+    creator_id BIGINT COMMENT '创建人ID',
+    create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted TINYINT NOT NULL DEFAULT 0,
+    CONSTRAINT fk_expense_creator FOREIGN KEY (creator_id) REFERENCES sys_user(id) ON UPDATE CASCADE ON DELETE SET NULL
+) COMMENT '物业消费事项表';
+
 -- 索引
 CREATE INDEX idx_fee_owner ON fee_record(owner_id);
 CREATE INDEX idx_fee_house ON fee_record(house_id);
@@ -94,6 +109,7 @@ CREATE INDEX idx_fee_create_time ON fee_record(create_time);
 CREATE INDEX idx_notice_creator ON fee_notice(creator_id);
 CREATE INDEX idx_fnb_building ON fee_notice_building(building_id);
 CREATE INDEX idx_fno_owner ON fee_notice_owner(owner_id);
+CREATE INDEX idx_expense_create_time ON fee_expense(create_time);
 
 -- =====================================================================
 

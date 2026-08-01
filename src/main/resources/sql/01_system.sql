@@ -462,6 +462,18 @@ INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, me
 INSERT INTO sys_role_menu (role_id, menu_id) SELECT 1, id FROM sys_menu WHERE id BETWEEN 95 AND 99;
 INSERT INTO sys_role_menu (role_id, menu_id) SELECT 2, id FROM sys_menu WHERE id BETWEEN 95 AND 99;
 
+-- 消费事项（收费管理子菜单：管理员维护，财务/业主查看公示）
+INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
+(100, 11, '消费事项', 'List', '/fee/expenses', 'fee/expense/index', 'fee:expense:list', 1, 4, 1),
+(101, 100, '事项新增', NULL, '', '', 'fee:expense:add', 2, 1, 1),
+(102, 100, '事项编辑', NULL, '', '', 'fee:expense:edit', 2, 2, 1),
+(103, 100, '事项删除', NULL, '', '', 'fee:expense:delete', 2, 3, 1);
+INSERT INTO sys_role_menu (role_id, menu_id) SELECT 1, id FROM sys_menu WHERE id BETWEEN 100 AND 103;
+INSERT INTO sys_role_menu (role_id, menu_id) SELECT 2, id FROM sys_menu WHERE id BETWEEN 100 AND 103;
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (6,100), (3,100);
+-- 业主可查看自己的缴费记录
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3,13);
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 
