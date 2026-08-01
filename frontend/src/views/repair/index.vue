@@ -152,6 +152,13 @@
         <el-form-item label="处理内容">
           <el-input v-model="completeForm.handleContent" type="textarea" :rows="3" />
         </el-form-item>
+        <el-form-item label="消费金额">
+          <el-input-number v-model="completeForm.expenseAmount" :min="0" :precision="2" style="width:100%" />
+          <div class="form-tip">维修产生的费用，将同步到费用模块消费事项公示</div>
+        </el-form-item>
+        <el-form-item label="消费事项">
+          <el-input v-model="completeForm.expenseName" placeholder="如：电梯配件更换、人工维修费" />
+        </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
@@ -210,7 +217,7 @@ const userStore = useUserStore()
 const searchForm = reactive({ pageNum: 1, pageSize: 10, ownerId: '', status: '' })
 const form = reactive({ id: null, ownerId: null, houseId: null, equipmentId: null, repairType: '水电', repairContent: '', repairImages: '', remark: '' })
 const assignForm = reactive({ handlerId: null })
-const completeForm = reactive({ equipmentId: null, hasEquipment: false, handleContent: '' })
+const completeForm = reactive({ equipmentId: null, hasEquipment: false, handleContent: '', expenseAmount: null, expenseName: '' })
 const ratingForm = reactive({ score: 5, content: '' })
 
 const submitting = ref(false)
@@ -345,6 +352,8 @@ function handleComplete(row) {
   completeForm.equipmentId = row.equipmentId || null
   completeForm.hasEquipment = !!row.equipmentId
   completeForm.handleContent = ''
+  completeForm.expenseAmount = null
+  completeForm.expenseName = ''
   completeDialogVisible.value = true
 }
 async function submitComplete() {
@@ -353,7 +362,7 @@ async function submitComplete() {
     return
   }
   try {
-    await updateRepairStatus({ id: currentRow.value.id, status: 2, equipmentId: completeForm.hasEquipment ? completeForm.equipmentId : undefined, handleContent: completeForm.handleContent })
+    await updateRepairStatus({ id: currentRow.value.id, status: 2, equipmentId: completeForm.hasEquipment ? completeForm.equipmentId : undefined, handleContent: completeForm.handleContent, expenseAmount: completeForm.expenseAmount, expenseName: completeForm.expenseName })
     ElMessage.success('结单成功，等待确认')
     completeDialogVisible.value = false
     fetchData()

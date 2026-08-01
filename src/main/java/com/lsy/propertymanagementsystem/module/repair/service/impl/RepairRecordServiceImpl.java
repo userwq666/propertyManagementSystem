@@ -13,6 +13,8 @@ import com.lsy.propertymanagementsystem.module.community.mapper.CommunityOwnerMa
 import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentDomain;
 import com.lsy.propertymanagementsystem.module.equipment.enums.EquipmentStatus;
 import com.lsy.propertymanagementsystem.module.equipment.mapper.EquipmentMapper;
+import com.lsy.propertymanagementsystem.module.fee.domain.FeeExpenseDomain;
+import com.lsy.propertymanagementsystem.module.fee.mapper.FeeExpenseMapper;
 import com.lsy.propertymanagementsystem.module.repair.domain.RepairRecordDomain;
 import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordDTO;
 import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordVO;
@@ -28,6 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,6 +56,9 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
 
     @Autowired
     private EquipmentMapper equipmentMapper;
+
+    @Autowired
+    private FeeExpenseMapper feeExpenseMapper;
 
     @Override
     public RepairRecordVO getById(Long id) {
@@ -183,7 +190,7 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
 
     @Override
     @Transactional
-    public void updateStatus(Long id, Integer status, Long handlerId, Long equipmentId, String handleContent) {
+    public void updateStatus(Long id, Integer status, Long handlerId, Long equipmentId, String handleContent, BigDecimal expenseAmount, String expenseName) {
         RepairRecordDomain domain = super.getById(id);
         if (domain == null) {
             throw new BusinessException("报修记录不存在");
@@ -244,6 +251,16 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
                 this.updateById(domain);
                 if (linkedEquipmentId != null) {
                     linkEquipmentAfterComplete(domain, linkedEquipmentId, userId);
+                }
+                if (expenseAmount != null && expenseAmount.compareTo(BigDecimal.ZERO) > 0) {
+                    FeeExpenseDomain expense = new FeeExpenseDomain();
+                    expense.setExpenseName(expenseName != null && !expenseName.isBlank() ? expenseName : "报修维修支出");
+                    expense.setExpenseType(1);
+                    expense.setAmount(expenseAmount.setScale(2, java.math.RoundingMode.HALF_UP));
+                    expense.setExpenseDate(LocalDate.now());
+                    expense.setContent("报修单号：" + domain.getRepairNo());
+                    expense.setCreatorId(userId);
+                    feeExpenseMapper.insert(expense);
                 }
             }
             case CANCELLED -> {

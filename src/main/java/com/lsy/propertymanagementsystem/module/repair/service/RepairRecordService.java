@@ -1,5 +1,7 @@
 package com.lsy.propertymanagementsystem.module.repair.service;
 
+import java.math.BigDecimal;
+
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.module.community.domain.CommunityHouseDomain;
 import com.lsy.propertymanagementsystem.module.equipment.domain.EquipmentDomain;
@@ -14,7 +16,7 @@ public interface RepairRecordService {
     Long addRepair(RepairRecordDTO domain);
     void updateRepair(RepairRecordDTO domain);
     void deleteRepair(Long id);
-    void updateStatus(Long id, Integer status, Long handlerId, Long equipmentId, String handleContent);
+    void updateStatus(Long id, Integer status, Long handlerId, Long equipmentId, String handleContent, BigDecimal expenseAmount, String expenseName);
     void updateRating(Long id, Integer score, String content);
     int autoCompleteExpired();
     List<CommunityHouseDomain> listHouses(Long ownerId);

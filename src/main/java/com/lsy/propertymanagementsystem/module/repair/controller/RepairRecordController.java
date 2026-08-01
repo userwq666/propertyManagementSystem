@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -67,8 +68,10 @@ public class RepairRecordController {
                                @RequestParam Integer status,
                                @RequestParam(required = false) Long handlerId,
                                @RequestParam(required = false) Long equipmentId,
-                               @RequestParam(required = false) String handleContent) {
-        repairRecordService.updateStatus(id, status, handlerId, equipmentId, handleContent);
+                               @RequestParam(required = false) String handleContent,
+                               @RequestParam(required = false) BigDecimal expenseAmount,
+                               @RequestParam(required = false) String expenseName) {
+        repairRecordService.updateStatus(id, status, handlerId, equipmentId, handleContent, expenseAmount, expenseName);
         return Result.success();
     }
 

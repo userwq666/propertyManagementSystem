@@ -1,0 +1,1 @@
+import{aa as u}from"./index-6ZimTZN1.js";function o(e){return u({url:"/community/house",method:"post",data:e})}function n(e){return u({url:"/community/house",method:"put",data:e})}function r(e){return u({url:`/community/house/${e}`,method:"delete"})}function s(e){return u({url:"/community/house/page",method:"get",params:e})}export{o as a,r as d,s as g,n as u};
