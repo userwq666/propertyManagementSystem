@@ -47,4 +47,11 @@ public class FeeExpenseController {
         feeExpenseService.delete(id);
         return Result.success();
     }
+
+    @PreAuthorize("hasAuthority('fee:expense:edit')")
+    @PutMapping("/audit")
+    public Result audit(@RequestParam Long id, @RequestParam Integer status) {
+        feeExpenseService.audit(id, status);
+        return Result.success();
+    }
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lsy.propertymanagementsystem.common.exception.BusinessException;
 import com.lsy.propertymanagementsystem.common.utils.SecurityUtils;
+import com.lsy.propertymanagementsystem.common.utils.SecurityUtils;
 import com.lsy.propertymanagementsystem.module.fee.domain.FeeExpenseDomain;
 import com.lsy.propertymanagementsystem.module.fee.dto.FeeExpenseDTO;
 import com.lsy.propertymanagementsystem.module.fee.dto.FeeExpenseVO;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +40,10 @@ public class FeeExpenseServiceImpl extends ServiceImpl<FeeExpenseMapper, FeeExpe
         if (expenseType != null) {
             wrapper.eq(FeeExpenseDomain::getExpenseType, expenseType);
         }
+        if (SecurityUtils.isOwner()) {
+            // 业主只能查看审核通过的费用公示
+            wrapper.eq(FeeExpenseDomain::getAuditStatus, 1);
+        }
         wrapper.orderByDesc(FeeExpenseDomain::getExpenseDate).orderByDesc(FeeExpenseDomain::getCreateTime);
         Page<FeeExpenseDomain> domainPage = this.page(new Page<>(pageNum, pageSize), wrapper);
         Page<FeeExpenseVO> voPage = new Page<>(pageNum, pageSize, domainPage.getTotal());
@@ -51,6 +57,9 @@ public class FeeExpenseServiceImpl extends ServiceImpl<FeeExpenseMapper, FeeExpe
         FeeExpenseDomain domain = new FeeExpenseDomain();
         BeanUtils.copyProperties(dto, domain);
         domain.setCreatorId(SecurityUtils.getCurrentUserId());
+        if (domain.getAuditStatus() == null) {
+            domain.setAuditStatus(0);
+        }
         this.save(domain);
     }
 
@@ -71,21 +80,54 @@ public class FeeExpenseServiceImpl extends ServiceImpl<FeeExpenseMapper, FeeExpe
         this.removeById(id);
     }
 
+    @Override
+    @Transactional
+    public void audit(Long id, Integer status) {
+        FeeExpenseDomain existing = this.getById(id);
+        if (existing == null) {
+            throw new BusinessException("消费事项不存在");
+        }
+        if (status == null || (status != 1 && status != 2)) {
+            throw new BusinessException("审核状态不正确");
+        }
+        existing.setAuditStatus(status);
+        existing.setAuditorId(SecurityUtils.getCurrentUserId());
+        existing.setAuditTime(LocalDateTime.now());
+        this.updateById(existing);
+    }
+
     private List<FeeExpenseVO> convertToVO(List<FeeExpenseDomain> domains) {
         if (domains.isEmpty()) {
             return Collections.emptyList();
         }
         List<Long> creatorIds = domains.stream().map(FeeExpenseDomain::getCreatorId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+        List<Long> auditorIds = domains.stream().map(FeeExpenseDomain::getAuditorId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+        List<Long> userIds = new java.util.ArrayList<>(creatorIds);
+        userIds.addAll(auditorIds);
         Map<Long, String> creatorNameMap = creatorIds.isEmpty() ? Collections.emptyMap()
                 : sysUserMapper.selectBatchIds(creatorIds).stream()
+                        .collect(Collectors.toMap(SysUserDomain::getId, SysUserDomain::getRealName));
+        Map<Long, String> auditorNameMap = auditorIds.isEmpty() ? Collections.emptyMap()
+                : sysUserMapper.selectBatchIds(auditorIds).stream()
                         .collect(Collectors.toMap(SysUserDomain::getId, SysUserDomain::getRealName));
         return domains.stream().map(d -> {
             FeeExpenseVO vo = new FeeExpenseVO();
             BeanUtils.copyProperties(d, vo);
             vo.setExpenseTypeName(expenseTypeName(d.getExpenseType()));
             vo.setCreatorName(creatorNameMap.get(d.getCreatorId()));
+            vo.setAuditStatusName(auditStatusName(d.getAuditStatus()));
+            vo.setAuditorName(auditorNameMap.get(d.getAuditorId()));
             return vo;
         }).collect(Collectors.toList());
+    }
+
+    private String auditStatusName(Integer status) {
+        if (status == null) return "待审核";
+        switch (status) {
+            case 1: return "已通过";
+            case 2: return "已驳回";
+            default: return "待审核";
+        }
     }
 
     private String expenseTypeName(Integer type) {

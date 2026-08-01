@@ -15,6 +15,9 @@ public class FeeExpenseDomain {
     private String expenseName;
     private Integer expenseType;
     private BigDecimal amount;
+    private Integer auditStatus;
+    private Long auditorId;
+    private LocalDateTime auditTime;
     private LocalDate expenseDate;
     private String content;
     private Long creatorId;

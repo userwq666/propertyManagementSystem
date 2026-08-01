@@ -9,4 +9,5 @@ public interface FeeExpenseService {
     void add(FeeExpenseDTO dto);
     void update(FeeExpenseDTO dto);
     void delete(Long id);
+    void audit(Long id, Integer status);
 }

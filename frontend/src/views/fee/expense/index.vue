@@ -32,6 +32,14 @@
           </template>
         </el-table-column>
         <el-table-column prop="amount" label="支出金额(元)" width="130" />
+        <el-table-column label="审核状态" width="100">
+          <template #default="{ row }">
+            <el-tag :type="auditTag(row.auditStatus)">{{ auditText(row.auditStatus) }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="auditorName" label="审核人" width="100">
+          <template #default="{ row }">{{ row.auditorName || '-' }}</template>
+        </el-table-column>
         <el-table-column prop="expenseDate" label="支出日期" width="120" />
         <el-table-column prop="content" label="说明" show-overflow-tooltip />
         <el-table-column prop="creatorName" label="记录人" width="100" />
@@ -40,6 +48,8 @@
         <el-table-column label="操作" min-width="180" class-name="action-column" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'fee:expense:edit'">编辑</el-button>
+            <el-button v-if="row.auditStatus === 0" type="success" size="small" @click="handleAudit(row, 1)" v-permission="'fee:expense:edit'">通过</el-button>
+            <el-button v-if="row.auditStatus === 0" type="warning" size="small" @click="handleAudit(row, 2)" v-permission="'fee:expense:edit'">驳回</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'fee:expense:delete'">删除</el-button>
           </template>
         </el-table-column>
@@ -82,7 +92,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getFeeExpensePage, addFeeExpense, updateFeeExpense, deleteFeeExpense } from '@/api/fee/expense'
+import { getFeeExpensePage, addFeeExpense, updateFeeExpense, deleteFeeExpense, auditFeeExpense } from '@/api/fee/expense'
 
 const loading = ref(false)
 const tableData = ref([])
@@ -96,6 +106,9 @@ const form = reactive({ id: null, expenseName: '', expenseType: 1, amount: null,
 
 const submitting = ref(false)
 const dialogTitle = computed(() => isEdit.value ? '编辑消费事项' : '新增消费事项')
+
+const auditText = (s) => ({ 0: '待审核', 1: '已通过', 2: '已驳回' }[s] || '待审核')
+const auditTag = (s) => ({ 0: 'warning', 1: 'success', 2: 'danger' }[s] || 'info')
 
 const rules = {
   expenseName: [{ required: true, message: '请输入事项名称', trigger: 'blur' }],
@@ -139,6 +152,16 @@ async function handleDelete(row) {
   try {
     await deleteFeeExpense(row.id)
     ElMessage.success('删除成功')
+    fetchData()
+  } catch (e) { /* handled */ }
+}
+
+async function handleAudit(row, status) {
+  const action = status === 1 ? '通过' : '驳回'
+  await ElMessageBox.confirm(`确定${action}该消费事项？${action === '通过' ? '通过后将向业主公示' : ''}`, '提示', { type: 'warning' })
+  try {
+    await auditFeeExpense({ id: row.id, status })
+    ElMessage.success(`${action}成功`)
     fetchData()
   } catch (e) { /* handled */ }
 }

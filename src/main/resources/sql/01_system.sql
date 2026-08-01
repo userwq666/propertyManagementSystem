@@ -471,6 +471,8 @@ INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, me
 INSERT INTO sys_role_menu (role_id, menu_id) SELECT 1, id FROM sys_menu WHERE id BETWEEN 100 AND 103;
 INSERT INTO sys_role_menu (role_id, menu_id) SELECT 2, id FROM sys_menu WHERE id BETWEEN 100 AND 103;
 INSERT INTO sys_role_menu (role_id, menu_id) VALUES (6,100), (3,100);
+-- 财务可审核消费事项
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (6,102);
 -- 业主可查看自己的缴费记录
 INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3,13);
 

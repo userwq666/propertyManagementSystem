@@ -15,3 +15,7 @@ export function updateFeeExpense(data) {
 export function deleteFeeExpense(id) {
   return request({ url: `/fee/expense/${id}`, method: 'delete' })
 }
+
+export function auditFeeExpense(params) {
+  return request({ url: '/fee/expense/audit', method: 'put', params })
+}

@@ -13,6 +13,10 @@ public class FeeExpenseVO {
     private Integer expenseType;
     private String expenseTypeName;
     private BigDecimal amount;
+    private Integer auditStatus;
+    private String auditStatusName;
+    private String auditorName;
+    private LocalDateTime auditTime;
     private LocalDate expenseDate;
     private String content;
     private Long creatorId;

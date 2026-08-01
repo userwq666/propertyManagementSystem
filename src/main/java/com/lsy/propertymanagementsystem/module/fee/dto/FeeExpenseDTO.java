@@ -20,6 +20,8 @@ public class FeeExpenseDTO {
     @NotNull(message = "支出金额不能为空")
     private BigDecimal amount;
 
+    private Integer auditStatus;
+
     private LocalDate expenseDate;
 
     private String content;
