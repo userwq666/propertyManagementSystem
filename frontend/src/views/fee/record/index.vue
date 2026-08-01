@@ -104,7 +104,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { getFeeRecordPage, payFeeRecord } from '@/api/fee/record'
 import { getOwnerPage } from '@/api/community/owner'
 import { getHousePage } from '@/api/community/house'
