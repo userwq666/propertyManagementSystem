@@ -45,7 +45,7 @@
         <el-table-column prop="creatorName" label="记录人" width="100" />
         <el-table-column prop="createTime" label="记录时间" width="170" />
         <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column label="操作" min-width="180" class-name="action-column" fixed="right">
+        <el-table-column label="操作" min-width="220" class-name="action-column" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'fee:expense:edit'">编辑</el-button>
             <el-button v-if="row.auditStatus === 0" type="success" size="small" @click="openAudit(row)" v-permission="'fee:expense:edit'">审核</el-button>
