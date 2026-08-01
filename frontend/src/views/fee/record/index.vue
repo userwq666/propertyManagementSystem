@@ -51,8 +51,6 @@
           <template #default="{ row }">{{ payText(row.payType) }}</template>
         </el-table-column>
         <el-table-column prop="payTime" label="缴费时间" width="160" />
-        <el-table-column prop="startDate" label="开始日期" width="110" />
-        <el-table-column prop="endDate" label="结束日期" width="110" />
         <el-table-column prop="createTime" label="创建时间" width="160" />
         <el-table-column label="操作" min-width="160" class-name="action-column" fixed="right">
           <template #default="{ row }">
