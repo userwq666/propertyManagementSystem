@@ -45,9 +45,9 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
     @Override
     public Page<ComplaintSuggestVO> page(int pageNum, int pageSize, Long ownerId, String type, Integer status) {
         LambdaQueryWrapper<ComplaintSuggestDomain> wrapper = new LambdaQueryWrapper<>();
-        if (SecurityUtils.isOwner()) {
-            // 业主只能查看自己提交的投诉
-            wrapper.eq(ComplaintSuggestDomain::getOwnerId, getCurrentOwnerId());
+        if (!SecurityUtils.hasPermission("complaint:list:edit")) {
+            // 非管理员只能查看自己提交的投诉
+            wrapper.eq(ComplaintSuggestDomain::getCreatorId, SecurityUtils.getCurrentUserId());
         } else if (ownerId != null) {
             wrapper.eq(ComplaintSuggestDomain::getOwnerId, ownerId);
         }
@@ -73,6 +73,7 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
         List<Long> ownerIds = domainList.stream().map(ComplaintSuggestDomain::getOwnerId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
         List<Long> houseIds = domainList.stream().map(ComplaintSuggestDomain::getHouseId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
         List<Long> handlerIds = domainList.stream().map(ComplaintSuggestDomain::getHandlerId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+        List<Long> creatorIds = domainList.stream().map(ComplaintSuggestDomain::getCreatorId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
 
         Map<Long, String> ownerNameMap = ownerIds.isEmpty() ? Collections.emptyMap()
                 : communityOwnerMapper.selectBatchIds(ownerIds).stream()
@@ -85,6 +86,9 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
         Map<Long, String> handlerNameMap = handlerIds.isEmpty() ? Collections.emptyMap()
                 : sysUserMapper.selectBatchIds(handlerIds).stream()
                         .collect(Collectors.toMap(SysUserDomain::getId, SysUserDomain::getRealName));
+        Map<Long, String> creatorNameMap = creatorIds.isEmpty() ? Collections.emptyMap()
+                : sysUserMapper.selectBatchIds(creatorIds).stream()
+                        .collect(Collectors.toMap(SysUserDomain::getId, SysUserDomain::getRealName));
 
         return domainList.stream().map(domain -> {
             ComplaintSuggestVO vo = new ComplaintSuggestVO();
@@ -92,6 +96,7 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
             vo.setOwnerName(ownerNameMap.get(domain.getOwnerId()));
             vo.setRoomNo(houseRoomMap.get(domain.getHouseId()));
             vo.setHandlerName(handlerNameMap.get(domain.getHandlerId()));
+            vo.setCreatorName(creatorNameMap.get(domain.getCreatorId()));
             return vo;
         }).collect(Collectors.toList());
     }
@@ -104,14 +109,9 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
             // 业主提交投诉强制归属自己
             dto.setOwnerId(getCurrentOwnerId());
         }
-        if (dto.getOwnerId() == null) {
-            throw new BusinessException("请选择业主");
-        }
-        if (dto.getHouseId() == null) {
-            throw new BusinessException("请选择房屋");
-        }
         ComplaintSuggestDomain domain = new ComplaintSuggestDomain();
         BeanUtils.copyProperties(dto, domain);
+        domain.setCreatorId(SecurityUtils.getCurrentUserId());
         domain.setComplaintNo("TS" + java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase());
         domain.prepareAdd();
         this.save(domain);
@@ -128,7 +128,7 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
         if (existing.getStatus() != ComplaintStatus.PENDING) {
             throw new BusinessException("仅待受理状态可编辑");
         }
-        if (SecurityUtils.isOwner() && !Objects.equals(existing.getOwnerId(), getCurrentOwnerId())) {
+        if (!Objects.equals(existing.getCreatorId(), SecurityUtils.getCurrentUserId())) {
             throw new BusinessException("只能编辑自己的投诉");
         }
         ComplaintSuggestDomain domain = new ComplaintSuggestDomain();
@@ -167,7 +167,7 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
         }
         ComplaintStatus newStatus = ComplaintStatus.of(status);
         boolean isManager = SecurityUtils.hasPermission("complaint:list:edit");
-        if (newStatus != ComplaintStatus.CANCELLED && !isManager) {
+        if (newStatus != ComplaintStatus.CANCELLED && newStatus != ComplaintStatus.COMPLETED && !isManager) {
             throw new BusinessException("无权执行该操作");
         }
         if (newStatus == ComplaintStatus.CANCELLED) {
@@ -175,10 +175,19 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
             if (domain.getStatus() != ComplaintStatus.PENDING && domain.getStatus() != ComplaintStatus.ACCEPTED) {
                 throw new BusinessException("当前状态不可撤销");
             }
-            if (SecurityUtils.isOwner() && !Objects.equals(domain.getOwnerId(), getCurrentOwnerId())) {
+            if (!Objects.equals(domain.getCreatorId(), SecurityUtils.getCurrentUserId())) {
                 throw new BusinessException("只能撤销自己的投诉");
             }
             domain.setStatus(ComplaintStatus.CANCELLED);
+        } else if (newStatus == ComplaintStatus.COMPLETED) {
+            // 投诉人确认完成
+            if (domain.getStatus() != ComplaintStatus.REPLIED) {
+                throw new BusinessException("仅已回复状态可确认完成");
+            }
+            if (!isManager && !Objects.equals(domain.getCreatorId(), SecurityUtils.getCurrentUserId())) {
+                throw new BusinessException("只能确认自己的投诉");
+            }
+            domain.confirm();
         } else if (newStatus == ComplaintStatus.ACCEPTED) {
             if (domain.getStatus() != ComplaintStatus.PENDING) {
                 throw new BusinessException("仅待受理状态可受理");
@@ -200,14 +209,29 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
                 throw new BusinessException("回复必须填写处理内容");
             }
             domain.reply(handleContent);
-        } else if (newStatus == ComplaintStatus.CLOSED) {
-            if (domain.getStatus() != ComplaintStatus.REPLIED) {
-                throw new BusinessException("仅已回复状态可关闭");
-            }
-            domain.close();
         } else {
             throw new BusinessException("不支持的状态流转");
         }
+        this.updateById(domain);
+    }
+
+    @Override
+    @Transactional
+    public void evaluate(Long id, Integer score, String content) {
+        ComplaintSuggestDomain domain = this.getById(id);
+        if (domain == null) {
+            throw new BusinessException("投诉建议不存在");
+        }
+        if (domain.getStatus() != ComplaintStatus.REPLIED) {
+            throw new BusinessException("仅已回复状态可评价");
+        }
+        if (!Objects.equals(domain.getCreatorId(), SecurityUtils.getCurrentUserId())) {
+            throw new BusinessException("只能评价自己的投诉");
+        }
+        if (score == null || score < 1 || score > 5) {
+            throw new BusinessException("评分必须在1-5之间");
+        }
+        domain.evaluate(score, content);
         this.updateById(domain);
     }
 

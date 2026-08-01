@@ -23,3 +23,7 @@ export function getComplaintById(id) {
 export function updateComplaintStatus(params) {
   return request({ url: '/complaint/suggest/status', method: 'put', params })
 }
+
+export function evaluateComplaint(params) {
+  return request({ url: '/complaint/suggest/evaluate', method: 'put', params })
+}

@@ -64,4 +64,11 @@ public class ComplaintSuggestController {
         complaintSuggestService.updateStatus(id, status, handlerId, handleContent);
         return Result.success();
     }
+
+    @PreAuthorize("hasAuthority('complaint:list:add') or hasAuthority('complaint:list:edit')")
+    @PutMapping("/evaluate")
+    public Result evaluate(@RequestParam Long id, @RequestParam Integer score, @RequestParam(required = false) String content) {
+        complaintSuggestService.evaluate(id, score, content);
+        return Result.success();
+    }
 }

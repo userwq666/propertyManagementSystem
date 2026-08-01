@@ -12,7 +12,7 @@ public enum ComplaintStatus {
     ACCEPTED(1, "已受理"),
     PROCESSING(2, "处理中"),
     REPLIED(3, "已回复"),
-    CLOSED(4, "已关闭"),
+    COMPLETED(4, "已完成"),
     CANCELLED(5, "已撤销");
 
     @EnumValue

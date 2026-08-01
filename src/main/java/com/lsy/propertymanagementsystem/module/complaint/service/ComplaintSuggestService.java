@@ -17,4 +17,5 @@ public interface ComplaintSuggestService {
     Page<ComplaintSuggestVO> page(int pageNum, int pageSize, Long ownerId, String type, Integer status);
     // 更新投诉建议状态
     void updateStatus(Long id, Integer status, Long handlerId, String handleContent);
+    void evaluate(Long id, Integer score, String content);
 }

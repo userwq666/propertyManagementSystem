@@ -13,6 +13,8 @@ public class ComplaintSuggestVO {
     private String complaintNo;
     private Long ownerId;
     private String ownerName;
+    private Long creatorId;
+    private String creatorName;
     private Long houseId;
     private String roomNo;
     private ComplaintType type;
@@ -25,6 +27,9 @@ public class ComplaintSuggestVO {
     private String handlerName;
     private String handleContent;
     private LocalDateTime handleTime;
+    private Integer evaluateScore;
+    private String evaluateContent;
+    private LocalDateTime evaluateTime;
     private Integer isAnonymous;
     private LocalDateTime createTime;
 }

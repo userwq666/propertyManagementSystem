@@ -14,6 +14,7 @@ public class ComplaintSuggestDomain {
     private Long id;
     private String complaintNo;
     private Long ownerId;
+    private Long creatorId;
     private Long houseId;
     private ComplaintType type;
     private String category;
@@ -24,6 +25,9 @@ public class ComplaintSuggestDomain {
     private Long handlerId;
     private String handleContent;
     private LocalDateTime handleTime;
+    private Integer evaluateScore;
+    private String evaluateContent;
+    private LocalDateTime evaluateTime;
     private Integer isAnonymous;
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
@@ -35,5 +39,11 @@ public class ComplaintSuggestDomain {
     public void prepareAdd() { this.status = ComplaintStatus.PENDING; this.priority = ComplaintPriority.NORMAL; this.isAnonymous = 0; }
     public void assignHandler(Long handlerId) { this.handlerId = handlerId; this.status = ComplaintStatus.ACCEPTED; }
     public void reply(String handleContent) { this.status = ComplaintStatus.REPLIED; this.handleContent = handleContent; this.handleTime = LocalDateTime.now(); }
-    public void close() { this.status = ComplaintStatus.CLOSED; }
+    public void confirm() { this.status = ComplaintStatus.COMPLETED; }
+    public void evaluate(Integer score, String content) {
+        this.evaluateScore = score;
+        this.evaluateContent = content;
+        this.evaluateTime = LocalDateTime.now();
+        this.status = ComplaintStatus.COMPLETED;
+    }
 }

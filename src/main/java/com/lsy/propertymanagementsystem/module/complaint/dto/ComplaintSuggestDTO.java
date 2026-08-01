@@ -8,10 +8,8 @@ import lombok.Data;
 public class ComplaintSuggestDTO {
     private Long id;
 
-    @NotNull(message = "业主ID不能为空")
     private Long ownerId;
 
-    @NotNull(message = "房屋ID不能为空")
     private Long houseId;
 
     private Integer type;
@@ -33,4 +31,8 @@ public class ComplaintSuggestDTO {
     private String handleContent;
 
     private Integer isAnonymous;
+
+    private Integer evaluateScore;
+
+    private String evaluateContent;
 }

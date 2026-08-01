@@ -441,5 +441,7 @@ INSERT INTO sys_role_menu (role_id, menu_id) VALUES (6,8),(6,9);
 INSERT INTO sys_role_menu (role_id, menu_id) VALUES (4,100),(4,102);
 -- 业主可查看自己的缴费记录
 INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3,13);
+-- 任何人均可投诉（维修工/巡检员分配投诉查看与新增）
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (4,17),(4,18),(4,68),(5,17),(5,18),(5,68);
 SET FOREIGN_KEY_CHECKS = 1;
 SET FOREIGN_KEY_CHECKS = 1;

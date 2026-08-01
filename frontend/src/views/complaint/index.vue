@@ -13,7 +13,7 @@
       </el-form-item>
       <el-form-item label="状态">
         <el-select v-model="searchForm.status" placeholder="请选择" clearable>
-          <el-option label="待受理" :value="0" /><el-option label="已受理" :value="1" /><el-option label="处理中" :value="2" /><el-option label="已回复" :value="3" /><el-option label="已关闭" :value="4" /><el-option label="已撤销" :value="5" />
+          <el-option label="待受理" :value="0" /><el-option label="已受理" :value="1" /><el-option label="处理中" :value="2" /><el-option label="已回复" :value="3" /><el-option label="已完成" :value="4" /><el-option label="已撤销" :value="5" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -41,7 +41,9 @@
         <el-table-column label="类型" width="90">
           <template #default="{ row }">{{ typeText(row.type) }}</template>
         </el-table-column>
-        <el-table-column prop="ownerName" label="业主" width="100" />
+        <el-table-column label="投诉人" width="100">
+          <template #default="{ row }">{{ row.creatorName || row.ownerName || '-' }}</template>
+        </el-table-column>
         <el-table-column prop="roomNo" label="房屋" width="90" />
         <el-table-column label="优先级" width="90">
           <template #default="{ row }">{{ priorityText(row.priority) }}</template>
@@ -58,7 +60,8 @@
             <el-button v-if="row.status===0" type="warning" size="small" @click="openHandle(row, 1)" v-permission="'complaint:list:edit'">受理</el-button>
             <el-button v-if="row.status===1" type="warning" size="small" @click="openHandle(row, 2)" v-permission="'complaint:list:edit'">处理</el-button>
             <el-button v-if="row.status===1 || row.status===2" type="success" size="small" @click="openHandle(row, 3)" v-permission="'complaint:list:edit'">回复</el-button>
-            <el-button v-if="row.status===3" type="success" size="small" @click="confirmClose(row)" v-permission="'complaint:list:edit'">关闭</el-button>
+            <el-button v-if="row.status===3 && row.creatorId === userId" type="success" size="small" @click="openEvaluate(row)" v-permission="'complaint:list:add'">确认评价</el-button>
+            <el-button v-if="row.status===3 && row.creatorId !== userId" type="success" size="small" @click="confirmComplete(row)" v-permission="'complaint:list:edit'">确认</el-button>
             <el-button v-if="row.status===0 || row.status===1" size="small" @click="confirmCancel(row)" v-permission="'complaint:list:add'">撤销</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'complaint:list:delete'">删除</el-button>
           </template>
@@ -87,7 +90,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="分类" prop="category">
-          <el-select v-model="form.category" style="width:100%" allow-create filterable clearable>
+          <el-select v-model="form.category" style="width:100%" placeholder="请选择分类">
             <el-option label="环境卫生" value="环境卫生" /><el-option label="噪音扰民" value="噪音扰民" /><el-option label="车辆管理" value="车辆管理" /><el-option label="服务态度" value="服务态度" /><el-option label="设施损坏" value="设施损坏" /><el-option label="其他" value="其他" />
           </el-select>
         </el-form-item>
@@ -131,6 +134,23 @@
       </template>
     </el-dialog>
 
+    <el-dialog title="确认并评价" v-model="evaluateDialogVisible" width="460px">
+      <el-form :model="evaluateForm" label-width="90px">
+        <el-form-item label="评分">
+          <el-rate v-model="evaluateForm.score" :max="5" show-text />
+        </el-form-item>
+        <el-form-item label="评价内容">
+          <el-input v-model="evaluateForm.content" type="textarea" :rows="3" placeholder="选填" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="evaluateDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="submitEvaluate">确认提交</el-button>
+        </div>
+      </template>
+    </el-dialog>
+
     <el-dialog title="投诉详情" v-model="detailVisible" width="640px">
       <el-descriptions v-if="detailRow" :column="2" border>
         <el-descriptions-item label="单号">{{ detailRow.complaintNo }}</el-descriptions-item>
@@ -148,6 +168,9 @@
         <el-descriptions-item label="处理人">{{ detailRow.handlerName || '-' }}</el-descriptions-item>
         <el-descriptions-item label="处理时间">{{ detailRow.handleTime || '-' }}</el-descriptions-item>
         <el-descriptions-item label="处理内容" :span="2">{{ detailRow.handleContent || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="评分">{{ detailRow.evaluateScore ? detailRow.evaluateScore + ' 分' : '-' }}</el-descriptions-item>
+        <el-descriptions-item label="评价时间">{{ detailRow.evaluateTime || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="评价内容" :span="2">{{ detailRow.evaluateContent || '-' }}</el-descriptions-item>
         <el-descriptions-item label="提交时间" :span="2">{{ detailRow.createTime }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
@@ -157,7 +180,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { addComplaint, updateComplaint, deleteComplaint, getComplaintPage, getComplaintById, updateComplaintStatus } from '@/api/complaint/suggest'
+import { addComplaint, updateComplaint, deleteComplaint, getComplaintPage, getComplaintById, updateComplaintStatus, evaluateComplaint } from '@/api/complaint/suggest'
 import { getOwnerPage } from '@/api/community/owner'
 import { getHousePage } from '@/api/community/house'
 import { getUserPage } from '@/api/system/user'
@@ -165,12 +188,14 @@ import { useUserStore } from '@/stores/user'
 
 const userStore = useUserStore()
 const hasOwnerPerm = computed(() => userStore.hasPermission('community:owner:list'))
+const userId = computed(() => userStore.userInfo.id || userStore.userInfo.userId)
 
 const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)
 const dialogVisible = ref(false)
 const handleDialogVisible = ref(false)
+const evaluateDialogVisible = ref(false)
 const detailVisible = ref(false)
 const formRef = ref(null)
 const isEdit = ref(false)
@@ -184,13 +209,14 @@ const anonymous = ref(false)
 const searchForm = reactive({ pageNum: 1, pageSize: 10, ownerId: '', type: '', status: '' })
 const form = reactive({ id: null, ownerId: null, houseId: null, type: 1, category: '', content: '', images: '', isAnonymous: 0 })
 const handleForm = reactive({ status: 1, handlerId: null, handleContent: '' })
+const evaluateForm = reactive({ score: 5, content: '' })
 
 const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑' : '新增投诉')
 
 const typeText = (t) => ({ 1: '投诉', 2: '建议', 3: '咨询', 4: '表扬' }[t] || '')
-const statusText = (s) => ({ 0: '待受理', 1: '已受理', 2: '处理中', 3: '已回复', 4: '已关闭', 5: '已撤销' }[s] || '')
+const statusText = (s) => ({ 0: '待受理', 1: '已受理', 2: '处理中', 3: '已回复', 4: '已完成', 5: '已撤销' }[s] || '')
 const statusTag = (s) => ({ 0: 'danger', 1: 'warning', 2: 'warning', 3: 'primary', 4: 'success', 5: 'info' }[s] || 'info')
 const priorityText = (p) => ({ 1: '普通', 2: '重要', 3: '紧急' }[p] || '')
 
@@ -291,11 +317,27 @@ async function submitHandle() {
   } catch (e) { /* handled */ }
 }
 
-async function confirmClose(row) {
-  await ElMessageBox.confirm('确认关闭该投诉？', '提示', { type: 'warning' })
+async function confirmComplete(row) {
+  await ElMessageBox.confirm('确认该投诉已完成？', '提示', { type: 'warning' })
   try {
     await updateComplaintStatus({ id: row.id, status: 4 })
-    ElMessage.success('已关闭')
+    ElMessage.success('已确认完成')
+    fetchData()
+  } catch (e) { /* handled */ }
+}
+
+function openEvaluate(row) {
+  evaluateForm.score = 5
+  evaluateForm.content = ''
+  currentRow.value = row
+  evaluateDialogVisible.value = true
+}
+
+async function submitEvaluate() {
+  try {
+    await evaluateComplaint({ id: currentRow.value.id, score: evaluateForm.score, content: evaluateForm.content })
+    ElMessage.success('评价成功，投诉已完成')
+    evaluateDialogVisible.value = false
     fetchData()
   } catch (e) { /* handled */ }
 }
