@@ -74,11 +74,6 @@
 
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="600px" @close="resetForm">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
-        <el-form-item v-if="hasOwnerPerm" label="业主" prop="ownerId">
-          <el-select v-model="form.ownerId" placeholder="请选择" filterable style="width:100%">
-            <el-option v-for="o in owners.filter(i => i.id != null)" :key="o.id" :label="o.name" :value="o.id" />
-          </el-select>
-        </el-form-item>
         <el-form-item label="类型" prop="type">
           <el-select v-model="form.type" style="width:100%">
             <el-option label="投诉" :value="1" /><el-option label="建议" :value="2" /><el-option label="咨询" :value="3" />
@@ -200,7 +195,7 @@ const detailRow = ref(null)
 const anonymous = ref(false)
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, ownerId: '', type: '', status: '' })
-const form = reactive({ id: null, ownerId: null, type: 1, category: '', content: '', images: '', isAnonymous: 0 })
+const form = reactive({ id: null, type: 1, category: '', content: '', images: '', isAnonymous: 0 })
 const handleForm = reactive({ status: 1, handlerId: null, handleContent: '' })
 const evaluateForm = reactive({ score: 5, content: '' })
 
@@ -214,8 +209,6 @@ const statusTag = (s) => ({ 0: 'danger', 1: 'warning', 2: 'warning', 3: 'primary
 const priorityText = (p) => ({ 1: '普通', 2: '重要', 3: '紧急' }[p] || '')
 
 const rules = {
-  ownerId: [{ required: true, message: '请选择业主', trigger: 'change' }],
-  houseId: [{ required: true, message: '请选择房屋', trigger: 'change' }],
   type: [{ required: true, message: '请选择类型', trigger: 'change' }],
   category: [{ required: true, message: '请选择分类', trigger: 'change' }],
   content: [{ required: true, message: '请输入内容', trigger: 'blur' }]
@@ -259,7 +252,6 @@ function handleEdit(row) {
 function resetForm() {
   formRef.value?.resetFields()
   form.id = null
-  form.ownerId = null
   form.type = 1
   form.category = ''
   form.content = ''
