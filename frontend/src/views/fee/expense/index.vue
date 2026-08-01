@@ -47,7 +47,7 @@
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column label="操作" min-width="220" class-name="action-column" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="handleEdit(row)" v-permission="'fee:expense:edit'">编辑</el-button>
+            <el-button v-if="canEdit(row)" type="primary" size="small" @click="handleEdit(row)" v-permission="'fee:expense:edit'">编辑</el-button>
             <el-button v-if="row.auditStatus === 0" type="success" size="small" @click="openAudit(row)" v-permission="'fee:expense:edit'">审核</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'fee:expense:delete'">删除</el-button>
           </template>
@@ -115,6 +115,11 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getFeeExpensePage, addFeeExpense, updateFeeExpense, deleteFeeExpense, auditFeeExpense } from '@/api/fee/expense'
+import { useUserStore } from '@/stores/user'
+
+const userStore = useUserStore()
+const userId = computed(() => userStore.userInfo.id || userStore.userInfo.userId)
+const managerLike = computed(() => (userStore.roles || []).some(r => ['admin', 'property_admin', 'finance'].includes(r)))
 
 const loading = ref(false)
 const tableData = ref([])
@@ -134,6 +139,10 @@ const dialogTitle = computed(() => isEdit.value ? '编辑消费事项' : '新增
 
 const auditText = (s) => ({ 0: '待审核', 1: '已通过', 2: '已驳回' }[s] || '待审核')
 const auditTag = (s) => ({ 0: 'warning', 1: 'success', 2: 'danger' }[s] || 'info')
+
+function canEdit(row) {
+  return row.auditStatus === 0 && (managerLike.value || row.creatorId === userId.value)
+}
 
 const rules = {
   expenseName: [{ required: true, message: '请输入事项名称', trigger: 'blur' }],
