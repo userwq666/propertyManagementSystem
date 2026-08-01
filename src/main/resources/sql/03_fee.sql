@@ -16,12 +16,23 @@ CREATE TABLE fee_item (
     cycle_type TINYINT NOT NULL DEFAULT 1 COMMENT '收费周期：1按月 2按季 3按半年 4按年 5一次性',
     notice_roles VARCHAR(100) COMMENT '通知范围角色（逗号分隔角色key）',
     total_times TINYINT NOT NULL DEFAULT 0 COMMENT '收费次数（0=长期周期性，N=固定次数）',
+    scope_type TINYINT NOT NULL DEFAULT 1 COMMENT '收费范围：1全部 2按楼栋 3按房屋 4按业主',
+    published TINYINT NOT NULL DEFAULT 0 COMMENT '发布状态：0未发布 1已发布',
     description VARCHAR(500) COMMENT '项目描述',
     status TINYINT NOT NULL DEFAULT 1 COMMENT '状态：0停用 1启用',
     create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除'
 ) COMMENT '收费项目表';
+
+-- 收费项目范围关联表
+CREATE TABLE fee_item_scope (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    item_id BIGINT NOT NULL COMMENT '收费项目ID',
+    scope_type TINYINT NOT NULL COMMENT '范围类型：1楼栋 2房屋 3业主',
+    target_id BIGINT NOT NULL COMMENT '目标ID',
+    CONSTRAINT fk_scope_item FOREIGN KEY (item_id) REFERENCES fee_item(id) ON DELETE CASCADE
+) COMMENT '收费项目范围关联表';
 
 -- 收费记录表
 CREATE TABLE fee_record (

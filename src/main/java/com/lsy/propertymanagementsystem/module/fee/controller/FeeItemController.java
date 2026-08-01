@@ -61,4 +61,11 @@ public class FeeItemController {
         feeItemService.updateStatus(id, status);
         return Result.success();
     }
+
+    @PreAuthorize("hasAuthority('fee:item:edit')")
+    @PutMapping("/publish/{id}")
+    public Result publish(@PathVariable Long id) {
+        feeItemService.publish(id);
+        return Result.success();
+    }
 }

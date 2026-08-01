@@ -11,4 +11,5 @@ public interface FeeItemService {
     void update(FeeItemDTO domain);
     void delete(Long id);
     void updateStatus(Long id, Integer status);
+    void publish(Long id);
 }

@@ -18,6 +18,9 @@ public class FeeItemVO {
     private FeeCycleType cycleType;
     private String noticeRoles;
     private Integer totalTimes;
+    private Integer scopeType;
+    private Integer published;
+    private java.util.List<Long> scopeIds;
     private String description;
     private EnableStatus status;
     private LocalDateTime createTime;

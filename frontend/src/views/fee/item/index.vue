@@ -39,6 +39,11 @@
         <el-table-column label="通知角色" width="140">
           <template #default="{ row }">{{ noticeRolesText(row.noticeRoles) }}</template>
         </el-table-column>
+        <el-table-column label="发布状态" width="90">
+          <template #default="{ row }">
+            <el-tag :type="row.published === 1 ? 'success' : 'info'">{{ row.published === 1 ? '已发布' : '未发布' }}</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="totalTimes" label="收费次数" width="90">
           <template #default="{ row }">{{ row.totalTimes ? row.totalTimes + ' 次' : '长期' }}</template>
         </el-table-column>
@@ -58,6 +63,7 @@
               size="small"
               @click="handleToggleStatus(row)"
             v-permission="'fee:item:edit'">{{ row.status === 1 ? '停用' : '启用' }}</el-button>
+            <el-button v-if="row.published !== 1" type="primary" size="small" @click="handlePublish(row)" v-permission="'fee:item:edit'">发布</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -98,6 +104,18 @@
           </el-select>
           <div class="form-tip">按角色身份通知，如选择"业主"则通知业主缴费</div>
         </el-form-item>
+        <el-form-item label="收费范围">
+          <el-tree
+            ref="scopeTreeRef"
+            :data="scopeTreeData"
+            show-checkbox
+            node-key="id"
+            default-expand-all
+            :props="{ label: 'label', children: 'children' }"
+            style="width: 100%; border: 1px solid #ebeef5; border-radius: 4px; padding: 8px; max-height: 220px; overflow: auto;"
+          />
+          <div class="form-tip">选择业主/楼栋/房屋；勾选父级默认包含全部子级；勾选"全部业主"则向全体业主收费</div>
+        </el-form-item>
         <el-form-item label="描述" prop="description">
           <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入描述" />
         </el-form-item>
@@ -121,8 +139,10 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { addFeeItem, updateFeeItem, deleteFeeItem, getFeeItemPage, updateFeeItemStatus } from '@/api/fee/item'
+import { addFeeItem, updateFeeItem, deleteFeeItem, getFeeItemPage, updateFeeItemStatus, publishFeeItem } from '@/api/fee/item'
 import { getRoleList } from '@/api/system/role'
+import { getBuildingPage } from '@/api/community/building'
+import { getHousePage } from '@/api/community/house'
 
 const loading = ref(false)
 const tableData = ref([])
@@ -131,9 +151,11 @@ const dialogVisible = ref(false)
 const formRef = ref(null)
 const isEdit = ref(false)
 const roleList = ref([])
+const scopeTreeRef = ref(null)
+const scopeTreeData = ref([])
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, itemName: '', status: null })
-const form = reactive({ id: null, itemName: '物业费', itemType: 1, unitPrice: null, unit: '元/㎡', cycleType: 5, noticeRoles: [], totalTimes: 1, description: '', status: 0 })
+const form = reactive({ id: null, itemName: '物业费', itemType: 1, unitPrice: null, unit: '元/㎡', cycleType: 5, noticeRoles: [], totalTimes: 1, scopeType: 1, scopeIds: [], description: '', status: 0 })
 
 const submitting = ref(false)
 
@@ -158,12 +180,40 @@ function noticeRolesText(roles) {
   return keys.map(k => nameMap[k] || k).join('、')
 }
 
-onMounted(() => { fetchData(); loadRoles() })
+onMounted(() => { fetchData(); loadRoles(); loadScopeTree() })
 
 async function loadRoles() {
   try {
     const res = await getRoleList()
     roleList.value = res.data || []
+  } catch (e) { /* ignore */ }
+}
+
+async function loadScopeTree() {
+  try {
+    const [bRes, hRes] = await Promise.all([
+      getBuildingPage({ pageNum: 1, pageSize: 200 }, { silent: true }),
+      getHousePage({ pageNum: 1, pageSize: 200 }, { silent: true })
+    ])
+    const buildings = bRes.data?.records || []
+    const houses = hRes.data?.records || []
+    scopeTreeData.value = [{
+      id: 'all',
+      label: '全部业主',
+      nodeType: 'all',
+      children: buildings.map(b => ({
+        id: 'b' + b.id,
+        label: b.buildingNo + '栋',
+        nodeType: 'building',
+        buildingId: b.id,
+        children: houses.filter(h => h.buildingId === b.id).map(h => ({
+          id: 'h' + h.id,
+          label: h.roomNo + (h.ownerName ? '（' + h.ownerName + '）' : '（未关联业主）'),
+          nodeType: 'house',
+          houseId: h.id
+        }))
+      }))
+    }]
   } catch (e) { /* ignore */ }
 }
 
@@ -186,21 +236,60 @@ function handleEdit(row) {
   isEdit.value = true
   Object.assign(form, { ...row, noticeRoles: row.noticeRoles ? String(row.noticeRoles).split(',') : [] })
   dialogVisible.value = true
+  // 回填范围树勾选
+  requestAnimationFrame(() => {
+    if (!scopeTreeRef.value) return
+    scopeTreeRef.value.setCheckedKeys([])
+    if (row.scopeType === 1) {
+      scopeTreeRef.value.setCheckedKeys(['all'])
+    } else if (row.scopeIds && row.scopeIds.length) {
+      const prefix = row.scopeType === 2 ? 'b' : 'h'
+      scopeTreeRef.value.setCheckedKeys(row.scopeIds.map(id => prefix + id))
+    }
+  })
 }
-function resetForm() { formRef.value?.resetFields(); form.id = null; form.itemName = '物业费'; form.itemType = 1; form.cycleType = 5; form.totalTimes = 1; form.noticeRoles = []; form.status = 0 }
+function resetForm() { formRef.value?.resetFields(); form.id = null; form.itemName = '物业费'; form.itemType = 1; form.cycleType = 5; form.totalTimes = 1; form.noticeRoles = []; form.scopeType = 1; form.scopeIds = []; form.status = 0; scopeTreeRef.value?.setCheckedKeys([]) }
+
+function resolveScope() {
+  const tree = scopeTreeRef.value
+  if (!tree) return { scopeType: 1, scopeIds: [] }
+  const checked = tree.getCheckedKeys()
+  const half = tree.getHalfCheckedKeys()
+  if (checked.includes('all')) return { scopeType: 1, scopeIds: [] }
+  const houseIds = checked.filter(k => String(k).startsWith('h')).map(k => Number(String(k).slice(1)))
+  const checkedBuildings = checked.filter(k => String(k).startsWith('b')).map(k => Number(String(k).slice(1)))
+  const halfBuildings = half.filter(k => String(k).startsWith('b')).map(k => Number(String(k).slice(1)))
+  const houseBuildingIds = houseIds.map(hid => {
+    const node = scopeTreeData.value[0]?.children.flatMap(b => b.children).find(h => h.houseId === hid)
+    return node ? node.buildingId : null
+  }).filter(Boolean)
+  const allBuildings = [...new Set([...checkedBuildings, ...halfBuildings, ...houseBuildingIds])]
+  if (allBuildings.length) return { scopeType: 2, scopeIds: allBuildings }
+  return { scopeType: 3, scopeIds: houseIds }
+}
 
 async function handleSubmit() {
   if (submitting.value) return
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
   try {
-    const payload = { ...form, noticeRoles: Array.isArray(form.noticeRoles) ? form.noticeRoles.join(',') : form.noticeRoles }
+    const scope = resolveScope()
+    const payload = { ...form, noticeRoles: Array.isArray(form.noticeRoles) ? form.noticeRoles.join(',') : form.noticeRoles, scopeType: scope.scopeType, scopeIds: scope.scopeIds }
     if (isEdit.value) { await updateFeeItem(payload) }
     else { await addFeeItem(payload) }
     ElMessage.success(isEdit.value ? '编辑成功' : '新增成功')
     dialogVisible.value = false
     fetchData()
   } catch (e) { /* handled by interceptor */ }
+}
+
+async function handlePublish(row) {
+  await ElMessageBox.confirm('发布后将为范围内业主自动生成待缴费账单，确定发布？', '提示', { type: 'warning' })
+  try {
+    await publishFeeItem(row.id)
+    ElMessage.success('发布成功，已生成待缴费账单')
+    fetchData()
+  } catch (e) { /* handled */ }
 }
 
 async function handleDelete(row) {

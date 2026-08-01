@@ -25,6 +25,10 @@ public class FeeItemDTO {
 
     private Integer totalTimes;
 
+    private Integer scopeType;
+
+    private java.util.List<Long> scopeIds;
+
     private String description;
 
     private Integer status;

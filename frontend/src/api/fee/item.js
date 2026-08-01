@@ -23,3 +23,7 @@ export function getFeeItemPage(params) {
 export function updateFeeItemStatus(params) {
   return request({ url: '/fee/item/status', method: 'put', params })
 }
+
+export function publishFeeItem(id) {
+  return request({ url: `/fee/item/publish/${id}`, method: 'put' })
+}

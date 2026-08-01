@@ -20,6 +20,8 @@ public class FeeItemDomain {
     private FeeCycleType cycleType;
     private String noticeRoles;
     private Integer totalTimes;
+    private Integer scopeType;
+    private Integer published;
     private String description;
     private EnableStatus status;
     @TableField(fill = FieldFill.INSERT)
