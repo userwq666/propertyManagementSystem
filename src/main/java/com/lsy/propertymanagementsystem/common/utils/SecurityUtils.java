@@ -1,6 +1,7 @@
 package com.lsy.propertymanagementsystem.common.utils;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -30,5 +31,14 @@ public class SecurityUtils {
 
     public static boolean isOwner() {
         return "owner".equals(getRoleKey());
+    }
+
+    public static boolean hasPermission(String permission) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getAuthorities() == null) {
+            return false;
+        }
+        return authentication.getAuthorities().stream()
+                .anyMatch(a -> permission.equals(a.getAuthority()));
     }
 }

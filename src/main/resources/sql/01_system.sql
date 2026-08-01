@@ -435,6 +435,8 @@ INSERT INTO sys_role_menu (role_id, menu_id) SELECT 2, id FROM sys_menu WHERE id
 INSERT INTO sys_role_menu (role_id, menu_id) VALUES (6,100), (3,100);
 -- 财务可审核消费事项
 INSERT INTO sys_role_menu (role_id, menu_id) VALUES (6,102),(6,104);
+-- 财务查看收费记录需业主/房屋列表
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (6,8),(6,9);
 -- 维修工可查看并编辑自己申报的消费事项
 INSERT INTO sys_role_menu (role_id, menu_id) VALUES (4,100),(4,102);
 -- 业主可查看自己的缴费记录

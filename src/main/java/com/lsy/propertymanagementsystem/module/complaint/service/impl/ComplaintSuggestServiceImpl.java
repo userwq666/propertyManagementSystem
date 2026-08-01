@@ -166,7 +166,7 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
             throw new BusinessException("投诉建议不存在");
         }
         ComplaintStatus newStatus = ComplaintStatus.of(status);
-        boolean isManager = !SecurityUtils.isOwner();
+        boolean isManager = SecurityUtils.hasPermission("complaint:list:edit");
         if (newStatus != ComplaintStatus.CANCELLED && !isManager) {
             throw new BusinessException("无权执行该操作");
         }

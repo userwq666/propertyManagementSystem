@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-form :inline="true" :model="searchForm" class="search-form">
-      <el-form-item v-if="!isOwnerRole" label="业主">
+      <el-form-item v-if="hasOwnerPerm" label="业主">
         <el-select v-model="searchForm.ownerId" placeholder="请选择业主" clearable filterable>
           <el-option v-for="o in owners.filter(i => i.id != null)" :key="o.id" :label="o.name" :value="o.id" />
         </el-select>
@@ -71,7 +71,7 @@
 
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="600px" @close="resetForm">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
-        <el-form-item v-if="!isOwnerRole" label="业主" prop="ownerId">
+        <el-form-item v-if="hasOwnerPerm" label="业主" prop="ownerId">
           <el-select v-model="form.ownerId" placeholder="请选择" filterable style="width:100%">
             <el-option v-for="o in owners.filter(i => i.id != null)" :key="o.id" :label="o.name" :value="o.id" />
           </el-select>
@@ -164,7 +164,7 @@ import { getUserPage } from '@/api/system/user'
 import { useUserStore } from '@/stores/user'
 
 const userStore = useUserStore()
-const isOwnerRole = computed(() => (userStore.roles || []).includes('owner'))
+const hasOwnerPerm = computed(() => userStore.hasPermission('community:owner:list'))
 
 const loading = ref(false)
 const tableData = ref([])
@@ -204,7 +204,7 @@ const rules = {
 
 onMounted(async () => {
   fetchData()
-  if (!isOwnerRole.value) {
+  if (hasOwnerPerm.value) {
     const oRes = await getOwnerPage({ pageNum: 1, pageSize: 200 }, { silent: true })
     owners.value = oRes.data?.records || []
   }

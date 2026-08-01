@@ -1,12 +1,12 @@
 <template>
   <div>
     <el-form :inline="true" :model="searchForm" class="search-form">
-      <el-form-item v-if="!isOwnerRole" label="业主">
+      <el-form-item v-if="hasOwnerPerm" label="业主">
         <el-select v-model="searchForm.ownerId" placeholder="请选择业主" clearable>
           <el-option v-for="o in ownerList.filter(i => i.id != null)" :key="o.id" :label="o.name" :value="o.id" />
         </el-select>
       </el-form-item>
-      <el-form-item v-if="!isOwnerRole" label="房屋">
+      <el-form-item v-if="hasOwnerPerm" label="房屋">
         <el-select v-model="searchForm.houseId" placeholder="请选择房屋" clearable>
           <el-option v-for="h in houseList.filter(i => i.id != null)" :key="h.id" :label="h.roomNo" :value="h.id" />
         </el-select>
@@ -117,7 +117,7 @@ import { getHousePage } from '@/api/community/house'
 import { useUserStore } from '@/stores/user'
 
 const userStore = useUserStore()
-const isOwnerRole = computed(() => (userStore.roles || []).includes('owner'))
+const hasOwnerPerm = computed(() => userStore.hasPermission('community:owner:list'))
 const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)
@@ -137,7 +137,7 @@ const payText = (t) => ({ 1: '现金', 2: '微信', 3: '支付宝', 4: '银行�
 
 onMounted(async () => {
   fetchData()
-  if (!isOwnerRole.value) {
+  if (hasOwnerPerm.value) {
     const oRes = await getOwnerPage({ pageNum: 1, pageSize: 200 }, { silent: true })
     ownerList.value = oRes.data.records
     const hRes = await getHousePage({ pageNum: 1, pageSize: 200 }, { silent: true })

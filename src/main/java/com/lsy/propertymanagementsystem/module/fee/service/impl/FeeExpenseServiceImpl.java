@@ -73,8 +73,7 @@ public class FeeExpenseServiceImpl extends ServiceImpl<FeeExpenseMapper, FeeExpe
         if (existing.getAuditStatus() != null && existing.getAuditStatus() != 0) {
             throw new BusinessException("已审核的消费事项不允许编辑");
         }
-        String roleKey = SecurityUtils.getRoleKey();
-        boolean managerLike = "admin".equals(roleKey) || "property_admin".equals(roleKey) || "finance".equals(roleKey);
+        boolean managerLike = SecurityUtils.hasPermission("fee:expense:audit");
         if (!managerLike && !Objects.equals(existing.getCreatorId(), SecurityUtils.getCurrentUserId())) {
             throw new BusinessException("只能编辑自己申报的消费事项");
         }
