@@ -16,6 +16,7 @@ public class FeeNoticeDomain {
     private Integer sendScope;
     private Integer sendStatus;
     private LocalDateTime sendTime;
+    private Long itemId;
     private Long creatorId;
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;

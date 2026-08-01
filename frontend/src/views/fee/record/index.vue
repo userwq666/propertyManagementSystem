@@ -13,10 +13,11 @@
       </el-form-item>
       <el-form-item label="状态">
         <el-select v-model="searchForm.status" placeholder="请选择状态" clearable>
-          <el-option label="未缴费" :value="0" />
-          <el-option label="已缴费" :value="1" />
-          <el-option label="逾期" :value="2" />
-          <el-option label="减免" :value="3" />
+          <el-option label="待缴费" :value="0" />
+          <el-option label="部分缴费" :value="1" />
+          <el-option label="已缴费" :value="2" />
+          <el-option label="逾期" :value="3" />
+          <el-option label="作废" :value="4" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -138,8 +139,8 @@ const genForm = reactive({ itemId: null, houseIds: [] })
 const searchForm = reactive({ pageNum: 1, pageSize: 10, ownerId: '', houseId: '', status: '' })
 const payForm = reactive({ payWay: 'WECHAT', paidAmount: 0 })
 
-const statusTag = (s) => ({ 0: 'info', 1: 'success', 2: 'danger', 3: 'warning' }[s] || 'info')
-const statusText = (s) => ({ 0: '未缴费', 1: '已缴费', 2: '逾期', 3: '减免' }[s] || '')
+const statusTag = (s) => ({ 0: 'warning', 1: 'warning', 2: 'success', 3: 'danger', 4: 'info' }[s] || 'info')
+const statusText = (s) => ({ 0: '待缴费', 1: '部分缴费', 2: '已缴费', 3: '逾期', 4: '作废' }[s] || '')
 const payText = (t) => ({ 'CASH': '现金', 'WECHAT': '微信', 'ALIPAY': '支付宝', 'BANK': '银行转账' }[t] || '')
 
 onMounted(async () => {

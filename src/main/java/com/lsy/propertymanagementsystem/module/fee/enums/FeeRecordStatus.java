@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum FeeRecordStatus {
-    UNPAID(0, "未缴费"),
+    UNPAID(0, "待缴费"),
     PARTIAL_PAID(1, "部分缴费"),
     PAID(2, "已缴费"),
     OVERDUE(3, "逾期"),

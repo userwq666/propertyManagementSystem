@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class FeeNoticeDTO {
     private Long id;
@@ -20,5 +22,7 @@ public class FeeNoticeDTO {
     private Integer sendScope;
 
     private Integer sendStatus;
+    private Long itemId;
     private Long creatorId;
+    private List<Long> buildingIds;
 }

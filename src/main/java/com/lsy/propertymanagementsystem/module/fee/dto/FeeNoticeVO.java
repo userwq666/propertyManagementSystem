@@ -13,6 +13,8 @@ public class FeeNoticeVO {
     private Integer sendScope;
     private Integer sendStatus;
     private LocalDateTime sendTime;
+    private Long itemId;
+    private String itemName;
     private Long creatorId;
     private String creatorName;
     private LocalDateTime createTime;

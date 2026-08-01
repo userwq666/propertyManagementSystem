@@ -56,6 +56,7 @@ CREATE TABLE fee_notice (
     send_scope TINYINT NOT NULL DEFAULT 1 COMMENT '发送范围：1全体 2指定楼栋 3指定业主',
     send_status TINYINT NOT NULL DEFAULT 0 COMMENT '发送状态：0草稿 1已发送 2发送失败',
     send_time DATETIME COMMENT '发送时间',
+    item_id BIGINT NULL COMMENT '关联收费项目ID，缴费通知发布时自动生成代缴费记录',
     creator_id BIGINT COMMENT '创建人ID',
     create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
