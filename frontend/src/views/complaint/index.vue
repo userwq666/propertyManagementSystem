@@ -79,11 +79,6 @@
             <el-option v-for="o in owners.filter(i => i.id != null)" :key="o.id" :label="o.name" :value="o.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="房屋" prop="houseId">
-          <el-select v-model="form.houseId" placeholder="请选择" filterable style="width:100%">
-            <el-option v-for="h in houses.filter(i => i.id != null)" :key="h.id" :label="h.buildingNo + ' - ' + h.roomNo" :value="h.id" />
-          </el-select>
-        </el-form-item>
         <el-form-item label="类型" prop="type">
           <el-select v-model="form.type" style="width:100%">
             <el-option label="投诉" :value="1" /><el-option label="建议" :value="2" /><el-option label="咨询" :value="3" /><el-option label="表扬" :value="4" />
@@ -182,7 +177,6 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { addComplaint, updateComplaint, deleteComplaint, getComplaintPage, getComplaintById, updateComplaintStatus, evaluateComplaint } from '@/api/complaint/suggest'
 import { getOwnerPage } from '@/api/community/owner'
-import { getHousePage } from '@/api/community/house'
 import { getUserPage } from '@/api/system/user'
 import { useUserStore } from '@/stores/user'
 
@@ -200,14 +194,13 @@ const detailVisible = ref(false)
 const formRef = ref(null)
 const isEdit = ref(false)
 const owners = ref([])
-const houses = ref([])
 const workers = ref([])
 const currentRow = ref(null)
 const detailRow = ref(null)
 const anonymous = ref(false)
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, ownerId: '', type: '', status: '' })
-const form = reactive({ id: null, ownerId: null, houseId: null, type: 1, category: '', content: '', images: '', isAnonymous: 0 })
+const form = reactive({ id: null, ownerId: null, type: 1, category: '', content: '', images: '', isAnonymous: 0 })
 const handleForm = reactive({ status: 1, handlerId: null, handleContent: '' })
 const evaluateForm = reactive({ score: 5, content: '' })
 
@@ -234,8 +227,6 @@ onMounted(async () => {
     const oRes = await getOwnerPage({ pageNum: 1, pageSize: 200 }, { silent: true })
     owners.value = oRes.data?.records || []
   }
-  const hRes = await getHousePage({ pageNum: 1, pageSize: 200 }, { silent: true })
-  houses.value = hRes.data?.records || []
   const wRes = await getUserPage({ pageNum: 1, pageSize: 200 }, { silent: true })
   workers.value = wRes.data?.records || []
 })
@@ -269,7 +260,6 @@ function resetForm() {
   formRef.value?.resetFields()
   form.id = null
   form.ownerId = null
-  form.houseId = null
   form.type = 1
   form.category = ''
   form.content = ''
