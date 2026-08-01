@@ -8,7 +8,7 @@
       </el-form-item>
       <el-form-item label="类型">
         <el-select v-model="searchForm.type" placeholder="请选择" clearable>
-          <el-option label="投诉" :value="1" /><el-option label="建议" :value="2" /><el-option label="咨询" :value="3" /><el-option label="表扬" :value="4" />
+          <el-option label="投诉" :value="1" /><el-option label="建议" :value="2" /><el-option label="咨询" :value="3" />
         </el-select>
       </el-form-item>
       <el-form-item label="状态">
@@ -81,7 +81,7 @@
         </el-form-item>
         <el-form-item label="类型" prop="type">
           <el-select v-model="form.type" style="width:100%">
-            <el-option label="投诉" :value="1" /><el-option label="建议" :value="2" /><el-option label="咨询" :value="3" /><el-option label="表扬" :value="4" />
+            <el-option label="投诉" :value="1" /><el-option label="建议" :value="2" /><el-option label="咨询" :value="3" />
           </el-select>
         </el-form-item>
         <el-form-item label="分类" prop="category">
@@ -208,7 +208,7 @@ const submitting = ref(false)
 
 const dialogTitle = computed(() => isEdit.value ? '编辑' : '新增投诉')
 
-const typeText = (t) => ({ 1: '投诉', 2: '建议', 3: '咨询', 4: '表扬' }[t] || '')
+const typeText = (t) => ({ 1: '投诉', 2: '建议', 3: '咨询' }[t] || '')
 const statusText = (s) => ({ 0: '待受理', 1: '已受理', 2: '处理中', 3: '已回复', 4: '已完成', 5: '已撤销' }[s] || '')
 const statusTag = (s) => ({ 0: 'danger', 1: 'warning', 2: 'warning', 3: 'primary', 4: 'success', 5: 'info' }[s] || 'info')
 const priorityText = (p) => ({ 1: '普通', 2: '重要', 3: '紧急' }[p] || '')
