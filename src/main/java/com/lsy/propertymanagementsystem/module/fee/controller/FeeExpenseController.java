@@ -48,7 +48,7 @@ public class FeeExpenseController {
         return Result.success();
     }
 
-    @PreAuthorize("hasAuthority('fee:expense:edit')")
+    @PreAuthorize("hasAuthority('fee:expense:audit')")
     @PutMapping("/audit")
     public Result audit(@RequestParam Long id, @RequestParam Integer status) {
         feeExpenseService.audit(id, status);

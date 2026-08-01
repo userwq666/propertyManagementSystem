@@ -48,7 +48,7 @@
         <el-table-column label="操作" min-width="220" class-name="action-column" fixed="right">
           <template #default="{ row }">
             <el-button v-if="canEdit(row)" type="primary" size="small" @click="handleEdit(row)" v-permission="'fee:expense:edit'">编辑</el-button>
-            <el-button v-if="row.auditStatus === 0" type="success" size="small" @click="openAudit(row)" v-permission="'fee:expense:edit'">审核</el-button>
+            <el-button v-if="row.auditStatus === 0" type="success" size="small" @click="openAudit(row)" v-permission="'fee:expense:audit'">审核</el-button>
             <el-button type="danger" size="small" @click="handleDelete(row)" v-permission="'fee:expense:delete'">删除</el-button>
           </template>
         </el-table-column>
