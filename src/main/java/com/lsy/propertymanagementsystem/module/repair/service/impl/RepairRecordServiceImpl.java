@@ -25,6 +25,7 @@ import com.lsy.propertymanagementsystem.module.repair.mapper.RepairRecordMapper;
 import com.lsy.propertymanagementsystem.module.repair.service.RepairRecordService;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserDomain;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserMapper;
+import com.lsy.propertymanagementsystem.websocket.MessagePushService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,6 +60,9 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
 
     @Autowired
     private FeeExpenseMapper feeExpenseMapper;
+
+    @Autowired
+    private MessagePushService messagePushService;
 
     @Override
     public RepairRecordVO getById(Long id) {
@@ -231,6 +235,8 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
                 if (domain.getEquipmentId() != null) {
                     markEquipmentRepair(domain.getEquipmentId());
                 }
+                messagePushService.pushToUser(targetHandler, "repair", "新派单",
+                        "有新的报修工单等待处理：" + domain.getRepairNo(), domain.getId());
             }
             case PENDING_EVALUATE -> {
                 // 维修工结单：只能完成自己负责的单；管理员可代完成
@@ -252,6 +258,8 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
                 if (linkedEquipmentId != null) {
                     linkEquipmentAfterComplete(domain, linkedEquipmentId, userId);
                 }
+                messagePushService.pushToUser(domain.getCreatorId(), "repair", "报修结单",
+                        "报修单 " + domain.getRepairNo() + " 已结单，请确认", domain.getId());
                 if (expenseAmount != null && expenseAmount.compareTo(BigDecimal.ZERO) > 0) {
                     FeeExpenseDomain expense = new FeeExpenseDomain();
                     int type = expenseType != null ? expenseType : 1;
@@ -315,6 +323,8 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         }
         domain.evaluate(score, content);
         this.updateById(domain);
+        messagePushService.pushToUser(domain.getHandlerId(), "repair", "报修已评价",
+                "报修单 " + domain.getRepairNo() + " 已确认并评价", id);
     }
 
     @Override

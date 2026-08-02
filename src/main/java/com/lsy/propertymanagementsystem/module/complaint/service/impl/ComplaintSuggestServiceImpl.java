@@ -18,6 +18,7 @@ import com.lsy.propertymanagementsystem.module.complaint.mapper.ComplaintSuggest
 import com.lsy.propertymanagementsystem.module.complaint.service.ComplaintSuggestService;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserDomain;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserMapper;
+import com.lsy.propertymanagementsystem.websocket.MessagePushService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,9 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
 
     @Autowired
     private SysUserMapper sysUserMapper;
+
+    @Autowired
+    private MessagePushService messagePushService;
 
     // 分页查询投诉建议
     @Override
@@ -209,6 +213,8 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
                 throw new BusinessException("回复必须填写处理内容");
             }
             domain.reply(handleContent);
+            messagePushService.pushToUser(domain.getCreatorId(), "complaint", "投诉已回复",
+                    "您的投诉「" + (domain.getCategory() != null ? domain.getCategory() : "投诉") + "」已回复，请确认", domain.getId());
         } else {
             throw new BusinessException("不支持的状态流转");
         }

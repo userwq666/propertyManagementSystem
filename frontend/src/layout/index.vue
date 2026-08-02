@@ -76,8 +76,9 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import { getUserMenus } from '@/api/system/menu'
+import { connectWebSocket, disconnectWebSocket } from '@/utils/ws'
 
 const route = useRoute()
 const router = useRouter()
@@ -87,6 +88,7 @@ const userMenus = ref([])
 
 // 确保用户权限已加载
 onMounted(async () => {
+  connectWebSocket(handleWsMessage)
   if (!userStore.permissions || userStore.permissions.length === 0) {
     try { await userStore.getUserInfo() } catch (e) {}
   }
@@ -95,6 +97,21 @@ onMounted(async () => {
     userMenus.value = res.data || []
   } catch (e) { userMenus.value = [] }
 })
+
+function handleWsMessage(msg) {
+  if (!msg || !msg.type) return
+  const routeMap = { repair: '/repair/record', complaint: '/complaint', fee: '/fee/records' }
+  ElNotification({
+    title: msg.title || '新消息',
+    message: msg.content || '',
+    type: 'info',
+    duration: 6000,
+    onClick: () => {
+      const target = routeMap[msg.type]
+      if (target) router.push(target)
+    }
+  })
+}
 
 const activeMenu = computed(() => route.path)
 
@@ -122,6 +139,7 @@ function handleCommand(command) {
   }
   if (command === 'logout') {
     ElMessageBox.confirm('确定要退出登录吗？', '提示', { type: 'warning' }).then(() => {
+      disconnectWebSocket()
       userStore.logout().then(() => router.push('/login'))
     })
   }

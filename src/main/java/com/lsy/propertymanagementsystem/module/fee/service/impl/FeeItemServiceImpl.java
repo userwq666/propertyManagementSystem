@@ -21,6 +21,7 @@ import com.lsy.propertymanagementsystem.module.fee.mapper.FeeNoticeMapper;
 import com.lsy.propertymanagementsystem.module.fee.mapper.FeeRecordMapper;
 import com.lsy.propertymanagementsystem.module.fee.service.FeeItemService;
 import com.lsy.propertymanagementsystem.module.system.enums.EnableStatus;
+import com.lsy.propertymanagementsystem.websocket.MessagePushService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,9 @@ public class FeeItemServiceImpl extends ServiceImpl<FeeItemMapper, FeeItemDomain
 
     @Autowired
     private FeeNoticeMapper feeNoticeMapper;
+
+    @Autowired
+    private MessagePushService messagePushService;
 
     @Override
     public FeeItemVO getById(Long id) {
@@ -182,6 +186,8 @@ public class FeeItemServiceImpl extends ServiceImpl<FeeItemMapper, FeeItemDomain
         notice.setItemId(item.getId());
         notice.setCreatorId(com.lsy.propertymanagementsystem.common.utils.SecurityUtils.getCurrentUserId());
         feeNoticeMapper.insert(notice);
+        messagePushService.broadcast("fee", "收费通知",
+                item.getItemName() + " 已发布，请相关业主及时缴纳（共 " + count + " 条待缴费账单）", item.getId());
         item.setPublished(1);
         this.updateById(item);
     }
