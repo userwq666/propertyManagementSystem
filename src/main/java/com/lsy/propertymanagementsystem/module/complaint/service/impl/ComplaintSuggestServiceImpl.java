@@ -119,6 +119,8 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
         domain.setComplaintNo("TS" + java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase());
         domain.prepareAdd();
         this.save(domain);
+        messagePushService.pushToRole("complaint", "新投诉",
+                "新投诉已提交，请及时受理", domain.getId(), "admin", "property_admin");
     }
 
     // 更新投诉建议
@@ -183,6 +185,10 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
                 throw new BusinessException("只能撤销自己的投诉");
             }
             domain.setStatus(ComplaintStatus.CANCELLED);
+            if (domain.getHandlerId() != null) {
+                messagePushService.pushToUser(domain.getHandlerId(), "complaint", "投诉已撤销",
+                        "投诉「" + (domain.getCategory() != null ? domain.getCategory() : "投诉") + "」已撤销", domain.getId());
+            }
         } else if (newStatus == ComplaintStatus.COMPLETED) {
             // 投诉人确认完成
             if (domain.getStatus() != ComplaintStatus.REPLIED) {
@@ -192,6 +198,10 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
                 throw new BusinessException("只能确认自己的投诉");
             }
             domain.confirm();
+            if (domain.getHandlerId() != null) {
+                messagePushService.pushToUser(domain.getHandlerId(), "complaint", "投诉已确认",
+                        "投诉已由投诉人确认完成", domain.getId());
+            }
         } else if (newStatus == ComplaintStatus.ACCEPTED) {
             if (domain.getStatus() != ComplaintStatus.PENDING) {
                 throw new BusinessException("仅待受理状态可受理");
@@ -200,11 +210,15 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
                 throw new BusinessException("受理必须指定处理人");
             }
             domain.assignHandler(handlerId);
+            messagePushService.pushToUser(domain.getCreatorId(), "complaint", "投诉已受理",
+                    "您的投诉已受理，正在处理中", domain.getId());
         } else if (newStatus == ComplaintStatus.PROCESSING) {
             if (domain.getStatus() != ComplaintStatus.ACCEPTED) {
                 throw new BusinessException("仅已受理状态可开始处理");
             }
             domain.setStatus(ComplaintStatus.PROCESSING);
+            messagePushService.pushToUser(domain.getCreatorId(), "complaint", "投诉开始处理",
+                    "您的投诉已开始处理", domain.getId());
         } else if (newStatus == ComplaintStatus.REPLIED) {
             if (domain.getStatus() != ComplaintStatus.PROCESSING && domain.getStatus() != ComplaintStatus.ACCEPTED) {
                 throw new BusinessException("当前状态不可回复");
@@ -239,6 +253,10 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
         }
         domain.evaluate(score, content);
         this.updateById(domain);
+        if (domain.getHandlerId() != null) {
+            messagePushService.pushToUser(domain.getHandlerId(), "complaint", "投诉已评价",
+                    "投诉「" + (domain.getCategory() != null ? domain.getCategory() : "投诉") + "」已评价", domain.getId());
+        }
     }
 
     private Long getCurrentOwnerId() {

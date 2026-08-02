@@ -18,6 +18,7 @@ import com.lsy.propertymanagementsystem.module.fee.mapper.FeeItemMapper;
 import com.lsy.propertymanagementsystem.module.fee.mapper.FeeRecordMapper;
 import com.lsy.propertymanagementsystem.module.fee.service.FeeItemService;
 import com.lsy.propertymanagementsystem.module.fee.service.FeeRecordService;
+import com.lsy.propertymanagementsystem.websocket.MessagePushService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,6 +50,9 @@ public class FeeRecordServiceImpl implements FeeRecordService {
 
     @Autowired
     private FeeItemMapper feeItemMapper;
+
+    @Autowired
+    private MessagePushService messagePushService;
 
     @Override
     @Transactional
@@ -140,6 +144,12 @@ public class FeeRecordServiceImpl implements FeeRecordService {
             throw new BusinessException("实缴金额必须大于0");
         }
         feeRecordMapper.updateById(domain);
+        CommunityOwnerDomain owner = domain.getOwnerId() != null ? communityOwnerMapper.selectById(domain.getOwnerId()) : null;
+        if (owner != null && owner.getUserId() != null) {
+            String statusName = domain.getStatus() == FeeRecordStatus.PAID ? "已缴清" : "已部分缴费";
+            messagePushService.pushToUser(owner.getUserId(), "fee", "缴费确认",
+                    "账单 " + domain.getFeeNo() + " " + statusName + "，实缴 " + domain.getPaidAmount() + " 元", domain.getId());
+        }
     }
 
     @Override
@@ -192,6 +202,11 @@ public class FeeRecordServiceImpl implements FeeRecordService {
         for (FeeRecordDomain record : overdueRecords) {
             record.markOverdue();
             feeRecordMapper.updateById(record);
+            CommunityOwnerDomain owner = record.getOwnerId() != null ? communityOwnerMapper.selectById(record.getOwnerId()) : null;
+            if (owner != null && owner.getUserId() != null) {
+                messagePushService.pushToUser(owner.getUserId(), "fee", "账单逾期",
+                        "账单 " + record.getFeeNo() + " 已逾期，请尽快缴纳", record.getId());
+            }
         }
     }
 

@@ -154,6 +154,9 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         if (domain.getEquipmentId() != null) {
             markEquipmentFault(domain.getEquipmentId());
         }
+        messagePushService.pushToRole("repair", "新报修",
+                "新报修工单 " + domain.getRepairNo() + " 待处理", domain.getId(),
+                "repair_worker", "admin", "property_admin");
         return domain.getId();
     }
 
@@ -237,6 +240,10 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
                 }
                 messagePushService.pushToUser(targetHandler, "repair", "新派单",
                         "有新的报修工单等待处理：" + domain.getRepairNo(), domain.getId());
+                if (domain.getCreatorId() != null && !Objects.equals(domain.getCreatorId(), targetHandler)) {
+                    messagePushService.pushToUser(domain.getCreatorId(), "repair", "报修已接单",
+                            "报修单 " + domain.getRepairNo() + " 已接单处理", domain.getId());
+                }
             }
             case PENDING_EVALUATE -> {
                 // 维修工结单：只能完成自己负责的单；管理员可代完成
@@ -284,6 +291,14 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
                 }
                 domain.cancel();
                 this.updateById(domain);
+                if (domain.getHandlerId() != null && !Objects.equals(domain.getHandlerId(), userId)) {
+                    messagePushService.pushToUser(domain.getHandlerId(), "repair", "报修已取消",
+                            "报修单 " + domain.getRepairNo() + " 已取消", domain.getId());
+                }
+                if (domain.getCreatorId() != null && !Objects.equals(domain.getCreatorId(), userId)) {
+                    messagePushService.pushToUser(domain.getCreatorId(), "repair", "报修已取消",
+                            "报修单 " + domain.getRepairNo() + " 已取消", domain.getId());
+                }
             }
             default -> throw new BusinessException("不支持的状态变更");
         }
@@ -331,11 +346,20 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
     @Transactional
     public int autoCompleteExpired() {
         LocalDateTime deadline = LocalDateTime.now().minusHours(24);
-        return baseMapper.update(null, new LambdaUpdateWrapper<RepairRecordDomain>()
+        List<RepairRecordDomain> expiredList = baseMapper.selectList(new LambdaQueryWrapper<RepairRecordDomain>()
                 .eq(RepairRecordDomain::getStatus, RepairStatus.PENDING_EVALUATE)
                 .isNull(RepairRecordDomain::getEvaluateTime)
-                .lt(RepairRecordDomain::getHandleTime, deadline)
-                .set(RepairRecordDomain::getStatus, RepairStatus.COMPLETED));
+                .lt(RepairRecordDomain::getHandleTime, deadline));
+        int count = 0;
+        for (RepairRecordDomain domain : expiredList) {
+            baseMapper.update(null, new LambdaUpdateWrapper<RepairRecordDomain>()
+                    .eq(RepairRecordDomain::getId, domain.getId())
+                    .set(RepairRecordDomain::getStatus, RepairStatus.COMPLETED));
+            count++;
+            messagePushService.pushToUser(domain.getCreatorId(), "repair", "报修自动完成",
+                    "报修单 " + domain.getRepairNo() + " 超时未确认，已自动完成", domain.getId());
+        }
+        return count;
     }
 
     @Override
@@ -370,6 +394,8 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
                 || equipment.getStatus() == EquipmentStatus.DISABLED) {
             equipment.changeStatus(EquipmentStatus.NORMAL);
             equipmentMapper.updateById(equipment);
+            messagePushService.broadcast("equipment", "设备状态变更",
+                    "设备「" + equipment.getEquipmentName() + "」已恢复正常", equipment.getId());
         }
     }
 
@@ -382,6 +408,8 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         if (status == EquipmentStatus.NORMAL || status == EquipmentStatus.DISABLED) {
             equipment.changeStatus(EquipmentStatus.FAULT);
             equipmentMapper.updateById(equipment);
+            messagePushService.broadcast("equipment", "设备状态变更",
+                    "设备「" + equipment.getEquipmentName() + "」状态变更为故障", equipment.getId());
         }
     }
 
@@ -394,6 +422,8 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         if (status == EquipmentStatus.FAULT || status == EquipmentStatus.NORMAL) {
             equipment.changeStatus(EquipmentStatus.UNDER_REPAIR);
             equipmentMapper.updateById(equipment);
+            messagePushService.broadcast("equipment", "设备状态变更",
+                    "设备「" + equipment.getEquipmentName() + "」状态变更为维修中", equipment.getId());
         }
     }
 

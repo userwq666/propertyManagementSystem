@@ -100,7 +100,14 @@ onMounted(async () => {
 
 function handleWsMessage(msg) {
   if (!msg || !msg.type) return
-  const routeMap = { repair: '/repair/record', complaint: '/complaint', fee: '/fee/records' }
+  const routeMap = {
+    repair: '/repair/record',
+    complaint: '/complaint',
+    fee: '/fee/records',
+    inspection: '/inspection/records',
+    announcement: '/announcement',
+    equipment: '/equipment/equipments'
+  }
   ElNotification({
     title: msg.title || '新消息',
     message: msg.content || '',

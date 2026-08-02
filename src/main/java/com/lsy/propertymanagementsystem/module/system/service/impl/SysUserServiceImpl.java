@@ -16,6 +16,7 @@ import com.lsy.propertymanagementsystem.module.system.mapper.SysRoleMapper;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserMapper;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserRoleMapper;
 import com.lsy.propertymanagementsystem.module.system.service.SysUserService;
+import com.lsy.propertymanagementsystem.websocket.MessagePushService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDomain
     //角色表
     @Autowired
     private SysRoleMapper roleMapper;
+
+    @Autowired
+    private MessagePushService messagePushService;
 
     //获取用户分页列表
     @Override
@@ -133,6 +137,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDomain
         }
         user.changeStatus(status);
         this.updateById(user);
+        String statusName = status == UserStatus.ENABLED ? "启用" : "禁用";
+        messagePushService.pushToUser(id, "system", "账号状态变更",
+                "您的账号已被" + statusName, id);
     }
 
     //重置密码

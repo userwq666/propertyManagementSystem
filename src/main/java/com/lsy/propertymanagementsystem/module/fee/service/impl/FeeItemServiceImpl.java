@@ -256,6 +256,9 @@ public class FeeItemServiceImpl extends ServiceImpl<FeeItemMapper, FeeItemDomain
         }
         domain.changeStatus(EnableStatus.of(status));
         this.updateById(domain);
+        String statusName = EnableStatus.of(status) == EnableStatus.ENABLED ? "启用" : "停用";
+        messagePushService.broadcast("fee", "收费项目已" + statusName,
+                "收费项目「" + domain.getItemName() + "」已" + statusName, domain.getId());
     }
 
     private FeeItemVO convertToVO(FeeItemDomain domain) {

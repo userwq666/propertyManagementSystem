@@ -14,6 +14,7 @@ import com.lsy.propertymanagementsystem.module.equipment.enums.EquipmentStatus;
 import com.lsy.propertymanagementsystem.module.equipment.mapper.EquipmentCategoryMapper;
 import com.lsy.propertymanagementsystem.module.equipment.mapper.EquipmentMapper;
 import com.lsy.propertymanagementsystem.module.equipment.service.EquipmentService;
+import com.lsy.propertymanagementsystem.websocket.MessagePushService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,9 @@ public class EquipmentServiceImpl extends ServiceImpl<EquipmentMapper, Equipment
 
     @Autowired
     private CommunityBuildingMapper communityBuildingMapper;
+
+    @Autowired
+    private MessagePushService messagePushService;
 
     @Override
     public EquipmentVO getById(Long id) {
@@ -119,6 +123,8 @@ public class EquipmentServiceImpl extends ServiceImpl<EquipmentMapper, Equipment
         }
         domain.changeStatus(EquipmentStatus.of(status));
         this.updateById(domain);
+        messagePushService.broadcast("equipment", "设备状态变更",
+                "设备「" + domain.getEquipmentName() + "」状态变更为" + EquipmentStatus.of(status).getDesc(), domain.getId());
     }
 
     @Override

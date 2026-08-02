@@ -13,6 +13,7 @@ import com.lsy.propertymanagementsystem.module.fee.mapper.FeeExpenseMapper;
 import com.lsy.propertymanagementsystem.module.fee.service.FeeExpenseService;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserDomain;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserMapper;
+import com.lsy.propertymanagementsystem.websocket.MessagePushService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,9 @@ public class FeeExpenseServiceImpl extends ServiceImpl<FeeExpenseMapper, FeeExpe
 
     @Autowired
     private SysUserMapper sysUserMapper;
+
+    @Autowired
+    private MessagePushService messagePushService;
 
     @Override
     public Page<FeeExpenseVO> page(int pageNum, int pageSize, String expenseName, Integer expenseType) {
@@ -101,6 +105,11 @@ public class FeeExpenseServiceImpl extends ServiceImpl<FeeExpenseMapper, FeeExpe
         existing.setAuditorId(SecurityUtils.getCurrentUserId());
         existing.setAuditTime(LocalDateTime.now());
         this.updateById(existing);
+        if (existing.getCreatorId() != null) {
+            String result = status == 1 ? "通过" : "驳回";
+            messagePushService.pushToUser(existing.getCreatorId(), "fee", "消费事项审核",
+                    "您申报的消费事项「" + existing.getExpenseName() + "」已审核" + result, existing.getId());
+        }
     }
 
     private List<FeeExpenseVO> convertToVO(List<FeeExpenseDomain> domains) {

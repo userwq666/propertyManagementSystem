@@ -14,6 +14,7 @@ import com.lsy.propertymanagementsystem.module.announcement.mapper.AnnouncementM
 import com.lsy.propertymanagementsystem.module.announcement.service.AnnouncementService;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserDomain;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserMapper;
+import com.lsy.propertymanagementsystem.websocket.MessagePushService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,9 @@ public class AnnouncementServiceImpl extends ServiceImpl<AnnouncementMapper, Ann
 
     @Autowired
     private SysUserMapper sysUserMapper;
+
+    @Autowired
+    private MessagePushService messagePushService;
 
     @Override
     public AnnouncementVO getById(Long id) {
@@ -110,8 +114,12 @@ public class AnnouncementServiceImpl extends ServiceImpl<AnnouncementMapper, Ann
         PublishStatus newStatus = PublishStatus.of(status);
         if (newStatus == PublishStatus.PUBLISHED) {
             announcement.publish();
+            messagePushService.broadcast("announcement", "公告已发布",
+                    announcement.getTitle(), announcement.getId());
         } else if (newStatus == PublishStatus.OFFLINE) {
             announcement.offline();
+            messagePushService.broadcast("announcement", "公告已下线",
+                    announcement.getTitle(), announcement.getId());
         } else {
             announcement.setPublishStatus(newStatus);
         }
@@ -148,6 +156,8 @@ public class AnnouncementServiceImpl extends ServiceImpl<AnnouncementMapper, Ann
                     .set(AnnouncementDomain::getPublishTime, LocalDateTime.now())
                     .set(AnnouncementDomain::getScheduledPublishTime, null));
             count++;
+            messagePushService.broadcast("announcement", "公告已发布",
+                    announcement.getTitle(), announcement.getId());
         }
         return count;
     }

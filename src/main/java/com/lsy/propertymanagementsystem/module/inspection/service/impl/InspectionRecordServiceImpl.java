@@ -22,6 +22,7 @@ import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordDTO;
 import com.lsy.propertymanagementsystem.module.repair.service.RepairRecordService;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserDomain;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserMapper;
+import com.lsy.propertymanagementsystem.websocket.MessagePushService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,6 +53,9 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
 
     @Autowired
     private InspectionRecordLogMapper recordLogMapper;
+
+    @Autowired
+    private MessagePushService messagePushService;
 
     @Override
     public Page<InspectionRecordVO> page(int pageNum, int pageSize, Long planId, Long equipmentId) {
@@ -201,6 +205,24 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
         }
         existing.setRemark(dto.getRemark());
         inspectionRecordMapper.updateById(existing);
+
+        InspectionPlanDomain plan = existing.getPlanId() != null ? inspectionPlanMapper.selectById(existing.getPlanId()) : null;
+        if (plan != null) {
+            if (plan.getCreatorId() != null && !Objects.equals(plan.getCreatorId(), currentUserId)) {
+                messagePushService.pushToUser(plan.getCreatorId(), "inspection", "巡检记录已更新",
+                        "巡检计划「" + plan.getPlanName() + "」有新的巡检记录", existing.getId());
+            }
+            if (isManager && alreadyChecked && existing.getInspectorUserId() != null
+                    && !Objects.equals(existing.getInspectorUserId(), currentUserId)) {
+                messagePushService.pushToUser(existing.getInspectorUserId(), "inspection", "巡检记录已修改",
+                        "管理员修改了巡检记录，请知悉", existing.getId());
+            }
+            if (existing.getStatus() == InspectResult.ABNORMAL) {
+                messagePushService.pushToRole("inspection", "巡检异常",
+                        "巡检计划「" + plan.getPlanName() + "」发现异常，请及时处理", existing.getId(),
+                        "admin", "property_admin");
+            }
+        }
     }
 
     @Override
@@ -239,6 +261,11 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
         }
         record.accept(SecurityUtils.getCurrentUserId());
         inspectionRecordMapper.updateById(record);
+        InspectionPlanDomain plan = record.getPlanId() != null ? inspectionPlanMapper.selectById(record.getPlanId()) : null;
+        if (plan != null && plan.getCreatorId() != null) {
+            messagePushService.pushToUser(plan.getCreatorId(), "inspection", "巡检任务已接单",
+                    "巡检计划「" + plan.getPlanName() + "」有任务已被接单", record.getId());
+        }
     }
 
     @Override

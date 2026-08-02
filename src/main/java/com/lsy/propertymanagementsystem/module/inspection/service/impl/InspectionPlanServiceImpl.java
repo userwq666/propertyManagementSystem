@@ -28,6 +28,7 @@ import com.lsy.propertymanagementsystem.module.system.domain.SysUserRoleDomain;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysRoleMapper;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserMapper;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserRoleMapper;
+import com.lsy.propertymanagementsystem.websocket.MessagePushService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -62,6 +63,9 @@ public class InspectionPlanServiceImpl extends ServiceImpl<InspectionPlanMapper,
 
     @Autowired
     private SysUserRoleMapper sysUserRoleMapper;
+
+    @Autowired
+    private MessagePushService messagePushService;
 
     @Override
     public List<Map<String, Object>> listInspectors() {
@@ -195,6 +199,10 @@ public class InspectionPlanServiceImpl extends ServiceImpl<InspectionPlanMapper,
         domain.setCreatorId(SecurityUtils.getCurrentUserId());
         this.save(domain);
         savePlanRelations(domain.getId(), dto.getEquipmentIds(), dto.getInspectorIds());
+        for (Long inspectorId : dto.getInspectorIds()) {
+            messagePushService.pushToUser(inspectorId, "inspection", "新巡检计划",
+                    "巡检计划「" + domain.getPlanName() + "」已创建，请查看", domain.getId());
+        }
     }
 
     @Override
@@ -270,6 +278,17 @@ public class InspectionPlanServiceImpl extends ServiceImpl<InspectionPlanMapper,
         }
         plan.changeStatus(PlanStatus.of(status));
         this.updateById(plan);
+        List<Long> inspectorIds = planInspectorMapper.selectList(
+                        new LambdaQueryWrapper<InspectionPlanInspectorDomain>()
+                                .eq(InspectionPlanInspectorDomain::getPlanId, id))
+                .stream()
+                .map(InspectionPlanInspectorDomain::getInspectorId)
+                .collect(Collectors.toList());
+        String statusName = PlanStatus.of(status) == PlanStatus.ENABLED ? "启用" : "停用";
+        for (Long inspectorId : inspectorIds) {
+            messagePushService.pushToUser(inspectorId, "inspection", "巡检计划已" + statusName,
+                    "巡检计划「" + plan.getPlanName() + "」已" + statusName, plan.getId());
+        }
     }
 
     private InspectionPlanVO convertToVO(InspectionPlanDomain plan) {
@@ -348,6 +367,13 @@ public class InspectionPlanServiceImpl extends ServiceImpl<InspectionPlanMapper,
             if (plan.getFrequencyType() == FrequencyType.ONCE) {
                 plan.changeStatus(PlanStatus.DISABLED);
                 this.updateById(plan);
+                List<InspectionPlanInspectorDomain> inspectors = planInspectorMapper.selectList(
+                        new LambdaQueryWrapper<InspectionPlanInspectorDomain>()
+                                .eq(InspectionPlanInspectorDomain::getPlanId, plan.getId()));
+                for (InspectionPlanInspectorDomain inspector : inspectors) {
+                    messagePushService.pushToUser(inspector.getInspectorId(), "inspection", "巡检计划已完成",
+                            "巡检计划「" + plan.getPlanName() + "」已完成", plan.getId());
+                }
             }
         }
     }
@@ -401,6 +427,10 @@ public class InspectionPlanServiceImpl extends ServiceImpl<InspectionPlanMapper,
             record.setInspectionTime(LocalDateTime.now());
             record.setStatus(InspectResult.NOT_INSPECTED);
             inspectionRecordService.addRecordDomain(record);
+        }
+        for (InspectionPlanInspectorDomain inspector : inspectors) {
+            messagePushService.pushToUser(inspector.getInspectorId(), "inspection", "新巡检任务",
+                    "巡检计划「" + plan.getPlanName() + "」今日有巡检任务待完成", plan.getId());
         }
     }
 }

@@ -13,6 +13,7 @@ import com.lsy.propertymanagementsystem.module.fee.mapper.FeeItemMapper;
 import com.lsy.propertymanagementsystem.module.fee.service.FeeNoticeService;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserDomain;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserMapper;
+import com.lsy.propertymanagementsystem.websocket.MessagePushService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,9 @@ public class FeeNoticeServiceImpl extends ServiceImpl<FeeNoticeMapper, FeeNotice
 
     @Autowired
     private FeeItemMapper feeItemMapper;
+
+    @Autowired
+    private MessagePushService messagePushService;
 
     @Override
     @Transactional
@@ -115,6 +119,8 @@ public class FeeNoticeServiceImpl extends ServiceImpl<FeeNoticeMapper, FeeNotice
         }
         domain.publish();
         this.updateById(domain);
+        messagePushService.broadcast("fee", "缴费通知已发布",
+                domain.getNoticeTitle() != null ? domain.getNoticeTitle() : "缴费通知", domain.getId());
     }
 
     private FeeNoticeVO convertToVO(FeeNoticeDomain domain) {
