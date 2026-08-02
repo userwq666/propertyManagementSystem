@@ -3,7 +3,6 @@ package com.lsy.propertymanagementsystem.module.fee.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lsy.propertymanagementsystem.common.result.Result;
 import com.lsy.propertymanagementsystem.module.fee.dto.FeeGenerateDTO;
-import com.lsy.propertymanagementsystem.module.fee.dto.FeeRecordDTO;
 import com.lsy.propertymanagementsystem.module.fee.dto.FeeRecordVO;
 import com.lsy.propertymanagementsystem.module.fee.service.FeeRecordService;
 import jakarta.validation.Valid;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 import java.math.BigDecimal;
 

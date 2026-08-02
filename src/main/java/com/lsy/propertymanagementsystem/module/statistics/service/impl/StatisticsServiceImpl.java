@@ -18,7 +18,6 @@ import com.lsy.propertymanagementsystem.module.fee.domain.FeeRecordDomain;
 import com.lsy.propertymanagementsystem.module.fee.enums.FeeRecordStatus;
 import com.lsy.propertymanagementsystem.module.fee.mapper.FeeExpenseMapper;
 import com.lsy.propertymanagementsystem.module.fee.mapper.FeeRecordMapper;
-import com.lsy.propertymanagementsystem.module.inspection.domain.InspectionPlanDomain;
 import com.lsy.propertymanagementsystem.module.inspection.domain.InspectionRecordDomain;
 import com.lsy.propertymanagementsystem.module.inspection.enums.HandleStatus;
 import com.lsy.propertymanagementsystem.module.inspection.enums.InspectResult;
@@ -27,11 +26,9 @@ import com.lsy.propertymanagementsystem.module.inspection.mapper.InspectionPlanM
 import com.lsy.propertymanagementsystem.module.inspection.mapper.InspectionRecordMapper;
 import com.lsy.propertymanagementsystem.module.repair.domain.RepairRecordDomain;
 import com.lsy.propertymanagementsystem.module.repair.enums.RepairStatus;
-import com.lsy.propertymanagementsystem.module.repair.enums.RepairType;
 import com.lsy.propertymanagementsystem.module.repair.mapper.RepairRecordMapper;
 import com.lsy.propertymanagementsystem.module.statistics.service.StatisticsService;
 import com.lsy.propertymanagementsystem.module.system.domain.SysRoleDomain;
-import com.lsy.propertymanagementsystem.module.system.domain.SysUserDomain;
 import com.lsy.propertymanagementsystem.module.system.domain.SysUserRoleDomain;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysRoleMapper;
 import com.lsy.propertymanagementsystem.module.system.mapper.SysUserMapper;
@@ -41,7 +38,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 

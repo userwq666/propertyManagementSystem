@@ -10,7 +10,6 @@ import com.lsy.propertymanagementsystem.module.community.mapper.CommunityHouseMa
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityOwnerMapper;
 import com.lsy.propertymanagementsystem.module.fee.domain.FeeItemDomain;
 import com.lsy.propertymanagementsystem.module.fee.domain.FeeRecordDomain;
-import com.lsy.propertymanagementsystem.module.fee.dto.FeeRecordDTO;
 import com.lsy.propertymanagementsystem.module.fee.dto.FeeRecordVO;
 import com.lsy.propertymanagementsystem.module.fee.enums.FeeRecordStatus;
 import com.lsy.propertymanagementsystem.module.fee.enums.PayType;
@@ -30,7 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service

@@ -10,8 +10,7 @@ import lombok.RequiredArgsConstructor;
 public enum ComplaintType {
     COMPLAINT(1, "投诉"),
     SUGGESTION(2, "建议"),
-    INQUIRY(3, "咨询"),
-    PRAISE(4, "表扬");
+    INQUIRY(3, "咨询");
 
     @EnumValue
     @JsonValue

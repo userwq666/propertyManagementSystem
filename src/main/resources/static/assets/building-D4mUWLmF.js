@@ -1,1 +1,0 @@
-import{r as t}from"./request-Chew_P30.js";function n(u){return t({url:"/community/building",method:"post",data:u})}function e(u){return t({url:"/community/building",method:"put",data:u})}function d(u){return t({url:`/community/building/${u}`,method:"delete"})}function r(u){return t({url:"/community/building/page",method:"get",params:u})}export{n as a,d,r as g,e as u};

@@ -26,23 +26,11 @@ CREATE TABLE announcement (
     CONSTRAINT fk_announcement_creator FOREIGN KEY (creator_id) REFERENCES sys_user(id) ON UPDATE CASCADE ON DELETE SET NULL
 ) COMMENT '公告表';
 
--- 公告阅读记录表
-CREATE TABLE announcement_read (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    announcement_id BIGINT NOT NULL COMMENT '公告ID',
-    user_id BIGINT NOT NULL COMMENT '用户ID',
-    read_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '阅读时间',
-    UNIQUE KEY uk_announcement_user (announcement_id, user_id),
-    CONSTRAINT fk_ar_announcement FOREIGN KEY (announcement_id) REFERENCES announcement(id) ON DELETE CASCADE,
-    CONSTRAINT fk_ar_user FOREIGN KEY (user_id) REFERENCES sys_user(id) ON DELETE CASCADE
-) COMMENT '公告阅读记录表';
-
 -- 索引
 CREATE INDEX idx_announcement_creator ON announcement(creator_id);
 CREATE INDEX idx_announcement_status ON announcement(publish_status);
 CREATE INDEX idx_announcement_type ON announcement(type);
 CREATE INDEX idx_announcement_create_time ON announcement(create_time);
-CREATE INDEX idx_ar_user ON announcement_read(user_id);
 
 -- =====================================================================
 

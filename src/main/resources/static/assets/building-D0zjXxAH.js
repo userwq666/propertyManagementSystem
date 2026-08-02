@@ -1,1 +1,0 @@
-import{a9 as t}from"./index-CIBl9iQy.js";function n(u){return t({url:"/community/building",method:"post",data:u})}function e(u){return t({url:"/community/building",method:"put",data:u})}function d(u){return t({url:`/community/building/${u}`,method:"delete"})}function o(u){return t({url:"/community/building/page",method:"get",params:u})}export{n as a,d,o as g,e as u};

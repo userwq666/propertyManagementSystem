@@ -75,26 +75,6 @@ CREATE TABLE fee_notice (
     CONSTRAINT fk_notice_creator FOREIGN KEY (creator_id) REFERENCES sys_user(id) ON UPDATE CASCADE ON DELETE SET NULL
 ) COMMENT '收费通知表';
 
--- 收费通知-楼栋关联表
-CREATE TABLE fee_notice_building (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    notice_id BIGINT NOT NULL COMMENT '通知ID',
-    building_id BIGINT NOT NULL COMMENT '楼栋ID',
-    UNIQUE KEY uk_notice_building (notice_id, building_id),
-    CONSTRAINT fk_fnb_notice FOREIGN KEY (notice_id) REFERENCES fee_notice(id) ON DELETE CASCADE,
-    CONSTRAINT fk_fnb_building FOREIGN KEY (building_id) REFERENCES community_building(id) ON DELETE CASCADE
-) COMMENT '收费通知-楼栋关联表';
-
--- 收费通知-业主关联表
-CREATE TABLE fee_notice_owner (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    notice_id BIGINT NOT NULL COMMENT '通知ID',
-    owner_id BIGINT NOT NULL COMMENT '业主ID',
-    UNIQUE KEY uk_notice_owner (notice_id, owner_id),
-    CONSTRAINT fk_fno_notice FOREIGN KEY (notice_id) REFERENCES fee_notice(id) ON DELETE CASCADE,
-    CONSTRAINT fk_fno_owner FOREIGN KEY (owner_id) REFERENCES community_owner(id) ON DELETE CASCADE
-) COMMENT '收费通知-业主关联表';
-
 -- 物业消费事项表（费用支出公示）
 CREATE TABLE fee_expense (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -121,8 +101,6 @@ CREATE INDEX idx_fee_status ON fee_record(status);
 CREATE INDEX idx_fee_no ON fee_record(fee_no);
 CREATE INDEX idx_fee_create_time ON fee_record(create_time);
 CREATE INDEX idx_notice_creator ON fee_notice(creator_id);
-CREATE INDEX idx_fnb_building ON fee_notice_building(building_id);
-CREATE INDEX idx_fno_owner ON fee_notice_owner(owner_id);
 CREATE INDEX idx_expense_create_time ON fee_expense(create_time);
 
 -- =====================================================================

@@ -1,1 +1,0 @@
-import{l as o,U as a}from"./index-Tqnzr8ll.js";function m(t){let e=null;const n=()=>{clearTimeout(e),e=setTimeout(()=>{t&&t()},200)};o(()=>window.addEventListener("pms:data-changed",n)),a(()=>{clearTimeout(e),window.removeEventListener("pms:data-changed",n)})}export{m as u};

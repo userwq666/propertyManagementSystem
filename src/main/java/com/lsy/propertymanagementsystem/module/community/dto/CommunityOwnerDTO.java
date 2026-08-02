@@ -5,7 +5,6 @@ import com.lsy.propertymanagementsystem.module.community.enums.OwnerType;
 import lombok.Data;
 
 import jakarta.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
 
 @Data
 public class CommunityOwnerDTO {

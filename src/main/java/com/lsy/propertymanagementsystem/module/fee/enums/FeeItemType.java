@@ -8,13 +8,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum FeeItemType {
-    PROPERTY_FEE(1, "物业费"),
-    PARKING_FEE(2, "车位费"),
-    WATER_FEE(3, "水费"),
-    ELECTRIC_FEE(4, "电费"),
-    GAS_FEE(5, "燃气费"),
-    HEATING_FEE(6, "暖气费"),
-    OTHER(9, "其他");
+    PROPERTY_FEE(1, "物业费");
 
     @EnumValue
     @JsonValue

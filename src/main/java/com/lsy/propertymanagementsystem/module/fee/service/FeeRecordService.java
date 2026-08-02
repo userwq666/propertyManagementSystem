@@ -1,7 +1,6 @@
 package com.lsy.propertymanagementsystem.module.fee.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.lsy.propertymanagementsystem.module.fee.dto.FeeRecordDTO;
 import com.lsy.propertymanagementsystem.module.fee.dto.FeeRecordVO;
 
 import java.math.BigDecimal;

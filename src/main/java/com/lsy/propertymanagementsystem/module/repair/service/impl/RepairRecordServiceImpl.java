@@ -21,7 +21,6 @@ import com.lsy.propertymanagementsystem.module.inspection.mapper.InspectionRecor
 import com.lsy.propertymanagementsystem.module.repair.domain.RepairRecordDomain;
 import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordDTO;
 import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordVO;
-import com.lsy.propertymanagementsystem.module.repair.enums.RepairPriority;
 import com.lsy.propertymanagementsystem.module.repair.enums.RepairStatus;
 import com.lsy.propertymanagementsystem.module.repair.enums.RepairType;
 import com.lsy.propertymanagementsystem.module.repair.mapper.RepairRecordMapper;

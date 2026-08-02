@@ -76,12 +76,6 @@
         <el-form-item label="身份证号" prop="idCard">
           <el-input v-model="form.idCard" placeholder="请输入身份证号" />
         </el-form-item>
-        <!-- <el-form-item label="身份证正面" prop="idCardFront">
-          <el-input v-model="form.idCardFront" placeholder="请输入身份证正面图片URL" />
-        </el-form-item> -->
-        <!-- <el-form-item label="身份证反面" prop="idCardBack">
-          <el-input v-model="form.idCardBack" placeholder="请输入身份证反面图片URL" />
-        </el-form-item> -->
         <el-form-item label="业主类型" prop="ownerType">
           <el-select v-model="form.ownerType" placeholder="请选择业主类型" style="width: 100%">
             <el-option label="本人" :value="1" />
@@ -121,7 +115,7 @@ const isEdit = ref(false)
 const ownerUserList = ref([])
 
 const searchForm = reactive({ pageNum: 1, pageSize: 10, name: '', phone: '' })
-const form = reactive({ id: null, userId: null, name: '', phone: '', idCard: '', idCardFront: '', idCardBack: '', ownerType: 1, status: 1, remark: '' })
+const form = reactive({ id: null, userId: null, name: '', phone: '', idCard: '', ownerType: 1, status: 1, remark: '' })
 
 const submitting = ref(false)
 

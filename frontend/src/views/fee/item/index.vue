@@ -163,7 +163,7 @@ const rules = {
   cycleType: [{ required: true, message: '请选择周期', trigger: 'change' }]
 }
 
-const itemTypeMap = { 1: '物业费', 2: '车位费', 3: '水费', 4: '电费', 5: '燃气费', 6: '暖气费', 9: '其他' }
+const itemTypeMap = { 1: '物业费' }
 const cycleTypeMap = { 1: '按月', 2: '按季', 3: '按半年', 4: '按年', 5: '一次性' }
 function itemTypeLabel(t) { return itemTypeMap[t] || '未知' }
 function cycleTypeLabel(t) { return cycleTypeMap[t] || '未知' }
