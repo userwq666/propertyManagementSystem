@@ -11,7 +11,7 @@
     <el-row :gutter="16">
       <el-col :span="12" class="panel-col">
         <el-card shadow="never" class="panel-card">
-          <template #header>工作待办</template>
+          <template #header>待办事项</template>
           <div class="todo-body">
             <div v-if="todos.length" class="todo-list">
               <div v-for="item in todos" :key="item.key" class="todo-item" @click="router.push(item.path)">
