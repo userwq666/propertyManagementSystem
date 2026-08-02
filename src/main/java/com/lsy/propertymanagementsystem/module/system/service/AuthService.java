@@ -9,7 +9,7 @@ public interface AuthService {
     // 登录
     LoginVO login(LoginDTO request);
     // 退出登录
-    void logout(String token);
+    void logout(String token, String tabId);
     // 获取当前用户信息
     UserVO getCurrentUser(String token);
 }

@@ -1,6 +1,7 @@
 ﻿import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import { getToken, removeToken } from '@/utils/auth'
+import { getTabId } from '@/utils/tabId'
 import router from '@/router'
 
 const request = axios.create({
@@ -14,6 +15,7 @@ request.interceptors.request.use(
     if (token) {
       config.headers.Authorization = 'Bearer ' + token
     }
+    config.headers['X-Tab-Id'] = getTabId()
     return config
   },
   error => Promise.reject(error)

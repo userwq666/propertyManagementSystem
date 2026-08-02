@@ -30,12 +30,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String authHeader = request.getHeader("Authorization");
+        String tabId = request.getHeader("X-Tab-Id");
         String token = null;
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
         }
 
-        if (token != null && JwtUtils.isTokenValid(token)) {
+        if (token != null && JwtUtils.isTokenValid(token, tabId)) {
             Claims claims = JwtUtils.parseClaims(token);
             if (claims != null) {
                 Long userId = JwtUtils.getUserIdFromClaims(claims);

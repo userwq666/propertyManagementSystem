@@ -18,15 +18,20 @@ public class AuthHandshakeInterceptor implements HandshakeInterceptor {
                                    WebSocketHandler wsHandler, Map<String, Object> attributes) {
         String query = request.getURI().getQuery();
         String token = null;
+        String tabId = null;
         if (query != null) {
             for (String pair : query.split("&")) {
                 String[] kv = pair.split("=", 2);
-                if (kv.length == 2 && "token".equals(kv[0])) {
-                    token = kv[1];
+                if (kv.length == 2) {
+                    if ("token".equals(kv[0])) {
+                        token = kv[1];
+                    } else if ("tabId".equals(kv[0])) {
+                        tabId = kv[1];
+                    }
                 }
             }
         }
-        if (token == null || !JwtUtils.isTokenValid(token)) {
+        if (token == null || !JwtUtils.isTokenValid(token, tabId)) {
             return false;
         }
         Claims claims = JwtUtils.parseClaims(token);

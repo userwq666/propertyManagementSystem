@@ -1,4 +1,5 @@
 import { getToken } from '@/utils/auth'
+import { getTabId } from '@/utils/tabId'
 
 let socket = null
 let reconnectTimer = null
@@ -14,7 +15,7 @@ export function connectWebSocket(onMessage) {
   if (onMessage) handlers.push(onMessage)
   const proto = window.location.protocol === 'https:' ? 'wss' : 'ws'
   try {
-    socket = new WebSocket(`${proto}://${window.location.host}/ws?token=${encodeURIComponent(token)}`)
+    socket = new WebSocket(`${proto}://${window.location.host}/ws?token=${encodeURIComponent(token)}&tabId=${encodeURIComponent(getTabId())}`)
   } catch (e) {
     return () => removeHandler(onMessage)
   }

@@ -92,9 +92,9 @@ public class AuthServiceImpl implements AuthService {
 
     // 退出登录
     @Override
-    public void logout(String token) {
+    public void logout(String token, String tabId) {
         if (token != null) {
-            JwtUtils.invalidateToken(token);
+            JwtUtils.invalidateToken(token, tabId);
         }
     }
 

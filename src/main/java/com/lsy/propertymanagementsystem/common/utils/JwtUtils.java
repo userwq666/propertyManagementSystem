@@ -120,8 +120,12 @@ public class JwtUtils {
     }
 
     public static boolean isTokenValid(String token) {
+        return isTokenValid(token, null);
+    }
+
+    public static boolean isTokenValid(String token, String tabId) {
         try {
-            if (tokenBlacklist.containsKey(token)) {
+            if (tokenBlacklist.containsKey(buildTokenKey(token, tabId))) {
                 return false;
             }
             Claims claims = parseToken(token);
@@ -132,9 +136,20 @@ public class JwtUtils {
     }
 
     public static void invalidateToken(String token) {
+        invalidateToken(token, null);
+    }
+
+    public static void invalidateToken(String token, String tabId) {
         if (token != null) {
-            tokenBlacklist.put(token, System.currentTimeMillis());
+            tokenBlacklist.put(buildTokenKey(token, tabId), System.currentTimeMillis());
         }
+    }
+
+    private static String buildTokenKey(String token, String tabId) {
+        if (tabId == null || tabId.trim().isEmpty()) {
+            return token;
+        }
+        return token + "::" + tabId.trim();
     }
 
     public static void cleanExpiredBlacklist() {

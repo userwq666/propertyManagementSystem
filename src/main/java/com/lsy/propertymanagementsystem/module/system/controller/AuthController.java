@@ -31,7 +31,8 @@ public class AuthController {
         if (token != null && token.startsWith("Bearer ")) {
             token = token.substring(7);
         }
-        authService.logout(token);
+        String tabId = request.getHeader("X-Tab-Id");
+        authService.logout(token, tabId);
         return Result.success();
     }
 
