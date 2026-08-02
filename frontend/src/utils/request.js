@@ -23,6 +23,10 @@ request.interceptors.response.use(
   response => {
     const res = response.data
     if (res.code === 200 || res.code === 0) {
+      const method = (response.config.method || '').toLowerCase()
+      if (['post', 'put', 'delete', 'patch'].includes(method)) {
+        window.dispatchEvent(new CustomEvent('pms:data-changed'))
+      }
       return res
     }
     if (res.code === 401) {

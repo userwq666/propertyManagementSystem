@@ -87,9 +87,6 @@
         <el-form-item label="内容" prop="content">
           <el-input v-model="form.content" type="textarea" :rows="4" placeholder="请输入投诉/建议内容" />
         </el-form-item>
-        <el-form-item label="图片">
-          <el-input v-model="form.images" placeholder="图片URL(多个逗号分隔)" />
-        </el-form-item>
         <el-form-item label="匿名">
           <el-switch v-model="anonymous" active-text="匿名提交" />
         </el-form-item>
@@ -174,7 +171,9 @@ import { addComplaint, updateComplaint, deleteComplaint, getComplaintPage, getCo
 import { getOwnerPage } from '@/api/community/owner'
 import { getUserPage } from '@/api/system/user'
 import { useUserStore } from '@/stores/user'
+import { useRealtimeRefresh } from '@/composables/useRealtimeRefresh'
 
+useRealtimeRefresh(fetchData)
 const userStore = useUserStore()
 const hasOwnerPerm = computed(() => userStore.hasPermission('community:owner:list'))
 const userId = computed(() => userStore.userInfo.id || userStore.userInfo.userId)

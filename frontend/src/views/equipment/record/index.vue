@@ -95,7 +95,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { getEquipmentRecordOptions, getEquipmentRecordSummary } from '@/api/equipment/record'
+import { useRealtimeRefresh } from '@/composables/useRealtimeRefresh'
 
+useRealtimeRefresh(loadEquipment)
 const equipments = ref([])
 const equipmentId = ref('')
 const equipment = ref(null)

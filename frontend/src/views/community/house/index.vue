@@ -112,7 +112,9 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { addHouse, updateHouse, deleteHouse, getHousePage } from '@/api/community/house'
 import { getBuildingPage } from '@/api/community/building'
 import { getOwnerPage } from '@/api/community/owner'
+import { useRealtimeRefresh } from '@/composables/useRealtimeRefresh'
 
+useRealtimeRefresh(fetchData)
 const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)

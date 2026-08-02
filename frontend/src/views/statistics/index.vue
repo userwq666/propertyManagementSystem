@@ -16,9 +16,14 @@
       <el-row :gutter="16">
         <stat-item v-for="s in repairStats" :key="s.label" :label="s.label" :value="s.value" />
       </el-row>
-      <div v-if="repair.typeRatio" class="ratio-box">
-        <el-tag v-for="(v, k) in repair.typeRatio" :key="k" class="ratio-tag">{{ k }}：{{ v }} 次</el-tag>
-      </div>
+      <el-row :gutter="16" class="chart-row">
+        <el-col :span="12">
+          <v-chart class="chart" :option="repairTypeOption" autoresize />
+        </el-col>
+        <el-col :span="12">
+          <v-chart class="chart" :option="repairStatusOption" autoresize />
+        </el-col>
+      </el-row>
     </el-card>
 
     <!-- 设备统计 -->
@@ -32,6 +37,7 @@
         <stat-item label="维修中" :value="equipment.underRepair" />
         <stat-item label="停用" :value="equipment.disabled" />
       </el-row>
+      <v-chart class="chart" :option="equipmentOption" autoresize />
     </el-card>
 
     <!-- 人员统计 -->
@@ -48,6 +54,7 @@
         <stat-item label="房屋数" :value="userInfo.houseCount" />
         <stat-item label="车位数" :value="userInfo.parkingCount" />
       </el-row>
+      <v-chart class="chart" :option="userRoleOption" autoresize />
     </el-card>
 
     <!-- 费用统计 -->
@@ -60,15 +67,7 @@
         <stat-item label="支出金额" :value="fee.expense" suffix="元" />
         <stat-item label="收支结余" :value="fee.balance" suffix="元" :type="fee.balance >= 0 ? 'income' : 'loss'" />
       </el-row>
-      <div v-if="fee.monthlyTrend" class="trend-box">
-        <div v-for="m in fee.monthlyTrend" :key="m.month" class="trend-item">
-          <span class="trend-month">{{ m.month }}</span>
-          <div class="trend-bar-wrap">
-            <div class="trend-bar" :style="{ width: trendWidth(m.amount) }"></div>
-          </div>
-          <span class="trend-amount">{{ m.amount }}</span>
-        </div>
-      </div>
+      <v-chart class="chart" :option="feeTrendOption" autoresize />
     </el-card>
 
     <!-- 投诉统计 -->
@@ -81,6 +80,7 @@
         <stat-item label="已完成" :value="complaint.done" />
         <stat-item label="平均评分" :value="complaint.avgScore" suffix="分" />
       </el-row>
+      <v-chart class="chart" :option="complaintOption" autoresize />
     </el-card>
 
     <!-- 巡检统计 -->
@@ -93,6 +93,7 @@
         <stat-item label="异常" :value="inspection.abnormal" />
         <stat-item label="完成率" :value="inspection.completionRate" suffix="%" />
       </el-row>
+      <v-chart class="chart" :option="inspectionOption" autoresize />
     </el-card>
   </div>
 </template>
@@ -101,6 +102,13 @@
 import { ref, computed, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { getStatisticsOverview, getRepairSummary, getEquipmentSummary, getUserSummary, getFeeSummary, getComplaintSummary, getInspectionSummary } from '@/api/statistics'
+import VChart from 'vue-echarts'
+import { use } from 'echarts/core'
+import { CanvasRenderer } from 'echarts/renderers'
+import { PieChart, LineChart } from 'echarts/charts'
+import { TooltipComponent, LegendComponent, GridComponent } from 'echarts/components'
+
+use([CanvasRenderer, PieChart, LineChart, TooltipComponent, LegendComponent, GridComponent])
 
 const StatItem = {
   props: { label: String, value: [Number, String], suffix: String, type: String },
@@ -151,10 +159,75 @@ const repairStats = computed(() => [
   { label: '维修支出(元)', value: repair.value.expense }
 ])
 
-const maxTrendAmount = computed(() => Math.max(...(fee.value.monthlyTrend || []).map(m => Number(m.amount) || 0), 1))
-function trendWidth(amount) {
-  return Math.max(2, Math.round((Number(amount) || 0) / maxTrendAmount.value * 100)) + '%'
+const palette = ['#409eff', '#67c23a', '#e6a23c', '#f56c6c', '#909399', '#36cfc9']
+
+function pieData(entries) {
+  return entries
+    .filter(([, v]) => v !== undefined && v !== null && Number(v) > 0)
+    .map(([name, value]) => ({ name, value: Number(value) }))
 }
+
+function pieOption(data) {
+  return {
+    color: palette,
+    tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+    legend: { bottom: 0, icon: 'circle', textStyle: { fontSize: 12 } },
+    series: [{
+      type: 'pie',
+      radius: ['38%', '65%'],
+      center: ['50%', '44%'],
+      itemStyle: { borderRadius: 4, borderColor: '#fff', borderWidth: 2 },
+      label: { show: false },
+      data
+    }]
+  }
+}
+
+const repairTypeOption = computed(() => pieOption(pieData(Object.entries(repair.value.typeRatio || {}))))
+const repairStatusOption = computed(() => pieOption(pieData([
+  ['待派单', repair.value.pending],
+  ['处理中', repair.value.processing],
+  ['待确认', repair.value.evaluate],
+  ['已完成', repair.value.done],
+  ['已取消', repair.value.cancelled]
+])))
+const equipmentOption = computed(() => pieOption(pieData([
+  ['正常', equipment.value.normal],
+  ['故障', equipment.value.fault],
+  ['维修中', equipment.value.underRepair],
+  ['停用', equipment.value.disabled],
+  ['报废', equipment.value.scrapped]
+])))
+const userRoleOption = computed(() => pieOption(pieData([
+  ['物业管理员', userInfo.value.propertyAdmin],
+  ['业主', userInfo.value.owner],
+  ['维修工', userInfo.value.repairWorker],
+  ['巡检员', userInfo.value.inspector],
+  ['财务', userInfo.value.finance]
+])))
+const complaintOption = computed(() => pieOption(pieData([
+  ['待受理', complaint.value.pending],
+  ['处理中', complaint.value.processing],
+  ['已完成', complaint.value.done],
+  ['已取消', complaint.value.cancelled]
+])))
+const inspectionOption = computed(() => {
+  const total = Number(inspection.value.recordTotal) || 0
+  const normal = Number(inspection.value.normal) || 0
+  const abnormal = Number(inspection.value.abnormal) || 0
+  return pieOption(pieData([['正常', normal], ['异常', abnormal], ['未巡检', Math.max(total - normal - abnormal, 0)]]))
+})
+const feeTrendOption = computed(() => {
+  const trend = fee.value.monthlyTrend || []
+  return {
+    color: ['#67c23a'],
+    tooltip: { trigger: 'axis' },
+    grid: { left: 50, right: 20, top: 20, bottom: 30 },
+    xAxis: { type: 'category', boundaryGap: false, data: trend.map(m => m.month) },
+    yAxis: { type: 'value' },
+    series: [{ name: '实收', type: 'line', smooth: true, areaStyle: { opacity: 0.15 }, data: trend.map(m => m.amount) }]
+  }
+})
 
 onMounted(async () => {
   const tasks = []
@@ -180,12 +253,6 @@ onMounted(async () => {
 .stat-label { margin-top: 6px; font-size: 13px; color: #909399; }
 .module-card { border-radius: 8px; }
 .module-card :deep(.el-card__header) { font-weight: 600; }
-.ratio-box { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
-.ratio-tag { }
-.trend-box { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
-.trend-item { display: flex; align-items: center; gap: 10px; font-size: 13px; }
-.trend-month { width: 70px; color: #909399; }
-.trend-bar-wrap { flex: 1; background: #f0f2f5; border-radius: 4px; height: 16px; }
-.trend-bar { height: 16px; background: #67c23a; border-radius: 4px; min-width: 2px; }
-.trend-amount { width: 80px; text-align: right; color: #606266; }
+.chart-row { margin-top: 16px; }
+.chart { height: 280px; }
 </style>

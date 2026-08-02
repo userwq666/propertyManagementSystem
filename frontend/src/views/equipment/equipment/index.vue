@@ -148,7 +148,9 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { addEquipment, updateEquipment, deleteEquipment, getEquipmentPage, updateEquipmentStatus } from '@/api/equipment/equipment'
 import { getCategoryPage } from '@/api/equipment/category'
 import { getBuildingPage } from '@/api/community/building'
+import { useRealtimeRefresh } from '@/composables/useRealtimeRefresh'
 
+useRealtimeRefresh(fetchData)
 const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)

@@ -134,7 +134,9 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getFeeExpensePage, addFeeExpense, updateFeeExpense, deleteFeeExpense, auditFeeExpense } from '@/api/fee/expense'
 import { useUserStore } from '@/stores/user'
+import { useRealtimeRefresh } from '@/composables/useRealtimeRefresh'
 
+useRealtimeRefresh(fetchData)
 const userStore = useUserStore()
 const userId = computed(() => userStore.userInfo.id || userStore.userInfo.userId)
 const managerLike = computed(() => userStore.hasPermission('fee:expense:audit'))

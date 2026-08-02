@@ -99,7 +99,9 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { addPlan, updatePlan, deletePlan, getPlanPage, updatePlanStatus, getInspectors } from '@/api/inspection/plan'
 import { getEquipmentPage } from '@/api/equipment/equipment'
+import { useRealtimeRefresh } from '@/composables/useRealtimeRefresh'
 
+useRealtimeRefresh(fetchData)
 const loading = ref(false); const tableData = ref([]); const total = ref(0)
 const dialogVisible = ref(false); const formRef = ref(null); const isEdit = ref(false)
 const detailDialogVisible = ref(false)

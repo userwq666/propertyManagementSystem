@@ -6,27 +6,29 @@ const handlers = []
 
 export function connectWebSocket(onMessage) {
   const token = getToken()
-  if (!token) return
+  if (!token) return () => {}
   if (socket && (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)) {
     if (onMessage) handlers.push(onMessage)
-    return
+    return () => removeHandler(onMessage)
   }
   if (onMessage) handlers.push(onMessage)
   const proto = window.location.protocol === 'https:' ? 'wss' : 'ws'
   try {
     socket = new WebSocket(`${proto}://${window.location.host}/ws?token=${encodeURIComponent(token)}`)
   } catch (e) {
-    return
+    return () => removeHandler(onMessage)
   }
   socket.onopen = () => { /* 连接成功 */ }
   socket.onmessage = (event) => {
     try {
       const msg = JSON.parse(event.data)
       handlers.forEach(h => h(msg))
+      window.dispatchEvent(new CustomEvent('pms:data-changed', { detail: msg }))
     } catch (e) { /* ignore */ }
   }
   socket.onclose = () => { scheduleReconnect() }
   socket.onerror = () => { try { socket.close() } catch (e) { /* ignore */ } }
+  return () => removeHandler(onMessage)
 }
 
 export function disconnectWebSocket() {
@@ -44,4 +46,9 @@ function scheduleReconnect() {
     socket = null
     connectWebSocket()
   }, 5000)
+}
+
+function removeHandler(handler) {
+  const idx = handlers.indexOf(handler)
+  if (idx !== -1) handlers.splice(idx, 1)
 }

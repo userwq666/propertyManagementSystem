@@ -125,7 +125,9 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { addFeeNotice, updateFeeNotice, deleteFeeNotice, getFeeNoticePage, publishFeeNotice } from '@/api/fee/notice'
+import { useRealtimeRefresh } from '@/composables/useRealtimeRefresh'
 
+useRealtimeRefresh(fetchData)
 const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)

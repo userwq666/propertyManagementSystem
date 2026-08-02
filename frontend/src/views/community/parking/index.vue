@@ -109,7 +109,9 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { addParking, updateParking, deleteParking, getParkingPage } from '@/api/community/parking'
 import { getOwnerPage } from '@/api/community/owner'
+import { useRealtimeRefresh } from '@/composables/useRealtimeRefresh'
 
+useRealtimeRefresh(fetchData)
 const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)

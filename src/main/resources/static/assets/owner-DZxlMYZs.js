@@ -1,0 +1,1 @@
+import{a2 as t}from"./index-B5YH7mXb.js";function o(e){return t({url:"/community/owner",method:"post",data:e})}function u(e){return t({url:"/community/owner",method:"put",data:e})}function m(e){return t({url:`/community/owner/${e}`,method:"delete"})}function a(e,n={}){return t({url:"/community/owner/page",method:"get",params:e,...n})}export{o as a,m as d,a as g,u};

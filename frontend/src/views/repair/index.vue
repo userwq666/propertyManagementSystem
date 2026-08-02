@@ -109,9 +109,6 @@
         <el-form-item label="报修描述" prop="repairContent">
           <el-input v-model="form.repairContent" type="textarea" :rows="3" />
         </el-form-item>
-        <el-form-item label="图片">
-          <el-input v-model="form.repairImages" placeholder="图片URL" />
-        </el-form-item>
         <el-form-item label="备注">
           <el-input v-model="form.remark" type="textarea" :rows="2" />
         </el-form-item>
@@ -200,7 +197,9 @@ import { addRepair, updateRepair, deleteRepair, getRepairPage, updateRepairStatu
 import { getOwnerPage } from '@/api/community/owner'
 import { getUserPage } from '@/api/system/user'
 import { useUserStore } from '@/stores/user'
+import { useRealtimeRefresh } from '@/composables/useRealtimeRefresh'
 
+useRealtimeRefresh(fetchData)
 const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)

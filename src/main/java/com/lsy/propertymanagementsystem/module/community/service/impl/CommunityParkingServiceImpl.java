@@ -17,6 +17,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,13 @@ public class CommunityParkingServiceImpl extends ServiceImpl<CommunityParkingMap
             wrapper.eq(CommunityParkingDomain::getStatus, status);
         }
         if (SecurityUtils.isOwner()) {
-            wrapper.eq(CommunityParkingDomain::getOwnerId, SecurityUtils.getCurrentUserId());
+            Long ownerId = getOwnerIdByUserId(SecurityUtils.getCurrentUserId());
+            if (ownerId == null) {
+                Page<CommunityParkingVO> empty = new Page<>(pageNum, pageSize, 0);
+                empty.setRecords(Collections.emptyList());
+                return empty;
+            }
+            wrapper.eq(CommunityParkingDomain::getOwnerId, ownerId);
         }
         wrapper.orderByDesc(CommunityParkingDomain::getCreateTime);
 
@@ -126,5 +133,11 @@ public class CommunityParkingServiceImpl extends ServiceImpl<CommunityParkingMap
             }
         }
         return vo;
+    }
+
+    private Long getOwnerIdByUserId(Long userId) {
+        CommunityOwnerDomain owner = ownerMapper.selectOne(new LambdaQueryWrapper<CommunityOwnerDomain>()
+                .eq(CommunityOwnerDomain::getUserId, userId));
+        return owner != null ? owner.getId() : null;
     }
 }

@@ -115,7 +115,9 @@ import { getFeeRecordPage, payFeeRecord } from '@/api/fee/record'
 import { getOwnerPage } from '@/api/community/owner'
 import { getHousePage } from '@/api/community/house'
 import { useUserStore } from '@/stores/user'
+import { useRealtimeRefresh } from '@/composables/useRealtimeRefresh'
 
+useRealtimeRefresh(fetchData)
 const userStore = useUserStore()
 const hasOwnerPerm = computed(() => userStore.hasPermission('community:owner:list'))
 const loading = ref(false)

@@ -27,3 +27,7 @@ export function getComplaintSummary() {
 export function getInspectionSummary() {
   return request({ url: '/statistics/inspection/summary', method: 'get' })
 }
+
+export function getTodos() {
+  return request({ url: '/statistics/todos', method: 'get' })
+}

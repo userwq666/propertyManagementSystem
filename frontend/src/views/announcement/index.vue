@@ -84,9 +84,6 @@
         <el-form-item label="内容" prop="content">
           <el-input v-model="form.content" type="textarea" :rows="6" />
         </el-form-item>
-        <el-form-item label="封面图">
-          <el-input v-model="form.coverImage" placeholder="封面图URL" />
-        </el-form-item>
         <el-form-item label="发布设置">
           <div class="scheduled-row">
             <span>预发布</span>
@@ -116,7 +113,9 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { addAnnouncement, updateAnnouncement, deleteAnnouncement, getAnnouncementPage, updateAnnouncementStatus, updateAnnouncementTop } from '@/api/announcement/index'
+import { useRealtimeRefresh } from '@/composables/useRealtimeRefresh'
 
+useRealtimeRefresh(fetchData)
 const loading = ref(false); const tableData = ref([]); const total = ref(0)
 const dialogVisible = ref(false); const formRef = ref(null); const isEdit = ref(false)
 const detailDialogVisible = ref(false)

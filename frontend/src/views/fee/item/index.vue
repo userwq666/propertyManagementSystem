@@ -136,7 +136,9 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { addFeeItem, updateFeeItem, deleteFeeItem, getFeeItemPage, updateFeeItemStatus, publishFeeItem } from '@/api/fee/item'
 import { getBuildingPage } from '@/api/community/building'
 import { getHousePage } from '@/api/community/house'
+import { useRealtimeRefresh } from '@/composables/useRealtimeRefresh'
 
+useRealtimeRefresh(fetchData)
 const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)

@@ -47,19 +47,27 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { getAnnouncementLatest } from '@/api/announcement'
+import { getTodos } from '@/api/statistics'
+import { connectWebSocket } from '@/utils/ws'
 
 const router = useRouter()
 const userStore = useUserStore()
 const now = ref(new Date())
 const latest = ref(null)
 
-// TODO: 待办数量后续接入后端接口（按角色返回真实数据）
-const todos = ref([
-  { key: 'repairAssign', name: '待派单报修', icon: 'Tickets', path: '/repair/record', count: 0 },
-  { key: 'repairConfirm', name: '待确认工单', icon: 'Finished', path: '/repair/record', count: 0 },
-  { key: 'complaint', name: '待处理投诉', icon: 'ChatDotSquare', path: '/complaint', count: 0 },
-  { key: 'inspection', name: '待执行巡检', icon: 'Calendar', path: '/inspection/records', count: 0 }
-])
+const todos = ref([])
+
+const todoMeta = {
+  repairAssign: { icon: 'Tickets', path: '/repair/record' },
+  repairConfirm: { icon: 'Finished', path: '/repair/record' },
+  repairProcessing: { icon: 'Tools', path: '/repair/record' },
+  complaint: { icon: 'ChatDotSquare', path: '/complaint' },
+  complaintConfirm: { icon: 'ChatDotSquare', path: '/complaint' },
+  inspectionTodo: { icon: 'Calendar', path: '/inspection/records' },
+  inspectionAbnormal: { icon: 'Warning', path: '/inspection/records' },
+  feePending: { icon: 'Money', path: '/fee/records' },
+  expenseAudit: { icon: 'List', path: '/fee/expenses' }
+}
 
 const greeting = computed(() => {
   const hour = now.value.getHours()
@@ -74,13 +82,39 @@ const nowText = computed(() => now.value.toLocaleString('zh-CN', { hour12: false
 const typeText = (t) => ({ 1: '通知', 2: '公告', 3: '活动' }[t] || '')
 
 const timer = setInterval(() => { now.value = new Date() }, 30000)
-onUnmounted(() => clearInterval(timer))
+let refreshTimer = null
+let pollTimer = null
+let wsUnsubscribe = null
+
+async function loadTodos() {
+  try {
+    const res = await getTodos()
+    todos.value = (res.data || [])
+      .map(item => ({ ...item, ...todoMeta[item.key] }))
+      .filter(item => item.icon && item.path)
+  } catch (e) { /* 保留旧数据 */ }
+}
+
+function scheduleRefresh() {
+  clearTimeout(refreshTimer)
+  refreshTimer = setTimeout(loadTodos, 300)
+}
+
+onUnmounted(() => {
+  clearInterval(timer)
+  clearInterval(pollTimer)
+  clearTimeout(refreshTimer)
+  if (wsUnsubscribe) wsUnsubscribe()
+})
 
 onMounted(async () => {
   try {
     const res = await getAnnouncementLatest()
     latest.value = res.data || null
   } catch (e) { latest.value = null }
+  wsUnsubscribe = connectWebSocket(scheduleRefresh)
+  loadTodos()
+  pollTimer = setInterval(loadTodos, 60000)
 })
 </script>
 

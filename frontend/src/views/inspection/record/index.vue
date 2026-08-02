@@ -40,6 +40,7 @@
               <div>
                 <div>{{ cellText(row, p) }}</div>
                 <div v-if="cellOf(row, p) && cellOf(row, p).updateTime" class="cell-time">{{ timeShort(cellOf(row, p).updateTime) }}</div>
+                <div v-if="cellOf(row, p) && cellOf(row, p).handleStatus === 2" class="cell-handled">已处理</div>
               </div>
             </div>
           </template>
@@ -54,6 +55,7 @@
         <el-descriptions :column="2" border>
           <el-descriptions-item label="设备">{{ currentCell.equipmentName }}</el-descriptions-item>
           <el-descriptions-item label="巡检周期">{{ currentCell.period.label }}</el-descriptions-item>
+          <el-descriptions-item v-if="currentCell.record && currentCell.record.status === 2" label="处理状态">{{ handleText(currentCell.record.handleStatus) }}</el-descriptions-item>
           <el-descriptions-item v-if="currentCell.record" label="巡检人">{{ currentCell.record.inspectorName || '-' }}</el-descriptions-item>
           <el-descriptions-item v-if="currentCell.record" label="填写人">{{ currentCell.record.fillerName || '-' }}</el-descriptions-item>
         </el-descriptions>
@@ -116,7 +118,9 @@ import { ElMessage } from 'element-plus'
 import { addRecord, updateRecord, getRecordPage, createRecordRepair, getRecordLogs } from '@/api/inspection/record'
 import { getPlanPage } from '@/api/inspection/plan'
 import { useUserStore } from '@/stores/user'
+import { useRealtimeRefresh } from '@/composables/useRealtimeRefresh'
 
+useRealtimeRefresh(fetchData)
 const loading = ref(false)
 const plans = ref([])
 const records = ref([])
@@ -136,6 +140,7 @@ const isManager = computed(() => {
     || userStore.userInfo.roleName === '超级管理员' || userStore.userInfo.roleName === '物业管理员'
 })
 const resultText = (s) => ({ 1: '正常', 2: '异常', 3: '未巡检' }[s] || '-')
+const handleText = (s) => ({ 0: '待处理', 1: '处理中', 2: '已处理', 3: '忽略' }[s] || '-')
 
 const periods = computed(() => currentPlan.value ? buildPeriods(currentPlan.value) : [])
 const matrixRows = computed(() => {
@@ -353,6 +358,7 @@ async function handleRepair() {
 .plan-header-meta { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #909399; }
 .matrix-cell { min-height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 4px; font-size: 13px; }
 .cell-time { margin-top: 2px; font-size: 11px; opacity: 0.75; }
+.cell-handled { margin-top: 2px; font-size: 11px; color: #67c23a; font-weight: 600; }
 .cell-empty { color: #909399; background: #f5f7fa; }
 .cell-normal { color: #67c23a; background: #f0f9eb; }
 .cell-abnormal { color: #f56c6c; background: #fef0f0; }

@@ -3,6 +3,7 @@ package com.lsy.propertymanagementsystem.module.statistics.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.lsy.propertymanagementsystem.common.utils.SecurityUtils;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityHouseMapper;
+import com.lsy.propertymanagementsystem.module.community.domain.CommunityOwnerDomain;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityOwnerMapper;
 import com.lsy.propertymanagementsystem.module.community.mapper.CommunityParkingMapper;
 import com.lsy.propertymanagementsystem.module.complaint.domain.ComplaintSuggestDomain;
@@ -19,7 +20,9 @@ import com.lsy.propertymanagementsystem.module.fee.mapper.FeeExpenseMapper;
 import com.lsy.propertymanagementsystem.module.fee.mapper.FeeRecordMapper;
 import com.lsy.propertymanagementsystem.module.inspection.domain.InspectionPlanDomain;
 import com.lsy.propertymanagementsystem.module.inspection.domain.InspectionRecordDomain;
+import com.lsy.propertymanagementsystem.module.inspection.enums.HandleStatus;
 import com.lsy.propertymanagementsystem.module.inspection.enums.InspectResult;
+import com.lsy.propertymanagementsystem.module.inspection.enums.TaskStatus;
 import com.lsy.propertymanagementsystem.module.inspection.mapper.InspectionPlanMapper;
 import com.lsy.propertymanagementsystem.module.inspection.mapper.InspectionRecordMapper;
 import com.lsy.propertymanagementsystem.module.repair.domain.RepairRecordDomain;
@@ -274,5 +277,79 @@ public class StatisticsServiceImpl implements StatisticsService {
         result.put("abnormal", abnormal);
         result.put("completionRate", recordTotal == 0 ? 0 : Math.round((normal + abnormal) * 100.0 / recordTotal * 10) / 10.0);
         return result;
+    }
+
+    @Override
+    public List<Map<String, Object>> getTodos() {
+        List<Map<String, Object>> todos = new ArrayList<>();
+        String roleKey = SecurityUtils.getRoleKey();
+        Long currentUserId = SecurityUtils.getCurrentUserId();
+
+        if ("admin".equals(roleKey) || "property_admin".equals(roleKey)) {
+            todos.add(todo("repairAssign", "待派单报修",
+                    repairRecordMapper.selectCount(new LambdaQueryWrapper<RepairRecordDomain>()
+                            .eq(RepairRecordDomain::getStatus, RepairStatus.PENDING))));
+            todos.add(todo("repairConfirm", "待确认报修",
+                    repairRecordMapper.selectCount(new LambdaQueryWrapper<RepairRecordDomain>()
+                            .eq(RepairRecordDomain::getStatus, RepairStatus.PENDING_EVALUATE))));
+            todos.add(todo("complaint", "待处理投诉",
+                    complaintSuggestMapper.selectCount(new LambdaQueryWrapper<ComplaintSuggestDomain>()
+                            .in(ComplaintSuggestDomain::getStatus,
+                                    ComplaintStatus.PENDING, ComplaintStatus.ACCEPTED, ComplaintStatus.PROCESSING))));
+            todos.add(todo("inspectionAbnormal", "巡检异常待处理",
+                    inspectionRecordMapper.selectCount(new LambdaQueryWrapper<InspectionRecordDomain>()
+                            .eq(InspectionRecordDomain::getStatus, InspectResult.ABNORMAL)
+                            .eq(InspectionRecordDomain::getHandleStatus, HandleStatus.PENDING))));
+            todos.add(todo("expenseAudit", "待审核消费",
+                    feeExpenseMapper.selectCount(new LambdaQueryWrapper<FeeExpenseDomain>()
+                            .eq(FeeExpenseDomain::getAuditStatus, 0))));
+        } else if ("finance".equals(roleKey)) {
+            todos.add(todo("feePending", "待收款确认",
+                    feeRecordMapper.selectCount(new LambdaQueryWrapper<FeeRecordDomain>()
+                            .in(FeeRecordDomain::getStatus, FeeRecordStatus.UNPAID, FeeRecordStatus.OVERDUE))));
+            todos.add(todo("expenseAudit", "待审核消费",
+                    feeExpenseMapper.selectCount(new LambdaQueryWrapper<FeeExpenseDomain>()
+                            .eq(FeeExpenseDomain::getAuditStatus, 0))));
+        } else if ("repair_worker".equals(roleKey)) {
+            todos.add(todo("repairAssign", "待接单报修",
+                    repairRecordMapper.selectCount(new LambdaQueryWrapper<RepairRecordDomain>()
+                            .eq(RepairRecordDomain::getStatus, RepairStatus.PENDING))));
+            todos.add(todo("repairProcessing", "处理中报修",
+                    repairRecordMapper.selectCount(new LambdaQueryWrapper<RepairRecordDomain>()
+                            .eq(RepairRecordDomain::getStatus, RepairStatus.PROCESSING)
+                            .eq(RepairRecordDomain::getHandlerId, currentUserId))));
+        } else if ("inspector".equals(roleKey)) {
+            todos.add(todo("inspectionTodo", "待巡检任务",
+                    inspectionRecordMapper.selectCount(new LambdaQueryWrapper<InspectionRecordDomain>()
+                            .eq(InspectionRecordDomain::getStatus, InspectResult.NOT_INSPECTED)
+                            .and(w -> w.eq(InspectionRecordDomain::getInspectorUserId, currentUserId)
+                                    .or().eq(InspectionRecordDomain::getTaskStatus, TaskStatus.PENDING)))));
+        } else if ("owner".equals(roleKey)) {
+            CommunityOwnerDomain owner = ownerMapper.selectOne(new LambdaQueryWrapper<CommunityOwnerDomain>()
+                    .eq(CommunityOwnerDomain::getUserId, currentUserId));
+            if (owner != null) {
+                todos.add(todo("feePending", "待缴物业费",
+                        feeRecordMapper.selectCount(new LambdaQueryWrapper<FeeRecordDomain>()
+                                .eq(FeeRecordDomain::getOwnerId, owner.getId())
+                                .in(FeeRecordDomain::getStatus, FeeRecordStatus.UNPAID, FeeRecordStatus.OVERDUE))));
+                todos.add(todo("repairConfirm", "报修待确认",
+                        repairRecordMapper.selectCount(new LambdaQueryWrapper<RepairRecordDomain>()
+                                .eq(RepairRecordDomain::getOwnerId, owner.getId())
+                                .eq(RepairRecordDomain::getStatus, RepairStatus.PENDING_EVALUATE))));
+            }
+            todos.add(todo("complaintConfirm", "投诉待确认",
+                    complaintSuggestMapper.selectCount(new LambdaQueryWrapper<ComplaintSuggestDomain>()
+                            .eq(ComplaintSuggestDomain::getCreatorId, currentUserId)
+                            .eq(ComplaintSuggestDomain::getStatus, ComplaintStatus.REPLIED))));
+        }
+        return todos;
+    }
+
+    private Map<String, Object> todo(String key, String name, long count) {
+        Map<String, Object> item = new HashMap<>();
+        item.put("key", key);
+        item.put("name", name);
+        item.put("count", count);
+        return item;
     }
 }

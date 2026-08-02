@@ -1,5 +1,6 @@
 package com.lsy.propertymanagementsystem.module.statistics.service;
 
+import java.util.List;
 import java.util.Map;
 
 public interface StatisticsService {
@@ -10,4 +11,5 @@ public interface StatisticsService {
     Map<String, Object> getFeeSummary();
     Map<String, Object> getComplaintSummary();
     Map<String, Object> getInspectionSummary();
+    List<Map<String, Object>> getTodos();
 }

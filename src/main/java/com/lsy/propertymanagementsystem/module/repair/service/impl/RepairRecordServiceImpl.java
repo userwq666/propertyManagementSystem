@@ -15,6 +15,9 @@ import com.lsy.propertymanagementsystem.module.equipment.enums.EquipmentStatus;
 import com.lsy.propertymanagementsystem.module.equipment.mapper.EquipmentMapper;
 import com.lsy.propertymanagementsystem.module.fee.domain.FeeExpenseDomain;
 import com.lsy.propertymanagementsystem.module.fee.mapper.FeeExpenseMapper;
+import com.lsy.propertymanagementsystem.module.inspection.domain.InspectionRecordDomain;
+import com.lsy.propertymanagementsystem.module.inspection.enums.InspectResult;
+import com.lsy.propertymanagementsystem.module.inspection.mapper.InspectionRecordMapper;
 import com.lsy.propertymanagementsystem.module.repair.domain.RepairRecordDomain;
 import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordDTO;
 import com.lsy.propertymanagementsystem.module.repair.dto.RepairRecordVO;
@@ -63,6 +66,9 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
 
     @Autowired
     private MessagePushService messagePushService;
+
+    @Autowired
+    private InspectionRecordMapper inspectionRecordMapper;
 
     @Override
     public RepairRecordVO getById(Long id) {
@@ -265,6 +271,7 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
                 if (linkedEquipmentId != null) {
                     linkEquipmentAfterComplete(domain, linkedEquipmentId, userId);
                 }
+                markInspectionHandled(domain.getId(), handleContent, userId);
                 messagePushService.pushToUser(domain.getCreatorId(), "repair", "报修结单",
                         "报修单 " + domain.getRepairNo() + " 已结单，请确认", domain.getId());
                 if (expenseAmount != null && expenseAmount.compareTo(BigDecimal.ZERO) > 0) {
@@ -338,6 +345,7 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         }
         domain.evaluate(score, content);
         this.updateById(domain);
+        markInspectionHandled(id, domain.getHandleContent(), domain.getHandlerId());
         messagePushService.pushToUser(domain.getHandlerId(), "repair", "报修已评价",
                 "报修单 " + domain.getRepairNo() + " 已确认并评价", id);
     }
@@ -356,6 +364,7 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
                     .eq(RepairRecordDomain::getId, domain.getId())
                     .set(RepairRecordDomain::getStatus, RepairStatus.COMPLETED));
             count++;
+            markInspectionHandled(domain.getId(), domain.getHandleContent(), domain.getHandlerId());
             messagePushService.pushToUser(domain.getCreatorId(), "repair", "报修自动完成",
                     "报修单 " + domain.getRepairNo() + " 超时未确认，已自动完成", domain.getId());
         }
@@ -424,6 +433,22 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
             equipmentMapper.updateById(equipment);
             messagePushService.broadcast("equipment", "设备状态变更",
                     "设备「" + equipment.getEquipmentName() + "」状态变更为维修中", equipment.getId());
+        }
+    }
+
+    private void markInspectionHandled(Long repairId, String handleContent, Long handlerId) {
+        if (repairId == null) {
+            return;
+        }
+        List<InspectionRecordDomain> records = inspectionRecordMapper.selectList(
+                new LambdaQueryWrapper<InspectionRecordDomain>()
+                        .eq(InspectionRecordDomain::getRepairRecordId, repairId));
+        for (InspectionRecordDomain record : records) {
+            if (record.getStatus() != InspectResult.ABNORMAL) {
+                continue;
+            }
+            record.handle(handleContent, handlerId);
+            inspectionRecordMapper.updateById(record);
         }
     }
 

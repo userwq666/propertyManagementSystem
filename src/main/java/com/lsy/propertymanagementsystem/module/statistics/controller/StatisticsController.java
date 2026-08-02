@@ -58,4 +58,9 @@ public class StatisticsController {
     public Result getInspectionSummary() {
         return Result.success(statisticsService.getInspectionSummary());
     }
+
+    @GetMapping("/todos")
+    public Result getTodos() {
+        return Result.success(statisticsService.getTodos());
+    }
 }

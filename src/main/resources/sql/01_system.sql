@@ -348,7 +348,6 @@ INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (3049,3,29);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (3058,3,63);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (3059,3,64);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (3060,3,65);
-INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (3061,3,66);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (3062,3,67);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (3065,3,68);
 INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (3066,3,69);
