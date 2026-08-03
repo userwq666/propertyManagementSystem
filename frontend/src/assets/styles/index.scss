@@ -255,6 +255,27 @@ a {
 .el-message-box {
   max-width: calc(100vw - 24px);
   border-radius: 8px;
+  padding: 14px 18px 12px;
+}
+
+.el-message-box__header {
+  padding: 0 0 8px;
+}
+
+.el-message-box__title {
+  font-size: 15px;
+}
+
+.el-message-box__content {
+  padding: 10px 0 12px;
+}
+
+.el-message-box__input {
+  padding-top: 6px;
+}
+
+.el-message-box__btns {
+  padding: 8px 0 0;
 }
 
 .el-message {
