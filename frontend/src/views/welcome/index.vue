@@ -398,14 +398,15 @@ onMounted(async () => {
 
 .notice-content {
   flex: 1;
-  display: -webkit-box;
+  display: block;
   margin-top: 10px;
   overflow: hidden;
   color: #596964;
   font-size: 14px;
   line-height: 1.7;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 120px;
 }
 
 @media (max-width: 900px) {
