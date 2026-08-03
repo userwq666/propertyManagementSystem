@@ -1,0 +1,1 @@
+import{s as o,v as a}from"./index-DdRGx8By.js";function s(t){let e=null;const n=()=>{clearTimeout(e),e=setTimeout(()=>{t&&t()},200)};o(()=>window.addEventListener("pms:data-changed",n)),a(()=>{clearTimeout(e),window.removeEventListener("pms:data-changed",n)})}export{s as u};

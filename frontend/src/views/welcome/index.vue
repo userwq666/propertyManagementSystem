@@ -182,9 +182,9 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  min-height: 190px;
-  padding: 32px 36px;
+  gap: 20px;
+  min-height: 180px;
+  padding: 28px 32px;
   overflow: hidden;
   border-radius: 8px;
   color: #fff;
@@ -213,7 +213,7 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   color: rgba(255, 255, 255, 0.78);
   font-size: 13px;
 }
@@ -224,13 +224,13 @@ onMounted(async () => {
 
 .hero h1 {
   color: #fff;
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 700;
   line-height: 1.25;
 }
 
 .hero p {
-  margin-top: 10px;
+  margin-top: 9px;
   color: rgba(255, 255, 255, 0.7);
   font-size: 14px;
 }
@@ -240,16 +240,16 @@ onMounted(async () => {
   z-index: 1;
   display: flex;
   align-items: stretch;
-  gap: 14px;
+  gap: 10px;
 }
 
 .hero-clock,
 .hero-stat {
-  min-width: 138px;
+  min-width: 128px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 18px 20px;
+  padding: 16px 18px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.1);
@@ -272,7 +272,7 @@ onMounted(async () => {
 .hero-stat strong {
   margin-top: 4px;
   color: #6ee7b7;
-  font-size: 34px;
+  font-size: 32px;
   line-height: 1;
 }
 
@@ -285,7 +285,7 @@ onMounted(async () => {
 .panel-card {
   display: flex;
   flex-direction: column;
-  min-height: 265px;
+  min-height: 255px;
   overflow: hidden;
   background: var(--pms-surface);
   border: 1px solid var(--pms-border);
@@ -297,7 +297,7 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: 14px 18px;
   border-bottom: 1px solid var(--pms-border);
 }
 
@@ -319,25 +319,25 @@ onMounted(async () => {
   flex: 1;
   display: flex;
   align-items: center;
-  padding: 18px 20px;
+  padding: 16px 18px;
 }
 
 .empty-body {
-  min-height: 215px;
+  min-height: 200px;
 }
 
 .todo-list {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 9px;
 }
 
 .todo-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
+  gap: 11px;
+  padding: 10px 13px;
   border: 1px solid var(--pms-border);
   border-radius: 8px;
   background: var(--pms-surface-soft);
@@ -353,8 +353,8 @@ onMounted(async () => {
 }
 
 .todo-icon {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -380,7 +380,7 @@ onMounted(async () => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: 16px 18px;
   cursor: pointer;
 }
 
@@ -394,29 +394,29 @@ onMounted(async () => {
 }
 
 .notice-title {
-  margin-top: 16px;
+  margin-top: 14px;
   color: var(--pms-text);
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 700;
 }
 
 .notice-content {
   flex: 1;
   display: -webkit-box;
-  margin-top: 12px;
+  margin-top: 10px;
   overflow: hidden;
   color: #596964;
   font-size: 14px;
-  line-height: 1.8;
+  line-height: 1.7;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 5;
+  -webkit-line-clamp: 4;
 }
 
 .notice-more {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-top: 16px;
+  margin-top: 12px;
   color: var(--pms-primary);
   font-size: 13px;
   font-weight: 500;
@@ -444,11 +444,11 @@ onMounted(async () => {
 
 @media (max-width: 560px) {
   .hero {
-    padding: 26px 22px;
+    padding: 20px 18px;
   }
 
   .hero h1 {
-    font-size: 24px;
+    font-size: 22px;
   }
 
   .hero-side {

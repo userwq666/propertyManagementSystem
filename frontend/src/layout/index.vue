@@ -466,6 +466,7 @@ function handleCommand(command) {
 
 .layout-main--dashboard {
   padding-top: 0;
+  padding-bottom: 16px;
 }
 
 .page-heading {
