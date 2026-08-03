@@ -103,7 +103,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getUserPage, getUserById, addUser, updateUser, deleteUser, resetPassword, updateUserStatus } from '@/api/system/user'
-import { getRoleList } from '@/api/system/role'
+import { getRoleOptions } from '@/api/system/role'
 
 const loading = ref(false)
 const tableData = ref([])
@@ -129,7 +129,7 @@ const rules = {
 
 onMounted(async () => {
   fetchData()
-  const res = await getRoleList()
+  const res = await getRoleOptions()
   roleList.value = res.data
 })
 

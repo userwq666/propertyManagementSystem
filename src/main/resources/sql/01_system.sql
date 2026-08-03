@@ -426,5 +426,7 @@ INSERT INTO sys_role_menu (role_id, menu_id) VALUES (4,100),(4,102);
 INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3,13);
 -- 任何人均可投诉（维修工/巡检员分配投诉查看与新增）
 INSERT INTO sys_role_menu (role_id, menu_id) VALUES (4,17),(4,18),(4,68),(5,17),(5,18),(5,68);
+-- 物业管理员默认不开放系统角色/菜单管理，仅保留用户管理及对应按钮
+DELETE FROM sys_role_menu WHERE role_id = 2 AND menu_id IN (3, 4, 34, 35, 36, 38, 39, 40);
 SET FOREIGN_KEY_CHECKS = 1;
 SET FOREIGN_KEY_CHECKS = 1;
