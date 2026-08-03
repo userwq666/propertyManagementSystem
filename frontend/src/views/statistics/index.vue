@@ -1,34 +1,39 @@
 <template>
   <div class="statistics-container">
-    <!-- 概览卡片 -->
-    <el-row v-if="overviewCards.length" :gutter="16" class="overview-row">
-      <el-col v-for="c in overviewCards" :key="c.label" :span="4">
-        <el-card shadow="hover" class="stat-card">
-          <div class="stat-value">{{ c.value }}</div>
-          <div class="stat-label">{{ c.label }}</div>
-        </el-card>
-      </el-col>
-    </el-row>
+    <div v-if="overviewCards.length" class="overview-grid">
+      <div v-for="c in overviewCards" :key="c.label" class="stat-tile overview-tile">
+        <span class="stat-label">{{ c.label }}</span>
+        <strong class="stat-value">{{ c.value }}</strong>
+      </div>
+    </div>
 
-    <!-- 维修统计 -->
     <el-card v-if="can('statistics:repair:list')" shadow="never" class="module-card">
-      <template #header>维修统计</template>
+      <template #header>
+        <div class="module-header">
+          <el-icon><Tools /></el-icon>
+          <span>维修统计</span>
+        </div>
+      </template>
       <el-row :gutter="16">
         <stat-item v-for="s in repairStats" :key="s.label" :label="s.label" :value="s.value" />
       </el-row>
       <el-row :gutter="16" class="chart-row">
-        <el-col :span="12">
+        <el-col :xs="24" :lg="12">
           <v-chart class="chart" :option="repairTypeOption" autoresize />
         </el-col>
-        <el-col :span="12">
+        <el-col :xs="24" :lg="12">
           <v-chart class="chart" :option="repairStatusOption" autoresize />
         </el-col>
       </el-row>
     </el-card>
 
-    <!-- 设备统计 -->
     <el-card v-if="can('statistics:equipment:list')" shadow="never" class="module-card">
-      <template #header>设备统计</template>
+      <template #header>
+        <div class="module-header">
+          <el-icon><Monitor /></el-icon>
+          <span>设备统计</span>
+        </div>
+      </template>
       <el-row :gutter="16">
         <stat-item label="设备总数" :value="equipment.total" />
         <stat-item label="分类数" :value="equipment.categoryTotal" />
@@ -37,12 +42,16 @@
         <stat-item label="维修中" :value="equipment.underRepair" />
         <stat-item label="停用" :value="equipment.disabled" />
       </el-row>
-      <v-chart class="chart" :option="equipmentOption" autoresize />
+      <v-chart class="chart wide-chart" :option="equipmentOption" autoresize />
     </el-card>
 
-    <!-- 人员统计 -->
     <el-card v-if="can('statistics:user:list')" shadow="never" class="module-card">
-      <template #header>人员统计</template>
+      <template #header>
+        <div class="module-header">
+          <el-icon><UserFilled /></el-icon>
+          <span>人员统计</span>
+        </div>
+      </template>
       <el-row :gutter="16">
         <stat-item label="用户总数" :value="userInfo.total" />
         <stat-item label="管理员" :value="userInfo.propertyAdmin" />
@@ -54,12 +63,16 @@
         <stat-item label="房屋数" :value="userInfo.houseCount" />
         <stat-item label="车位数" :value="userInfo.parkingCount" />
       </el-row>
-      <v-chart class="chart" :option="userRoleOption" autoresize />
+      <v-chart class="chart wide-chart" :option="userRoleOption" autoresize />
     </el-card>
 
-    <!-- 费用统计 -->
     <el-card v-if="can('statistics:fee:list')" shadow="never" class="module-card">
-      <template #header>物业费收支</template>
+      <template #header>
+        <div class="module-header">
+          <el-icon><Money /></el-icon>
+          <span>物业费收支</span>
+        </div>
+      </template>
       <el-row :gutter="16">
         <stat-item label="应收金额" :value="fee.receivable" suffix="元" />
         <stat-item label="实收金额" :value="fee.income" suffix="元" />
@@ -67,12 +80,16 @@
         <stat-item label="支出金额" :value="fee.expense" suffix="元" />
         <stat-item label="收支结余" :value="fee.balance" suffix="元" :type="fee.balance >= 0 ? 'income' : 'loss'" />
       </el-row>
-      <v-chart class="chart" :option="feeTrendOption" autoresize />
+      <v-chart class="chart wide-chart" :option="feeTrendOption" autoresize />
     </el-card>
 
-    <!-- 投诉统计 -->
     <el-card v-if="can('statistics:complaint:list')" shadow="never" class="module-card">
-      <template #header>投诉统计</template>
+      <template #header>
+        <div class="module-header">
+          <el-icon><ChatDotSquare /></el-icon>
+          <span>投诉统计</span>
+        </div>
+      </template>
       <el-row :gutter="16">
         <stat-item label="投诉总数" :value="complaint.total" />
         <stat-item label="待受理" :value="complaint.pending" />
@@ -80,12 +97,16 @@
         <stat-item label="已完成" :value="complaint.done" />
         <stat-item label="平均评分" :value="complaint.avgScore" suffix="分" />
       </el-row>
-      <v-chart class="chart" :option="complaintOption" autoresize />
+      <v-chart class="chart wide-chart" :option="complaintOption" autoresize />
     </el-card>
 
-    <!-- 巡检统计 -->
     <el-card v-if="can('statistics:inspection:list')" shadow="never" class="module-card">
-      <template #header>巡检统计</template>
+      <template #header>
+        <div class="module-header">
+          <el-icon><Search /></el-icon>
+          <span>巡检统计</span>
+        </div>
+      </template>
       <el-row :gutter="16">
         <stat-item label="计划数" :value="inspection.planTotal" />
         <stat-item label="记录数" :value="inspection.recordTotal" />
@@ -93,7 +114,7 @@
         <stat-item label="异常" :value="inspection.abnormal" />
         <stat-item label="完成率" :value="inspection.completionRate" suffix="%" />
       </el-row>
-      <v-chart class="chart" :option="inspectionOption" autoresize />
+      <v-chart class="chart wide-chart" :option="inspectionOption" autoresize />
     </el-card>
   </div>
 </template>
@@ -101,7 +122,15 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
-import { getStatisticsOverview, getRepairSummary, getEquipmentSummary, getUserSummary, getFeeSummary, getComplaintSummary, getInspectionSummary } from '@/api/statistics'
+import {
+  getStatisticsOverview,
+  getRepairSummary,
+  getEquipmentSummary,
+  getUserSummary,
+  getFeeSummary,
+  getComplaintSummary,
+  getInspectionSummary
+} from '@/api/statistics'
 import VChart from 'vue-echarts'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -113,11 +142,11 @@ use([CanvasRenderer, PieChart, LineChart, TooltipComponent, LegendComponent, Gri
 const StatItem = {
   props: { label: String, value: [Number, String], suffix: String, type: String },
   template: `
-    <el-col :span="4">
-      <el-card shadow="hover" class="stat-card">
-        <div class="stat-value" :class="type">{{ value }}<span v-if="suffix" class="stat-suffix">{{ suffix }}</span></div>
-        <div class="stat-label">{{ label }}</div>
-      </el-card>
+    <el-col :xs="12" :sm="8" :md="6" :lg="4">
+      <div class="stat-tile" :class="type">
+        <span class="stat-label">{{ label }}</span>
+        <strong class="stat-value">{{ value }}<span v-if="suffix" class="stat-suffix">{{ suffix }}</span></strong>
+      </div>
     </el-col>`
 }
 
@@ -159,7 +188,7 @@ const repairStats = computed(() => [
   { label: '维修支出(元)', value: repair.value.expense }
 ])
 
-const palette = ['#409eff', '#67c23a', '#e6a23c', '#f56c6c', '#909399', '#36cfc9']
+const palette = ['#0f766e', '#d99a2b', '#d64545', '#2e9e5b', '#64748b', '#0ea5a4']
 
 function pieData(entries) {
   return entries
@@ -171,7 +200,7 @@ function pieOption(data) {
   return {
     color: palette,
     tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
-    legend: { bottom: 0, icon: 'circle', textStyle: { fontSize: 12 } },
+    legend: { bottom: 0, icon: 'circle', itemWidth: 8, itemHeight: 8, textStyle: { fontSize: 12 } },
     series: [{
       type: 'pie',
       radius: ['38%', '65%'],
@@ -220,12 +249,19 @@ const inspectionOption = computed(() => {
 const feeTrendOption = computed(() => {
   const trend = fee.value.monthlyTrend || []
   return {
-    color: ['#67c23a'],
+    color: ['#0f766e'],
     tooltip: { trigger: 'axis' },
     grid: { left: 50, right: 20, top: 20, bottom: 30 },
     xAxis: { type: 'category', boundaryGap: false, data: trend.map(m => m.month) },
     yAxis: { type: 'value' },
-    series: [{ name: '实收', type: 'line', smooth: true, areaStyle: { opacity: 0.15 }, data: trend.map(m => m.amount) }]
+    series: [{
+      name: '实收',
+      type: 'line',
+      smooth: true,
+      lineStyle: { width: 3 },
+      areaStyle: { color: 'rgba(15, 118, 110, 0.12)' },
+      data: trend.map(m => m.amount)
+    }]
   }
 })
 
@@ -243,16 +279,117 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.statistics-container { display: flex; flex-direction: column; gap: 16px; }
-.overview-row { margin-bottom: 0; }
-.stat-card { text-align: center; }
-.stat-value { font-size: 22px; font-weight: 600; color: #409eff; }
-.stat-value.income { color: #67c23a; }
-.stat-value.loss { color: #f56c6c; }
-.stat-suffix { font-size: 12px; color: #909399; margin-left: 2px; }
-.stat-label { margin-top: 6px; font-size: 13px; color: #909399; }
-.module-card { border-radius: 8px; }
-.module-card :deep(.el-card__header) { font-weight: 600; }
-.chart-row { margin-top: 16px; }
-.chart { height: 280px; }
+.statistics-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.stat-tile {
+  min-height: 96px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 16px 18px;
+  border: 1px solid var(--pms-border);
+  border-radius: 8px;
+  background: var(--pms-surface);
+  box-shadow: var(--pms-shadow);
+  transition: all 0.2s ease;
+}
+
+.stat-tile:hover {
+  border-color: #b5d6cf;
+  box-shadow: 0 12px 28px rgba(15, 118, 110, 0.08);
+  transform: translateY(-1px);
+}
+
+.stat-label {
+  color: var(--pms-text-muted);
+  font-size: 13px;
+}
+
+.stat-value {
+  margin-top: 10px;
+  color: var(--pms-primary);
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.stat-value.income {
+  color: var(--el-color-success);
+}
+
+.stat-value.loss {
+  color: var(--pms-danger);
+}
+
+.stat-suffix {
+  margin-left: 3px;
+  color: var(--pms-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.overview-tile {
+  min-height: 110px;
+  background:
+    linear-gradient(135deg, rgba(15, 118, 110, 0.05), transparent 55%),
+    var(--pms-surface);
+}
+
+.module-card {
+  border-radius: 8px;
+}
+
+.module-card :deep(.el-card__header) {
+  padding: 14px 20px;
+}
+
+.module-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.module-header .el-icon {
+  color: var(--pms-primary);
+  font-size: 16px;
+}
+
+.chart-row {
+  margin-top: 16px;
+}
+
+.chart {
+  height: 280px;
+}
+
+.wide-chart {
+  height: 300px;
+  margin-top: 16px;
+}
+
+@media (max-width: 768px) {
+  .overview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stat-tile {
+    min-height: 84px;
+    padding: 14px;
+  }
+
+  .chart,
+  .wide-chart {
+    height: 240px;
+  }
+}
 </style>

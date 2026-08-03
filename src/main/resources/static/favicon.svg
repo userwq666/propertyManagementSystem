@@ -1,4 +1,7 @@
-﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="6" fill="#409EFF"/>
-  <text x="16" y="22" text-anchor="middle" fill="white" font-size="18" font-weight="bold" font-family="Arial">物</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="7" fill="#0f766e"/>
+  <rect x="7" y="11" width="8" height="13" rx="1.5" fill="#6ee7b7"/>
+  <rect x="16.5" y="7" width="8.5" height="17" rx="1.5" fill="#ffffff" fill-opacity="0.92"/>
+  <circle cx="25" cy="10.5" r="1.8" fill="#d99a2b"/>
+  <path d="M7 24h18" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.4" stroke-linecap="round"/>
 </svg>

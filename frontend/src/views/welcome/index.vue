@@ -1,44 +1,74 @@
 <template>
   <div class="welcome-container">
-    <div class="welcome-banner">
-      <div>
-        <h2 class="welcome-title">{{ greeting }}，{{ userStore.realName || userStore.userInfo.username }}</h2>
-        <p class="welcome-sub">欢迎使用社区物业系统，祝您生活愉快</p>
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="hero-kicker">
+          <el-icon><Sunny /></el-icon>
+          <span>{{ dateLabel }}</span>
+        </div>
+        <h1>{{ greeting }}，{{ userName }}</h1>
+        <p>欢迎使用社区物业系统，祝您工作顺利。</p>
       </div>
-      <div class="welcome-date">{{ nowText }}</div>
-    </div>
 
-    <el-row :gutter="16">
-      <el-col :span="12" class="panel-col">
-        <el-card shadow="never" class="panel-card">
-          <template #header>待办事项</template>
-          <div class="todo-body">
-            <div v-if="todos.length" class="todo-list">
-              <div v-for="item in todos" :key="item.key" class="todo-item" @click="router.push(item.path)">
-                <el-icon :size="18" color="#409eff"><component :is="item.icon" /></el-icon>
-                <span class="todo-name">{{ item.name }}</span>
-                <el-badge :value="item.count" :hidden="!item.count" />
+      <div class="hero-side">
+        <div class="hero-clock">
+          <strong>{{ timeText }}</strong>
+          <span>{{ dateText }}</span>
+        </div>
+        <div class="hero-stat">
+          <span>当前待办</span>
+          <strong>{{ todoCount }}</strong>
+        </div>
+      </div>
+    </section>
+
+    <div class="welcome-grid">
+      <section class="panel-card">
+        <div class="panel-header">
+          <div class="panel-title">
+            <el-icon><Tickets /></el-icon>
+            <span>待办事项</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div v-if="todos.length" class="todo-list">
+            <div v-for="item in todos" :key="item.key" class="todo-item" @click="router.push(item.path)">
+              <div class="todo-icon">
+                <el-icon :size="18"><component :is="item.icon" /></el-icon>
               </div>
+              <span class="todo-name">{{ item.name }}</span>
+              <el-badge :value="item.count" :hidden="!item.count" class="todo-badge" />
+              <el-icon class="todo-arrow"><ArrowRight /></el-icon>
             </div>
-            <el-empty v-else description="暂无待办事项" :image-size="60" />
           </div>
-        </el-card>
-      </el-col>
-      <el-col :span="12" class="panel-col">
-        <el-card shadow="never" class="panel-card">
-          <template #header>最新公告</template>
-          <div v-if="latest" class="notice-body" @click="router.push('/announcement')">
-            <div class="notice-title">{{ latest.title }}</div>
-            <div class="notice-meta">
-              <el-tag size="small">{{ typeText(latest.type) }}</el-tag>
-              <span>{{ latest.publishTime }}</span>
-            </div>
-            <div class="notice-content">{{ latest.content }}</div>
+          <el-empty v-else description="暂无待办事项" :image-size="72" />
+        </div>
+      </section>
+
+      <section class="panel-card">
+        <div class="panel-header">
+          <div class="panel-title">
+            <el-icon><BellFilled /></el-icon>
+            <span>最新公告</span>
           </div>
-          <el-empty v-else description="暂无已发布公告" :image-size="60" />
-        </el-card>
-      </el-col>
-    </el-row>
+        </div>
+        <div v-if="latest" class="notice-body" @click="router.push('/announcement')">
+          <div class="notice-top">
+            <el-tag :type="typeTag(latest.type)" size="small">{{ typeText(latest.type) }}</el-tag>
+            <span>{{ latest.publishTime }}</span>
+          </div>
+          <div class="notice-title">{{ latest.title }}</div>
+          <div class="notice-content">{{ latest.content }}</div>
+          <div class="notice-more">
+            查看公告
+            <el-icon><ArrowRight /></el-icon>
+          </div>
+        </div>
+        <div v-else class="panel-body empty-body">
+          <el-empty description="暂无已发布公告" :image-size="72" />
+        </div>
+      </section>
+    </div>
   </div>
 </template>
 
@@ -69,6 +99,8 @@ const todoMeta = {
   expenseAudit: { icon: 'List', path: '/fee/expenses' }
 }
 
+const userName = computed(() => userStore.realName || userStore.userInfo.username || '朋友')
+
 const greeting = computed(() => {
   const hour = now.value.getHours()
   if (hour < 6) return '夜深了'
@@ -77,11 +109,31 @@ const greeting = computed(() => {
   return '晚上好'
 })
 
-const nowText = computed(() => now.value.toLocaleString('zh-CN', { hour12: false }))
+const dateText = computed(() => now.value.toLocaleDateString('zh-CN', {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit'
+}))
+
+const dateLabel = computed(() => now.value.toLocaleDateString('zh-CN', {
+  month: 'long',
+  day: 'numeric',
+  weekday: 'long'
+}))
+
+const timeText = computed(() => now.value.toLocaleTimeString('zh-CN', {
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+  hour12: false
+}))
+
+const todoCount = computed(() => todos.value.reduce((sum, item) => sum + (Number(item.count) || 0), 0))
 
 const typeText = (t) => ({ 1: '通知', 2: '公告', 3: '活动' }[t] || '')
+const typeTag = (t) => ({ 1: 'primary', 2: 'success', 3: 'warning' }[t] || 'primary')
 
-const timer = setInterval(() => { now.value = new Date() }, 30000)
+const timer = setInterval(() => { now.value = new Date() }, 1000)
 let refreshTimer = null
 let pollTimer = null
 let wsUnsubscribe = null
@@ -119,52 +171,288 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.welcome-container { display: flex; flex-direction: column; gap: 16px; }
-.welcome-banner {
+.welcome-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hero {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 48px 48px;
-  background: linear-gradient(135deg, #409eff, #36cfc9);
+  gap: 24px;
+  min-height: 190px;
+  padding: 32px 36px;
+  overflow: hidden;
   border-radius: 8px;
   color: #fff;
+  background: linear-gradient(120deg, #0f766e 0%, #177f77 55%, #2f8d85 100%);
+  box-shadow: 0 14px 34px rgba(15, 118, 110, 0.2);
 }
-.welcome-title { margin: 0 0 12px; font-size: 32px; font-weight: 600; }
-.welcome-sub { margin: 0; opacity: 0.9; font-size: 16px; }
-.welcome-date { font-size: 15px; opacity: 0.95; }
-.panel-col { display: flex; }
-.panel-card { border-radius: 8px; flex: 1; height: 320px; }
-.panel-card :deep(.el-card__body) {
+
+.hero::after {
+  content: '';
+  position: absolute;
+  right: -70px;
+  top: -70px;
+  width: 240px;
+  height: 240px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  transform: rotate(45deg);
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-kicker {
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: calc(100% - 53px);
-  padding: 16px 24px;
+  gap: 8px;
+  margin-bottom: 16px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
 }
-.todo-body { width: 100%; }
-.todo-list { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+
+.hero-kicker .el-icon {
+  color: #6ee7b7;
+}
+
+.hero h1 {
+  color: #fff;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.hero p {
+  margin-top: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+}
+
+.hero-side {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+}
+
+.hero-clock,
+.hero-stat {
+  min-width: 138px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 18px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hero-clock strong {
+  color: #fff;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 22px;
+  letter-spacing: 0;
+}
+
+.hero-clock span,
+.hero-stat span {
+  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 12px;
+}
+
+.hero-stat strong {
+  margin-top: 4px;
+  color: #6ee7b7;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.welcome-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.panel-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 340px;
+  overflow: hidden;
+  background: var(--pms-surface);
+  border: 1px solid var(--pms-border);
+  border-radius: 8px;
+  box-shadow: var(--pms-shadow);
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--pms-border);
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--pms-text);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.panel-title .el-icon {
+  color: var(--pms-primary);
+  font-size: 17px;
+}
+
+.panel-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 18px 20px;
+}
+
+.empty-body {
+  min-height: 290px;
+}
+
+.todo-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .todo-item {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 12px 14px;
-  border: 1px solid #ebeef5;
-  border-radius: 6px;
+  border: 1px solid var(--pms-border);
+  border-radius: 8px;
+  background: var(--pms-surface-soft);
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
 }
-.todo-item:hover { background: #f5f7fa; }
-.todo-name { flex: 1; font-size: 14px; color: #303133; }
-.notice-body { cursor: pointer; width: 100%; }
-.notice-title { font-size: 20px; font-weight: 600; color: #303133; }
-.notice-meta { display: flex; align-items: center; gap: 12px; margin: 12px 0; font-size: 14px; color: #909399; }
+
+.todo-item:hover {
+  border-color: #b5d6cf;
+  background: #f1faf7;
+  box-shadow: 0 8px 20px rgba(15, 118, 110, 0.08);
+  transform: translateY(-1px);
+}
+
+.todo-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: var(--pms-primary-soft);
+  color: var(--pms-primary);
+}
+
+.todo-name {
+  flex: 1;
+  color: var(--pms-text);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.todo-arrow {
+  color: #9db0aa;
+  font-size: 14px;
+}
+
+.notice-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  cursor: pointer;
+}
+
+.notice-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--pms-text-muted);
+  font-size: 12px;
+}
+
+.notice-title {
+  margin-top: 16px;
+  color: var(--pms-text);
+  font-size: 20px;
+  font-weight: 700;
+}
+
 .notice-content {
+  flex: 1;
   display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
+  margin-top: 12px;
   overflow: hidden;
-  font-size: 15px;
-  color: #606266;
+  color: #596964;
+  font-size: 14px;
   line-height: 1.8;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+}
+
+.notice-more {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  color: var(--pms-primary);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .hero-side {
+    width: 100%;
+  }
+
+  .hero-clock,
+  .hero-stat {
+    flex: 1;
+  }
+
+  .welcome-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .hero {
+    padding: 26px 22px;
+  }
+
+  .hero h1 {
+    font-size: 24px;
+  }
+
+  .hero-side {
+    flex-direction: column;
+  }
 }
 </style>
