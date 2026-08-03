@@ -80,10 +80,11 @@ INSERT INTO sys_user (id, username, password, real_name, phone, status) VALUES
 (2,  'admin',     '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '王经理',     '13800000002', 1),
 (3,  'zhouwei',   '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '周伟',       '13900001101', 1),
 (4, 'chenjie',   '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '陈姐',       '13900001202', 1),
-(5, 'zhouan',    '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '周安',       '13900001301', 1);
+(5, 'zhouan',    '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '周安',       '13900001301', 1),
+(6, 'caiwu',     '$2a$10$8d.4.nxvzJIPULjJMeLwquXdMVIyvUqXWyIiqmk1c7abGyNbdMWlG', '财务',       '13900001401', 1);
 -- 用户-角色关联
 INSERT INTO sys_user_role (user_id, role_id) VALUES
-(1,1),(2,2),(3,3),(4,4),(5,5);
+(1,1),(2,2),(3,3),(4,4),(5,5),(6,6);
 -- 3. 菜单权限 (menu_type: 0目录 1菜单 2按钮)
 -- 以下菜单与权限点由系统菜单管理维护，固化当前分配
 INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status, create_time, update_time, deleted) VALUES (1,0,'系统管理','Setting','/system','','',0,1,1,'2026-07-31 01:02:22','2026-07-31 21:35:03',0);
