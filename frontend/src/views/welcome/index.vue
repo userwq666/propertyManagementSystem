@@ -59,10 +59,6 @@
           </div>
           <div class="notice-title">{{ latest.title }}</div>
           <div class="notice-content">{{ latest.content }}</div>
-          <div class="notice-more">
-            查看公告
-            <el-icon><ArrowRight /></el-icon>
-          </div>
         </div>
         <div v-else class="panel-body empty-body">
           <el-empty description="暂无已发布公告" :image-size="72" />
@@ -410,16 +406,6 @@ onMounted(async () => {
   line-height: 1.7;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 4;
-}
-
-.notice-more {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 12px;
-  color: var(--pms-primary);
-  font-size: 13px;
-  font-weight: 500;
 }
 
 @media (max-width: 900px) {
