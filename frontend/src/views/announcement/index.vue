@@ -56,21 +56,24 @@
     </div>
 
     <!-- 详情 -->
-    <el-dialog title="公告详情" v-model="detailDialogVisible" width="640px">
-      <el-descriptions :column="2" border v-if="detailRow">
-        <el-descriptions-item label="标题" :span="2">{{ detailRow.title }}</el-descriptions-item>
-        <el-descriptions-item label="类型">{{ typeText(detailRow.type) }}</el-descriptions-item>
-        <el-descriptions-item label="状态">{{ stText(detailRow.publishStatus) }}</el-descriptions-item>
-        <el-descriptions-item label="发布人">{{ detailRow.creatorName || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="发布时间">{{ detailRow.publishTime || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="置顶">{{ detailRow.isTop ? '是' : '否' }}</el-descriptions-item>
-        <el-descriptions-item label="预发布时间">{{ detailRow.scheduledPublishTime || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="封面" :span="2">
-          <el-image v-if="detailRow.coverImage" :src="detailRow.coverImage" fit="cover" style="max-width:100%;max-height:120px" />
-          <span v-else>-</span>
-        </el-descriptions-item>
-        <el-descriptions-item label="内容" :span="2" style="white-space:pre-wrap">{{ detailRow.content }}</el-descriptions-item>
-      </el-descriptions>
+    <el-dialog :title="detailRow ? detailRow.title : '公告详情'" v-model="detailDialogVisible" width="680px">
+      <div v-if="detailRow" class="notice-detail">
+        <div class="notice-detail-head">
+          <div class="notice-detail-tags">
+            <el-tag :type="typeTag(detailRow.type)" size="small">{{ typeText(detailRow.type) }}</el-tag>
+            <el-tag :type="st(detailRow.publishStatus)" size="small">{{ stText(detailRow.publishStatus) }}</el-tag>
+            <el-tag v-if="detailRow.isTop" type="danger" size="small">置顶</el-tag>
+          </div>
+          <h3 class="notice-detail-title">{{ detailRow.title }}</h3>
+          <div class="notice-detail-meta">
+            <span>发布人：{{ detailRow.creatorName || '-' }}</span>
+            <span>发布时间：{{ detailRow.publishTime || '-' }}</span>
+            <span v-if="detailRow.scheduledPublishTime">预发布：{{ detailRow.scheduledPublishTime }}</span>
+          </div>
+        </div>
+        <el-image v-if="detailRow.coverImage" :src="detailRow.coverImage" fit="cover" class="notice-detail-cover" />
+        <div class="notice-detail-content">{{ detailRow.content }}</div>
+      </div>
     </el-dialog>
 
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="700px" @close="resetForm">
@@ -130,6 +133,7 @@ const dialogTitle = computed(() => isEdit.value ? '编辑公告' : '新增公告
 const st = (s) => ({ 0: 'info', 1: 'success', 2: 'warning' }[s] || 'info')
 const stText = (s) => ({ 0: '草稿', 1: '已发布', 2: '已撤回' }[s] || '')
 const typeText = (t) => ({ 1: '通知', 2: '公告', 3: '活动' }[t] || '')
+const typeTag = (t) => ({ 1: 'primary', 2: 'success', 3: 'warning' }[t] || 'primary')
 
 const rules = {
   title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
@@ -199,6 +203,62 @@ async function handleTop(row) {
 .row-gap {
   margin-left: 16px;
 }
+
+.notice-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.notice-detail-head {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.notice-detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.notice-detail-title {
+  margin: 0;
+  color: var(--pms-text);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.notice-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  color: var(--pms-text-muted);
+  font-size: 12px;
+}
+
+.notice-detail-cover {
+  width: 100%;
+  max-height: 220px;
+  border-radius: 8px;
+}
+
+.notice-detail-content {
+  min-height: 160px;
+  max-height: 55vh;
+  overflow-y: auto;
+  padding: 16px;
+  border: 1px solid var(--pms-border);
+  border-radius: 8px;
+  background: var(--pms-surface-soft);
+  color: #42534e;
+  font-size: 14px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 .announcement-table :deep(.el-table__row) {
   height: 56px;
 }
