@@ -285,7 +285,7 @@ onMounted(async () => {
 .panel-card {
   display: flex;
   flex-direction: column;
-  min-height: 340px;
+  min-height: 280px;
   overflow: hidden;
   background: var(--pms-surface);
   border: 1px solid var(--pms-border);
@@ -323,7 +323,7 @@ onMounted(async () => {
 }
 
 .empty-body {
-  min-height: 290px;
+  min-height: 230px;
 }
 
 .todo-list {

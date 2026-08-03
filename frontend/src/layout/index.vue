@@ -86,8 +86,8 @@
         </div>
       </header>
 
-      <main class="layout-main">
-        <div class="page-heading">
+      <main class="layout-main" :class="{ 'layout-main--dashboard': route.path === '/dashboard' }">
+        <div v-if="route.path !== '/dashboard'" class="page-heading">
           <div class="page-heading-icon">
             <el-icon :size="20"><component :is="pageIcon" /></el-icon>
           </div>
@@ -462,6 +462,10 @@ function handleCommand(command) {
   overflow-y: auto;
   padding: 22px 24px 32px;
   background: var(--pms-bg);
+}
+
+.layout-main--dashboard {
+  padding-top: 0;
 }
 
 .page-heading {
