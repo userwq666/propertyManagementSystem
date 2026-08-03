@@ -120,7 +120,7 @@ public class ComplaintSuggestServiceImpl extends ServiceImpl<ComplaintSuggestMap
         domain.prepareAdd();
         this.save(domain);
         messagePushService.pushToRole("complaint", "新投诉",
-                "新投诉已提交，请及时受理", domain.getId(), "admin", "property_admin");
+                "新投诉已提交，请及时受理", domain.getId(), "root", "property_admin");
     }
 
     // 更新投诉建议

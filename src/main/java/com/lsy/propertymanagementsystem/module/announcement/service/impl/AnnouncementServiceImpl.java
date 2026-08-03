@@ -173,7 +173,7 @@ public class AnnouncementServiceImpl extends ServiceImpl<AnnouncementMapper, Ann
 
     private boolean isManager() {
         String roleKey = SecurityUtils.getRoleKey();
-        return "admin".equals(roleKey) || "property_admin".equals(roleKey);
+        return "root".equals(roleKey) || "property_admin".equals(roleKey);
     }
 
     private AnnouncementVO convertToVO(AnnouncementDomain domain) {

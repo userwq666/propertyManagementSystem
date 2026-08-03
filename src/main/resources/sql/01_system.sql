@@ -68,7 +68,7 @@ CREATE TABLE sys_role_menu (
 -- ===============================================================
 -- 1. 系统角色
 INSERT INTO sys_role (id, role_name, role_key, remark) VALUES
-(1, '超级管理员', 'admin',          '系统最高权限'),
+(1, '超级管理员', 'root',          '系统最高权限'),
 (2, '物业管理员', 'property_admin',  '社区日常业务管理'),
 (3, '业主',       'owner',           '个人线上服务'),
 (4, '维修工',     'repair_worker',   '处理报修工单'),

@@ -96,7 +96,7 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
             wrapper.and(w -> w.eq(RepairRecordDomain::getHandlerId, userId)
                     .or().eq(RepairRecordDomain::getStatus, RepairStatus.PENDING));
         } else {
-            if ("admin".equals(roleKey) || "property_admin".equals(roleKey)) {
+            if ("root".equals(roleKey) || "property_admin".equals(roleKey)) {
                 if (ownerId != null) {
                     if (ownerId == 0L) {
                         wrapper.isNull(RepairRecordDomain::getOwnerId);
@@ -161,7 +161,7 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         }
         messagePushService.pushToRole("repair", "新报修",
                 "新报修工单 " + domain.getRepairNo() + " 待处理", domain.getId(),
-                "repair_worker", "admin", "property_admin");
+                "repair_worker", "root", "property_admin");
         return domain.getId();
     }
 
@@ -210,7 +210,7 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
         RepairStatus newStatus = RepairStatus.of(status);
         Long userId = SecurityUtils.getCurrentUserId();
         String roleKey = SecurityUtils.getRoleKey();
-        boolean isAdmin = "admin".equals(roleKey) || "property_admin".equals(roleKey);
+        boolean isAdmin = "root".equals(roleKey) || "property_admin".equals(roleKey);
         boolean isOwner = SecurityUtils.isOwner();
         boolean isWorker = "repair_worker".equals(roleKey);
 
@@ -334,7 +334,7 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
             throw new BusinessException("只有待确认的报修才能评价，确认后不可补评");
         }
         Long userId = SecurityUtils.getCurrentUserId();
-        boolean isAdmin = "admin".equals(SecurityUtils.getRoleKey())
+        boolean isAdmin = "root".equals(SecurityUtils.getRoleKey())
                 || "property_admin".equals(SecurityUtils.getRoleKey());
         boolean ownerOk = SecurityUtils.isOwner()
                 && Objects.equals(domain.getOwnerId(), getOwnerIdByUserId(userId));
