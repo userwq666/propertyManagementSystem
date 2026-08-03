@@ -68,7 +68,7 @@ CREATE TABLE sys_role_menu (
 -- ===============================================================
 -- 1. 系统角色
 INSERT INTO sys_role (id, role_name, role_key, remark) VALUES
-(1, '超级管理员', 'admin',          '系统最高权限'),
+(1, '超级管理员', 'root',           '系统最高权限'),
 (2, '物业管理员', 'property_admin',  '社区日常业务管理'),
 (3, '业主',       'owner',           '个人线上服务'),
 (4, '维修工',     'repair_worker',   '处理报修工单'),
@@ -389,7 +389,7 @@ INSERT INTO sys_role_menu (id, role_id, menu_id) VALUES (3503,5,86);
 INSERT INTO sys_role_menu (role_id, menu_id) VALUES
 (6,11),(6,12),(6,13),  -- 收费管理目录、收费项目、收费记录
 (6,57),(6,58);  -- 收费记录：生成账单、缴纳费用
--- 统计面板子权限（admin/property_admin）
+-- 统计面板子权限（root/property_admin）
 INSERT INTO sys_menu (id, parent_id, menu_name, icon, path, component, perms, menu_type, sort, status) VALUES
 (95, 27, '费用统计', NULL, '', '', 'statistics:fee:list', 2, 1, 1),
 (96, 27, '报修统计', NULL, '', '', 'statistics:repair:list', 2, 2, 1),

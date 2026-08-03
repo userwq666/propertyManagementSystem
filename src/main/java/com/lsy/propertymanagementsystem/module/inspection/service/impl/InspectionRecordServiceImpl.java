@@ -164,7 +164,7 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
         }
         Long currentUserId = SecurityUtils.getCurrentUserId();
         String roleKey = SecurityUtils.getRoleKey();
-        boolean isManager = "admin".equals(roleKey) || "property_admin".equals(roleKey);
+        boolean isManager = "root".equals(roleKey) || "property_admin".equals(roleKey);
         if (!isManager && !currentUserId.equals(existing.getInspectorUserId())) {
             throw new BusinessException("只能填写自己负责的巡检记录");
         }
@@ -220,7 +220,7 @@ public class InspectionRecordServiceImpl implements InspectionRecordService {
             if (existing.getStatus() == InspectResult.ABNORMAL) {
                 messagePushService.pushToRole("inspection", "巡检异常",
                         "巡检计划「" + plan.getPlanName() + "」发现异常，请及时处理", existing.getId(),
-                        "admin", "property_admin");
+                        "root", "property_admin");
             }
         }
     }

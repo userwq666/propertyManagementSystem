@@ -281,7 +281,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         String roleKey = SecurityUtils.getRoleKey();
         Long currentUserId = SecurityUtils.getCurrentUserId();
 
-        if ("admin".equals(roleKey) || "property_admin".equals(roleKey)) {
+        if ("root".equals(roleKey) || "property_admin".equals(roleKey)) {
             todos.add(todo("repairAssign", "待派单报修",
                     repairRecordMapper.selectCount(new LambdaQueryWrapper<RepairRecordDomain>()
                             .eq(RepairRecordDomain::getStatus, RepairStatus.PENDING))));
