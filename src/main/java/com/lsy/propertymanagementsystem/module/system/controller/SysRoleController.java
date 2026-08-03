@@ -53,6 +53,13 @@ public class SysRoleController {
         return Result.success(roles);
     }
 
+    @PreAuthorize("hasAnyAuthority('system:user:list', 'system:user:add', 'system:user:edit')")
+    @GetMapping("/options")
+    public Result<List<RoleVO>> getRoleOptions() {
+        List<RoleVO> roles = roleService.getRoleList();
+        return Result.success(roles);
+    }
+
     @PreAuthorize("hasAuthority('system:role:edit')")
     @PostMapping("/assignMenus")
     public Result<Void> assignMenus(@RequestParam Long roleId, @RequestBody List<Long> menuIds) {

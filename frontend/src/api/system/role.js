@@ -20,6 +20,10 @@ export function getRoleList() {
   return request({ url: '/system/role/list', method: 'get' })
 }
 
+export function getRoleOptions() {
+  return request({ url: '/system/role/options', method: 'get' })
+}
+
 export function assignMenus(roleId, menuIds) {
   return request({ url: '/system/role/assignMenus', method: 'post', params: { roleId }, data: menuIds })
 }
