@@ -201,7 +201,8 @@ function handleCommand(command) {
     ElMessageBox.prompt('请输入新密码', '修改密码', {
       inputType: 'password',
       confirmButtonText: '确定',
-      cancelButtonText: '取消'
+      cancelButtonText: '取消',
+      customClass: 'compact-message-box'
     }).then(({ value }) => {
       if (value && value.length >= 6) {
         import('@/api/system/user').then(({ resetPassword }) => {
@@ -217,7 +218,10 @@ function handleCommand(command) {
     return
   }
   if (command === 'logout') {
-    ElMessageBox.confirm('确定要退出登录吗？', '提示', { type: 'warning' }).then(() => {
+    ElMessageBox.confirm('确定要退出登录吗？', '提示', {
+      type: 'warning',
+      customClass: 'compact-message-box'
+    }).then(() => {
       disconnectWebSocket()
       userStore.logout().then(() => router.push('/login'))
     })
