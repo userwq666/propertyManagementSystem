@@ -285,8 +285,7 @@ onMounted(async () => {
 .panel-card {
   display: flex;
   flex-direction: column;
-  min-height: 250
-  px;
+  min-height: 265px;
   overflow: hidden;
   background: var(--pms-surface);
   border: 1px solid var(--pms-border);
