@@ -152,9 +152,15 @@ const handleLogin = async () => {
   flex-direction: column;
   padding: 44px 48px;
   overflow: hidden;
-  color: #223b35;
+  color: #173b36;
   background:
-    linear-gradient(135deg, rgba(255, 253, 247, 0.96), rgba(252, 247, 237, 0.74) 58%, rgba(245, 242, 233, 0.62)),
+    linear-gradient(
+      90deg,
+      rgba(255, 254, 251, 0.99) 0%,
+      rgba(255, 254, 251, 0.94) 38%,
+      rgba(250, 247, 239, 0.68) 72%,
+      rgba(244, 242, 234, 0.38) 100%
+    ),
     url('/login-community.jpg') center / cover no-repeat;
 }
 
@@ -193,12 +199,13 @@ const handleLogin = async () => {
 }
 
 .brand-copy strong {
+  color: #143832;
   font-size: 17px;
 }
 
 .brand-copy span {
   margin-top: 4px;
-  color: #6f7f78;
+  color: #6a7c75;
   font-size: 10px;
   letter-spacing: 0.1em;
 }
@@ -210,8 +217,8 @@ const handleLogin = async () => {
   padding: 7px 12px;
   border: 1px solid rgba(46, 91, 81, 0.14);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.56);
-  color: #3e5a53;
+  background: rgba(255, 255, 255, 0.78);
+  color: #36544d;
   font-size: 12px;
 }
 
@@ -219,30 +226,33 @@ const handleLogin = async () => {
   position: relative;
   z-index: 1;
   margin: auto 0;
+  max-width: 440px;
   padding: 40px 0;
 }
 
 .eyebrow {
   margin-bottom: 18px;
-  color: #9b7b45;
+  color: #9a7435;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.18em;
 }
 
 .visual-main h1 {
-  color: #223b35;
+  color: #143832;
   font-size: 40px;
   font-weight: 700;
   line-height: 1.2;
+  text-shadow: 0 2px 14px rgba(255, 255, 255, 0.72);
 }
 
 .visual-sub {
-  max-width: 420px;
+  max-width: 400px;
   margin-top: 18px;
-  color: #576a63;
+  color: #4a625b;
   font-size: 15px;
   line-height: 1.8;
+  text-shadow: 0 1px 8px rgba(255, 255, 255, 0.68);
 }
 
 .visual-points {
@@ -256,12 +266,13 @@ const handleLogin = async () => {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #3e5750;
+  color: #315149;
   font-size: 14px;
+  text-shadow: 0 1px 6px rgba(255, 255, 255, 0.62);
 }
 
 .point .el-icon {
-  color: #2f7d6c;
+  color: #287364;
   font-size: 17px;
 }
 
@@ -271,8 +282,9 @@ const handleLogin = async () => {
   display: flex;
   align-items: center;
   gap: 14px;
-  color: #66756e;
+  color: #5a6d66;
   font-size: 12px;
+  text-shadow: 0 1px 6px rgba(255, 255, 255, 0.7);
 }
 
 .visual-line {
@@ -356,7 +368,7 @@ const handleLogin = async () => {
     min-height: 0;
     padding: 18px 22px;
     background:
-      linear-gradient(180deg, rgba(255, 253, 247, 0.92), rgba(249, 245, 236, 0.72)),
+      linear-gradient(180deg, rgba(255, 254, 251, 0.97), rgba(255, 253, 248, 0.88) 52%, rgba(246, 243, 235, 0.68)),
       url('/login-community.jpg') center / cover no-repeat;
   }
 
