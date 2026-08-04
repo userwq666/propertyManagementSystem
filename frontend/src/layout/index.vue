@@ -77,7 +77,6 @@
             </div>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item command="profile">个人信息</el-dropdown-item>
                 <el-dropdown-item command="password">修改密码</el-dropdown-item>
                 <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
               </el-dropdown-menu>
@@ -193,16 +192,11 @@ function handleWsMessage(msg) {
 }
 
 function handleCommand(command) {
-  if (command === 'profile') {
-    ElMessage.info('个人信息功能开发中，请稍候')
-    return
-  }
   if (command === 'password') {
     ElMessageBox.prompt('请输入新密码', '修改密码', {
       inputType: 'password',
       confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      customClass: 'compact-message-box'
+      cancelButtonText: '取消'
     }).then(({ value }) => {
       if (value && value.length >= 6) {
         import('@/api/system/user').then(({ resetPassword }) => {
@@ -218,10 +212,7 @@ function handleCommand(command) {
     return
   }
   if (command === 'logout') {
-    ElMessageBox.confirm('确定要退出登录吗？', '提示', {
-      type: 'warning',
-      customClass: 'compact-message-box'
-    }).then(() => {
+    ElMessageBox.confirm('确定要退出登录吗？', '提示', { type: 'warning' }).then(() => {
       disconnectWebSocket()
       userStore.logout().then(() => router.push('/login'))
     })

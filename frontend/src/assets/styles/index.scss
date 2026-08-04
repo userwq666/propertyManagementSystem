@@ -253,14 +253,10 @@ a {
 }
 
 .el-message-box {
-  max-width: calc(100vw - 24px);
-  border-radius: 8px;
-  padding: 14px 18px 12px;
-}
-
-.compact-message-box {
   width: 340px;
   max-width: calc(100vw - 32px);
+  border-radius: 8px;
+  padding: 14px 18px 12px;
 }
 
 .el-message-box__header {
